@@ -68,12 +68,45 @@ pub fn ceiling_log_2_mpz(n: &Mpz) -> u32 {
     }
 }
 
-pub fn bits_u8(n: u8) -> Vec<bool> {
-    let mut bits = Vec::new();
-    let mut remaining = n;
-    while remaining != 0 {
-        bits.push(remaining & 1 != 0);
-        remaining >>= 1;
+macro_rules! bits_u {
+    ($t: ty, $b: ident) => {
+        pub fn $b(n: $t) -> Vec<bool> {
+            let mut bits = Vec::new();
+            let mut remaining = n;
+            while remaining != 0 {
+                bits.push(remaining & 1 != 0);
+                remaining >>= 1;
+            }
+            bits
+        }
     }
-    bits
 }
+
+bits_u!(u8, bits_u8);
+bits_u!(u16, bits_u16);
+bits_u!(u32, bits_u32);
+bits_u!(u64, bits_u64);
+bits_u!(usize, bits_usize);
+
+macro_rules! bits_i {
+    ($t: ty, $b: ident) => {
+        pub fn $b(n: $t) -> Vec<bool> {
+            if n < 0 {
+                panic!("n cannot be negative. Invalid n: {}", n);
+            }
+            let mut bits = Vec::new();
+            let mut remaining = n;
+            while remaining != 0 {
+                bits.push(remaining & 1 != 0);
+                remaining >>= 1;
+            }
+            bits
+        }
+    }
+}
+
+bits_i!(i8, bits_i8);
+bits_i!(i16, bits_i16);
+bits_i!(i32, bits_i32);
+bits_i!(i64, bits_i64);
+bits_i!(isize, bits_isize);

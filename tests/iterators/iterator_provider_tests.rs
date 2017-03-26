@@ -13,7 +13,9 @@ macro_rules! test_integer_range_aux {
             $rdi_t: ident,
             $rdd_t: ident,
             $ri_t: ident,
-            $rd_t: ident
+            $rd_t: ident,
+            $i_t: ident,
+            $d_t: ident
     ) => {
         $rui_t(&$eo, &mut $p);
         $rud_t(&$eo, &mut $p);
@@ -21,6 +23,8 @@ macro_rules! test_integer_range_aux {
         $rdd_t(&$eo, &mut $p);
         $ri_t(&$eo, &mut $p);
         $rd_t(&$eo, &mut $p);
+        $i_t(&$eo, &mut $p);
+        $d_t(&$eo, &mut $p);
     }
 }
 
@@ -36,7 +40,9 @@ fn master_test() {
                             test_range_down_increasing_u8,
                             test_range_down_decreasing_u8,
                             test_range_increasing_u8,
-                            test_range_decreasing_u8);
+                            test_range_decreasing_u8,
+                            test_u8s_increasing,
+                            test_u8s_decreasing);
 }
 
 macro_rules! test_integer_range {
@@ -49,6 +55,8 @@ macro_rules! test_integer_range {
         $rdd: ident,
         $ri: ident,
         $rd: ident,
+        $i: ident,
+        $d: ident,
         $rui_th: ident,
         $rud_th: ident,
         $rdi_th: ident,
@@ -61,6 +69,8 @@ macro_rules! test_integer_range {
         $rdd_t: ident,
         $ri_t: ident,
         $rd_t: ident,
+        $i_t: ident,
+        $d_t: ident,
         $ri_f: ident,
         $rd_f: ident,
         $max: expr
@@ -121,6 +131,12 @@ macro_rules! test_integer_range {
             $ri_th(eo, p, &format!("{}_{}_iv", s, $ts), 10, 10);
         }
 
+        #[test]
+        #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
+        fn $ri_f() {
+            IteratorProvider::Exhaustive.$ri(10, 9);
+        }
+
         fn $rd_th(eo: &TestOutput, p: &mut IteratorProvider, key: &str, a: $t, b: $t) {
             eo.match_list(key, &mut p.$rd(a, b));
         }
@@ -135,14 +151,16 @@ macro_rules! test_integer_range {
 
         #[test]
         #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
-        fn $ri_f() {
-            IteratorProvider::Exhaustive.$ri(10, 9);
-        }
-
-        #[test]
-        #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
         fn $rd_f() {
             IteratorProvider::Exhaustive.$rd(10, 9);
+        }
+
+        fn $i_t(eo: &TestOutput, p: &mut IteratorProvider) {
+            eo.match_list(&format!("exhaustive_{}s_increasing_i", $ts), &mut p.$i());
+        }
+
+        fn $d_t(eo: &TestOutput, p: &mut IteratorProvider) {
+            eo.match_list(&format!("exhaustive_{}s_decreasing_i", $ts), &mut p.$d());
         }
     }
 }
@@ -155,6 +173,8 @@ test_integer_range!(u8,
                     range_down_decreasing_u8,
                     range_increasing_u8,
                     range_decreasing_u8,
+                    u8s_increasing,
+                    u8s_decreasing,
                     range_up_increasing_u8_helper,
                     range_up_decreasing_u8_helper,
                     range_down_increasing_u8_helper,
@@ -167,6 +187,8 @@ test_integer_range!(u8,
                     test_range_down_decreasing_u8,
                     test_range_increasing_u8,
                     test_range_decreasing_u8,
+                    test_u8s_increasing,
+                    test_u8s_decreasing,
                     range_increasing_u8_fail,
                     range_decreasing_u8_fail,
                     u8::max_value());

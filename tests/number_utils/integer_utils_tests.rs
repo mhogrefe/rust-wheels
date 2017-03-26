@@ -265,3 +265,52 @@ fn test_ceiling_log_2_mpz_fail_1() {
 fn test_ceiling_log_2_mpz_fail_2() {
     ceiling_log_2_mpz_fail_helper("-5");
 }
+
+macro_rules! test_bits {
+    ($t: ty, $f: ident, $test: ident, $helper: ident, $max: expr, $max_bits: expr) => {
+        fn $helper(n: $t, out: &str) {
+            assert_eq!(format!("{:?}", $f(n)), out);
+        }
+
+        #[test]
+        fn $test() {
+            $helper(0, "[]");
+            $helper(1, "[true]");
+            $helper(6, "[false, true, true]");
+            $helper(105, "[true, false, false, true, false, true, true]");
+            $helper($max, $max_bits);
+        }
+    }
+}
+
+test_bits!(u8,
+           bits_u8,
+           test_bits_u8,
+           bits_u8_helper,
+           u8::max_value(),
+           "[true, true, true, true, true, true, true, true]");
+test_bits!(u16,
+           bits_u16,
+           test_bits_16,
+           bits_u16_helper,
+           u16::max_value(),
+           "[true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
+             true, true]");
+test_bits!(u32,
+           bits_u32,
+           test_bits_32,
+           bits_u32_helper,
+           u32::max_value(),
+           "[true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
+             true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
+             true, true, true, true]");
+test_bits!(u64,
+           bits_u64,
+           test_bits_64,
+           bits_u64_helper,
+           u64::max_value(),
+           "[true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
+             true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
+             true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
+             true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
+             true, true, true, true, true, true, true, true]");

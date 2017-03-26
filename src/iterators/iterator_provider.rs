@@ -112,6 +112,8 @@ macro_rules! integer_range_impl {
         $rdd_f: ident,
         $ri_f: ident,
         $rd_f: ident,
+        $i: ident,
+        $d: ident,
         $ri_s: ident,
         $rd_s: ident,
         $max: expr
@@ -145,6 +147,14 @@ macro_rules! integer_range_impl {
             }
             $rd_s::new(a, b)
         }
+
+        pub fn $i(&mut self) -> $ri_s {
+            $ri_s::new(0, $max)
+        }
+
+        pub fn $d(&mut self) -> $rd_s {
+            $rd_s::new(0, $max)
+        }
     }
 }
 
@@ -174,6 +184,8 @@ impl IteratorProvider {
                         range_down_decreasing_u8,
                         range_increasing_u8,
                         range_decreasing_u8,
+                        u8s_increasing,
+                        u8s_decreasing,
                         RangeIncreasingU8,
                         RangeDecreasingU8,
                         u8::max_value());

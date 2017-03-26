@@ -227,3 +227,49 @@ exhaustive_range_decreasing_u8_iii list 11
 
 exhaustive_range_decreasing_u8_iv list 1
 10
+
+exhaustive_u8s_increasing_i list 21
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+...
+
+exhaustive_u8s_decreasing_i list 21
+255
+254
+253
+252
+251
+250
+249
+248
+247
+246
+245
+244
+243
+242
+241
+240
+239
+238
+237
+236
+...
