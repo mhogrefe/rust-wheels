@@ -17,10 +17,12 @@ is_power_of_two!(is_power_of_two_u8, u8);
 is_power_of_two!(is_power_of_two_u16, u16);
 is_power_of_two!(is_power_of_two_u32, u32);
 is_power_of_two!(is_power_of_two_u64, u64);
+is_power_of_two!(is_power_of_two_usize, usize);
 is_power_of_two!(is_power_of_two_i8, i8);
 is_power_of_two!(is_power_of_two_i16, i16);
 is_power_of_two!(is_power_of_two_i32, i32);
 is_power_of_two!(is_power_of_two_i64, i64);
+is_power_of_two!(is_power_of_two_isize, isize);
 
 pub fn is_power_of_two_mpz(n: &Mpz) -> bool {
     if n < &Mpz::from(1) {

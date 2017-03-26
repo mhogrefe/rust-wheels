@@ -60,6 +60,13 @@ test_is_power_of_two_u!(u64,
                         test_is_power_of_two_u64_fail,
                         10000000000000000000,
                         u64::max_value());
+test_is_power_of_two_u!(usize,
+                        is_power_of_two_usize,
+                        test_is_power_of_two_usize,
+                        is_power_of_two_usize_helper,
+                        test_is_power_of_two_usize_fail,
+                        100,
+                        usize::max_value());
 
 macro_rules! test_is_power_of_two_i {
     ($t: ty, $f: ident, $test: ident, $helper: ident, $fail1: ident, $fail2: ident, $p10: expr,
@@ -127,6 +134,14 @@ test_is_power_of_two_i!(i64,
                         test_is_power_of_two_i64_fail_2,
                         1000000000000000000,
                         i64::max_value());
+test_is_power_of_two_i!(isize,
+                        is_power_of_two_isize,
+                        test_is_power_of_two_isize,
+                        is_power_of_two_isize_helper,
+                        test_is_power_of_two_isize_fail_1,
+                        test_is_power_of_two_isize_fail_2,
+                        100,
+                        isize::max_value());
 
 fn is_power_of_two_mpz_helper(n: &str, out: bool) {
     assert_eq!(is_power_of_two_mpz(&Mpz::from_str(n).unwrap()), out);
