@@ -133,10 +133,16 @@ macro_rules! integer_range_impl {
         }
 
         pub fn $ri_f(&mut self, a: $t, b: $t) -> $ri_s {
+            if a > b {
+                panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
+            }
             $ri_s::new(a, b)
         }
 
         pub fn $rd_f(&mut self, a: $t, b: $t) -> $rd_s {
+            if a > b {
+                panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
+            }
             $rd_s::new(a, b)
         }
     }
