@@ -1,0 +1,17 @@
+[package]
+name = "rust-wheels"
+version = "0.1.0"
+authors = ["Mikhail Hogrefe <mikhailhogrefe@gmail.com>"]
+
+[lib]
+name = "rust_wheels_lib"
+path = "src/lib.rs"
+
+[[bin]]
+name = "rust_wheels_main"
+path = "src/bin.rs"
+
+[dependencies]
+
+rand = "0.3.0"
+rust-gmp = "0.4.0"
