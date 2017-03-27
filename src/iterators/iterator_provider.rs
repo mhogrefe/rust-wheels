@@ -102,6 +102,26 @@ integer_range!(u8,
                RangeDecreasingU8,
                RandomU8s,
                u8::max_value());
+integer_range!(u16,
+               RangeIncreasingU16,
+               RangeDecreasingU16,
+               RandomU16s,
+               u16::max_value());
+integer_range!(u32,
+               RangeIncreasingU32,
+               RangeDecreasingU32,
+               RandomU32s,
+               u32::max_value());
+integer_range!(u64,
+               RangeIncreasingU64,
+               RangeDecreasingU64,
+               RandomU64s,
+               u64::max_value());
+integer_range!(usize,
+               RangeIncreasingUsize,
+               RangeDecreasingUsize,
+               RandomUsizes,
+               usize::max_value());
 
 macro_rules! integer_range_impl {
     (
@@ -189,6 +209,54 @@ impl IteratorProvider {
                         RangeIncreasingU8,
                         RangeDecreasingU8,
                         u8::max_value());
+    integer_range_impl!(u16,
+                        range_up_increasing_u16,
+                        range_up_decreasing_u16,
+                        range_down_increasing_u16,
+                        range_down_decreasing_u16,
+                        range_increasing_u16,
+                        range_decreasing_u16,
+                        u16s_increasing,
+                        u16s_decreasing,
+                        RangeIncreasingU16,
+                        RangeDecreasingU16,
+                        u16::max_value());
+    integer_range_impl!(u32,
+                        range_up_increasing_u32,
+                        range_up_decreasing_u32,
+                        range_down_increasing_u32,
+                        range_down_decreasing_u32,
+                        range_increasing_u32,
+                        range_decreasing_u32,
+                        u32s_increasing,
+                        u32s_decreasing,
+                        RangeIncreasingU32,
+                        RangeDecreasingU32,
+                        u32::max_value());
+    integer_range_impl!(u64,
+                        range_up_increasing_u64,
+                        range_up_decreasing_u64,
+                        range_down_increasing_u64,
+                        range_down_decreasing_u64,
+                        range_increasing_u64,
+                        range_decreasing_u64,
+                        u64s_increasing,
+                        u64s_decreasing,
+                        RangeIncreasingU64,
+                        RangeDecreasingU64,
+                        u64::max_value());
+    integer_range_impl!(usize,
+                        range_up_increasing_usize,
+                        range_up_decreasing_usize,
+                        range_down_increasing_usize,
+                        range_down_decreasing_usize,
+                        range_increasing_usize,
+                        range_decreasing_usize,
+                        usizes_increasing,
+                        usizes_decreasing,
+                        RangeIncreasingUsize,
+                        RangeDecreasingUsize,
+                        usize::max_value());
 
     pub fn u8s(&mut self) -> U8s {
         match self {

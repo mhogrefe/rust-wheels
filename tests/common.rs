@@ -69,6 +69,9 @@ pub fn get_expected_test_outputs() -> TestOutput {
                     if !line.is_empty() {
                         panic!("Line `{}` should be empty", line);
                     }
+                    if vecs.contains_key(current_key) {
+                        panic!("Duplicate key {}", current_key);
+                    }
                     vecs.insert(current_key.to_string(), current_vec.clone());
                     current_vec.clear();
                     read_mode = 0;
@@ -79,6 +82,9 @@ pub fn get_expected_test_outputs() -> TestOutput {
             }
             _ => panic!("Maps not handled yet"),
         }
+    }
+    if vecs.contains_key(current_key) {
+        panic!("Duplicate key {}", current_key);
     }
     vecs.insert(current_key.to_string(), current_vec.clone());
     TestOutput {
