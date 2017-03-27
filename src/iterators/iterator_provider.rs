@@ -157,8 +157,10 @@ macro_rules! integer_range_impl {
         $rdd_f: ident,
         $ri_f: ident,
         $rd_f: ident,
-        $i: ident,
-        $d: ident,
+        $i_f: ident,
+        $d_f: ident,
+        $pos_f: ident,
+        $nat_f: ident,
         $ri_s: ident,
         $rd_s: ident,
         $min: expr,
@@ -194,12 +196,20 @@ macro_rules! integer_range_impl {
             $rd_s::new(a, b)
         }
 
-        pub fn $i(&mut self) -> $ri_s {
+        pub fn $i_f(&mut self) -> $ri_s {
             $ri_s::new($min, $max)
         }
 
-        pub fn $d(&mut self) -> $rd_s {
+        pub fn $d_f(&mut self) -> $rd_s {
             $rd_s::new($min, $max)
+        }
+
+        pub fn $pos_f(&mut self) -> $ri_s {
+            $ri_s::new(1, $max)
+        }
+
+        pub fn $nat_f(&mut self) -> $ri_s {
+            $ri_s::new(0, $max)
         }
     }
 }
@@ -232,6 +242,8 @@ impl IteratorProvider {
                         range_decreasing_u8,
                         u8s_increasing,
                         u8s_decreasing,
+                        positive_u8s,
+                        natural_u8s,
                         RangeIncreasingU8,
                         RangeDecreasingU8,
                         0,
@@ -245,6 +257,8 @@ impl IteratorProvider {
                         range_decreasing_u16,
                         u16s_increasing,
                         u16s_decreasing,
+                        positive_u16s,
+                        natural_u16s,
                         RangeIncreasingU16,
                         RangeDecreasingU16,
                         0,
@@ -258,6 +272,8 @@ impl IteratorProvider {
                         range_decreasing_u32,
                         u32s_increasing,
                         u32s_decreasing,
+                        positive_u32s,
+                        natural_u32s,
                         RangeIncreasingU32,
                         RangeDecreasingU32,
                         0,
@@ -271,6 +287,8 @@ impl IteratorProvider {
                         range_decreasing_u64,
                         u64s_increasing,
                         u64s_decreasing,
+                        positive_u64s,
+                        natural_u64s,
                         RangeIncreasingU64,
                         RangeDecreasingU64,
                         0,
@@ -284,6 +302,8 @@ impl IteratorProvider {
                         range_decreasing_usize,
                         usizes_increasing,
                         usizes_decreasing,
+                        positive_usizes,
+                        natural_usizes,
                         RangeIncreasingUsize,
                         RangeDecreasingUsize,
                         0,
@@ -297,6 +317,8 @@ impl IteratorProvider {
                         range_decreasing_i8,
                         i8s_increasing,
                         i8s_decreasing,
+                        positive_i8s,
+                        natural_i8s,
                         RangeIncreasingI8,
                         RangeDecreasingI8,
                         i8::min_value(),
@@ -310,6 +332,8 @@ impl IteratorProvider {
                         range_decreasing_i16,
                         i16s_increasing,
                         i16s_decreasing,
+                        positive_i16s,
+                        natural_i16s,
                         RangeIncreasingI16,
                         RangeDecreasingI16,
                         i16::min_value(),
@@ -323,6 +347,8 @@ impl IteratorProvider {
                         range_decreasing_i32,
                         i32s_increasing,
                         i32s_decreasing,
+                        positive_i32s,
+                        natural_i32s,
                         RangeIncreasingI32,
                         RangeDecreasingI32,
                         i32::min_value(),
@@ -336,6 +362,8 @@ impl IteratorProvider {
                         range_decreasing_i64,
                         i64s_increasing,
                         i64s_decreasing,
+                        positive_i64s,
+                        natural_i64s,
                         RangeIncreasingI64,
                         RangeDecreasingI64,
                         i64::min_value(),
@@ -349,6 +377,8 @@ impl IteratorProvider {
                         range_decreasing_isize,
                         isizes_increasing,
                         isizes_decreasing,
+                        positive_isizes,
+                        natural_isizes,
                         RangeIncreasingIsize,
                         RangeDecreasingIsize,
                         isize::min_value(),
