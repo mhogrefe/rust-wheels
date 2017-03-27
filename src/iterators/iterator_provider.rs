@@ -122,6 +122,31 @@ integer_range!(usize,
                RangeDecreasingUsize,
                RandomUsizes,
                usize::max_value());
+integer_range!(i8,
+               RangeIncreasingI8,
+               RangeDecreasingI8,
+               RandomI8s,
+               i8::max_value());
+integer_range!(i16,
+               RangeIncreasingI16,
+               RangeDecreasingI16,
+               RandomI16s,
+               i16::max_value());
+integer_range!(i32,
+               RangeIncreasingI32,
+               RangeDecreasingI32,
+               RandomI32s,
+               i32::max_value());
+integer_range!(i64,
+               RangeIncreasingI64,
+               RangeDecreasingI64,
+               RandomI64s,
+               i64::max_value());
+integer_range!(isize,
+               RangeIncreasingIsize,
+               RangeDecreasingIsize,
+               RandomIsizes,
+               isize::max_value());
 
 macro_rules! integer_range_impl {
     (
@@ -136,6 +161,7 @@ macro_rules! integer_range_impl {
         $d: ident,
         $ri_s: ident,
         $rd_s: ident,
+        $min: expr,
         $max: expr
     ) => {
         pub fn $rui_f(&mut self, a: $t) -> $ri_s {
@@ -147,11 +173,11 @@ macro_rules! integer_range_impl {
         }
 
         pub fn $rdi_f(&mut self, b: $t) -> $ri_s {
-            $ri_s::new(0, b)
+            $ri_s::new($min, b)
         }
 
         pub fn $rdd_f(&mut self, b: $t) -> $rd_s {
-            $rd_s::new(0, b)
+            $rd_s::new($min, b)
         }
 
         pub fn $ri_f(&mut self, a: $t, b: $t) -> $ri_s {
@@ -169,11 +195,11 @@ macro_rules! integer_range_impl {
         }
 
         pub fn $i(&mut self) -> $ri_s {
-            $ri_s::new(0, $max)
+            $ri_s::new($min, $max)
         }
 
         pub fn $d(&mut self) -> $rd_s {
-            $rd_s::new(0, $max)
+            $rd_s::new($min, $max)
         }
     }
 }
@@ -208,6 +234,7 @@ impl IteratorProvider {
                         u8s_decreasing,
                         RangeIncreasingU8,
                         RangeDecreasingU8,
+                        0,
                         u8::max_value());
     integer_range_impl!(u16,
                         range_up_increasing_u16,
@@ -220,6 +247,7 @@ impl IteratorProvider {
                         u16s_decreasing,
                         RangeIncreasingU16,
                         RangeDecreasingU16,
+                        0,
                         u16::max_value());
     integer_range_impl!(u32,
                         range_up_increasing_u32,
@@ -232,6 +260,7 @@ impl IteratorProvider {
                         u32s_decreasing,
                         RangeIncreasingU32,
                         RangeDecreasingU32,
+                        0,
                         u32::max_value());
     integer_range_impl!(u64,
                         range_up_increasing_u64,
@@ -244,6 +273,7 @@ impl IteratorProvider {
                         u64s_decreasing,
                         RangeIncreasingU64,
                         RangeDecreasingU64,
+                        0,
                         u64::max_value());
     integer_range_impl!(usize,
                         range_up_increasing_usize,
@@ -256,7 +286,73 @@ impl IteratorProvider {
                         usizes_decreasing,
                         RangeIncreasingUsize,
                         RangeDecreasingUsize,
+                        0,
                         usize::max_value());
+    integer_range_impl!(i8,
+                        range_up_increasing_i8,
+                        range_up_decreasing_i8,
+                        range_down_increasing_i8,
+                        range_down_decreasing_i8,
+                        range_increasing_i8,
+                        range_decreasing_i8,
+                        i8s_increasing,
+                        i8s_decreasing,
+                        RangeIncreasingI8,
+                        RangeDecreasingI8,
+                        i8::min_value(),
+                        i8::max_value());
+    integer_range_impl!(i16,
+                        range_up_increasing_i16,
+                        range_up_decreasing_i16,
+                        range_down_increasing_i16,
+                        range_down_decreasing_i16,
+                        range_increasing_i16,
+                        range_decreasing_i16,
+                        i16s_increasing,
+                        i16s_decreasing,
+                        RangeIncreasingI16,
+                        RangeDecreasingI16,
+                        i16::min_value(),
+                        i16::max_value());
+    integer_range_impl!(i32,
+                        range_up_increasing_i32,
+                        range_up_decreasing_i32,
+                        range_down_increasing_i32,
+                        range_down_decreasing_i32,
+                        range_increasing_i32,
+                        range_decreasing_i32,
+                        i32s_increasing,
+                        i32s_decreasing,
+                        RangeIncreasingI32,
+                        RangeDecreasingI32,
+                        i32::min_value(),
+                        i32::max_value());
+    integer_range_impl!(i64,
+                        range_up_increasing_i64,
+                        range_up_decreasing_i64,
+                        range_down_increasing_i64,
+                        range_down_decreasing_i64,
+                        range_increasing_i64,
+                        range_decreasing_i64,
+                        i64s_increasing,
+                        i64s_decreasing,
+                        RangeIncreasingI64,
+                        RangeDecreasingI64,
+                        i64::min_value(),
+                        i64::max_value());
+    integer_range_impl!(isize,
+                        range_up_increasing_isize,
+                        range_up_decreasing_isize,
+                        range_down_increasing_isize,
+                        range_down_decreasing_isize,
+                        range_increasing_isize,
+                        range_decreasing_isize,
+                        isizes_increasing,
+                        isizes_decreasing,
+                        RangeIncreasingIsize,
+                        RangeDecreasingIsize,
+                        isize::min_value(),
+                        isize::max_value());
 
     pub fn u8s(&mut self) -> U8s {
         match self {
