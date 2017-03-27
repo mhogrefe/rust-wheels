@@ -1,6 +1,7 @@
 extern crate gmp;
 
 use self::gmp::mpz::Mpz;
+use std::cmp::Ordering;
 
 macro_rules! is_power_of_two {
     ($ipot: ident, $t: ty) => {
@@ -110,3 +111,18 @@ bits_i!(i16, bits_i16);
 bits_i!(i32, bits_i32);
 bits_i!(i64, bits_i64);
 bits_i!(isize, bits_isize);
+
+pub fn bits_mpz(n: &Mpz) -> Vec<bool> {
+    match n.cmp(&Mpz::from(0)) {
+        Ordering::Less => panic!("n cannot be negative. Invalid n: {}", n),
+        Ordering::Equal => Vec::new(),
+        Ordering::Greater => {
+            let bit_length = n.bit_length();
+            let mut bits = Vec::with_capacity(bit_length);
+            for i in 0..bit_length {
+                bits.push(n.tstbit(i));
+            }
+            bits
+        }
+    }
+}

@@ -361,3 +361,21 @@ test_bits_s!(i16, bits_i16, bits_i16_fail);
 test_bits_s!(i32, bits_i32, bits_i32_fail);
 test_bits_s!(i64, bits_i64, bits_i64_fail);
 test_bits_s!(isize, bits_isize, bits_isize_fail);
+
+fn bits_mpz_helper(n: &str, out: &str) {
+    assert_eq!(format!("{:?}", bits_mpz(&Mpz::from_str(n).unwrap())), out);
+}
+
+#[test]
+fn test_bits_mpz() {
+    bits_mpz_helper("0", "[]");
+    bits_mpz_helper("1", "[true]");
+    bits_mpz_helper("6", "[false, true, true]");
+    bits_mpz_helper("105", "[true, false, false, true, false, true, true]");
+}
+
+#[test]
+#[should_panic(expected = "n cannot be negative. Invalid n: -5")]
+fn bits_mpz_fail() {
+    bits_mpz(&Mpz::from(-5));
+}
