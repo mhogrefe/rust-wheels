@@ -164,13 +164,13 @@ fn is_power_of_two_mpz_fail_helper(n: &str) {
 
 #[test]
 #[should_panic(expected = "n must be positive. Invalid n: 0")]
-fn test_is_power_of_two_mpz_fail_1() {
+fn is_power_of_two_mpz_fail_1() {
     is_power_of_two_mpz_fail_helper("0");
 }
 
 #[test]
 #[should_panic(expected = "n must be positive. Invalid n: -5")]
-fn test_is_power_of_two_mpz_fail_2() {
+fn is_power_of_two_mpz_fail_2() {
     is_power_of_two_mpz_fail_helper("-5");
 }
 
@@ -256,13 +256,13 @@ fn ceiling_log_2_mpz_fail_helper(n: &str) {
 
 #[test]
 #[should_panic(expected = "n must be positive. Invalid n: 0")]
-fn test_ceiling_log_2_mpz_fail_1() {
+fn ceiling_log_2_mpz_fail_1() {
     ceiling_log_2_mpz_fail_helper("0");
 }
 
 #[test]
 #[should_panic(expected = "n must be positive. Invalid n: -5")]
-fn test_ceiling_log_2_mpz_fail_2() {
+fn ceiling_log_2_mpz_fail_2() {
     ceiling_log_2_mpz_fail_helper("-5");
 }
 
@@ -291,14 +291,14 @@ test_bits!(u8,
            "[true, true, true, true, true, true, true, true]");
 test_bits!(u16,
            bits_u16,
-           test_bits_16,
+           test_bits_u16,
            bits_u16_helper,
            u16::max_value(),
            "[true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
              true, true]");
 test_bits!(u32,
            bits_u32,
-           test_bits_32,
+           test_bits_u32,
            bits_u32_helper,
            u32::max_value(),
            "[true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
@@ -306,7 +306,7 @@ test_bits!(u32,
              true, true, true, true]");
 test_bits!(u64,
            bits_u64,
-           test_bits_64,
+           test_bits_u64,
            bits_u64_helper,
            u64::max_value(),
            "[true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
@@ -314,3 +314,50 @@ test_bits!(u64,
              true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
              true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
              true, true, true, true, true, true, true, true]");
+test_bits!(i8,
+           bits_i8,
+           test_bits_i8,
+           bits_i8_helper,
+           i8::max_value(),
+           "[true, true, true, true, true, true, true]");
+test_bits!(i16,
+           bits_i16,
+           test_bits_i16,
+           bits_i16_helper,
+           i16::max_value(),
+           "[true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
+             true]");
+test_bits!(i32,
+           bits_i32,
+           test_bits_i32,
+           bits_i32_helper,
+           i32::max_value(),
+           "[true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
+             true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
+             true, true, true]");
+test_bits!(i64,
+           bits_i64,
+           test_bits_i64,
+           bits_i64_helper,
+           i64::max_value(),
+           "[true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
+             true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
+             true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
+             true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
+             true, true, true, true, true, true, true]");
+
+macro_rules! test_bits_s {
+    ($t: ty, $f: ident, $fail: ident) => {
+        #[test]
+        #[should_panic(expected = "n cannot be negative. Invalid n: -5")]
+        fn $fail() {
+            $f(-5);
+        }
+    }
+}
+
+test_bits_s!(i8, bits_i8, bits_i8_fail);
+test_bits_s!(i16, bits_i16, bits_i16_fail);
+test_bits_s!(i32, bits_i32, bits_i32_fail);
+test_bits_s!(i64, bits_i64, bits_i64_fail);
+test_bits_s!(isize, bits_isize, bits_isize_fail);
