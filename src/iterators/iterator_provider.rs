@@ -97,6 +97,26 @@ macro_rules! integer_range {
     }
 }
 
+macro_rules! integer_range_u {
+    ($t: ty, $t_s: ident, $ri_s: ident, $r_s: ident) => {
+        pub enum $t_s {
+            Exhaustive($ri_s),
+            Random($r_s),
+        }
+
+        impl Iterator for $t_s {
+            type Item = $t;
+
+            fn next(&mut self) -> Option<Self::Item> {
+                match self {
+                    &mut $t_s::Exhaustive(ref mut it) => it.next(),
+                    &mut $t_s::Random(ref mut it) => it.next(),
+                }
+            }
+        }
+    }
+}
+
 integer_range!(u8,
                RangeIncreasingU8,
                RangeDecreasingU8,
@@ -147,6 +167,12 @@ integer_range!(isize,
                RangeDecreasingIsize,
                RandomIsizes,
                isize::max_value());
+
+integer_range_u!(u8, U8s, RangeIncreasingU8, RandomU8s);
+integer_range_u!(u16, U16s, RangeIncreasingU16, RandomU16s);
+integer_range_u!(u32, U32s, RangeIncreasingU32, RandomU32s);
+integer_range_u!(u64, U64s, RangeIncreasingU64, RandomU64s);
+integer_range_u!(usize, Usizes, RangeIncreasingUsize, RandomUsizes);
 
 macro_rules! integer_range_impl {
     (
@@ -207,23 +233,16 @@ macro_rules! integer_range_impl {
         pub fn $pos_f(&mut self) -> $ri_s {
             $ri_s::new(1, $max)
         }
-
-        pub fn $nat_f(&mut self) -> $ri_s {
-            $ri_s::new(0, $max)
-        }
     }
 }
 
-pub enum U8s {
-    Random(RandomU8s),
-}
-
-impl Iterator for U8s {
-    type Item = u8;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        match self {
-            &mut U8s::Random(ref mut it) => it.next(),
+macro_rules! integer_range_impl_u {
+    ($t: ty, $t_f: ident, $i_f: ident, $t_s: ident, $r_s: ident) => {
+        pub fn $t_f(&mut self) -> $t_s {
+            match self {
+                &mut IteratorProvider::Exhaustive => $t_s::Exhaustive(self.$i_f()),
+                &mut IteratorProvider::Random(seed) => $t_s::Random($r_s::new(&seed)),
+            }
         }
     }
 }
@@ -384,13 +403,9 @@ impl IteratorProvider {
                         isize::min_value(),
                         isize::max_value());
 
-    pub fn u8s(&mut self) -> U8s {
-        match self {
-            &mut IteratorProvider::Exhaustive => {
-                let dummy: [u32; 4] = [0, 0, 0, 0];
-                U8s::Random(RandomU8s::new(&dummy))
-            }
-            &mut IteratorProvider::Random(seed) => U8s::Random(RandomU8s::new(&seed)),
-        }
-    }
+    integer_range_impl_u!(u8, u8s, u8s_increasing, U8s, RandomU8s);
+    integer_range_impl_u!(u16, u16s, u16s_increasing, U16s, RandomU16s);
+    integer_range_impl_u!(u32, u32s, u32s_increasing, U32s, RandomU32s);
+    integer_range_impl_u!(u64, u64s, u64s_increasing, U64s, RandomU64s);
+    integer_range_impl_u!(usize, usizes, usizes_increasing, Usizes, RandomUsizes);
 }

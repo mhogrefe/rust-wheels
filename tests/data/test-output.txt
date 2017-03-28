@@ -297,7 +297,7 @@ exhaustive_positive_u8s list 21
 20
 ...
 
-exhaustive_natural_u8s list 21
+exhaustive_u8s list 21
 0
 1
 2
@@ -619,7 +619,7 @@ exhaustive_positive_u16s list 21
 20
 ...
 
-exhaustive_natural_u16s list 21
+exhaustive_u16s list 21
 0
 1
 2
@@ -941,7 +941,7 @@ exhaustive_positive_u32s list 21
 20
 ...
 
-exhaustive_natural_u32s list 21
+exhaustive_u32s list 21
 0
 1
 2
@@ -1263,7 +1263,7 @@ exhaustive_positive_u64s list 21
 20
 ...
 
-exhaustive_natural_u64s list 21
+exhaustive_u64s list 21
 0
 1
 2
@@ -1831,29 +1831,6 @@ exhaustive_positive_i8s list 21
 20
 ...
 
-exhaustive_natural_i8s list 21
-0
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-...
-
 exhaustive_range_up_increasing_i16_i list 21
 0
 1
@@ -2399,29 +2376,6 @@ exhaustive_positive_i16s list 21
 20
 ...
 
-exhaustive_natural_i16s list 21
-0
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-...
-
 exhaustive_range_up_increasing_i32_i list 21
 0
 1
@@ -2965,29 +2919,6 @@ exhaustive_positive_i32s list 21
 18
 19
 20
-...
-
-exhaustive_natural_i32s list 21
-0
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
 ...
 
 exhaustive_range_up_increasing_i64_i list 21
@@ -3556,27 +3487,4 @@ exhaustive_positive_i64s list 21
 18
 19
 20
-...
-
-exhaustive_natural_i64s list 21
-0
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
 ...
