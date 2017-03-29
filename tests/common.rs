@@ -48,6 +48,7 @@ pub fn get_expected_test_outputs() -> TestOutput {
     let mut current_key = "";
     let mut current_counter = 0;
     let mut current_vec = Vec::new();
+    let mut current_map = HashMap::new();
     let mut read_mode = 0;
     for line in contents.lines() {
         match read_mode {
@@ -70,13 +71,33 @@ pub fn get_expected_test_outputs() -> TestOutput {
                         panic!("Line `{}` should be empty", line);
                     }
                     if vecs.contains_key(current_key) {
-                        panic!("Duplicate key {}", current_key);
+                        panic!("Duplicate vec key {}", current_key);
                     }
                     vecs.insert(current_key.to_string(), current_vec.clone());
                     current_vec.clear();
                     read_mode = 0;
                 } else {
                     current_vec.push(line.to_string());
+                    current_counter -= 1;
+                }
+            }
+            2 => {
+                if current_counter == 0 {
+                    if !line.is_empty() {
+                        panic!("Line `{}` should be empty", line);
+                    }
+                    if maps.contains_key(current_key) {
+                        panic!("Duplicate map key {}", current_key);
+                    }
+                    maps.insert(current_key.to_string(), current_map.clone());
+                    current_map.clear();
+                    read_mode = 0;
+                } else {
+                    let line_tokens = line.split(": ").collect::<Vec<_>>();
+                    if line_tokens.len() != 2 {
+                        panic!("Bad map line: {}", line);
+                    }
+                    current_map.insert(line_tokens[0].to_string(), line_tokens[1].to_string());
                     current_counter -= 1;
                 }
             }
@@ -87,6 +108,7 @@ pub fn get_expected_test_outputs() -> TestOutput {
         panic!("Duplicate key {}", current_key);
     }
     vecs.insert(current_key.to_string(), current_vec.clone());
+    maps.insert(current_key.to_string(), current_map.clone());
     TestOutput {
         vecs: vecs,
         maps: maps,
