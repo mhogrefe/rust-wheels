@@ -1,6 +1,6 @@
-extern crate gmp;
+extern crate rugint;
 
-use self::gmp::mpz::Mpz;
+use self::rugint::Integer;
 use std::cmp::Ordering;
 
 macro_rules! is_power_of_two {
@@ -25,11 +25,11 @@ is_power_of_two!(is_power_of_two_i32, i32);
 is_power_of_two!(is_power_of_two_i64, i64);
 is_power_of_two!(is_power_of_two_isize, isize);
 
-pub fn is_power_of_two_mpz(n: &Mpz) -> bool {
-    if n < &Mpz::from(1) {
+pub fn is_power_of_two_integer(n: &Integer) -> bool {
+    if n.sign() != Ordering::Greater {
         panic!("n must be positive. Invalid n: {}", n);
     }
-    n.popcount() == 1
+    n.count_ones().unwrap() == 1
 }
 
 macro_rules! ceiling_log_2 {
@@ -57,12 +57,12 @@ ceiling_log_2!(ceiling_log_2_i16, i16, 16);
 ceiling_log_2!(ceiling_log_2_i32, i32, 32);
 ceiling_log_2!(ceiling_log_2_i64, i64, 64);
 
-pub fn ceiling_log_2_mpz(n: &Mpz) -> u32 {
-    if n < &Mpz::from(1) {
+pub fn ceiling_log_2_integer(n: &Integer) -> u32 {
+    if n.sign() != Ordering::Greater {
         panic!("n must be positive. Invalid n: {}", n);
     }
-    let bit_length = n.size_in_base(2) as u32;
-    if n.popcount() == 1 {
+    let bit_length = n.significant_bits();
+    if n.count_ones().unwrap() == 1 {
         bit_length - 1
     } else {
         bit_length
@@ -112,15 +112,15 @@ bits_i!(i32, bits_i32);
 bits_i!(i64, bits_i64);
 bits_i!(isize, bits_isize);
 
-pub fn bits_mpz(n: &Mpz) -> Vec<bool> {
-    match n.cmp(&Mpz::from(0)) {
+pub fn bits_integer(n: &Integer) -> Vec<bool> {
+    match n.sign() {
         Ordering::Less => panic!("n cannot be negative. Invalid n: {}", n),
         Ordering::Equal => Vec::new(),
         Ordering::Greater => {
-            let bit_length = n.bit_length();
-            let mut bits = Vec::with_capacity(bit_length);
+            let bit_length = n.significant_bits();
+            let mut bits = Vec::with_capacity(bit_length as usize);
             for i in 0..bit_length {
-                bits.push(n.tstbit(i));
+                bits.push(n.get_bit(i));
             }
             bits
         }

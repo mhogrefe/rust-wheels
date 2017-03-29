@@ -1,7 +1,7 @@
-extern crate gmp;
+extern crate rugint;
 extern crate rust_wheels_lib;
 
-use self::gmp::mpz::Mpz;
+use self::rugint::Integer;
 use self::rust_wheels_lib::number_utils::integer_utils::*;
 use std::str::FromStr;
 
@@ -143,35 +143,35 @@ test_is_power_of_two_i!(isize,
                         100,
                         isize::max_value());
 
-fn is_power_of_two_mpz_helper(n: &str, out: bool) {
-    assert_eq!(is_power_of_two_mpz(&Mpz::from_str(n).unwrap()), out);
+fn is_power_of_two_integer_helper(n: &str, out: bool) {
+    assert_eq!(is_power_of_two_integer(&Integer::from_str(n).unwrap()), out);
 }
 
 #[test]
-fn test_is_power_of_two_mpz() {
-    is_power_of_two_mpz_helper("1", true);
-    is_power_of_two_mpz_helper("2", true);
-    is_power_of_two_mpz_helper("4", true);
-    is_power_of_two_mpz_helper("8", true);
-    is_power_of_two_mpz_helper("16", true);
-    is_power_of_two_mpz_helper("3", false);
-    is_power_of_two_mpz_helper("13", false);
+fn test_is_power_of_two_integer() {
+    is_power_of_two_integer_helper("1", true);
+    is_power_of_two_integer_helper("2", true);
+    is_power_of_two_integer_helper("4", true);
+    is_power_of_two_integer_helper("8", true);
+    is_power_of_two_integer_helper("16", true);
+    is_power_of_two_integer_helper("3", false);
+    is_power_of_two_integer_helper("13", false);
 }
 
-fn is_power_of_two_mpz_fail_helper(n: &str) {
-    is_power_of_two_mpz(&Mpz::from_str(n).unwrap());
+fn is_power_of_two_integer_fail_helper(n: &str) {
+    is_power_of_two_integer(&Integer::from_str(n).unwrap());
 }
 
 #[test]
 #[should_panic(expected = "n must be positive. Invalid n: 0")]
-fn is_power_of_two_mpz_fail_1() {
-    is_power_of_two_mpz_fail_helper("0");
+fn is_power_of_two_integer_fail_1() {
+    is_power_of_two_integer_fail_helper("0");
 }
 
 #[test]
 #[should_panic(expected = "n must be positive. Invalid n: -5")]
-fn is_power_of_two_mpz_fail_2() {
-    is_power_of_two_mpz_fail_helper("-5");
+fn is_power_of_two_integer_fail_2() {
+    is_power_of_two_integer_fail_helper("-5");
 }
 
 macro_rules! test_ceiling_log_2 {
@@ -232,38 +232,38 @@ test_ceiling_log_2!(u64,
                     64,
                     u64::max_value());
 
-fn ceiling_log_2_mpz_helper(n: &str, out: u32) {
-    assert_eq!(ceiling_log_2_mpz(&Mpz::from_str(n).unwrap()), out);
+fn ceiling_log_2_integer_helper(n: &str, out: u32) {
+    assert_eq!(ceiling_log_2_integer(&Integer::from_str(n).unwrap()), out);
 }
 
 #[test]
-fn test_ceiling_log_2_mpz() {
-    ceiling_log_2_mpz_helper("1", 0);
-    ceiling_log_2_mpz_helper("2", 1);
-    ceiling_log_2_mpz_helper("3", 2);
-    ceiling_log_2_mpz_helper("4", 2);
-    ceiling_log_2_mpz_helper("5", 3);
-    ceiling_log_2_mpz_helper("6", 3);
-    ceiling_log_2_mpz_helper("7", 3);
-    ceiling_log_2_mpz_helper("8", 3);
-    ceiling_log_2_mpz_helper("9", 4);
-    ceiling_log_2_mpz_helper("100", 7);
+fn test_ceiling_log_2_integer() {
+    ceiling_log_2_integer_helper("1", 0);
+    ceiling_log_2_integer_helper("2", 1);
+    ceiling_log_2_integer_helper("3", 2);
+    ceiling_log_2_integer_helper("4", 2);
+    ceiling_log_2_integer_helper("5", 3);
+    ceiling_log_2_integer_helper("6", 3);
+    ceiling_log_2_integer_helper("7", 3);
+    ceiling_log_2_integer_helper("8", 3);
+    ceiling_log_2_integer_helper("9", 4);
+    ceiling_log_2_integer_helper("100", 7);
 }
 
-fn ceiling_log_2_mpz_fail_helper(n: &str) {
-    ceiling_log_2_mpz(&Mpz::from_str(n).unwrap());
+fn ceiling_log_2_integer_fail_helper(n: &str) {
+    ceiling_log_2_integer(&Integer::from_str(n).unwrap());
 }
 
 #[test]
 #[should_panic(expected = "n must be positive. Invalid n: 0")]
-fn ceiling_log_2_mpz_fail_1() {
-    ceiling_log_2_mpz_fail_helper("0");
+fn ceiling_log_2_integer_fail_1() {
+    ceiling_log_2_integer_fail_helper("0");
 }
 
 #[test]
 #[should_panic(expected = "n must be positive. Invalid n: -5")]
-fn ceiling_log_2_mpz_fail_2() {
-    ceiling_log_2_mpz_fail_helper("-5");
+fn ceiling_log_2_integer_fail_2() {
+    ceiling_log_2_integer_fail_helper("-5");
 }
 
 macro_rules! test_bits {
@@ -362,20 +362,21 @@ test_bits_s!(i32, bits_i32, bits_i32_fail);
 test_bits_s!(i64, bits_i64, bits_i64_fail);
 test_bits_s!(isize, bits_isize, bits_isize_fail);
 
-fn bits_mpz_helper(n: &str, out: &str) {
-    assert_eq!(format!("{:?}", bits_mpz(&Mpz::from_str(n).unwrap())), out);
+fn bits_integer_helper(n: &str, out: &str) {
+    assert_eq!(format!("{:?}", bits_integer(&Integer::from_str(n).unwrap())),
+               out);
 }
 
 #[test]
-fn test_bits_mpz() {
-    bits_mpz_helper("0", "[]");
-    bits_mpz_helper("1", "[true]");
-    bits_mpz_helper("6", "[false, true, true]");
-    bits_mpz_helper("105", "[true, false, false, true, false, true, true]");
+fn test_bits_integer() {
+    bits_integer_helper("0", "[]");
+    bits_integer_helper("1", "[true]");
+    bits_integer_helper("6", "[false, true, true]");
+    bits_integer_helper("105", "[true, false, false, true, false, true, true]");
 }
 
 #[test]
 #[should_panic(expected = "n cannot be negative. Invalid n: -5")]
-fn bits_mpz_fail() {
-    bits_mpz(&Mpz::from(-5));
+fn bits_integer_fail() {
+    bits_integer(&Integer::from(-5));
 }
