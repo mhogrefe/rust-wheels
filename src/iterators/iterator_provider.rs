@@ -319,7 +319,7 @@ impl IteratorProvider {
 
     pub fn altered(&self, key_addition: &str) -> IteratorProvider {
         match *self {
-            IteratorProvider::Random(ref key, s1, s2, s3, seed) => {
+            IteratorProvider::Random(ref key, s1, s2, s3, ref seed) => {
                 let new_key = format!("{}-{}", key, key_addition);
                 let scrambled_seed = scramble(&seed, &new_key);
                 IteratorProvider::Random(new_key, s1, s2, s3, scrambled_seed)
