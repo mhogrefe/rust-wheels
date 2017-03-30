@@ -192,45 +192,45 @@ macro_rules! integer_range_impl {
         $min: expr,
         $max: expr
     ) => {
-        pub fn $rui_f(&mut self, a: $t) -> $ri_s {
+        pub fn $rui_f(&self, a: $t) -> $ri_s {
             $ri_s::new(a, $max)
         }
 
-        pub fn $rud_f(&mut self, a: $t) -> $rd_s {
+        pub fn $rud_f(&self, a: $t) -> $rd_s {
             $rd_s::new(a, $max)
         }
 
-        pub fn $rdi_f(&mut self, b: $t) -> $ri_s {
+        pub fn $rdi_f(&self, b: $t) -> $ri_s {
             $ri_s::new($min, b)
         }
 
-        pub fn $rdd_f(&mut self, b: $t) -> $rd_s {
+        pub fn $rdd_f(&self, b: $t) -> $rd_s {
             $rd_s::new($min, b)
         }
 
-        pub fn $ri_f(&mut self, a: $t, b: $t) -> $ri_s {
+        pub fn $ri_f(&self, a: $t, b: $t) -> $ri_s {
             if a > b {
                 panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
             }
             $ri_s::new(a, b)
         }
 
-        pub fn $rd_f(&mut self, a: $t, b: $t) -> $rd_s {
+        pub fn $rd_f(&self, a: $t, b: $t) -> $rd_s {
             if a > b {
                 panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
             }
             $rd_s::new(a, b)
         }
 
-        pub fn $i_f(&mut self) -> $ri_s {
+        pub fn $i_f(&self) -> $ri_s {
             $ri_s::new($min, $max)
         }
 
-        pub fn $d_f(&mut self) -> $rd_s {
+        pub fn $d_f(&self) -> $rd_s {
             $rd_s::new($min, $max)
         }
 
-        pub fn $pos_f(&mut self) -> $ri_s {
+        pub fn $pos_f(&self) -> $ri_s {
             $ri_s::new(1, $max)
         }
     }
@@ -238,10 +238,10 @@ macro_rules! integer_range_impl {
 
 macro_rules! integer_range_impl_u {
     ($t: ty, $t_f: ident, $i_f: ident, $t_s: ident, $r_s: ident) => {
-        pub fn $t_f(&mut self) -> $t_s {
+        pub fn $t_f(&self) -> $t_s {
             match self {
-                &mut IteratorProvider::Exhaustive => $t_s::Exhaustive(self.$i_f()),
-                &mut IteratorProvider::Random(seed) => $t_s::Random($r_s::new(&seed)),
+                &IteratorProvider::Exhaustive => $t_s::Exhaustive(self.$i_f()),
+                &IteratorProvider::Random(seed) => $t_s::Random($r_s::new(&seed)),
             }
         }
     }
