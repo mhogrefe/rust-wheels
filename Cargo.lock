@@ -4,6 +4,29 @@ version = "0.1.0"
 dependencies = [
  "rand 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
  "rugint 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sha3 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "byte-tools"
+version = "0.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "digest"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "generic-array 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "generic-array"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "nodrop 0.1.9 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typenum 1.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -14,6 +37,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "libc"
 version = "0.2.21"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "nodrop"
+version = "0.1.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "odds 0.2.25 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "odds"
+version = "0.2.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -33,8 +69,30 @@ dependencies = [
  "rand 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
+[[package]]
+name = "sha3"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "byte-tools 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "digest 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "generic-array 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "typenum"
+version = "1.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
 [metadata]
+"checksum byte-tools 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)" = "0919189ba800c7ffe8778278116b7e0de3905ab81c72abb69c85cbfef7991279"
+"checksum digest 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "41a0f307b67d9f0e57edc00804d3146f9f889fe8b2422825566c8e8dd2b5733c"
+"checksum generic-array 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)" = "7229d82657e79be00d5f2a110a973ab5340681b945cf1bc022be7cfebf2dc00c"
 "checksum gmp-mpfr-sys 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)" = "98868b8f0e3833ec9225124b858188789107ce3f18fddd05ed0336a72bf62ed9"
 "checksum libc 0.2.21 (registry+https://github.com/rust-lang/crates.io-index)" = "88ee81885f9f04bff991e306fea7c1c60a5f0f9e409e99f6b40e3311a3363135"
+"checksum nodrop 0.1.9 (registry+https://github.com/rust-lang/crates.io-index)" = "52cd74cd09beba596430cc6e3091b74007169a56246e1262f0ba451ea95117b2"
+"checksum odds 0.2.25 (registry+https://github.com/rust-lang/crates.io-index)" = "c3df9b730298cea3a1c3faa90b7e2f9df3a9c400d0936d6015e6165734eefcba"
 "checksum rand 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)" = "022e0636ec2519ddae48154b028864bdce4eaf7d35226ab8e65c611be97b189d"
 "checksum rugint 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "adb4b14eeee2435621b3ba97c06b707232ee6906282a8fa6c5ec5b4b8ae7a5c8"
+"checksum sha3 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)" = "47e72786a5f51fbce3ba5485ef4fcbff99eda815d2e0a3c619460cd90e2a660c"
+"checksum typenum 1.7.0 (registry+https://github.com/rust-lang/crates.io-index)" = "a6cd616f63c9d40a6e43f98e61c46bc9de0b1b41a30b03620d19e232e1aa0ca8"
