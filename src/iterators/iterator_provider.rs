@@ -2,7 +2,7 @@ extern crate rand;
 
 use self::rand::{IsaacRng, Rng, SeedableRng};
 
-const SEED_SIZE: usize = 4;
+const SEED_SIZE: usize = 256;
 
 pub enum IteratorProvider {
     Exhaustive,
@@ -249,7 +249,58 @@ macro_rules! integer_range_impl_u {
 
 impl IteratorProvider {
     pub fn example_random() -> IteratorProvider {
-        IteratorProvider::Random([0xc2ba7ec5, 0x8570291c, 0xc01903b4, 0xb3b63b5e])
+        IteratorProvider::Random([0xc2ba7ec5, 0x8570291c, 0xc01903b4, 0xb3b63b5e, 0x60a15a04,
+                                  0x49cb3889, 0x8656014b, 0x4489160e, 0x4cfc5c82, 0x4b50a3c8,
+                                  0x842d828e, 0x9b2d83d5, 0x8f700df6, 0x06182781, 0x7d9f61f9,
+                                  0x0af20cd5, 0x94d77191, 0xc3d93b66, 0x19f8b8f6, 0xba2eefdb,
+                                  0x678ad2b8, 0x3b53214d, 0x8058837a, 0x3e899556, 0x2f039c85,
+                                  0x7b0e4c96, 0xd4e1848a, 0x278ff71b, 0x19f07329, 0x11c6dd13,
+                                  0xaf62556f, 0x997b71b0, 0x53a80a7d, 0x3c62630b, 0x98e25284,
+                                  0x855e8f46, 0xc051e439, 0xabeed5b1, 0x6ef28ce9, 0xc5565c11,
+                                  0x092e2a2b, 0x9067a520, 0x9e70aef7, 0x943e7656, 0x18c4d180,
+                                  0x507f1efc, 0x4cae8182, 0x8bb2d120, 0x008b968e, 0xd6e9fbd9,
+                                  0x537a5896, 0x7d8aa351, 0xdb1a211e, 0xcdfb287a, 0x70c87163,
+                                  0x1f1b5cf4, 0x75d0a44e, 0x67619075, 0x22743ffc, 0xed61527e,
+                                  0xbaa109b9, 0xf6089407, 0xfb30b32b, 0xe0c15709, 0x4a34890a,
+                                  0x7b4f04e4, 0x0144f2e6, 0x217e07b4, 0x0caf93eb, 0xe698376f,
+                                  0xa146167e, 0xf4345d67, 0x224dc81c, 0x2fadfdee, 0xfea4a8ec,
+                                  0x76293549, 0x82f8713a, 0x3afcfe7d, 0xfd9b3b8b, 0x0329303d,
+                                  0x8c85be02, 0xb65e899a, 0xa166256b, 0x5146cf71, 0xfc076118,
+                                  0xddded979, 0xb16a0d0e, 0x4b37a80e, 0xfc3d5e1f, 0x44f2cebd,
+                                  0xaf18b58d, 0xaa19a03d, 0x55badec6, 0xefaa7e5f, 0xa2a07a27,
+                                  0x32972064, 0x309acda5, 0x26ef3b9a, 0xe280fa00, 0x0475bb12,
+                                  0x5af7a531, 0xece9bed3, 0x802b1c7b, 0x69f6d54b, 0xc4502e07,
+                                  0xbdf7e9c7, 0x0a1bd4ca, 0x01e8163d, 0xd78c8cdf, 0x23e4c122,
+                                  0x802f6a97, 0x2364b37e, 0xcedefe5f, 0x0cc18f37, 0x4b24c75d,
+                                  0x9d75f0ed, 0xd519acd2, 0x8ddabaca, 0xac7a26ab, 0xf2f9d5f0,
+                                  0xcd9e65d7, 0xaf56730a, 0xaf0f51e2, 0x2b80a753, 0xc5e709ff,
+                                  0x74558483, 0xff1413f3, 0xe8ac0312, 0x7caf6683, 0x0806dbdf,
+                                  0xb914a79c, 0x3c22f9ca, 0x559a5450, 0x0d44af11, 0x6917e268,
+                                  0xc464800c, 0x8dbf36a3, 0xe783a8e0, 0x5d2e69ec, 0x7e606281,
+                                  0x7cbce3d7, 0xf8df4062, 0x63852a67, 0xdd712417, 0x33f43ef5,
+                                  0x04668ce5, 0x3aaff9fe, 0xa1a015a4, 0x2036353f, 0xb62e3085,
+                                  0x02c37c33, 0x918a0e96, 0xdcffc070, 0x44f652f8, 0xf23b9e9e,
+                                  0xfe9f2bd7, 0x355857f6, 0x735e0efc, 0x46e29345, 0xea77a3ff,
+                                  0x40cbcad9, 0xbd2e5013, 0x7ab2c23b, 0xfd57b407, 0xc1553de4,
+                                  0xfdf95c8b, 0xfbb00eb7, 0x3a1e33e6, 0x6ab7973e, 0xe7585473,
+                                  0xb16ccab0, 0x20efa765, 0x604728a7, 0x7de0b479, 0xf708d51c,
+                                  0x480d51d1, 0xc54388e6, 0x78c0c2a8, 0xb7f2f73e, 0xc184d42f,
+                                  0x43c9c988, 0x81d5c1e3, 0xeb3f8337, 0x5d8bfb01, 0x101a0a28,
+                                  0xa9db2a65, 0x2b198777, 0x36b32652, 0x4c23e850, 0x356b0620,
+                                  0x8a9c7afb, 0x9e5c04bb, 0x2ba85921, 0xf4a4931d, 0x50069920,
+                                  0xd4548176, 0x9deb2296, 0xfacb9fce, 0x809b0c63, 0x0f83e2b5,
+                                  0xa552296b, 0xebfde28b, 0xb091d265, 0xe5eeb245, 0xa82118f5,
+                                  0xe1a7324e, 0x405df7df, 0x61ed1072, 0x31c2fd1e, 0xfc512b29,
+                                  0xf4147274, 0x4d69b85a, 0x70feddb5, 0xb847511f, 0xc06dbb14,
+                                  0x8b49c1bf, 0x7f8b87ac, 0x26263842, 0x187a71d6, 0x7a518b43,
+                                  0x17780e8a, 0x60ba19c1, 0x32a1636f, 0x87e6a806, 0x8238efe3,
+                                  0x6cf2aa46, 0xf04ab8e4, 0x7b087b4e, 0x54f98594, 0x46e2cb12,
+                                  0x374a7391, 0x6f118b9d, 0xc27814ff, 0xb2548865, 0x0029b619,
+                                  0x81c244c3, 0x4916def1, 0x53b1fc20, 0x41a19f4f, 0x025eb0c3,
+                                  0x9efa239a, 0x89c07eed, 0xeb99a870, 0x931f129f, 0x075f60e4,
+                                  0x951db99f, 0xcb52a1e1, 0x542600f0, 0xeb82b9a3, 0x5e4fd956,
+                                  0xe7f71bab, 0x8f79aeff, 0xab5b81ae, 0x7aa714f0, 0x8a8260b7,
+                                  0x123fc3c9])
     }
 
     integer_range_impl!(u8,
