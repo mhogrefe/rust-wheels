@@ -126,3 +126,46 @@ pub fn bits_integer(n: &Integer) -> Vec<bool> {
         }
     }
 }
+
+macro_rules! bits_padded_u {
+    ($t: ty, $bp: ident) => {
+        pub fn $bp(size: usize, n: $t) -> Vec<bool> {
+            let mut bits = Vec::with_capacity(size);
+            let mut remaining = n;
+            for _ in 0..size {
+                bits.push(remaining & 1 != 0);
+                remaining >>= 1;
+            }
+            return bits
+        }
+    }
+}
+
+bits_padded_u!(u8, bits_padded_u8);
+bits_padded_u!(u16, bits_padded_u16);
+bits_padded_u!(u32, bits_padded_u32);
+bits_padded_u!(u64, bits_padded_u64);
+bits_padded_u!(usize, bits_padded_usize);
+
+macro_rules! bits_padded_i {
+    ($t: ty, $bp: ident) => {
+        pub fn $bp(size: usize, n: $t) -> Vec<bool> {
+            if n < 0 {
+                panic!("n cannot be negative. Invalid n: {}", n);
+            }
+            let mut bits = Vec::with_capacity(size);
+            let mut remaining = n;
+            for _ in 0..size {
+                bits.push(remaining & 1 != 0);
+                remaining >>= 1;
+            }
+            return bits
+        }
+    }
+}
+
+bits_padded_i!(i8, bits_padded_i8);
+bits_padded_i!(i16, bits_padded_i16);
+bits_padded_i!(i32, bits_padded_i32);
+bits_padded_i!(i64, bits_padded_i64);
+bits_padded_i!(isize, bits_padded_isize);

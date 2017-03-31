@@ -69,8 +69,16 @@ test_is_power_of_two_u!(usize,
                         usize::max_value());
 
 macro_rules! test_is_power_of_two_i {
-    ($t: ty, $f: ident, $test: ident, $helper: ident, $fail1: ident, $fail2: ident, $p10: expr,
-            $max: expr) => {
+    (
+            $t: ty,
+            $f: ident,
+            $test: ident,
+            $helper: ident,
+            $fail1: ident,
+            $fail2: ident,
+            $p10: expr,
+            $max: expr
+    ) => {
         fn $helper(n: $t, out: bool) {
             assert_eq!($f(n), out);
         }
@@ -380,3 +388,81 @@ fn test_bits_integer() {
 fn bits_integer_fail() {
     bits_integer(&Integer::from(-5));
 }
+
+macro_rules! test_bits_padded_u {
+    (
+            $t: ty,
+            $f: ident,
+            $test: ident,
+            $helper: ident,
+            $max: expr,
+            $max_pos_bit_length: expr,
+            $max_bits: expr
+    ) => {
+        fn $helper(size: usize, n: $t, out: &str) {
+            assert_eq!(format!("{:?}", $f(size, n)), out);
+        }
+
+        #[test]
+        fn $test() {
+            $helper(8, 0, "[false, false, false, false, false, false, false, false]");
+            $helper(8, 1, "[true, false, false, false, false, false, false, false]");
+            $helper(8, 6, "[false, true, true, false, false, false, false, false]");
+            $helper(8, 105, "[true, false, false, true, false, true, true, false]");
+            $helper(2, 104, "[false, false]");
+            $helper(2, 105, "[true, false]");
+            $helper(1, 104, "[false]");
+            $helper(1, 105, "[true]");
+            $helper(0, 104, "[]");
+            $helper(100, 105,
+                    "[true, false, false, true, false, true, true, false, false, false, false, \
+                     false, false, false, false, false, false, false, false, false, false, false, \
+                     false, false, false, false, false, false, false, false, false, false, false, \
+                     false, false, false, false, false, false, false, false, false, false, false, \
+                     false, false, false, false, false, false, false, false, false, false, false, \
+                     false, false, false, false, false, false, false, false, false, false, false, \
+                     false, false, false, false, false, false, false, false, false, false, false, \
+                     false, false, false, false, false, false, false, false, false, false, false, \
+                     false, false, false, false, false, false, false, false, false, false, false, \
+                     false]");
+            $helper($max_pos_bit_length, $max, $max_bits);
+        }
+    }
+}
+
+test_bits_padded_u!(u8,
+                    bits_padded_u8,
+                    test_bits_padded_u8,
+                    bits_padded_u8_helper,
+                    u8::max_value(),
+                    8,
+                    "[true, true, true, true, true, true, true, true]");
+test_bits_padded_u!(u16,
+                    bits_padded_u16,
+                    test_bits_padded_u16,
+                    bits_padded_u16_helper,
+                    u16::max_value(),
+                    16,
+                    "[true, true, true, true, true, true, true, true, true, true, true, true, \
+                      true, true, true, true]");
+test_bits_padded_u!(u32,
+                    bits_padded_u32,
+                    test_bits_padded_u32,
+                    bits_padded_u32_helper,
+                    u32::max_value(),
+                    32,
+                    "[true, true, true, true, true, true, true, true, true, true, true, true, \
+                      true, true, true, true, true, true, true, true, true, true, true, true, \
+                      true, true, true, true, true, true, true, true]");
+test_bits_padded_u!(u64,
+                    bits_padded_u64,
+                    test_bits_padded_u64,
+                    bits_padded_u64_helper,
+                    u64::max_value(),
+                    64,
+                    "[true, true, true, true, true, true, true, true, true, true, true, true, \
+                      true, true, true, true, true, true, true, true, true, true, true, true, \
+                      true, true, true, true, true, true, true, true, true, true, true, true, \
+                      true, true, true, true, true, true, true, true, true, true, true, true, \
+                      true, true, true, true, true, true, true, true, true, true, true, true, \
+                      true, true, true, true]");
