@@ -1,3 +1,9 @@
+pub mod demos {
+    pub mod number_utils {
+        pub mod integer_utils_demos;
+    }
+}
+
 pub mod iterators {
     pub mod adaptors;
     pub mod iterator_provider;
