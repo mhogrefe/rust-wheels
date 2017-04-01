@@ -307,6 +307,14 @@ macro_rules! integer_range_impl_u {
     }
 }
 
+macro_rules! integer_range_impl_i {
+    ($t: ty, $neg_f: ident, $rd_s: ident, $min: expr) => {
+        pub fn $neg_f(&self) -> $rd_s {
+            $rd_s::new($min, -1)
+        }
+    }
+}
+
 impl IteratorProvider {
     pub fn example_random() -> IteratorProvider {
         let key = "example";
@@ -484,4 +492,13 @@ impl IteratorProvider {
     integer_range_impl_u!(u32, u32s, u32s_increasing, U32s, RandomU32s);
     integer_range_impl_u!(u64, u64s, u64s_increasing, U64s, RandomU64s);
     integer_range_impl_u!(usize, usizes, usizes_increasing, Usizes, RandomUsizes);
+
+    integer_range_impl_i!(i8, negative_i8s, RangeDecreasingI8, i8::min_value());
+    integer_range_impl_i!(i16, negative_i16s, RangeDecreasingI16, i16::min_value());
+    integer_range_impl_i!(i32, negative_i32s, RangeDecreasingI32, i32::min_value());
+    integer_range_impl_i!(i64, negative_i64s, RangeDecreasingI64, i64::min_value());
+    integer_range_impl_i!(isize,
+                          negative_isizes,
+                          RangeDecreasingIsize,
+                          isize::min_value());
 }

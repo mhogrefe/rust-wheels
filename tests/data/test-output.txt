@@ -1831,6 +1831,29 @@ exhaustive_positive_i8s list 21
 20
 ...
 
+exhaustive_negative_i8s list 21
+-1
+-2
+-3
+-4
+-5
+-6
+-7
+-8
+-9
+-10
+-11
+-12
+-13
+-14
+-15
+-16
+-17
+-18
+-19
+-20
+...
+
 exhaustive_range_up_increasing_i16_i list 21
 0
 1
@@ -2376,6 +2399,29 @@ exhaustive_positive_i16s list 21
 20
 ...
 
+exhaustive_negative_i16s list 21
+-1
+-2
+-3
+-4
+-5
+-6
+-7
+-8
+-9
+-10
+-11
+-12
+-13
+-14
+-15
+-16
+-17
+-18
+-19
+-20
+...
+
 exhaustive_range_up_increasing_i32_i list 21
 0
 1
@@ -2919,6 +2965,29 @@ exhaustive_positive_i32s list 21
 18
 19
 20
+...
+
+exhaustive_negative_i32s list 21
+-1
+-2
+-3
+-4
+-5
+-6
+-7
+-8
+-9
+-10
+-11
+-12
+-13
+-14
+-15
+-16
+-17
+-18
+-19
+-20
 ...
 
 exhaustive_range_up_increasing_i64_i list 21
@@ -3487,4 +3556,27 @@ exhaustive_positive_i64s list 21
 18
 19
 20
+...
+
+exhaustive_negative_i64s list 21
+-1
+-2
+-3
+-4
+-5
+-6
+-7
+-8
+-9
+-10
+-11
+-12
+-13
+-14
+-15
+-16
+-17
+-18
+-19
+-20
 ...
