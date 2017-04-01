@@ -1,6 +1,9 @@
+extern crate itertools;
 extern crate rand;
 extern crate sha3;
 
+use self::itertools::Interleave;
+use self::itertools::Itertools;
 use self::rand::{IsaacRng, Rng, SeedableRng};
 use self::sha3::{Digest, Sha3_256};
 
@@ -308,9 +311,21 @@ macro_rules! integer_range_impl_u {
 }
 
 macro_rules! integer_range_impl_i {
-    ($t: ty, $neg_f: ident, $rd_s: ident, $min: expr) => {
+    (
+        $t: ty,
+        $pos_f: ident,
+        $neg_f: ident,
+        $nz_f: ident,
+        $ri_s: ident,
+        $rd_s: ident,
+        $min: expr
+    ) => {
         pub fn $neg_f(&self) -> $rd_s {
             $rd_s::new($min, -1)
+        }
+
+        pub fn $nz_f(&self) -> Interleave<$ri_s, $rd_s> {
+            self.$pos_f().interleave(self.$neg_f())
         }
     }
 }
@@ -493,12 +508,39 @@ impl IteratorProvider {
     integer_range_impl_u!(u64, u64s, u64s_increasing, U64s, RandomU64s);
     integer_range_impl_u!(usize, usizes, usizes_increasing, Usizes, RandomUsizes);
 
-    integer_range_impl_i!(i8, negative_i8s, RangeDecreasingI8, i8::min_value());
-    integer_range_impl_i!(i16, negative_i16s, RangeDecreasingI16, i16::min_value());
-    integer_range_impl_i!(i32, negative_i32s, RangeDecreasingI32, i32::min_value());
-    integer_range_impl_i!(i64, negative_i64s, RangeDecreasingI64, i64::min_value());
+    integer_range_impl_i!(i8,
+                          positive_i8s,
+                          negative_i8s,
+                          nonzero_i8s,
+                          RangeIncreasingI8,
+                          RangeDecreasingI8,
+                          i8::min_value());
+    integer_range_impl_i!(i16,
+                          positive_i16s,
+                          negative_i16s,
+                          nonzero_i16s,
+                          RangeIncreasingI16,
+                          RangeDecreasingI16,
+                          i16::min_value());
+    integer_range_impl_i!(i32,
+                          positive_i32s,
+                          negative_i32s,
+                          nonzero_i32s,
+                          RangeIncreasingI32,
+                          RangeDecreasingI32,
+                          i32::min_value());
+    integer_range_impl_i!(i64,
+                          positive_i64s,
+                          negative_i64s,
+                          nonzero_i64s,
+                          RangeIncreasingI64,
+                          RangeDecreasingI64,
+                          i64::min_value());
     integer_range_impl_i!(isize,
+                          positive_isizes,
                           negative_isizes,
+                          nonzero_isizes,
+                          RangeIncreasingIsize,
                           RangeDecreasingIsize,
                           isize::min_value());
 }

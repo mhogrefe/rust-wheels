@@ -13,6 +13,7 @@ path = "src/bin.rs"
 
 [dependencies]
 
+itertools = "0.5.9"
 rand = "0.3.0"
 rugint = "0.2.0"
 sha3 = "0.4.1"
