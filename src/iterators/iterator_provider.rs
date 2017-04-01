@@ -6,6 +6,7 @@ use self::itertools::Interleave;
 use self::itertools::Itertools;
 use self::rand::{IsaacRng, Rng, SeedableRng};
 use self::sha3::{Digest, Sha3_256};
+use std::iter::*;
 
 const SEED_SIZE: usize = 256;
 const DEFAULT_SCALE_1: i32 = 32;
@@ -160,26 +161,6 @@ macro_rules! integer_range {
     }
 }
 
-macro_rules! integer_range_u {
-    ($t: ty, $t_s: ident, $ri_s: ident, $r_s: ident) => {
-        pub enum $t_s {
-            Exhaustive($ri_s),
-            Random($r_s),
-        }
-
-        impl Iterator for $t_s {
-            type Item = $t;
-
-            fn next(&mut self) -> Option<Self::Item> {
-                match self {
-                    &mut $t_s::Exhaustive(ref mut it) => it.next(),
-                    &mut $t_s::Random(ref mut it) => it.next(),
-                }
-            }
-        }
-    }
-}
-
 integer_range!(u8,
                RangeIncreasingU8,
                RangeDecreasingU8,
@@ -231,11 +212,73 @@ integer_range!(isize,
                RandomIsizes,
                isize::max_value());
 
+macro_rules! integer_range_u {
+    ($t: ty, $t_s: ident, $ri_s: ident, $r_s: ident) => {
+        pub enum $t_s {
+            Exhaustive($ri_s),
+            Random($r_s),
+        }
+
+        impl Iterator for $t_s {
+            type Item = $t;
+
+            fn next(&mut self) -> Option<Self::Item> {
+                match self {
+                    &mut $t_s::Exhaustive(ref mut it) => it.next(),
+                    &mut $t_s::Random(ref mut it) => it.next(),
+                }
+            }
+        }
+    }
+}
+
 integer_range_u!(u8, U8s, RangeIncreasingU8, RandomU8s);
 integer_range_u!(u16, U16s, RangeIncreasingU16, RandomU16s);
 integer_range_u!(u32, U32s, RangeIncreasingU32, RandomU32s);
 integer_range_u!(u64, U64s, RangeIncreasingU64, RandomU64s);
 integer_range_u!(usize, Usizes, RangeIncreasingUsize, RandomUsizes);
+
+macro_rules! integer_range_i {
+    ($t: ty, $t_s: ident, $ri_s: ident, $rd_s: ident, $r_s: ident) => {
+        pub enum $t_s {
+            Exhaustive(Chain<Once<$t>, Interleave<$ri_s, $rd_s>>),
+            Random($r_s),
+        }
+
+        impl Iterator for $t_s {
+            type Item = $t;
+
+            fn next(&mut self) -> Option<Self::Item> {
+                match self {
+                    &mut $t_s::Exhaustive(ref mut it) => it.next(),
+                    &mut $t_s::Random(ref mut it) => it.next(),
+                }
+            }
+        }
+    }
+}
+
+integer_range_i!(i8, I8s, RangeIncreasingI8, RangeDecreasingI8, RandomI8s);
+integer_range_i!(i16,
+                 I16s,
+                 RangeIncreasingI16,
+                 RangeDecreasingI16,
+                 RandomI16s);
+integer_range_i!(i32,
+                 I32s,
+                 RangeIncreasingI32,
+                 RangeDecreasingI32,
+                 RandomI32s);
+integer_range_i!(i64,
+                 I64s,
+                 RangeIncreasingI64,
+                 RangeDecreasingI64,
+                 RandomI64s);
+integer_range_i!(isize,
+                 Isizes,
+                 RangeIncreasingIsize,
+                 RangeDecreasingIsize,
+                 RandomIsizes);
 
 macro_rules! integer_range_impl {
     (
@@ -316,8 +359,11 @@ macro_rules! integer_range_impl_i {
         $pos_f: ident,
         $neg_f: ident,
         $nz_f: ident,
+        $t_f: ident,
         $ri_s: ident,
         $rd_s: ident,
+        $r_s: ident,
+        $t_s: ident,
         $min: expr
     ) => {
         pub fn $neg_f(&self) -> $rd_s {
@@ -326,6 +372,13 @@ macro_rules! integer_range_impl_i {
 
         pub fn $nz_f(&self) -> Interleave<$ri_s, $rd_s> {
             self.$pos_f().interleave(self.$neg_f())
+        }
+
+        pub fn $t_f(&self) -> $t_s {
+            match self {
+                &IteratorProvider::Exhaustive => $t_s::Exhaustive(once(0).chain(self.$nz_f())),
+                &IteratorProvider::Random(_, _, _, _, seed) => $t_s::Random($r_s::new(&seed)),
+            }
         }
     }
 }
@@ -512,35 +565,50 @@ impl IteratorProvider {
                           positive_i8s,
                           negative_i8s,
                           nonzero_i8s,
+                          i8s,
                           RangeIncreasingI8,
                           RangeDecreasingI8,
+                          RandomI8s,
+                          I8s,
                           i8::min_value());
     integer_range_impl_i!(i16,
                           positive_i16s,
                           negative_i16s,
                           nonzero_i16s,
+                          i16s,
                           RangeIncreasingI16,
                           RangeDecreasingI16,
+                          RandomI16s,
+                          I16s,
                           i16::min_value());
     integer_range_impl_i!(i32,
                           positive_i32s,
                           negative_i32s,
                           nonzero_i32s,
+                          i32s,
                           RangeIncreasingI32,
                           RangeDecreasingI32,
+                          RandomI32s,
+                          I32s,
                           i32::min_value());
     integer_range_impl_i!(i64,
                           positive_i64s,
                           negative_i64s,
                           nonzero_i64s,
+                          i64s,
                           RangeIncreasingI64,
                           RangeDecreasingI64,
+                          RandomI64s,
+                          I64s,
                           i64::min_value());
     integer_range_impl_i!(isize,
                           positive_isizes,
                           negative_isizes,
                           nonzero_isizes,
+                          isizes,
                           RangeIncreasingIsize,
                           RangeDecreasingIsize,
+                          RandomIsizes,
+                          Isizes,
                           isize::min_value());
 }
