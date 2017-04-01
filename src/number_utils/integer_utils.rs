@@ -136,7 +136,7 @@ macro_rules! bits_padded_u {
                 bits.push(remaining & 1 != 0);
                 remaining >>= 1;
             }
-            return bits
+            bits
         }
     }
 }
@@ -159,7 +159,7 @@ macro_rules! bits_padded_i {
                 bits.push(remaining & 1 != 0);
                 remaining >>= 1;
             }
-            return bits
+            bits
         }
     }
 }
@@ -169,3 +169,15 @@ bits_padded_i!(i16, bits_padded_i16);
 bits_padded_i!(i32, bits_padded_i32);
 bits_padded_i!(i64, bits_padded_i64);
 bits_padded_i!(isize, bits_padded_isize);
+
+pub fn bits_padded_integer(size: usize, n: &Integer) -> Vec<bool> {
+    if n.sign() == Ordering::Less {
+        panic!("n cannot be negative. Invalid n: {}", n);
+    } else {
+        let mut bits = Vec::with_capacity(size);
+        for i in 0..(size as u32) {
+            bits.push(n.get_bit(i));
+        }
+        bits
+    }
+}

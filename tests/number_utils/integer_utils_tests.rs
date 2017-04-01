@@ -466,3 +466,138 @@ test_bits_padded_u!(u64,
                       true, true, true, true, true, true, true, true, true, true, true, true, \
                       true, true, true, true, true, true, true, true, true, true, true, true, \
                       true, true, true, true]");
+
+macro_rules! test_bits_padded_i {
+    (
+            $t: ty,
+            $f: ident,
+            $test: ident,
+            $helper: ident,
+            $fail: ident,
+            $max: expr,
+            $max_pos_bit_length: expr,
+            $max_bits: expr
+    ) => {
+        fn $helper(size: usize, n: $t, out: &str) {
+            assert_eq!(format!("{:?}", $f(size, n)), out);
+        }
+
+        #[test]
+        fn $test() {
+            $helper(8, 0, "[false, false, false, false, false, false, false, false]");
+            $helper(8, 1, "[true, false, false, false, false, false, false, false]");
+            $helper(8, 6, "[false, true, true, false, false, false, false, false]");
+            $helper(8, 105, "[true, false, false, true, false, true, true, false]");
+            $helper(2, 104, "[false, false]");
+            $helper(2, 105, "[true, false]");
+            $helper(1, 104, "[false]");
+            $helper(1, 105, "[true]");
+            $helper(0, 104, "[]");
+            $helper(100, 105,
+                    "[true, false, false, true, false, true, true, false, false, false, false, \
+                     false, false, false, false, false, false, false, false, false, false, false, \
+                     false, false, false, false, false, false, false, false, false, false, false, \
+                     false, false, false, false, false, false, false, false, false, false, false, \
+                     false, false, false, false, false, false, false, false, false, false, false, \
+                     false, false, false, false, false, false, false, false, false, false, false, \
+                     false, false, false, false, false, false, false, false, false, false, false, \
+                     false, false, false, false, false, false, false, false, false, false, false, \
+                     false, false, false, false, false, false, false, false, false, false, false, \
+                     false]");
+            $helper($max_pos_bit_length, $max, $max_bits);
+        }
+
+        #[test]
+        #[should_panic(expected = "n cannot be negative. Invalid n: -1")]
+        fn $fail() {
+            $f(8, -1);
+        }
+    }
+}
+
+test_bits_padded_i!(i8,
+                    bits_padded_i8,
+                    test_bits_padded_i8,
+                    bits_padded_i8_helper,
+                    test_bits_padded_i8_fail,
+                    i8::max_value(),
+                    7,
+                    "[true, true, true, true, true, true, true]");
+test_bits_padded_i!(i16,
+                    bits_padded_i16,
+                    test_bits_padded_i16,
+                    bits_padded_i16_helper,
+                    test_bits_padded_i16_fail,
+                    i16::max_value(),
+                    15,
+                    "[true, true, true, true, true, true, true, true, true, true, true, true, \
+                      true, true, true]");
+test_bits_padded_i!(i32,
+                    bits_padded_i32,
+                    test_bits_padded_i32,
+                    bits_padded_i32_helper,
+                    test_bits_padded_i32_fail,
+                    i32::max_value(),
+                    31,
+                    "[true, true, true, true, true, true, true, true, true, true, true, true, \
+                      true, true, true, true, true, true, true, true, true, true, true, true, \
+                      true, true, true, true, true, true, true]");
+test_bits_padded_i!(i64,
+                    bits_padded_i64,
+                    test_bits_padded_i64,
+                    bits_padded_i64_helper,
+                    test_bits_padded_i64_fail,
+                    i64::max_value(),
+                    63,
+                    "[true, true, true, true, true, true, true, true, true, true, true, true, \
+                      true, true, true, true, true, true, true, true, true, true, true, true, \
+                      true, true, true, true, true, true, true, true, true, true, true, true, \
+                      true, true, true, true, true, true, true, true, true, true, true, true, \
+                      true, true, true, true, true, true, true, true, true, true, true, true, \
+                      true, true, true]");
+
+fn bits_padded_integer_helper(size: usize, n: &str, out: &str) {
+    assert_eq!(format!("{:?}",
+                       bits_padded_integer(size, &Integer::from_str(n).unwrap())),
+               out);
+}
+
+#[test]
+fn test_bits_padded_integer() {
+    bits_padded_integer_helper(8,
+                               "0",
+                               "[false, false, false, false, false, false, false, false]");
+    bits_padded_integer_helper(8,
+                               "1",
+                               "[true, false, false, false, false, false, false, false]");
+    bits_padded_integer_helper(8,
+                               "6",
+                               "[false, true, true, false, false, false, false, false]");
+    bits_padded_integer_helper(8,
+                               "105",
+                               "[true, false, false, true, false, true, true, false]");
+    bits_padded_integer_helper(2, "104", "[false, false]");
+    bits_padded_integer_helper(2, "105", "[true, false]");
+    bits_padded_integer_helper(1, "104", "[false]");
+    bits_padded_integer_helper(1, "105", "[true]");
+    bits_padded_integer_helper(0, "104", "[]");
+    bits_padded_integer_helper(100,
+                               "105",
+                               "[true, false, false, true, false, true, true, false, false, false, \
+                                 false, false, false, false, false, false, false, false, false, \
+                                 false, false, false, false, false, false, false, false, false, \
+                                 false, false, false, false, false, false, false, false, false, \
+                                 false, false, false, false, false, false, false, false, false, \
+                                 false, false, false, false, false, false, false, false, false, \
+                                 false, false, false, false, false, false, false, false, false, \
+                                 false, false, false, false, false, false, false, false, false, \
+                                 false, false, false, false, false, false, false, false, false, \
+                                 false, false, false, false, false, false, false, false, false, \
+                                 false, false, false, false, false, false, false, false, false]");
+}
+
+#[test]
+#[should_panic(expected = "n cannot be negative. Invalid n: -1")]
+fn bits_padded_integer_fail() {
+    bits_padded_integer(8, &Integer::from(-1));
+}
