@@ -239,6 +239,13 @@ test_ceiling_log_2!(u64,
                     test_is_ceiling_log_2_u64_fail,
                     64,
                     u64::max_value());
+test_ceiling_log_2!(usize,
+                    ceiling_log_2_usize,
+                    test_ceiling_log_2_usize,
+                    ceiling_log_2_usize_helper,
+                    test_is_ceiling_log_2_usize_fail,
+                    usize_bit_count(),
+                    usize::max_value());
 
 fn ceiling_log_2_integer_helper(n: &str, out: u32) {
     assert_eq!(ceiling_log_2_integer(&Integer::from_str(n).unwrap()), out);
@@ -600,4 +607,122 @@ fn test_bits_padded_integer() {
 #[should_panic(expected = "n cannot be negative. Invalid n: -1")]
 fn bits_padded_integer_fail() {
     bits_padded_integer(8, &Integer::from(-1));
+}
+
+macro_rules! test_big_endian_bits {
+    ($t: ty, $f: ident, $test: ident, $helper: ident, $max: expr, $max_bits: expr) => {
+        fn $helper(n: $t, out: &str) {
+            assert_eq!(format!("{:?}", $f(n)), out);
+        }
+
+        #[test]
+        fn $test() {
+            $helper(0, "[]");
+            $helper(1, "[true]");
+            $helper(6, "[true, true, false]");
+            $helper(105, "[true, true, false, true, false, false, true]");
+            $helper($max, $max_bits);
+        }
+    }
+}
+
+test_big_endian_bits!(u8,
+                      big_endian_bits_u8,
+                      test_big_endian_bits_u8,
+                      big_endian_bits_u8_helper,
+                      u8::max_value(),
+                      "[true, true, true, true, true, true, true, true]");
+test_big_endian_bits!(u16,
+                      big_endian_bits_u16,
+                      test_big_endian_bits_u16,
+                      big_endian_bits_u16_helper,
+                      u16::max_value(),
+                      "[true, true, true, true, true, true, true, true, true, true, true, true, \
+                      true, true, true, true]");
+test_big_endian_bits!(u32,
+                      big_endian_bits_u32,
+                      test_big_endian_bits_u32,
+                      big_endian_bits_u32_helper,
+                      u32::max_value(),
+                      "[true, true, true, true, true, true, true, true, true, true, true, true, \
+                        true, true, true, true, true, true, true, true, true, true, true, true, \
+                        true, true, true, true, true, true, true, true]");
+test_big_endian_bits!(u64,
+                      big_endian_bits_u64,
+                      test_big_endian_bits_u64,
+                      big_endian_bits_u64_helper,
+                      u64::max_value(),
+                      "[true, true, true, true, true, true, true, true, true, true, true, true, \
+                        true, true, true, true, true, true, true, true, true, true, true, true, \
+                        true, true, true, true, true, true, true, true, true, true, true, true, \
+                        true, true, true, true, true, true, true, true, true, true, true, true, \
+                        true, true, true, true, true, true, true, true, true, true, true, true, \
+                        true, true, true, true]");
+test_big_endian_bits!(i8,
+                      big_endian_bits_i8,
+                      test_big_endian_bits_i8,
+                      big_endian_bits_i8_helper,
+                      i8::max_value(),
+                      "[true, true, true, true, true, true, true]");
+test_big_endian_bits!(i16,
+                      big_endian_bits_i16,
+                      test_big_endian_bits_i16,
+                      big_endian_bits_i16_helper,
+                      i16::max_value(),
+                      "[true, true, true, true, true, true, true, true, true, true, true, true, \
+                        true, true, true]");
+test_big_endian_bits!(i32,
+                      big_endian_bits_i32,
+                      test_big_endian_bits_i32,
+                      big_endian_bits_i32_helper,
+                      i32::max_value(),
+                      "[true, true, true, true, true, true, true, true, true, true, true, true, \
+                        true, true, true, true, true, true, true, true, true, true, true, true, \
+                        true, true, true, true, true, true, true]");
+test_big_endian_bits!(i64,
+                      big_endian_bits_i64,
+                      test_big_endian_bits_i64,
+                      big_endian_bits_i64_helper,
+                      i64::max_value(),
+                      "[true, true, true, true, true, true, true, true, true, true, true, true, \
+                        true, true, true, true, true, true, true, true, true, true, true, true, \
+                        true, true, true, true, true, true, true, true, true, true, true, true, \
+                        true, true, true, true, true, true, true, true, true, true, true, true, \
+                        true, true, true, true, true, true, true, true, true, true, true, true, \
+                        true, true, true]");
+
+macro_rules! test_big_endian_bits_s {
+    ($t: ty, $f: ident, $fail: ident) => {
+        #[test]
+        #[should_panic(expected = "n cannot be negative. Invalid n: -5")]
+        fn $fail() {
+            $f(-5);
+        }
+    }
+}
+
+test_big_endian_bits_s!(i8, big_endian_bits_i8, big_endian_bits_i8_fail);
+test_big_endian_bits_s!(i16, big_endian_bits_i16, big_endian_bits_i16_fail);
+test_big_endian_bits_s!(i32, big_endian_bits_i32, big_endian_bits_i32_fail);
+test_big_endian_bits_s!(i64, big_endian_bits_i64, big_endian_bits_i64_fail);
+test_big_endian_bits_s!(isize, big_endian_bits_isize, big_endian_bits_isize_fail);
+
+fn big_endian_bits_integer_helper(n: &str, out: &str) {
+    assert_eq!(format!("{:?}",
+                       big_endian_bits_integer(&Integer::from_str(n).unwrap())),
+               out);
+}
+
+#[test]
+fn test_big_endian_bits_integer() {
+    big_endian_bits_integer_helper("0", "[]");
+    big_endian_bits_integer_helper("1", "[true]");
+    big_endian_bits_integer_helper("6", "[true, true, false]");
+    big_endian_bits_integer_helper("105", "[true, true, false, true, false, false, true]");
+}
+
+#[test]
+#[should_panic(expected = "n cannot be negative. Invalid n: -5")]
+fn big_endian_bits_integer_fail() {
+    big_endian_bits_integer(&Integer::from(-5));
 }

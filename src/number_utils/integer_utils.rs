@@ -3,6 +3,14 @@ extern crate rugint;
 use self::rugint::Integer;
 use std::cmp::Ordering;
 
+pub fn usize_bit_count() -> u32 {
+    (0 as usize).count_zeros()
+}
+
+pub fn isize_bit_count() -> u32 {
+    (0 as isize).count_zeros()
+}
+
 macro_rules! is_power_of_two {
     ($ipot: ident, $t: ty) => {
         pub fn $ipot(n: $t) -> bool {
@@ -52,10 +60,12 @@ ceiling_log_2!(ceiling_log_2_u8, u8, 8);
 ceiling_log_2!(ceiling_log_2_u16, u16, 16);
 ceiling_log_2!(ceiling_log_2_u32, u32, 32);
 ceiling_log_2!(ceiling_log_2_u64, u64, 64);
+ceiling_log_2!(ceiling_log_2_usize, usize, usize_bit_count());
 ceiling_log_2!(ceiling_log_2_i8, i8, 8);
 ceiling_log_2!(ceiling_log_2_i16, i16, 16);
 ceiling_log_2!(ceiling_log_2_i32, i32, 32);
 ceiling_log_2!(ceiling_log_2_i64, i64, 64);
+ceiling_log_2!(ceiling_log_2_isize, isize, isize_bit_count());
 
 pub fn ceiling_log_2_integer(n: &Integer) -> u32 {
     if n.sign() != Ordering::Greater {
@@ -179,5 +189,76 @@ pub fn bits_padded_integer(size: usize, n: &Integer) -> Vec<bool> {
             bits.push(n.get_bit(i));
         }
         bits
+    }
+}
+
+macro_rules! big_endian_bits_u {
+    ($t: ty, $b: ident, $size: expr) => {
+        pub fn $b(n: $t) -> Vec<bool> {
+            let mut bits = Vec::new();
+            if n == 0 {
+                return bits;
+            }
+            let mut mask = 1 << ($size - n.leading_zeros() - 1);
+            while mask != 0 {
+                bits.push(n & mask != 0);
+                mask >>= 1;
+            }
+            bits
+        }
+    }
+}
+
+big_endian_bits_u!(u8, big_endian_bits_u8, 8);
+big_endian_bits_u!(u16, big_endian_bits_u16, 16);
+big_endian_bits_u!(u32, big_endian_bits_u32, 32);
+big_endian_bits_u!(u64, big_endian_bits_u64, 64);
+big_endian_bits_u!(usize, big_endian_bits_usize, usize_bit_count());
+
+macro_rules! big_endian_bits_i {
+    ($t: ty, $b: ident, $size: expr) => {
+        pub fn $b(n: $t) -> Vec<bool> {
+            match n.signum() {
+                -1 => panic!("n cannot be negative. Invalid n: {}", n),
+                0 => Vec::new(),
+                1 => {
+                    let mut bits = Vec::new();
+                    let mut mask = 1 << ($size - n.leading_zeros() - 1);
+                    while mask != 0 {
+                        bits.push(n & mask != 0);
+                        mask >>= 1;
+                    }
+                    bits
+                },
+                _ => unreachable!()
+            }
+        }
+    }
+}
+
+big_endian_bits_i!(i8, big_endian_bits_i8, 8);
+big_endian_bits_i!(i16, big_endian_bits_i16, 16);
+big_endian_bits_i!(i32, big_endian_bits_i32, 32);
+big_endian_bits_i!(i64, big_endian_bits_i64, 64);
+big_endian_bits_i!(isize, big_endian_bits_isize, isize_bit_count());
+
+pub fn big_endian_bits_integer(n: &Integer) -> Vec<bool> {
+    match n.sign() {
+        Ordering::Less => panic!("n cannot be negative. Invalid n: {}", n),
+        Ordering::Equal => Vec::new(),
+        Ordering::Greater => {
+            let bit_length = n.significant_bits();
+            let mut bits = Vec::with_capacity(bit_length as usize);
+            let mut i = bit_length - 1;
+            loop {
+                bits.push(n.get_bit(i));
+                if i == 0 {
+                    break;
+                } else {
+                    i -= 1;
+                }
+            }
+            bits
+        }
     }
 }
