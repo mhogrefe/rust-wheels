@@ -545,7 +545,7 @@ test_big_endian_bits!(i64,
                         true, true, true, true, true, true, true, true, true, true, true, true, \
                         true, true, true]");
 
-macro_rules! test_big_endian_bits_s {
+macro_rules! test_big_endian_bits_i {
     ($t: ty, $f: ident, $fail: ident) => {
         #[test]
         #[should_panic(expected = "n cannot be negative. Invalid n: -5")]
@@ -555,11 +555,11 @@ macro_rules! test_big_endian_bits_s {
     }
 }
 
-test_big_endian_bits_s!(i8, big_endian_bits_i8, big_endian_bits_i8_fail);
-test_big_endian_bits_s!(i16, big_endian_bits_i16, big_endian_bits_i16_fail);
-test_big_endian_bits_s!(i32, big_endian_bits_i32, big_endian_bits_i32_fail);
-test_big_endian_bits_s!(i64, big_endian_bits_i64, big_endian_bits_i64_fail);
-test_big_endian_bits_s!(isize, big_endian_bits_isize, big_endian_bits_isize_fail);
+test_big_endian_bits_i!(i8, big_endian_bits_i8, big_endian_bits_i8_fail);
+test_big_endian_bits_i!(i16, big_endian_bits_i16, big_endian_bits_i16_fail);
+test_big_endian_bits_i!(i32, big_endian_bits_i32, big_endian_bits_i32_fail);
+test_big_endian_bits_i!(i64, big_endian_bits_i64, big_endian_bits_i64_fail);
+test_big_endian_bits_i!(isize, big_endian_bits_isize, big_endian_bits_isize_fail);
 
 fn big_endian_bits_integer_helper(n: &str, out: &str) {
     assert_eq!(format!("{:?}",
@@ -579,4 +579,224 @@ fn test_big_endian_bits_integer() {
 #[should_panic(expected = "n cannot be negative. Invalid n: -5")]
 fn big_endian_bits_integer_fail() {
     big_endian_bits_integer(&Integer::from(-5));
+}
+
+macro_rules! test_big_endian_bits_padded_u {
+    (
+            $t: ty,
+            $f: ident,
+            $test: ident,
+            $helper: ident,
+            $max: expr,
+            $max_pos_bit_length: expr,
+            $max_bits: expr
+    ) => {
+        fn $helper(size: usize, n: $t, out: &str) {
+            assert_eq!(format!("{:?}", $f(size, n)), out);
+        }
+
+        #[test]
+        fn $test() {
+            $helper(8, 0, "[false, false, false, false, false, false, false, false]");
+            $helper(8, 1, "[false, false, false, false, false, false, false, true]");
+            $helper(8, 6, "[false, false, false, false, false, true, true, false]");
+            $helper(8, 105, "[false, true, true, false, true, false, false, true]");
+            $helper(2, 104, "[false, false]");
+            $helper(2, 105, "[false, true]");
+            $helper(1, 104, "[false]");
+            $helper(1, 105, "[true]");
+            $helper(0, 104, "[]");
+            $helper(100, 105,
+                    "[false, false, false, false, false, false, false, false, false, false, false, \
+                      false, false, false, false, false, false, false, false, false, false, false, \
+                      false, false, false, false, false, false, false, false, false, false, false, \
+                      false, false, false, false, false, false, false, false, false, false, false, \
+                      false, false, false, false, false, false, false, false, false, false, false, \
+                      false, false, false, false, false, false, false, false, false, false, false, \
+                      false, false, false, false, false, false, false, false, false, false, false, \
+                      false, false, false, false, false, false, false, false, false, false, false, \
+                      false, false, false, false, false, true, true, false, true, false, false, \
+                      true]");
+            $helper($max_pos_bit_length, $max, $max_bits);
+        }
+    }
+}
+
+test_big_endian_bits_padded_u!(u8,
+                               big_endian_bits_padded_u8,
+                               test_big_endian_bits_padded_u8,
+                               big_endian_bits_padded_u8_helper,
+                               u8::max_value(),
+                               8,
+                               "[true, true, true, true, true, true, true, true]");
+test_big_endian_bits_padded_u!(u16,
+                               big_endian_bits_padded_u16,
+                               test_big_endian_bits_padded_u16,
+                               big_endian_bits_padded_u16_helper,
+                               u16::max_value(),
+                               16,
+                               "[true, true, true, true, true, true, true, true, true, true, true, \
+                                 true, true, true, true, true]");
+test_big_endian_bits_padded_u!(u32,
+                               big_endian_bits_padded_u32,
+                               test_big_endian_bits_padded_u32,
+                               big_endian_bits_padded_u32_helper,
+                               u32::max_value(),
+                               32,
+                               "[true, true, true, true, true, true, true, true, true, true, true, \
+                                 true, true, true, true, true, true, true, true, true, true, true, \
+                                 true, true, true, true, true, true, true, true, true, true]");
+test_big_endian_bits_padded_u!(u64,
+                               big_endian_bits_padded_u64,
+                               test_big_endian_bits_padded_u64,
+                               big_endian_bits_padded_u64_helper,
+                               u64::max_value(),
+                               64,
+                               "[true, true, true, true, true, true, true, true, true, true, true, \
+                                 true, true, true, true, true, true, true, true, true, true, true, \
+                                 true, true, true, true, true, true, true, true, true, true, true, \
+                                 true, true, true, true, true, true, true, true, true, true, true, \
+                                 true, true, true, true, true, true, true, true, true, true, true, \
+                                 true, true, true, true, true, true, true, true, true]");
+
+macro_rules! test_big_endian_bits_padded_i {
+    (
+            $t: ty,
+            $f: ident,
+            $test: ident,
+            $helper: ident,
+            $fail: ident,
+            $max: expr,
+            $max_pos_bit_length: expr,
+            $max_bits: expr
+    ) => {
+        fn $helper(size: usize, n: $t, out: &str) {
+            assert_eq!(format!("{:?}", $f(size, n)), out);
+        }
+
+        #[test]
+        fn $test() {
+            $helper(8, 0, "[false, false, false, false, false, false, false, false]");
+            $helper(8, 1, "[false, false, false, false, false, false, false, true]");
+            $helper(8, 6, "[false, false, false, false, false, true, true, false]");
+            $helper(8, 105, "[false, true, true, false, true, false, false, true]");
+            $helper(2, 104, "[false, false]");
+            $helper(2, 105, "[false, true]");
+            $helper(1, 104, "[false]");
+            $helper(1, 105, "[true]");
+            $helper(0, 104, "[]");
+            $helper(100, 105,
+                    "[false, false, false, false, false, false, false, false, false, false, false, \
+                      false, false, false, false, false, false, false, false, false, false, false, \
+                      false, false, false, false, false, false, false, false, false, false, false, \
+                      false, false, false, false, false, false, false, false, false, false, false, \
+                      false, false, false, false, false, false, false, false, false, false, false, \
+                      false, false, false, false, false, false, false, false, false, false, false, \
+                      false, false, false, false, false, false, false, false, false, false, false, \
+                      false, false, false, false, false, false, false, false, false, false, false, \
+                      false, false, false, false, false, true, true, false, true, false, false, \
+                      true]");
+            $helper($max_pos_bit_length, $max, $max_bits);
+        }
+
+        #[test]
+        #[should_panic(expected = "n cannot be negative. Invalid n: -1")]
+        fn $fail() {
+            $f(8, -1);
+        }
+    }
+}
+
+test_big_endian_bits_padded_i!(i8,
+                               big_endian_bits_padded_i8,
+                               test_big_endian_bits_padded_i8,
+                               big_endian_bits_padded_i8_helper,
+                               test_big_endian_bits_padded_i8_fail,
+                               i8::max_value(),
+                               7,
+                               "[true, true, true, true, true, true, true]");
+test_big_endian_bits_padded_i!(i16,
+                               big_endian_bits_padded_i16,
+                               test_big_endian_bits_padded_i16,
+                               big_endian_bits_padded_i16_helper,
+                               test_big_endian_bits_padded_i16_fail,
+                               i16::max_value(),
+                               15,
+                               "[true, true, true, true, true, true, true, true, true, true, true, \
+                                 true, true, true, true]");
+test_big_endian_bits_padded_i!(i32,
+                               big_endian_bits_padded_i32,
+                               test_big_endian_bits_padded_i32,
+                               big_endian_bits_padded_i32_helper,
+                               test_big_endian_bits_padded_i32_fail,
+                               i32::max_value(),
+                               31,
+                               "[true, true, true, true, true, true, true, true, true, true, true, \
+                                 true, true, true, true, true, true, true, true, true, true, true, \
+                                 true, true, true, true, true, true, true, true, true]");
+test_big_endian_bits_padded_i!(i64,
+                               big_endian_bits_padded_i64,
+                               test_big_endian_bits_padded_i64,
+                               big_endian_bits_padded_i64_helper,
+                               test_big_endian_bits_padded_i64_fail,
+                               i64::max_value(),
+                               63,
+                               "[true, true, true, true, true, true, true, true, true, true, true, \
+                                 true, true, true, true, true, true, true, true, true, true, true, \
+                                 true, true, true, true, true, true, true, true, true, true, true, \
+                                 true, true, true, true, true, true, true, true, true, true, true, \
+                                 true, true, true, true, true, true, true, true, true, true, true, \
+                                 true, true, true, true, true, true, true, true]");
+
+fn big_endian_bits_padded_integer_helper(size: usize, n: &str, out: &str) {
+    assert_eq!(format!("{:?}",
+                       big_endian_bits_padded_integer(size, &Integer::from_str(n).unwrap())),
+               out);
+}
+
+#[test]
+fn test_big_endian_bits_padded_integer() {
+    big_endian_bits_padded_integer_helper(8,
+                                          "0",
+                                          "[false, false, false, false, false, false, false, \
+                                            false]");
+    big_endian_bits_padded_integer_helper(8,
+                                          "1",
+                                          "[false, false, false, false, false, false, false, \
+                                            true]");
+    big_endian_bits_padded_integer_helper(8,
+                                          "6",
+                                          "[false, false, false, false, false, true, true, \
+                                            false]");
+    big_endian_bits_padded_integer_helper(8,
+                                          "105",
+                                          "[false, true, true, false, true, false, false, true]");
+    big_endian_bits_padded_integer_helper(2, "104", "[false, false]");
+    big_endian_bits_padded_integer_helper(2, "105", "[false, true]");
+    big_endian_bits_padded_integer_helper(1, "104", "[false]");
+    big_endian_bits_padded_integer_helper(1, "105", "[true]");
+    big_endian_bits_padded_integer_helper(0, "104", "[]");
+    big_endian_bits_padded_integer_helper(100,
+                                          "105",
+                                          "[false, false, false, false, false, false, false, \
+                                            false, false, false, false, false, false, false, \
+                                            false, false, false, false, false, false, false, \
+                                            false, false, false, false, false, false, false, \
+                                            false, false, false, false, false, false, false, \
+                                            false, false, false, false, false, false, false, \
+                                            false, false, false, false, false, false, false, \
+                                            false, false, false, false, false, false, false, \
+                                            false, false, false, false, false, false, false, \
+                                            false, false, false, false, false, false, false, \
+                                            false, false, false, false, false, false, false, \
+                                            false, false, false, false, false, false, false, \
+                                            false, false, false, false, false, false, false, \
+                                            false, false, true, true, false, true, false, false, \
+                                            true]");
+}
+
+#[test]
+#[should_panic(expected = "n cannot be negative. Invalid n: -1")]
+fn big_endian_bits_padded_integer_fail() {
+    big_endian_bits_padded_integer(8, &Integer::from(-1));
 }

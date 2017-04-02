@@ -161,18 +161,17 @@ bits_padded_i!(isize, bits_padded_isize);
 pub fn bits_padded_integer(size: usize, n: &Integer) -> Vec<bool> {
     if n.sign() == Ordering::Less {
         panic!("n cannot be negative. Invalid n: {}", n);
-    } else {
-        let mut bits = Vec::with_capacity(size);
-        for i in 0..(size as u32) {
-            bits.push(n.get_bit(i));
-        }
-        bits
     }
+    let mut bits = Vec::with_capacity(size);
+    for i in 0..(size as u32) {
+        bits.push(n.get_bit(i));
+    }
+    bits
 }
 
 macro_rules! big_endian_bits_u {
-    ($t: ty, $b: ident, $size: expr) => {
-        pub fn $b(n: $t) -> Vec<bool> {
+    ($t: ty, $beb: ident, $size: expr) => {
+        pub fn $beb(n: $t) -> Vec<bool> {
             let mut bits = Vec::new();
             if n == 0 {
                 return bits;
@@ -194,8 +193,8 @@ big_endian_bits_u!(u64, big_endian_bits_u64, 64);
 big_endian_bits_u!(usize, big_endian_bits_usize, usize_bit_count());
 
 macro_rules! big_endian_bits_i {
-    ($t: ty, $b: ident, $size: expr) => {
-        pub fn $b(n: $t) -> Vec<bool> {
+    ($t: ty, $beb: ident, $size: expr) => {
+        pub fn $beb(n: $t) -> Vec<bool> {
             match n.signum() {
                 -1 => panic!("n cannot be negative. Invalid n: {}", n),
                 0 => Vec::new(),
@@ -239,4 +238,89 @@ pub fn big_endian_bits_integer(n: &Integer) -> Vec<bool> {
             bits
         }
     }
+}
+
+macro_rules! big_endian_bits_padded_u {
+    ($t: ty, $bebp: ident, $max_bits: expr) => {
+        pub fn $bebp(size: usize, n: $t) -> Vec<bool> {
+            let mut bits = Vec::new();
+            if size == 0 {
+                return bits;
+            }
+            let mut size = size;
+            let max_bits = $max_bits;
+            while size > max_bits {
+                bits.push(false);
+                size -= 1;
+            }
+            let mut mask = 1 << (size - 1);
+            while mask != 0 {
+                bits.push(n & mask != 0);
+                mask >>= 1;
+            }
+            bits
+        }
+    }
+}
+
+big_endian_bits_padded_u!(u8, big_endian_bits_padded_u8, 8);
+big_endian_bits_padded_u!(u16, big_endian_bits_padded_u16, 16);
+big_endian_bits_padded_u!(u32, big_endian_bits_padded_u32, 32);
+big_endian_bits_padded_u!(u64, big_endian_bits_padded_u64, 64);
+big_endian_bits_padded_u!(usize,
+                          big_endian_bits_padded_usize,
+                          usize_bit_count() as usize);
+
+macro_rules! big_endian_bits_padded_i {
+    ($t: ty, $bebp: ident, $max_bits: expr) => {
+        pub fn $bebp(size: usize, n: $t) -> Vec<bool> {
+            if n < 0 {
+                panic!("n cannot be negative. Invalid n: {}", n);
+            }
+            let mut bits = Vec::new();
+            if size == 0 {
+                return bits;
+            }
+            let mut size = size;
+            let max_bits = $max_bits;
+            while size > max_bits {
+                bits.push(false);
+                size -= 1;
+            }
+            let mut mask = 1 << (size - 1);
+            while mask != 0 {
+                bits.push(n & mask != 0);
+                mask >>= 1;
+            }
+            bits
+        }
+    }
+}
+
+big_endian_bits_padded_i!(i8, big_endian_bits_padded_i8, 7);
+big_endian_bits_padded_i!(i16, big_endian_bits_padded_i16, 15);
+big_endian_bits_padded_i!(i32, big_endian_bits_padded_i32, 31);
+big_endian_bits_padded_i!(i64, big_endian_bits_padded_i64, 63);
+big_endian_bits_padded_i!(isize,
+                          big_endian_bits_padded_isize,
+                          (isize_bit_count() - 1) as usize);
+
+pub fn big_endian_bits_padded_integer(size: usize, n: &Integer) -> Vec<bool> {
+    if n.sign() == Ordering::Less {
+        panic!("n cannot be negative. Invalid n: {}", n);
+    }
+    let mut bits = Vec::new();
+    if size == 0 {
+        return bits;
+    }
+    let mut i = size - 1;
+    loop {
+        bits.push(n.get_bit(i as u32));
+        if i == 0 {
+            break;
+        } else {
+            i -= 1;
+        }
+    }
+    bits
 }
