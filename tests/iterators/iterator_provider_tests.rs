@@ -28,7 +28,7 @@ macro_rules! test_integer_range_master {
         $rd_t(&$eo, &$ep);
         $i_t(&$eo, &$ep);
         $d_t(&$eo, &$ep);
-        $pos_t(&$eo, &$ep);
+        $pos_t(&$eo, &$ep, &$rp);
         $all_t(&$eo, &$ep, &$rp);
     }
 }
@@ -343,8 +343,9 @@ macro_rules! test_integer_range {
             eo.match_vec(&format!("exhaustive_{}s_decreasing", $ts), &mut p.$d());
         }
 
-        fn $pos_t(eo: &TestOutput, p: &IteratorProvider) {
-            eo.match_vec(&format!("exhaustive_positive_{}s", $ts), &mut p.$pos());
+        fn $pos_t(eo: &TestOutput, ep: &IteratorProvider, rp: &IteratorProvider) {
+            eo.match_vec(&format!("exhaustive_positive_{}s", $ts), &mut ep.$pos());
+            eo.match_vec_f(&format!("random_positive_{}s", $ts), &mut rp.$pos());
         }
 
         fn $all_t(eo: &TestOutput, ep: &IteratorProvider, rp: &IteratorProvider) {
