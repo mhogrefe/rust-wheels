@@ -36,7 +36,8 @@ macro_rules! test_integer_range_master {
 macro_rules! test_integer_range_master_i {
     (
             $eo: ident,
-            $p: ident,
+            $ep: ident,
+            $rp: ident,
             $rui_t_i: ident,
             $rud_t_i: ident,
             $rdi_t_i: ident,
@@ -47,15 +48,15 @@ macro_rules! test_integer_range_master_i {
             $nat_t: ident,
             $nz_t: ident
     ) => {
-        $rui_t_i(&$eo, &$p);
-        $rud_t_i(&$eo, &$p);
-        $rdi_t_i(&$eo, &$p);
-        $rdd_t_i(&$eo, &$p);
-        $ri_t_i(&$eo, &$p);
-        $rd_t_i(&$eo, &$p);
-        $neg_t(&$eo, &$p);
-        $nat_t(&$eo, &$p);
-        $nz_t(&$eo, &$p);
+        $rui_t_i(&$eo, &$ep);
+        $rud_t_i(&$eo, &$ep);
+        $rdi_t_i(&$eo, &$ep);
+        $rdd_t_i(&$eo, &$ep);
+        $ri_t_i(&$eo, &$ep);
+        $rd_t_i(&$eo, &$ep);
+        $neg_t(&$eo, &$ep);
+        $nat_t(&$eo, &$ep, &$rp);
+        $nz_t(&$eo, &$ep);
     }
 }
 
@@ -172,6 +173,7 @@ fn master_test() {
 
     test_integer_range_master_i!(eo,
                                  ep,
+                                 rp,
                                  test_range_up_increasing_i8_i,
                                  test_range_up_decreasing_i8_i,
                                  test_range_down_increasing_i8_i,
@@ -183,6 +185,7 @@ fn master_test() {
                                  test_nonzero_i8s);
     test_integer_range_master_i!(eo,
                                  ep,
+                                 rp,
                                  test_range_up_increasing_i16_i,
                                  test_range_up_decreasing_i16_i,
                                  test_range_down_increasing_i16_i,
@@ -194,6 +197,7 @@ fn master_test() {
                                  test_nonzero_i16s);
     test_integer_range_master_i!(eo,
                                  ep,
+                                 rp,
                                  test_range_up_increasing_i32_i,
                                  test_range_up_decreasing_i32_i,
                                  test_range_down_increasing_i32_i,
@@ -205,6 +209,7 @@ fn master_test() {
                                  test_nonzero_i32s);
     test_integer_range_master_i!(eo,
                                  ep,
+                                 rp,
                                  test_range_up_increasing_i64_i,
                                  test_range_up_decreasing_i64_i,
                                  test_range_down_increasing_i64_i,
@@ -682,8 +687,9 @@ macro_rules! test_integer_range_i {
             eo.match_vec(&format!("exhaustive_negative_{}s", $ts), &mut p.$neg());
         }
 
-        fn $nat_t(eo: &TestOutput, p: &IteratorProvider) {
-            eo.match_vec(&format!("exhaustive_natural_{}s", $ts), &mut p.$nat());
+        fn $nat_t(eo: &TestOutput, ep: &IteratorProvider, rp: &IteratorProvider) {
+            eo.match_vec(&format!("exhaustive_natural_{}s", $ts), &mut ep.$nat());
+            eo.match_vec_f(&format!("random_natural_{}s", $ts), &mut rp.$nat());
         }
 
         fn $nz_t(eo: &TestOutput, p: &IteratorProvider) {
