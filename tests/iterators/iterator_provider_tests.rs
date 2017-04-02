@@ -16,7 +16,8 @@ macro_rules! test_integer_range_master {
             $rd_t: ident,
             $i_t: ident,
             $d_t: ident,
-            $pos_t: ident
+            $pos_t: ident,
+            $all_t: ident
     ) => {
         $rui_t(&$eo, &mut $p);
         $rud_t(&$eo, &mut $p);
@@ -27,6 +28,7 @@ macro_rules! test_integer_range_master {
         $i_t(&$eo, &mut $p);
         $d_t(&$eo, &mut $p);
         $pos_t(&$eo, &mut $p);
+        $all_t(&$eo, &mut $p);
     }
 }
 
@@ -71,7 +73,8 @@ fn master_test() {
                                test_range_decreasing_u8,
                                test_u8s_increasing,
                                test_u8s_decreasing,
-                               test_positive_u8s);
+                               test_positive_u8s,
+                               test_u8s);
     test_integer_range_master!(eo,
                                p,
                                test_range_up_increasing_u16,
@@ -82,7 +85,8 @@ fn master_test() {
                                test_range_decreasing_u16,
                                test_u16s_increasing,
                                test_u16s_decreasing,
-                               test_positive_u16s);
+                               test_positive_u16s,
+                               test_u16s);
     test_integer_range_master!(eo,
                                p,
                                test_range_up_increasing_u32,
@@ -93,7 +97,8 @@ fn master_test() {
                                test_range_decreasing_u32,
                                test_u32s_increasing,
                                test_u32s_decreasing,
-                               test_positive_u32s);
+                               test_positive_u32s,
+                               test_u32s);
     test_integer_range_master!(eo,
                                p,
                                test_range_up_increasing_u64,
@@ -104,7 +109,8 @@ fn master_test() {
                                test_range_decreasing_u64,
                                test_u64s_increasing,
                                test_u64s_decreasing,
-                               test_positive_u64s);
+                               test_positive_u64s,
+                               test_u64s);
     test_integer_range_master!(eo,
                                p,
                                test_range_up_increasing_i8,
@@ -115,7 +121,8 @@ fn master_test() {
                                test_range_decreasing_i8,
                                test_i8s_increasing,
                                test_i8s_decreasing,
-                               test_positive_i8s);
+                               test_positive_i8s,
+                               test_i8s);
     test_integer_range_master!(eo,
                                p,
                                test_range_up_increasing_i16,
@@ -126,7 +133,8 @@ fn master_test() {
                                test_range_decreasing_i16,
                                test_i16s_increasing,
                                test_i16s_decreasing,
-                               test_positive_i16s);
+                               test_positive_i16s,
+                               test_i16s);
     test_integer_range_master!(eo,
                                p,
                                test_range_up_increasing_i32,
@@ -137,7 +145,8 @@ fn master_test() {
                                test_range_decreasing_i32,
                                test_i32s_increasing,
                                test_i32s_decreasing,
-                               test_positive_i32s);
+                               test_positive_i32s,
+                               test_i32s);
     test_integer_range_master!(eo,
                                p,
                                test_range_up_increasing_i64,
@@ -148,7 +157,8 @@ fn master_test() {
                                test_range_decreasing_i64,
                                test_i64s_increasing,
                                test_i64s_decreasing,
-                               test_positive_i64s);
+                               test_positive_i64s,
+                               test_i64s);
 
     test_integer_range_master_i!(eo,
                                  p,
@@ -209,6 +219,7 @@ macro_rules! test_integer_range {
         $i: ident,
         $d: ident,
         $pos: ident,
+        $all: ident,
         $rui_th: ident,
         $rud_th: ident,
         $rdi_th: ident,
@@ -224,6 +235,7 @@ macro_rules! test_integer_range {
         $i_t: ident,
         $d_t: ident,
         $pos_t: ident,
+        $all_t: ident,
         $ri_f: ident,
         $rd_f: ident,
         $max: expr
@@ -319,6 +331,10 @@ macro_rules! test_integer_range {
         fn $pos_t(eo: &TestOutput, p: &mut IteratorProvider) {
             eo.match_vec(&format!("exhaustive_positive_{}s", $ts), &mut p.$pos());
         }
+
+        fn $all_t(eo: &TestOutput, p: &mut IteratorProvider) {
+            eo.match_vec(&format!("exhaustive_{}s", $ts), &mut p.$all());
+        }
     }
 }
 
@@ -333,6 +349,7 @@ test_integer_range!(u8,
                     u8s_increasing,
                     u8s_decreasing,
                     positive_u8s,
+                    u8s,
                     range_up_increasing_u8_helper,
                     range_up_decreasing_u8_helper,
                     range_down_increasing_u8_helper,
@@ -348,6 +365,7 @@ test_integer_range!(u8,
                     test_u8s_increasing,
                     test_u8s_decreasing,
                     test_positive_u8s,
+                    test_u8s,
                     range_increasing_u8_fail,
                     range_decreasing_u8_fail,
                     u8::max_value());
@@ -362,6 +380,7 @@ test_integer_range!(u16,
                     u16s_increasing,
                     u16s_decreasing,
                     positive_u16s,
+                    u16s,
                     range_up_increasing_u16_helper,
                     range_up_decreasing_u16_helper,
                     range_down_increasing_u16_helper,
@@ -377,6 +396,7 @@ test_integer_range!(u16,
                     test_u16s_increasing,
                     test_u16s_decreasing,
                     test_positive_u16s,
+                    test_u16s,
                     range_increasing_u16_fail,
                     range_decreasing_u16_fail,
                     u16::max_value());
@@ -391,6 +411,7 @@ test_integer_range!(u32,
                     u32s_increasing,
                     u32s_decreasing,
                     positive_u32s,
+                    u32s,
                     range_up_increasing_u32_helper,
                     range_up_decreasing_u32_helper,
                     range_down_increasing_u32_helper,
@@ -406,6 +427,7 @@ test_integer_range!(u32,
                     test_u32s_increasing,
                     test_u32s_decreasing,
                     test_positive_u32s,
+                    test_u32s,
                     range_increasing_u32_fail,
                     range_decreasing_u32_fail,
                     u32::max_value());
@@ -420,6 +442,7 @@ test_integer_range!(u64,
                     u64s_increasing,
                     u64s_decreasing,
                     positive_u64s,
+                    u64s,
                     range_up_increasing_u64_helper,
                     range_up_decreasing_u64_helper,
                     range_down_increasing_u64_helper,
@@ -435,6 +458,7 @@ test_integer_range!(u64,
                     test_u64s_increasing,
                     test_u64s_decreasing,
                     test_positive_u64s,
+                    test_u64s,
                     range_increasing_u64_fail,
                     range_decreasing_u64_fail,
                     u64::max_value());
@@ -449,6 +473,7 @@ test_integer_range!(i8,
                     i8s_increasing,
                     i8s_decreasing,
                     positive_i8s,
+                    i8s,
                     range_up_increasing_i8_helper,
                     range_up_decreasing_i8_helper,
                     range_down_increasing_i8_helper,
@@ -464,6 +489,7 @@ test_integer_range!(i8,
                     test_i8s_increasing,
                     test_i8s_decreasing,
                     test_positive_i8s,
+                    test_i8s,
                     range_increasing_i8_fail,
                     range_decreasing_i8_fail,
                     i8::max_value());
@@ -478,6 +504,7 @@ test_integer_range!(i16,
                     i16s_increasing,
                     i16s_decreasing,
                     positive_i16s,
+                    i16s,
                     range_up_increasing_i16_helper,
                     range_up_decreasing_i16_helper,
                     range_down_increasing_i16_helper,
@@ -493,6 +520,7 @@ test_integer_range!(i16,
                     test_i16s_increasing,
                     test_i16s_decreasing,
                     test_positive_i16s,
+                    test_i16s,
                     range_increasing_i16_fail,
                     range_decreasing_i16_fail,
                     i16::max_value());
@@ -507,6 +535,7 @@ test_integer_range!(i32,
                     i32s_increasing,
                     i32s_decreasing,
                     positive_i32s,
+                    i32s,
                     range_up_increasing_i32_helper,
                     range_up_decreasing_i32_helper,
                     range_down_increasing_i32_helper,
@@ -522,6 +551,7 @@ test_integer_range!(i32,
                     test_i32s_increasing,
                     test_i32s_decreasing,
                     test_positive_i32s,
+                    test_i32s,
                     range_increasing_i32_fail,
                     range_decreasing_i32_fail,
                     i32::max_value());
@@ -536,6 +566,7 @@ test_integer_range!(i64,
                     i64s_increasing,
                     i64s_decreasing,
                     positive_i64s,
+                    i64s,
                     range_up_increasing_i64_helper,
                     range_up_decreasing_i64_helper,
                     range_down_increasing_i64_helper,
@@ -551,6 +582,7 @@ test_integer_range!(i64,
                     test_i64s_increasing,
                     test_i64s_decreasing,
                     test_positive_i64s,
+                    test_i64s,
                     range_increasing_i64_fail,
                     range_decreasing_i64_fail,
                     i64::max_value());

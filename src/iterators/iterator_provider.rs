@@ -368,8 +368,8 @@ macro_rules! integer_range_impl {
 }
 
 macro_rules! integer_range_impl_u {
-    ($t: ty, $t_f: ident, $i_f: ident, $t_s: ident, $r_s: ident) => {
-        pub fn $t_f(&self) -> $t_s {
+    ($t: ty, $all_f: ident, $i_f: ident, $t_s: ident, $r_s: ident) => {
+        pub fn $all_f(&self) -> $t_s {
             match self {
                 &IteratorProvider::Exhaustive => $t_s::Exhaustive(self.$i_f()),
                 &IteratorProvider::Random(_, _, _, _, seed) => $t_s::Random($r_s::new(&seed)),
@@ -385,7 +385,7 @@ macro_rules! integer_range_impl_i {
         $neg_f: ident,
         $nat_f: ident,
         $nz_f: ident,
-        $t_f: ident,
+        $all_f: ident,
         $ri_s: ident,
         $rd_s: ident,
         $nt_s: ident,
@@ -410,7 +410,7 @@ macro_rules! integer_range_impl_i {
             self.$pos_f().interleave(self.$neg_f())
         }
 
-        pub fn $t_f(&self) -> $t_s {
+        pub fn $all_f(&self) -> $t_s {
             match self {
                 &IteratorProvider::Exhaustive => $t_s::Exhaustive(once(0).chain(self.$nz_f())),
                 &IteratorProvider::Random(_, _, _, _, seed) => $t_s::Random($r_s::new(&seed)),
