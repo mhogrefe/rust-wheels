@@ -8,6 +8,7 @@ use std::hash::Hash;
 use std::io::prelude::*;
 
 const TINY_LIMIT: usize = 20;
+const HUGE_LIMIT: usize = 1000000;
 
 #[derive(Debug)]
 pub struct TestOutput {
@@ -40,11 +41,12 @@ impl TestOutput {
         self.match_vec_helper(key, to_limited_string_vec(TINY_LIMIT, xs));
     }
 
-    pub fn match_list_with_frequencies<I>(&self, key: &str, limit: usize, xs: &mut I)
+    pub fn match_vec_f<I>(&self, key: &str, xs: &mut I)
         where I: Iterator,
               <I as Iterator>::Item: Clone + Display + Eq + Hash
     {
-        let (vec, map) = get_limited_string_vec_and_most_common_values(TINY_LIMIT, limit, xs);
+        let (vec, map) =
+            get_limited_string_vec_and_most_common_values(10, TINY_LIMIT, HUGE_LIMIT, xs);
         self.match_vec_helper(key, vec);
         let result = self.maps.get(key);
         if !result.is_some() || &map != result.unwrap() {
@@ -131,14 +133,17 @@ pub fn get_expected_test_outputs() -> TestOutput {
             _ => panic!("Maps not handled yet"),
         }
     }
-    if vecs.contains_key(current_key) {
-        panic!("Duplicate key {}", current_key);
+    if read_mode == 1 {
+        if vecs.contains_key(current_key) {
+            panic!("Duplicate key {}", current_key);
+        }
+        vecs.insert(current_key.to_string(), current_vec.clone());
+    } else {
+        if maps.contains_key(current_key) {
+            panic!("Duplicate map key {}", current_key);
+        }
+        maps.insert(current_key.to_string(), current_map.clone());
     }
-    vecs.insert(current_key.to_string(), current_vec.clone());
-    if maps.contains_key(current_key) {
-        panic!("Duplicate map key {}", current_key);
-    }
-    maps.insert(current_key.to_string(), current_map.clone());
     TestOutput {
         vecs: vecs,
         maps: maps,

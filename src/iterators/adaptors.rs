@@ -47,13 +47,13 @@ pub fn get_most_common_values<T>(limit: usize, map: HashMap<T, usize>) -> Vec<(S
 {
     let mut inverse_frequency_map: BTreeMap<usize, Vec<T>> = BTreeMap::new();
     for (x, frequency) in map {
-        let mut xs = Vec::new();
-        xs.push(x);
-        match inverse_frequency_map.get(&frequency) {
-            Some(ref ys) => xs.extend(ys.iter().cloned()),
-            _ => {}
-        };
-        inverse_frequency_map.insert(frequency, xs);
+        if inverse_frequency_map.contains_key(&frequency) {
+            inverse_frequency_map.get_mut(&frequency).unwrap().push(x);
+        } else {
+            let mut xs = Vec::new();
+            xs.push(x);
+            inverse_frequency_map.insert(frequency, xs);
+        }
     }
     let mut most_common_values = Vec::new();
     let mut i = 0;
@@ -74,7 +74,8 @@ pub fn get_most_common_values<T>(limit: usize, map: HashMap<T, usize>) -> Vec<(S
     most_common_values
 }
 
-pub fn get_limited_string_vec_and_frequency_map<I>(limit: usize,
+pub fn get_limited_string_vec_and_frequency_map<I>(small_limit: usize,
+                                                   large_limit: usize,
                                                    xs: &mut I)
                                                    -> (Vec<String>, HashMap<I::Item, usize>)
     where I: Iterator,
@@ -83,8 +84,8 @@ pub fn get_limited_string_vec_and_frequency_map<I>(limit: usize,
     let mut vec = Vec::new();
     let mut map: HashMap<I::Item, usize> = HashMap::new();
     let mut i = 0;
-    for x in xs {
-        if i < limit {
+    for x in xs.take(large_limit) {
+        if i < small_limit {
             vec.push(x.to_string())
         }
         let frequency = match map.get(&x) {
@@ -94,19 +95,20 @@ pub fn get_limited_string_vec_and_frequency_map<I>(limit: usize,
         map.insert(x, frequency + 1);
         i += 1;
     }
-    if limit < i {
+    if small_limit < i {
         vec.push("...".to_string());
     }
     (vec, map)
 }
 
-pub fn get_limited_string_vec_and_most_common_values<I>(small_limit: usize,
-                                                        limit: usize,
+pub fn get_limited_string_vec_and_most_common_values<I>(tiny_limit: usize,
+                                                        small_limit: usize,
+                                                        large_limit: usize,
                                                         xs: &mut I)
                                                         -> (Vec<String>, Vec<(String, usize)>)
     where I: Iterator,
           <I as Iterator>::Item: Clone + Eq + Hash + Display
 {
-    let (vec, map) = get_limited_string_vec_and_frequency_map(small_limit, xs);
-    (vec, get_most_common_values(limit, map))
+    let (vec, map) = get_limited_string_vec_and_frequency_map(small_limit, large_limit, xs);
+    (vec, get_most_common_values(tiny_limit, map))
 }

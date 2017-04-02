@@ -7,7 +7,8 @@ use self::rust_wheels_lib::iterators::iterator_provider::IteratorProvider;
 macro_rules! test_integer_range_master {
     (
             $eo: ident,
-            $p: ident,
+            $ep: ident,
+            $rp: ident,
             $rui_t: ident,
             $rud_t: ident,
             $rdi_t: ident,
@@ -19,16 +20,16 @@ macro_rules! test_integer_range_master {
             $pos_t: ident,
             $all_t: ident
     ) => {
-        $rui_t(&$eo, &mut $p);
-        $rud_t(&$eo, &mut $p);
-        $rdi_t(&$eo, &mut $p);
-        $rdd_t(&$eo, &mut $p);
-        $ri_t(&$eo, &mut $p);
-        $rd_t(&$eo, &mut $p);
-        $i_t(&$eo, &mut $p);
-        $d_t(&$eo, &mut $p);
-        $pos_t(&$eo, &mut $p);
-        $all_t(&$eo, &mut $p);
+        $rui_t(&$eo, &$ep);
+        $rud_t(&$eo, &$ep);
+        $rdi_t(&$eo, &$ep);
+        $rdd_t(&$eo, &$ep);
+        $ri_t(&$eo, &$ep);
+        $rd_t(&$eo, &$ep);
+        $i_t(&$eo, &$ep);
+        $d_t(&$eo, &$ep);
+        $pos_t(&$eo, &$ep);
+        $all_t(&$eo, &$ep, &$rp);
     }
 }
 
@@ -46,25 +47,27 @@ macro_rules! test_integer_range_master_i {
             $nat_t: ident,
             $nz_t: ident
     ) => {
-        $rui_t_i(&$eo, &mut $p);
-        $rud_t_i(&$eo, &mut $p);
-        $rdi_t_i(&$eo, &mut $p);
-        $rdd_t_i(&$eo, &mut $p);
-        $ri_t_i(&$eo, &mut $p);
-        $rd_t_i(&$eo, &mut $p);
-        $neg_t(&$eo, &mut $p);
-        $nat_t(&$eo, &mut $p);
-        $nz_t(&$eo, &mut $p);
+        $rui_t_i(&$eo, &$p);
+        $rud_t_i(&$eo, &$p);
+        $rdi_t_i(&$eo, &$p);
+        $rdd_t_i(&$eo, &$p);
+        $ri_t_i(&$eo, &$p);
+        $rd_t_i(&$eo, &$p);
+        $neg_t(&$eo, &$p);
+        $nat_t(&$eo, &$p);
+        $nz_t(&$eo, &$p);
     }
 }
 
 #[test]
 fn master_test() {
     let eo = common::get_expected_test_outputs();
-    let mut p = IteratorProvider::Exhaustive;
+    let ep = IteratorProvider::Exhaustive;
+    let rp = IteratorProvider::example_random();
 
     test_integer_range_master!(eo,
-                               p,
+                               ep,
+                               rp,
                                test_range_up_increasing_u8,
                                test_range_up_decreasing_u8,
                                test_range_down_increasing_u8,
@@ -76,7 +79,8 @@ fn master_test() {
                                test_positive_u8s,
                                test_u8s);
     test_integer_range_master!(eo,
-                               p,
+                               ep,
+                               rp,
                                test_range_up_increasing_u16,
                                test_range_up_decreasing_u16,
                                test_range_down_increasing_u16,
@@ -88,7 +92,8 @@ fn master_test() {
                                test_positive_u16s,
                                test_u16s);
     test_integer_range_master!(eo,
-                               p,
+                               ep,
+                               rp,
                                test_range_up_increasing_u32,
                                test_range_up_decreasing_u32,
                                test_range_down_increasing_u32,
@@ -100,7 +105,8 @@ fn master_test() {
                                test_positive_u32s,
                                test_u32s);
     test_integer_range_master!(eo,
-                               p,
+                               ep,
+                               rp,
                                test_range_up_increasing_u64,
                                test_range_up_decreasing_u64,
                                test_range_down_increasing_u64,
@@ -112,7 +118,8 @@ fn master_test() {
                                test_positive_u64s,
                                test_u64s);
     test_integer_range_master!(eo,
-                               p,
+                               ep,
+                               rp,
                                test_range_up_increasing_i8,
                                test_range_up_decreasing_i8,
                                test_range_down_increasing_i8,
@@ -124,7 +131,8 @@ fn master_test() {
                                test_positive_i8s,
                                test_i8s);
     test_integer_range_master!(eo,
-                               p,
+                               ep,
+                               rp,
                                test_range_up_increasing_i16,
                                test_range_up_decreasing_i16,
                                test_range_down_increasing_i16,
@@ -136,7 +144,8 @@ fn master_test() {
                                test_positive_i16s,
                                test_i16s);
     test_integer_range_master!(eo,
-                               p,
+                               ep,
+                               rp,
                                test_range_up_increasing_i32,
                                test_range_up_decreasing_i32,
                                test_range_down_increasing_i32,
@@ -148,7 +157,8 @@ fn master_test() {
                                test_positive_i32s,
                                test_i32s);
     test_integer_range_master!(eo,
-                               p,
+                               ep,
+                               rp,
                                test_range_up_increasing_i64,
                                test_range_up_decreasing_i64,
                                test_range_down_increasing_i64,
@@ -161,7 +171,7 @@ fn master_test() {
                                test_i64s);
 
     test_integer_range_master_i!(eo,
-                                 p,
+                                 ep,
                                  test_range_up_increasing_i8_i,
                                  test_range_up_decreasing_i8_i,
                                  test_range_down_increasing_i8_i,
@@ -172,7 +182,7 @@ fn master_test() {
                                  test_natural_i8s,
                                  test_nonzero_i8s);
     test_integer_range_master_i!(eo,
-                                 p,
+                                 ep,
                                  test_range_up_increasing_i16_i,
                                  test_range_up_decreasing_i16_i,
                                  test_range_down_increasing_i16_i,
@@ -183,7 +193,7 @@ fn master_test() {
                                  test_natural_i16s,
                                  test_nonzero_i16s);
     test_integer_range_master_i!(eo,
-                                 p,
+                                 ep,
                                  test_range_up_increasing_i32_i,
                                  test_range_up_decreasing_i32_i,
                                  test_range_down_increasing_i32_i,
@@ -194,7 +204,7 @@ fn master_test() {
                                  test_natural_i32s,
                                  test_nonzero_i32s);
     test_integer_range_master_i!(eo,
-                                 p,
+                                 ep,
                                  test_range_up_increasing_i64_i,
                                  test_range_up_decreasing_i64_i,
                                  test_range_down_increasing_i64_i,
@@ -240,55 +250,55 @@ macro_rules! test_integer_range {
         $rd_f: ident,
         $max: expr
     ) => {
-        fn $rui_th(eo: &TestOutput, p: &mut IteratorProvider, key: &str, a: $t) {
+        fn $rui_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t) {
             eo.match_vec(key, &mut p.$rui(a));
         }
 
-        fn $rui_t(eo: &TestOutput, p: &mut IteratorProvider) {
+        fn $rui_t(eo: &TestOutput, p: &IteratorProvider) {
             let s = "exhaustive_range_up_increasing";
             $rui_th(eo, p, &format!("{}_{}_i", s, $ts), 0);
             $rui_th(eo, p, &format!("{}_{}_ii", s, $ts), 5);
             $rui_th(eo, p, &format!("{}_{}_iii", s, $ts), $max);
         }
 
-        fn $rud_th(eo: &TestOutput, p: &mut IteratorProvider, key: &str, a: $t) {
+        fn $rud_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t) {
             eo.match_vec(key, &mut p.$rud(a));
         }
 
-        fn $rud_t(eo: &TestOutput, p: &mut IteratorProvider) {
+        fn $rud_t(eo: &TestOutput, p: &IteratorProvider) {
             let s = "exhaustive_range_up_decreasing";
             $rud_th(eo, p, &format!("{}_{}_i", s, $ts), 0);
             $rud_th(eo, p, &format!("{}_{}_ii", s, $ts), 5);
             $rud_th(eo, p, &format!("{}_{}_iii", s, $ts), $max);
         }
 
-        fn $rdi_th(eo: &TestOutput, p: &mut IteratorProvider, key: &str, a: $t) {
+        fn $rdi_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t) {
             eo.match_vec(key, &mut p.$rdi(a));
         }
 
-        fn $rdi_t(eo: &TestOutput, p: &mut IteratorProvider) {
+        fn $rdi_t(eo: &TestOutput, p: &IteratorProvider) {
             let s = "exhaustive_range_down_increasing";
             $rdi_th(eo, p, &format!("{}_{}_i", s, $ts), 0);
             $rdi_th(eo, p, &format!("{}_{}_ii", s, $ts), 5);
             $rdi_th(eo, p, &format!("{}_{}_iii", s, $ts), $max);
         }
 
-        fn $rdd_th(eo: &TestOutput, p: &mut IteratorProvider, key: &str, a: $t) {
+        fn $rdd_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t) {
             eo.match_vec(key, &mut p.$rdd(a));
         }
 
-        fn $rdd_t(eo: &TestOutput, p: &mut IteratorProvider) {
+        fn $rdd_t(eo: &TestOutput, p: &IteratorProvider) {
             let s = "exhaustive_range_down_decreasing";
             $rdd_th(eo, p, &format!("{}_{}_i", s, $ts), 0);
             $rdd_th(eo, p, &format!("{}_{}_ii", s, $ts), 5);
             $rdd_th(eo, p, &format!("{}_{}_iii", s, $ts), $max);
         }
 
-        fn $ri_th(eo: &TestOutput, p: &mut IteratorProvider, key: &str, a: $t, b: $t) {
+        fn $ri_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t, b: $t) {
             eo.match_vec(key, &mut p.$ri(a, b));
         }
 
-        fn $ri_t(eo: &TestOutput, p: &mut IteratorProvider) {
+        fn $ri_t(eo: &TestOutput, p: &IteratorProvider) {
             let s = "exhaustive_range_increasing";
             $ri_th(eo, p, &format!("{}_{}_i", s, $ts), 0, 0);
             $ri_th(eo, p, &format!("{}_{}_ii", s, $ts), 0, 10);
@@ -302,11 +312,11 @@ macro_rules! test_integer_range {
             IteratorProvider::Exhaustive.$ri(10, 9);
         }
 
-        fn $rd_th(eo: &TestOutput, p: &mut IteratorProvider, key: &str, a: $t, b: $t) {
+        fn $rd_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t, b: $t) {
             eo.match_vec(key, &mut p.$rd(a, b));
         }
 
-        fn $rd_t(eo: &TestOutput, p: &mut IteratorProvider) {
+        fn $rd_t(eo: &TestOutput, p: &IteratorProvider) {
             let s = "exhaustive_range_decreasing";
             $rd_th(eo, p, &format!("{}_{}_i", s, $ts), 0, 0);
             $rd_th(eo, p, &format!("{}_{}_ii", s, $ts), 0, 10);
@@ -320,20 +330,21 @@ macro_rules! test_integer_range {
             IteratorProvider::Exhaustive.$rd(10, 9);
         }
 
-        fn $i_t(eo: &TestOutput, p: &mut IteratorProvider) {
+        fn $i_t(eo: &TestOutput, p: &IteratorProvider) {
             eo.match_vec(&format!("exhaustive_{}s_increasing", $ts), &mut p.$i());
         }
 
-        fn $d_t(eo: &TestOutput, p: &mut IteratorProvider) {
+        fn $d_t(eo: &TestOutput, p: &IteratorProvider) {
             eo.match_vec(&format!("exhaustive_{}s_decreasing", $ts), &mut p.$d());
         }
 
-        fn $pos_t(eo: &TestOutput, p: &mut IteratorProvider) {
+        fn $pos_t(eo: &TestOutput, p: &IteratorProvider) {
             eo.match_vec(&format!("exhaustive_positive_{}s", $ts), &mut p.$pos());
         }
 
-        fn $all_t(eo: &TestOutput, p: &mut IteratorProvider) {
-            eo.match_vec(&format!("exhaustive_{}s", $ts), &mut p.$all());
+        fn $all_t(eo: &TestOutput, ep: &IteratorProvider, rp: &IteratorProvider) {
+            eo.match_vec(&format!("exhaustive_{}s", $ts), &mut ep.$all());
+            eo.match_vec_f(&format!("random_{}s", $ts), &mut rp.$all());
         }
     }
 }
@@ -619,31 +630,31 @@ macro_rules! test_integer_range_i {
         $rd_f: ident,
         $min: expr
     ) => {
-        fn $rui_t(eo: &TestOutput, p: &mut IteratorProvider) {
+        fn $rui_t(eo: &TestOutput, p: &IteratorProvider) {
             let s = "exhaustive_range_up_increasing";
             $rui_th(eo, p, &format!("{}_{}_iv", s, $ts), -5);
             $rui_th(eo, p, &format!("{}_{}_v", s, $ts), $min);
         }
 
-        fn $rud_t(eo: &TestOutput, p: &mut IteratorProvider) {
+        fn $rud_t(eo: &TestOutput, p: &IteratorProvider) {
             let s = "exhaustive_range_up_decreasing";
             $rud_th(eo, p, &format!("{}_{}_iv", s, $ts), -5);
             $rud_th(eo, p, &format!("{}_{}_v", s, $ts), $min);
         }
 
-        fn $rdi_t(eo: &TestOutput, p: &mut IteratorProvider) {
+        fn $rdi_t(eo: &TestOutput, p: &IteratorProvider) {
             let s = "exhaustive_range_down_increasing";
             $rdi_th(eo, p, &format!("{}_{}_iv", s, $ts), -5);
             $rdi_th(eo, p, &format!("{}_{}_v", s, $ts), $min);
         }
 
-        fn $rdd_t(eo: &TestOutput, p: &mut IteratorProvider) {
+        fn $rdd_t(eo: &TestOutput, p: &IteratorProvider) {
             let s = "exhaustive_range_down_decreasing";
             $rdd_th(eo, p, &format!("{}_{}_iv", s, $ts), -5);
             $rdd_th(eo, p, &format!("{}_{}_v", s, $ts), $min);
         }
 
-        fn $ri_t(eo: &TestOutput, p: &mut IteratorProvider) {
+        fn $ri_t(eo: &TestOutput, p: &IteratorProvider) {
             let s = "exhaustive_range_increasing";
             $ri_th(eo, p, &format!("{}_{}_v", s, $ts), -10, -10);
             $ri_th(eo, p, &format!("{}_{}_vi", s, $ts), -20, -10);
@@ -655,7 +666,7 @@ macro_rules! test_integer_range_i {
             IteratorProvider::Exhaustive.$ri(10, 9);
         }
 
-        fn $rd_t(eo: &TestOutput, p: &mut IteratorProvider) {
+        fn $rd_t(eo: &TestOutput, p: &IteratorProvider) {
             let s = "exhaustive_range_decreasing";
             $rd_th(eo, p, &format!("{}_{}_v", s, $ts), -10, -10);
             $rd_th(eo, p, &format!("{}_{}_vi", s, $ts), -20, -10);
@@ -667,15 +678,15 @@ macro_rules! test_integer_range_i {
             IteratorProvider::Exhaustive.$rd(-9, -10);
         }
 
-        fn $neg_t(eo: &TestOutput, p: &mut IteratorProvider) {
+        fn $neg_t(eo: &TestOutput, p: &IteratorProvider) {
             eo.match_vec(&format!("exhaustive_negative_{}s", $ts), &mut p.$neg());
         }
 
-        fn $nat_t(eo: &TestOutput, p: &mut IteratorProvider) {
+        fn $nat_t(eo: &TestOutput, p: &IteratorProvider) {
             eo.match_vec(&format!("exhaustive_natural_{}s", $ts), &mut p.$nat());
         }
 
-        fn $nz_t(eo: &TestOutput, p: &mut IteratorProvider) {
+        fn $nz_t(eo: &TestOutput, p: &IteratorProvider) {
             eo.match_vec(&format!("exhaustive_nonzero_{}s", $ts), &mut p.$nz());
         }
     }
