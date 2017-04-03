@@ -521,8 +521,9 @@ macro_rules! test_integer_range_i {
 
         #[test]
         fn $nz_t() {
-            let (eo, p, _) = prepare_test();
-            eo.match_vec(&format!("exhaustive_nonzero_{}s", $ts), &mut p.$nz());
+            let (eo, ep, rp) = prepare_test();
+            eo.match_vec(&format!("exhaustive_nonzero_{}s", $ts), &mut ep.$nz());
+            eo.match_vec_f(&format!("random_nonzero_{}s", $ts), &mut rp.$nz());
         }
     }
 }
