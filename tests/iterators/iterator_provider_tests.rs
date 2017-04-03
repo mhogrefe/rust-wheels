@@ -1,8 +1,11 @@
+extern crate rugint;
 extern crate rust_wheels_lib;
 
 use common;
 use common::TestOutput;
+use self::rugint::Integer;
 use self::rust_wheels_lib::iterators::iterator_provider::IteratorProvider;
+use std::str::FromStr;
 
 fn prepare_test() -> (TestOutput, IteratorProvider, IteratorProvider) {
     (common::get_expected_test_outputs(),
@@ -644,3 +647,114 @@ test_integer_range_i!(i64,
                       range_increasing_i64_fail_i,
                       range_decreasing_i64_fail_i,
                       i64::min_value());
+
+fn range_up_increasing_integer_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: &str) {
+    eo.match_vec(key,
+                 &mut p.range_up_increasing_integer(Integer::from_str(a).unwrap()));
+}
+
+#[test]
+fn test_range_up_increasing_integer() {
+    let (eo, p, _) = prepare_test();
+    let s = "exhaustive_range_up_increasing_integer";
+    range_up_increasing_integer_helper(&eo, &p, &format!("{}_i", s), "0");
+    range_up_increasing_integer_helper(&eo, &p, &format!("{}_ii", s), "5");
+    range_up_increasing_integer_helper(&eo, &p, &format!("{}_iii", s), "-5");
+}
+
+fn range_down_decreasing_integer_helper(eo: &TestOutput,
+                                        p: &IteratorProvider,
+                                        key: &str,
+                                        a: &str) {
+    eo.match_vec(key,
+                 &mut p.range_down_decreasing_integer(Integer::from_str(a).unwrap()));
+}
+
+#[test]
+fn test_range_down_decreasing_integer() {
+    let (eo, p, _) = prepare_test();
+    let s = "exhaustive_range_down_decreasing_integer";
+    range_down_decreasing_integer_helper(&eo, &p, &format!("{}_i", s), "0");
+    range_down_decreasing_integer_helper(&eo, &p, &format!("{}_ii", s), "5");
+    range_down_decreasing_integer_helper(&eo, &p, &format!("{}_iii", s), "-5");
+}
+
+fn range_increasing_integer_helper(eo: &TestOutput,
+                                   p: &IteratorProvider,
+                                   key: &str,
+                                   a: &str,
+                                   b: &str) {
+    eo.match_vec(key,
+                 &mut p.range_increasing_integer(Integer::from_str(a).unwrap(),
+                                                 Integer::from_str(b).unwrap()));
+}
+
+#[test]
+fn test_range_increasing_integer() {
+    let (eo, p, _) = prepare_test();
+    let s = "exhaustive_range_increasing_integer";
+    range_increasing_integer_helper(&eo, &p, &format!("{}_i", s), "0", "0");
+    range_increasing_integer_helper(&eo, &p, &format!("{}_ii", s), "0", "10");
+    range_increasing_integer_helper(&eo, &p, &format!("{}_iii", s), "10", "20");
+    range_increasing_integer_helper(&eo, &p, &format!("{}_iv", s), "10", "10");
+    range_increasing_integer_helper(&eo, &p, &format!("{}_v", s), "-10", "-10");
+    range_increasing_integer_helper(&eo, &p, &format!("{}_vi", s), "-20", "-10");
+}
+
+fn range_increasing_integer_fail_helper(p: &IteratorProvider, a: &str, b: &str) {
+    p.range_increasing_integer(Integer::from_str(a).unwrap(), Integer::from_str(b).unwrap());
+}
+
+#[test]
+#[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
+fn range_increasing_integer_fail_1() {
+    let p = IteratorProvider::Exhaustive;
+    range_increasing_integer_fail_helper(&p, "10", "9")
+}
+
+#[test]
+#[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
+fn range_increasing_integer_fail_2() {
+    let p = IteratorProvider::Exhaustive;
+    range_increasing_integer_fail_helper(&p, "-9", "-10")
+}
+
+fn range_decreasing_integer_helper(eo: &TestOutput,
+                                   p: &IteratorProvider,
+                                   key: &str,
+                                   a: &str,
+                                   b: &str) {
+    eo.match_vec(key,
+                 &mut p.range_decreasing_integer(Integer::from_str(a).unwrap(),
+                                                 Integer::from_str(b).unwrap()));
+}
+
+#[test]
+fn test_range_decreasing_integer() {
+    let (eo, p, _) = prepare_test();
+    let s = "exhaustive_range_decreasing_integer";
+    range_decreasing_integer_helper(&eo, &p, &format!("{}_i", s), "0", "0");
+    range_decreasing_integer_helper(&eo, &p, &format!("{}_ii", s), "0", "10");
+    range_decreasing_integer_helper(&eo, &p, &format!("{}_iii", s), "10", "20");
+    range_decreasing_integer_helper(&eo, &p, &format!("{}_iv", s), "10", "10");
+    range_decreasing_integer_helper(&eo, &p, &format!("{}_v", s), "-10", "-10");
+    range_decreasing_integer_helper(&eo, &p, &format!("{}_vi", s), "-20", "-10");
+}
+
+fn range_decreasing_integer_fail_helper(p: &IteratorProvider, a: &str, b: &str) {
+    p.range_decreasing_integer(Integer::from_str(a).unwrap(), Integer::from_str(b).unwrap());
+}
+
+#[test]
+#[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
+fn range_decreasing_integer_fail_1() {
+    let p = IteratorProvider::Exhaustive;
+    range_decreasing_integer_fail_helper(&p, "10", "9")
+}
+
+#[test]
+#[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
+fn range_decreasing_integer_fail_2() {
+    let p = IteratorProvider::Exhaustive;
+    range_decreasing_integer_fail_helper(&p, "-9", "-10")
+}

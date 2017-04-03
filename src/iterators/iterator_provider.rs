@@ -1,10 +1,12 @@
 extern crate itertools;
 extern crate rand;
+extern crate rugint;
 extern crate sha3;
 
 use self::itertools::Interleave;
 use self::itertools::Itertools;
 use self::rand::{IsaacRng, Rng, SeedableRng};
+use self::rugint::Integer;
 use self::sha3::{Digest, Sha3_256};
 use std::iter::*;
 
@@ -418,6 +420,112 @@ integer_range_i!(isize,
                  RangeIncreasingIsize,
                  RangeDecreasingIsize,
                  RandomIsizes);
+
+pub struct RangeIncreasingInteger {
+    i: Integer,
+    b: Integer,
+    done: bool,
+}
+
+impl RangeIncreasingInteger {
+    fn new(a: Integer, b: Integer) -> RangeIncreasingInteger {
+        RangeIncreasingInteger {
+            i: a,
+            b: b,
+            done: false,
+        }
+    }
+}
+
+impl Iterator for RangeIncreasingInteger {
+    type Item = Integer;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.done {
+            None
+        } else {
+            self.done = self.i == self.b;
+            let ret = self.i.clone();
+            if !self.done {
+                self.i += 1
+            }
+            Some(ret)
+        }
+    }
+}
+
+pub struct RangeDecreasingInteger {
+    a: Integer,
+    i: Integer,
+    done: bool,
+}
+
+impl RangeDecreasingInteger {
+    fn new(a: Integer, b: Integer) -> RangeDecreasingInteger {
+        RangeDecreasingInteger {
+            a: a,
+            i: b,
+            done: false,
+        }
+    }
+}
+
+impl Iterator for RangeDecreasingInteger {
+    type Item = Integer;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.done {
+            None
+        } else {
+            self.done = self.i == self.a;
+            let ret = self.i.clone();
+            if !self.done {
+                self.i -= 1
+            }
+            Some(ret)
+        }
+    }
+}
+
+pub struct RangeIncreasingUnboundedInteger {
+    i: Integer,
+}
+
+impl RangeIncreasingUnboundedInteger {
+    fn new(a: Integer) -> RangeIncreasingUnboundedInteger {
+        RangeIncreasingUnboundedInteger { i: a }
+    }
+}
+
+impl Iterator for RangeIncreasingUnboundedInteger {
+    type Item = Integer;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let ret = self.i.clone();
+        self.i += 1;
+        Some(ret)
+    }
+}
+
+pub struct RangeDecreasingUnboundedInteger {
+    i: Integer,
+}
+
+impl RangeDecreasingUnboundedInteger {
+    fn new(a: Integer) -> RangeDecreasingUnboundedInteger {
+        RangeDecreasingUnboundedInteger { i: a }
+    }
+}
+
+impl Iterator for RangeDecreasingUnboundedInteger {
+    type Item = Integer;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let ret = self.i.clone();
+        self.i -= 1;
+        Some(ret)
+    }
+}
 
 macro_rules! integer_range_impl {
     (
@@ -863,4 +971,26 @@ impl IteratorProvider {
                           Isizes,
                           isize::min_value(),
                           isize::max_value());
+
+    pub fn range_up_increasing_integer(&self, a: Integer) -> RangeIncreasingUnboundedInteger {
+        RangeIncreasingUnboundedInteger::new(a)
+    }
+
+    pub fn range_down_decreasing_integer(&self, b: Integer) -> RangeDecreasingUnboundedInteger {
+        RangeDecreasingUnboundedInteger::new(b)
+    }
+
+    pub fn range_increasing_integer(&self, a: Integer, b: Integer) -> RangeIncreasingInteger {
+        if a > b {
+            panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
+        }
+        RangeIncreasingInteger::new(a, b)
+    }
+
+    pub fn range_decreasing_integer(&self, a: Integer, b: Integer) -> RangeDecreasingInteger {
+        if a > b {
+            panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
+        }
+        RangeDecreasingInteger::new(a, b)
+    }
 }
