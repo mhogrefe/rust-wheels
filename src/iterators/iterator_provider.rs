@@ -266,7 +266,16 @@ integer_range_u!(usize,
                  PositiveUsizes);
 
 macro_rules! integer_range_i {
-    ($t: ty, $pos_s: ident, $nt_s: ident, $t_s: ident, $ri_s: ident, $rd_s: ident, $r_s: ident) => {
+    (
+        $t: ty,
+        $pos_s: ident,
+        $neg_s: ident,
+        $nat_s: ident,
+        $all_s: ident,
+        $ri_s: ident,
+        $rd_s: ident,
+        $r_s: ident
+) => {
         pub enum $pos_s {
             Exhaustive($ri_s),
             Random($t, $r_s),
@@ -290,34 +299,50 @@ macro_rules! integer_range_i {
             }
         }
 
-        pub enum $nt_s {
-            Exhaustive($ri_s),
+        pub enum $neg_s {
+            Exhaustive($rd_s),
             Random($t, $r_s),
         }
 
-        impl Iterator for $nt_s {
+        impl Iterator for $neg_s {
             type Item = $t;
 
             fn next(&mut self) -> Option<Self::Item> {
                 match self {
-                    &mut $nt_s::Exhaustive(ref mut it) => it.next(),
-                    &mut $nt_s::Random(mask, ref mut it) => it.next().map(|x| x & mask),
+                    &mut $neg_s::Exhaustive(ref mut it) => it.next(),
+                    &mut $neg_s::Random(mask, ref mut it) => it.next().map(|x| !(x & mask)),
                 }
             }
         }
 
-        pub enum $t_s {
-            Exhaustive(Chain<Once<$t>, Interleave<$pos_s, $rd_s>>),
-            Random($r_s),
+        pub enum $nat_s {
+            Exhaustive($ri_s),
+            Random($t, $r_s),
         }
 
-        impl Iterator for $t_s {
+        impl Iterator for $nat_s {
             type Item = $t;
 
             fn next(&mut self) -> Option<Self::Item> {
                 match self {
-                    &mut $t_s::Exhaustive(ref mut it) => it.next(),
-                    &mut $t_s::Random(ref mut it) => it.next(),
+                    &mut $nat_s::Exhaustive(ref mut it) => it.next(),
+                    &mut $nat_s::Random(mask, ref mut it) => it.next().map(|x| x & mask),
+                }
+            }
+        }
+
+        pub enum $all_s {
+            Exhaustive(Chain<Once<$t>, Interleave<$pos_s, $rd_s>>),
+            Random($r_s),
+        }
+
+        impl Iterator for $all_s {
+            type Item = $t;
+
+            fn next(&mut self) -> Option<Self::Item> {
+                match self {
+                    &mut $all_s::Exhaustive(ref mut it) => it.next(),
+                    &mut $all_s::Random(ref mut it) => it.next(),
                 }
             }
         }
@@ -326,6 +351,7 @@ macro_rules! integer_range_i {
 
 integer_range_i!(i8,
                  PositiveI8s,
+                 NegativeI8s,
                  NaturalI8s,
                  I8s,
                  RangeIncreasingI8,
@@ -333,6 +359,7 @@ integer_range_i!(i8,
                  RandomI8s);
 integer_range_i!(i16,
                  PositiveI16s,
+                 NegativeI16s,
                  NaturalI16s,
                  I16s,
                  RangeIncreasingI16,
@@ -340,6 +367,7 @@ integer_range_i!(i16,
                  RandomI16s);
 integer_range_i!(i32,
                  PositiveI32s,
+                 NegativeI32s,
                  NaturalI32s,
                  I32s,
                  RangeIncreasingI32,
@@ -347,6 +375,7 @@ integer_range_i!(i32,
                  RandomI32s);
 integer_range_i!(i64,
                  PositiveI64s,
+                 NegativeI64s,
                  NaturalI64s,
                  I64s,
                  RangeIncreasingI64,
@@ -354,6 +383,7 @@ integer_range_i!(i64,
                  RandomI64s);
 integer_range_i!(isize,
                  PositiveIsizes,
+                 NegativeIsizes,
                  NaturalIsizes,
                  Isizes,
                  RangeIncreasingIsize,
@@ -457,7 +487,8 @@ macro_rules! integer_range_impl_i {
         $ri_s: ident,
         $rd_s: ident,
         $pos_s: ident,
-        $nt_s: ident,
+        $neg_s: ident,
+        $nat_s: ident,
         $r_s: ident,
         $t_s: ident,
         $min: expr,
@@ -471,20 +502,24 @@ macro_rules! integer_range_impl_i {
             }
         }
 
-        pub fn $neg_f(&self) -> $rd_s {
-            $rd_s::new($min, -1)
+        pub fn $neg_f(&self) -> $neg_s {
+            match self {
+                &IteratorProvider::Exhaustive => $neg_s::Exhaustive($rd_s::new($min, -1)),
+                &IteratorProvider::Random(_, _, _, _, seed) =>
+                        $neg_s::Random($max, $r_s::new(&seed)),
+            }
         }
 
-        pub fn $nat_f(&self) -> $nt_s {
+        pub fn $nat_f(&self) -> $nat_s {
             match self {
-                &IteratorProvider::Exhaustive => $nt_s::Exhaustive($ri_s::new(0, $max)),
+                &IteratorProvider::Exhaustive => $nat_s::Exhaustive($ri_s::new(0, $max)),
                 &IteratorProvider::Random(_, _, _, _, seed) =>
-                        $nt_s::Random($max, $r_s::new(&seed)),
+                        $nat_s::Random($max, $r_s::new(&seed)),
             }
         }
 
         pub fn $nz_f(&self) -> Interleave<$pos_s, $rd_s> {
-            self.$pos_f().interleave(self.$neg_f())
+            self.$pos_f().interleave($rd_s::new($min, -1))
         }
 
         pub fn $all_f(&self) -> $t_s {
@@ -723,6 +758,7 @@ impl IteratorProvider {
                           RangeIncreasingI8,
                           RangeDecreasingI8,
                           PositiveI8s,
+                          NegativeI8s,
                           NaturalI8s,
                           RandomI8s,
                           I8s,
@@ -737,6 +773,7 @@ impl IteratorProvider {
                           RangeIncreasingI16,
                           RangeDecreasingI16,
                           PositiveI16s,
+                          NegativeI16s,
                           NaturalI16s,
                           RandomI16s,
                           I16s,
@@ -751,6 +788,7 @@ impl IteratorProvider {
                           RangeIncreasingI32,
                           RangeDecreasingI32,
                           PositiveI32s,
+                          NegativeI32s,
                           NaturalI32s,
                           RandomI32s,
                           I32s,
@@ -765,6 +803,7 @@ impl IteratorProvider {
                           RangeIncreasingI64,
                           RangeDecreasingI64,
                           PositiveI64s,
+                          NegativeI64s,
                           NaturalI64s,
                           RandomI64s,
                           I64s,
@@ -779,6 +818,7 @@ impl IteratorProvider {
                           RangeIncreasingIsize,
                           RangeDecreasingIsize,
                           PositiveIsizes,
+                          NegativeIsizes,
                           NaturalIsizes,
                           RandomIsizes,
                           Isizes,

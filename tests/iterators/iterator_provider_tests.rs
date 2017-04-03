@@ -507,8 +507,9 @@ macro_rules! test_integer_range_i {
 
         #[test]
         fn $neg_t() {
-            let (eo, p, _) = prepare_test();
-            eo.match_vec(&format!("exhaustive_negative_{}s", $ts), &mut p.$neg());
+            let (eo, ep, rp) = prepare_test();
+            eo.match_vec(&format!("exhaustive_negative_{}s", $ts), &mut ep.$neg());
+            eo.match_vec_f(&format!("random_negative_{}s", $ts), &mut rp.$neg());
         }
 
         #[test]
