@@ -11,9 +11,6 @@ use self::sha3::{Digest, Sha3_256};
 use std::iter::*;
 
 const SEED_SIZE: usize = 256;
-const DEFAULT_SCALE_1: i32 = 32;
-const DEFAULT_SCALE_2: i32 = 8;
-const DEFAULT_SCALE_3: i32 = 2;
 
 const EXAMPLE_SEED: [u32; SEED_SIZE] =
     [0xc2ba7ec5, 0x8570291c, 0xc01903b4, 0xb3b63b5e, 0x60a15a04, 0x49cb3889, 0x8656014b,
@@ -56,7 +53,7 @@ const EXAMPLE_SEED: [u32; SEED_SIZE] =
 
 pub enum IteratorProvider {
     Exhaustive,
-    Random(String, i32, i32, i32, [u32; SEED_SIZE]),
+    Random(String, [u32; SEED_SIZE]),
 }
 
 pub fn scramble(seed: &[u32; SEED_SIZE], s: &str) -> [u32; SEED_SIZE] {
@@ -600,14 +597,14 @@ macro_rules! integer_range_impl_u {
         pub fn $pos_f(&self) -> $pos_s {
             match self {
                 &IteratorProvider::Exhaustive => $pos_s::Exhaustive($ri_s::new(1, $max)),
-                &IteratorProvider::Random(_, _, _, _, seed) => $pos_s::Random($r_s::new(&seed)),
+                &IteratorProvider::Random(_, seed) => $pos_s::Random($r_s::new(&seed)),
             }
         }
 
         pub fn $all_f(&self) -> $t_s {
             match self {
                 &IteratorProvider::Exhaustive => $t_s::Exhaustive(self.$i_f()),
-                &IteratorProvider::Random(_, _, _, _, seed) => $t_s::Random($r_s::new(&seed)),
+                &IteratorProvider::Random(_, seed) => $t_s::Random($r_s::new(&seed)),
             }
         }
     }
@@ -635,7 +632,7 @@ macro_rules! integer_range_impl_i {
         pub fn $pos_f(&self) -> $pos_s {
             match self {
                 &IteratorProvider::Exhaustive => $pos_s::Exhaustive($ri_s::new(1, $max)),
-                &IteratorProvider::Random(_, _, _, _, seed) =>
+                &IteratorProvider::Random(_, seed) =>
                         $pos_s::Random($max, $r_s::new(&seed)),
             }
         }
@@ -643,7 +640,7 @@ macro_rules! integer_range_impl_i {
         pub fn $neg_f(&self) -> $neg_s {
             match self {
                 &IteratorProvider::Exhaustive => $neg_s::Exhaustive($rd_s::new($min, -1)),
-                &IteratorProvider::Random(_, _, _, _, seed) =>
+                &IteratorProvider::Random(_, seed) =>
                         $neg_s::Random($max, $r_s::new(&seed)),
             }
         }
@@ -651,7 +648,7 @@ macro_rules! integer_range_impl_i {
         pub fn $nat_f(&self) -> $nat_s {
             match self {
                 &IteratorProvider::Exhaustive => $nat_s::Exhaustive($ri_s::new(0, $max)),
-                &IteratorProvider::Random(_, _, _, _, seed) =>
+                &IteratorProvider::Random(_, seed) =>
                         $nat_s::Random($max, $r_s::new(&seed)),
             }
         }
@@ -660,14 +657,14 @@ macro_rules! integer_range_impl_i {
             match self {
                 &IteratorProvider::Exhaustive =>
                         $nz_s::Exhaustive(self.$pos_f().interleave(self.$neg_f())),
-                &IteratorProvider::Random(_, _, _, _, seed) => $nz_s::Random($r_s::new(&seed)),
+                &IteratorProvider::Random(_, seed) => $nz_s::Random($r_s::new(&seed)),
             }
         }
 
         pub fn $all_f(&self) -> $all_s {
             match self {
                 &IteratorProvider::Exhaustive => $all_s::Exhaustive(once(0).chain(self.$nz_f())),
-                &IteratorProvider::Random(_, _, _, _, seed) => $all_s::Random($r_s::new(&seed)),
+                &IteratorProvider::Random(_, seed) => $all_s::Random($r_s::new(&seed)),
             }
         }
     }
@@ -676,19 +673,15 @@ macro_rules! integer_range_impl_i {
 impl IteratorProvider {
     pub fn example_random() -> IteratorProvider {
         let key = "example";
-        IteratorProvider::Random(key.to_string(),
-                                 DEFAULT_SCALE_1,
-                                 DEFAULT_SCALE_2,
-                                 DEFAULT_SCALE_3,
-                                 scramble(&EXAMPLE_SEED, key))
+        IteratorProvider::Random(key.to_string(), scramble(&EXAMPLE_SEED, key))
     }
 
     pub fn altered(&self, key_addition: &str) -> IteratorProvider {
         match *self {
-            IteratorProvider::Random(ref key, s1, s2, s3, ref seed) => {
+            IteratorProvider::Random(ref key, ref seed) => {
                 let new_key = format!("{}-{}", key, key_addition);
                 let scrambled_seed = scramble(&seed, &new_key);
-                IteratorProvider::Random(new_key, s1, s2, s3, scrambled_seed)
+                IteratorProvider::Random(new_key, scrambled_seed)
             }
             IteratorProvider::Exhaustive => IteratorProvider::Exhaustive,
         }
