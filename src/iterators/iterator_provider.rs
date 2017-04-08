@@ -1,14 +1,9 @@
-extern crate itertools;
-extern crate rand;
-extern crate rugint;
-extern crate sha3;
-
-use self::itertools::Interleave;
-use self::itertools::Itertools;
-use self::rand::{IsaacRng, Rng, SeedableRng};
-use self::rand::distributions::{IndependentSample, Range};
-use self::rugint::Integer;
-use self::sha3::{Digest, Sha3_256};
+use itertools::Interleave;
+use itertools::Itertools;
+use rand::{IsaacRng, Rng, SeedableRng};
+use rand::distributions::{IndependentSample, Range};
+use rugint::Integer;
+use sha3::{Digest, Sha3_256};
 use std::iter::*;
 
 const SEED_SIZE: usize = 256;

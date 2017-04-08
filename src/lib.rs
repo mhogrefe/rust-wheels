@@ -1,3 +1,8 @@
+extern crate itertools;
+extern crate rand;
+extern crate rugint;
+extern crate sha3;
+
 pub mod demos {
     pub mod number_utils {
         pub mod integer_utils_demos;

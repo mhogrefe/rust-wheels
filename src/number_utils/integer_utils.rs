@@ -1,6 +1,4 @@
-extern crate rugint;
-
-use self::rugint::Integer;
+use rugint::Integer;
 use std::cmp::Ordering;
 
 pub fn usize_bit_count() -> u32 {
