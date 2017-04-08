@@ -1,4 +1,4 @@
-use rugint::Integer;
+use gmp_to_flint_adaptor_lib::integer::Integer;
 use std::cmp::Ordering;
 
 pub fn usize_bit_count() -> u32 {

@@ -1,7 +1,7 @@
-extern crate rugint;
+extern crate gmp_to_flint_adaptor_lib;
 extern crate rust_wheels_lib;
 
-use self::rugint::Integer;
+use self::gmp_to_flint_adaptor_lib::integer::Integer;
 use self::rust_wheels_lib::number_utils::integer_utils::*;
 use std::str::FromStr;
 

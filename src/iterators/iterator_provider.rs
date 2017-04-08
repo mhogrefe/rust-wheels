@@ -1,8 +1,8 @@
+use gmp_to_flint_adaptor_lib::integer::Integer;
 use itertools::Interleave;
 use itertools::Itertools;
 use rand::{IsaacRng, Rng, SeedableRng};
 use rand::distributions::{IndependentSample, Range};
-use rugint::Integer;
 use sha3::{Digest, Sha3_256};
 use std::iter::*;
 

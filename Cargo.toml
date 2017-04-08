@@ -13,7 +13,7 @@ path = "src/bin.rs"
 
 [dependencies]
 
+gmp-to-flint-adaptor = { path = "../gmp-to-flint-adaptor" }
 itertools = "0.5.9"
 rand = "0.3.0"
-rugint = "0.2.0"
 sha3 = "0.4.1"
