@@ -13,7 +13,7 @@ pub fn is_power_of_two(n: &Integer) -> bool {
     if n.sign() != Ordering::Greater {
         panic!("n must be positive. Invalid n: {}", n);
     }
-    n.count_ones().unwrap() == 1
+    n.find_one(0).unwrap() == n.significant_bits() - 1
 }
 
 macro_rules! ceiling_log_2 {
