@@ -1031,6 +1031,7 @@ fn test_range_increasing_integer() {
     range_increasing_integer_helper(&eo, &p, &format!("{}_iv", s), "10", "10");
     range_increasing_integer_helper(&eo, &p, &format!("{}_v", s), "-10", "-10");
     range_increasing_integer_helper(&eo, &p, &format!("{}_vi", s), "-20", "-10");
+    range_increasing_integer_helper(&eo, &p, &format!("{}_vii", s), "-100", "100");
 }
 
 fn range_increasing_integer_fail_helper(p: &IteratorProvider, a: &str, b: &str) {
@@ -1071,6 +1072,7 @@ fn test_range_decreasing_integer() {
     range_decreasing_integer_helper(&eo, &p, &format!("{}_iv", s), "10", "10");
     range_decreasing_integer_helper(&eo, &p, &format!("{}_v", s), "-10", "-10");
     range_decreasing_integer_helper(&eo, &p, &format!("{}_vi", s), "-20", "-10");
+    range_decreasing_integer_helper(&eo, &p, &format!("{}_vii", s), "-100", "100");
 }
 
 fn range_decreasing_integer_fail_helper(p: &IteratorProvider, a: &str, b: &str) {
@@ -1089,4 +1091,63 @@ fn range_decreasing_integer_fail_1() {
 fn range_decreasing_integer_fail_2() {
     let p = IteratorProvider::Exhaustive;
     range_decreasing_integer_fail_helper(&p, "-9", "-10")
+}
+
+fn range_integer_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: &str, b: &str) {
+    eo.match_vec(key,
+                 &mut p.range_integer(Integer::from_str(a).unwrap(),
+                                      Integer::from_str(b).unwrap()));
+}
+
+#[test]
+fn test_range_integer() {
+    let (eo, ep, rp) = prepare_test();
+    let es = "exhaustive_range_integer";
+    range_integer_helper(&eo, &ep, &format!("{}_i", es), "0", "0");
+    range_integer_helper(&eo, &ep, &format!("{}_ii", es), "0", "10");
+    range_integer_helper(&eo, &ep, &format!("{}_iii", es), "10", "20");
+    range_integer_helper(&eo, &ep, &format!("{}_iv", es), "10", "10");
+    range_integer_helper(&eo, &ep, &format!("{}_v", es), "-10", "-10");
+    range_integer_helper(&eo, &ep, &format!("{}_vi", es), "-20", "-10");
+    range_integer_helper(&eo, &ep, &format!("{}_vii", es), "-100", "100");
+    let rs = "random_range_integer";
+    range_integer_helper(&eo, &rp, &format!("{}_i", rs), "0", "0");
+    range_integer_helper(&eo, &rp, &format!("{}_ii", rs), "0", "10");
+    range_integer_helper(&eo, &rp, &format!("{}_iii", rs), "10", "20");
+    range_integer_helper(&eo, &rp, &format!("{}_iv", rs), "10", "10");
+    range_integer_helper(&eo, &rp, &format!("{}_v", rs), "-10", "-10");
+    range_integer_helper(&eo, &rp, &format!("{}_vi", rs), "-20", "-10");
+    range_integer_helper(&eo, &rp, &format!("{}_vii", rs), "-100", "100");
+}
+
+fn range_integer_fail_helper(p: &IteratorProvider, a: &str, b: &str) {
+    p.range_integer(Integer::from_str(a).unwrap(), Integer::from_str(b).unwrap());
+}
+
+#[test]
+#[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
+fn range_integer_fail_1() {
+    let p = IteratorProvider::Exhaustive;
+    range_integer_fail_helper(&p, "10", "9")
+}
+
+#[test]
+#[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
+fn range_integer_fail_2() {
+    let p = IteratorProvider::Exhaustive;
+    range_integer_fail_helper(&p, "-9", "-10")
+}
+
+#[test]
+#[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
+fn range_integer_fail_3() {
+    let p = IteratorProvider::example_random();
+    range_integer_fail_helper(&p, "10", "9")
+}
+
+#[test]
+#[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
+fn range_integer_fail_4() {
+    let p = IteratorProvider::example_random();
+    range_integer_fail_helper(&p, "-9", "-10")
 }

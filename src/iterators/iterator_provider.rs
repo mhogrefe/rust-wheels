@@ -650,6 +650,40 @@ impl Iterator for RangeDecreasingUnboundedInteger {
     }
 }
 
+pub enum ExhaustiveRangeInteger {
+    AllNonNegative(RangeIncreasingInteger),
+    AllNonPositive(RangeDecreasingInteger),
+    SomeOfEachSign(Chain<Once<Integer>,
+                         Interleave<RangeIncreasingInteger, RangeDecreasingInteger>>),
+}
+
+pub enum RangeInteger {
+    Exhaustive(ExhaustiveRangeInteger),
+    Random(IsaacRng, Integer, Integer),
+}
+
+impl Iterator for RangeInteger {
+    type Item = Integer;
+
+    fn next(&mut self) -> Option<Integer> {
+        match self {
+            &mut RangeInteger::Exhaustive(ref mut it) => {
+                match it {
+                    &mut ExhaustiveRangeInteger::AllNonNegative(ref mut it) => it.next(),
+                    &mut ExhaustiveRangeInteger::AllNonPositive(ref mut it) => it.next(),
+                    &mut ExhaustiveRangeInteger::SomeOfEachSign(ref mut it) => it.next(),
+                }
+            }
+            &mut RangeInteger::Random(ref mut rng, ref mut diameter, ref mut lower) => {
+                let mut random = diameter.clone();
+                random.random_below(rng);
+                random += lower as &Integer;
+                Some(random)
+            }
+        }
+    }
+}
+
 macro_rules! integer_range_impl {
     (
         $t: ty,
@@ -1236,5 +1270,38 @@ impl IteratorProvider {
             panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
         }
         RangeDecreasingInteger::new(a, b)
+    }
+
+    pub fn range_integer(&self, a: Integer, b: Integer) -> RangeInteger {
+        if a > b {
+            panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
+        }
+        match self {
+            &IteratorProvider::Exhaustive => {
+                let xs = if a >= 0 {
+                    ExhaustiveRangeInteger::AllNonNegative(RangeIncreasingInteger::new(a, b))
+                } else if b <= 0 {
+                    ExhaustiveRangeInteger::AllNonPositive(RangeDecreasingInteger::new(a, b))
+                } else {
+                    ExhaustiveRangeInteger::SomeOfEachSign(
+                            once(Integer::from(0)).chain(
+                                    RangeIncreasingInteger::new(Integer::from(1), b)
+                                            .interleave(
+                                                    RangeDecreasingInteger::new(
+                                                            a,
+                                                            Integer::from(-1)
+                                                    )
+                                            )
+                            )
+                    )
+                };
+                RangeInteger::Exhaustive(xs)
+            }
+            &IteratorProvider::Random(_, seed) => {
+                let mut diameter = b - &a;
+                diameter += 1;
+                RangeInteger::Random(SeedableRng::from_seed(&seed[..]), diameter, a)
+            }
+        }
     }
 }
