@@ -274,10 +274,10 @@ macro_rules! integer_range_u {
                     &mut $r_s::Exhaustive(ref mut it) => it.next(),
                     &mut $r_s::Random(ref mut it) => {
                         match it {
-                            &mut $rr_s::Some(shift, ref mut rng, ref mut it) => Some(if shift {
-                                it.ind_sample(rng) + 1
+                            &mut $rr_s::Some(shift, ref mut rng, ref range) => Some(if shift {
+                                range.ind_sample(rng) + 1
                             } else {
-                                it.ind_sample(rng)
+                                range.ind_sample(rng)
                             }),
                             &mut $rr_s::All(ref mut it) => it.next(),
                         }
@@ -464,10 +464,10 @@ macro_rules! integer_range_i {
                     },
                     &mut $r_s::Random(ref mut it) => {
                         match it {
-                            &mut $rr_s::Some(shift, ref mut rng, ref mut it) => Some(if shift {
-                                it.ind_sample(rng) + 1
+                            &mut $rr_s::Some(shift, ref mut rng, ref range) => Some(if shift {
+                                range.ind_sample(rng) + 1
                             } else {
-                                it.ind_sample(rng)
+                                range.ind_sample(rng)
                             }),
                             &mut $rr_s::All(ref mut it) => it.next(),
                         }
@@ -674,10 +674,10 @@ impl Iterator for RangeInteger {
                     &mut ExhaustiveRangeInteger::SomeOfEachSign(ref mut it) => it.next(),
                 }
             }
-            &mut RangeInteger::Random(ref mut rng, ref mut diameter, ref mut lower) => {
+            &mut RangeInteger::Random(ref mut rng, ref diameter, ref lower) => {
                 let mut random = diameter.clone();
                 random.random_below(rng);
-                random += lower as &Integer;
+                random += lower;
                 Some(random)
             }
         }
