@@ -108,6 +108,9 @@ macro_rules! integer_range {
 
         impl $ri_s {
             fn new(a: $t, b: $t) -> $ri_s {
+                if a > b {
+                    panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
+                }
                 $ri_s {
                     i: a,
                     b: b,
@@ -141,6 +144,9 @@ macro_rules! integer_range {
 
         impl $rd_s {
             fn new(a: $t, b: $t) -> $rd_s {
+                if a > b {
+                    panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
+                }
                 $rd_s {
                     a: a,
                     i: b,
@@ -582,6 +588,9 @@ pub struct RangeIncreasingInteger {
 
 impl RangeIncreasingInteger {
     fn new(a: Integer, b: Integer) -> RangeIncreasingInteger {
+        if a > b {
+            panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
+        }
         RangeIncreasingInteger {
             i: a,
             b: b,
@@ -615,6 +624,9 @@ pub struct RangeDecreasingInteger {
 
 impl RangeDecreasingInteger {
     fn new(a: Integer, b: Integer) -> RangeDecreasingInteger {
+        if a > b {
+            panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
+        }
         RangeDecreasingInteger {
             a: a,
             i: b,
@@ -749,16 +761,10 @@ macro_rules! integer_range_impl {
         }
 
         pub fn $ri_f(&self, a: $t, b: $t) -> $ri_s {
-            if a > b {
-                panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
-            }
             $ri_s::new(a, b)
         }
 
         pub fn $rd_f(&self, a: $t, b: $t) -> $rd_s {
-            if a > b {
-                panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
-            }
             $rd_s::new(a, b)
         }
 
@@ -939,7 +945,11 @@ impl<T: Clone> Iterator for ExhaustiveFromVector<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        self.range.next().map(|i| self.xs[i].clone())
+        if self.xs.is_empty() {
+            None
+        } else {
+            self.range.next().map(|i| self.xs[i].clone())
+        }
     }
 }
 
@@ -952,7 +962,11 @@ impl<T: Clone> Iterator for FromVector<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        self.range.next().map(|i| self.xs[i].clone())
+        if self.xs.is_empty() {
+            None
+        } else {
+            self.range.next().map(|i| self.xs[i].clone())
+        }
     }
 }
 
@@ -1324,16 +1338,10 @@ impl IteratorProvider {
     }
 
     pub fn range_increasing_integer(&self, a: Integer, b: Integer) -> RangeIncreasingInteger {
-        if a > b {
-            panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
-        }
         RangeIncreasingInteger::new(a, b)
     }
 
     pub fn range_decreasing_integer(&self, a: Integer, b: Integer) -> RangeDecreasingInteger {
-        if a > b {
-            panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
-        }
         RangeDecreasingInteger::new(a, b)
     }
 
@@ -1379,6 +1387,11 @@ impl IteratorProvider {
     }
 
     pub fn generate_from_vector<T>(&self, xs: Vec<T>) -> FromVector<T> {
+        if xs.is_empty() {
+            if let IteratorProvider::Random(_, _) = *self {
+                panic!("Cannot randomly generate values from an empty Vec.");
+            }
+        }
         let max = &xs.len() - 1;
         FromVector {
             xs: xs,

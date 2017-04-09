@@ -1,6 +1,7 @@
 use common;
 use common::TestOutput;
 use gmp_to_flint_adaptor_lib::integer::Integer;
+use rust_wheels_lib::io::readers::parse_vec;
 use rust_wheels_lib::iterators::iterator_provider::IteratorProvider;
 use std::str::FromStr;
 
@@ -1097,31 +1098,45 @@ fn range_decreasing_integer_fail_2() {
     range_decreasing_integer_fail_helper(&p, "-9", "-10")
 }
 
-fn range_integer_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: &str, b: &str) {
+fn range_integer_exhaustive_helper(eo: &TestOutput,
+                                   p: &IteratorProvider,
+                                   key: &str,
+                                   a: &str,
+                                   b: &str) {
     eo.match_vec(key,
                  &mut p.range_integer(Integer::from_str(a).unwrap(),
                                       Integer::from_str(b).unwrap()));
+}
+
+fn range_integer_random_helper(eo: &TestOutput,
+                               p: &IteratorProvider,
+                               key: &str,
+                               a: &str,
+                               b: &str) {
+    eo.match_vec_f(key,
+                   &mut p.range_integer(Integer::from_str(a).unwrap(),
+                                        Integer::from_str(b).unwrap()));
 }
 
 #[test]
 fn test_range_integer() {
     let (eo, ep, rp) = prepare_test();
     let es = "exhaustive_range_integer";
-    range_integer_helper(&eo, &ep, &format!("{}_i", es), "0", "0");
-    range_integer_helper(&eo, &ep, &format!("{}_ii", es), "0", "10");
-    range_integer_helper(&eo, &ep, &format!("{}_iii", es), "10", "20");
-    range_integer_helper(&eo, &ep, &format!("{}_iv", es), "10", "10");
-    range_integer_helper(&eo, &ep, &format!("{}_v", es), "-10", "-10");
-    range_integer_helper(&eo, &ep, &format!("{}_vi", es), "-20", "-10");
-    range_integer_helper(&eo, &ep, &format!("{}_vii", es), "-100", "100");
+    range_integer_exhaustive_helper(&eo, &ep, &format!("{}_i", es), "0", "0");
+    range_integer_exhaustive_helper(&eo, &ep, &format!("{}_ii", es), "0", "10");
+    range_integer_exhaustive_helper(&eo, &ep, &format!("{}_iii", es), "10", "20");
+    range_integer_exhaustive_helper(&eo, &ep, &format!("{}_iv", es), "10", "10");
+    range_integer_exhaustive_helper(&eo, &ep, &format!("{}_v", es), "-10", "-10");
+    range_integer_exhaustive_helper(&eo, &ep, &format!("{}_vi", es), "-20", "-10");
+    range_integer_exhaustive_helper(&eo, &ep, &format!("{}_vii", es), "-100", "100");
     let rs = "random_range_integer";
-    range_integer_helper(&eo, &rp, &format!("{}_i", rs), "0", "0");
-    range_integer_helper(&eo, &rp, &format!("{}_ii", rs), "0", "10");
-    range_integer_helper(&eo, &rp, &format!("{}_iii", rs), "10", "20");
-    range_integer_helper(&eo, &rp, &format!("{}_iv", rs), "10", "10");
-    range_integer_helper(&eo, &rp, &format!("{}_v", rs), "-10", "-10");
-    range_integer_helper(&eo, &rp, &format!("{}_vi", rs), "-20", "-10");
-    range_integer_helper(&eo, &rp, &format!("{}_vii", rs), "-100", "100");
+    range_integer_random_helper(&eo, &rp, &format!("{}_i", rs), "0", "0");
+    range_integer_random_helper(&eo, &rp, &format!("{}_ii", rs), "0", "10");
+    range_integer_random_helper(&eo, &rp, &format!("{}_iii", rs), "10", "20");
+    range_integer_random_helper(&eo, &rp, &format!("{}_iv", rs), "10", "10");
+    range_integer_random_helper(&eo, &rp, &format!("{}_v", rs), "-10", "-10");
+    range_integer_random_helper(&eo, &rp, &format!("{}_vi", rs), "-20", "-10");
+    range_integer_random_helper(&eo, &rp, &format!("{}_vii", rs), "-100", "100");
 }
 
 fn range_integer_fail_helper(p: &IteratorProvider, a: &str, b: &str) {
@@ -1154,6 +1169,59 @@ fn range_integer_fail_3() {
 fn range_integer_fail_4() {
     let p = IteratorProvider::example_random();
     range_integer_fail_helper(&p, "-9", "-10")
+}
+
+fn exhaustive_generate_from_vector_helper(eo: &TestOutput,
+                                          p: &IteratorProvider,
+                                          key: &str,
+                                          xs: &str) {
+    let xs: Vec<u32> = parse_vec(xs).unwrap();
+    eo.match_vec(key, &mut p.exhaustive_generate_from_vector(xs));
+}
+
+#[test]
+fn test_exhaustive_generate_from_vector() {
+    let (eo, p, _) = prepare_test();
+    let s = "exhaustive_exhaustive_generate_from_vector";
+    exhaustive_generate_from_vector_helper(&eo, &p, &format!("{}_i", s), "[]");
+    exhaustive_generate_from_vector_helper(&eo, &p, &format!("{}_ii", s), "[5]");
+    exhaustive_generate_from_vector_helper(&eo, &p, &format!("{}_iii", s), "[1, 2, 3]");
+    exhaustive_generate_from_vector_helper(&eo, &p, &format!("{}_iv", s), "[3, 1, 4, 1]");
+}
+
+fn generate_from_vector_exhaustive_helper(eo: &TestOutput,
+                                          p: &IteratorProvider,
+                                          key: &str,
+                                          xs: &str) {
+    let xs: Vec<u32> = parse_vec(xs).unwrap();
+    eo.match_vec(key, &mut p.generate_from_vector(xs));
+}
+
+fn generate_from_vector_random_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, xs: &str) {
+    let xs: Vec<u32> = parse_vec(xs).unwrap();
+    eo.match_vec_f(key, &mut p.generate_from_vector(xs));
+}
+
+#[test]
+fn test_generate_from_vector() {
+    let (eo, ep, rp) = prepare_test();
+    let es = "exhaustive_generate_from_vector";
+    generate_from_vector_exhaustive_helper(&eo, &ep, &format!("{}_i", es), "[]");
+    generate_from_vector_exhaustive_helper(&eo, &ep, &format!("{}_ii", es), "[5]");
+    generate_from_vector_exhaustive_helper(&eo, &ep, &format!("{}_iii", es), "[1, 2, 3]");
+    generate_from_vector_exhaustive_helper(&eo, &ep, &format!("{}_iv", es), "[3, 1, 4, 1]");
+    let rs = "random_generate_from_vector";
+    //generate_from_vector_helper(&eo, &rp, &format!("{}_i", rs), "[]");
+    generate_from_vector_random_helper(&eo, &rp, &format!("{}_i", rs), "[5]");
+    generate_from_vector_random_helper(&eo, &rp, &format!("{}_ii", rs), "[1, 2, 3]");
+    generate_from_vector_random_helper(&eo, &rp, &format!("{}_iii", rs), "[3, 1, 4, 1]");
+}
+
+#[test]
+#[should_panic(expected = "Cannot randomly generate values from an empty Vec.")]
+fn generate_from_vector_fail() {
+    let p = IteratorProvider::example_random();
+    &mut p.generate_from_vector(Vec::<u32>::new());
 }
 
 #[test]
