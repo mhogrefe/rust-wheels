@@ -1,4 +1,5 @@
 use gmp_to_flint_adaptor_lib::integer::Integer;
+use rust_wheels_lib::io::readers::parse_vec;
 use rust_wheels_lib::number_utils::integer_utils::*;
 use std::str::FromStr;
 
@@ -796,4 +797,19 @@ fn test_big_endian_bits_padded_integer() {
 #[should_panic(expected = "n cannot be negative. Invalid n: -1")]
 fn big_endian_bits_padded_integer_fail() {
     big_endian_bits_padded_integer(8, &Integer::from(-1));
+}
+
+fn from_big_endian_bits_helper(bits: &str, out: &str) {
+    let bits: Vec<bool> = parse_vec(bits).unwrap();
+    assert_eq!(format!("{}", from_big_endian_bits(&bits[..])), out);
+}
+
+#[test]
+fn test_from_big_endian_bits() {
+    from_big_endian_bits_helper("[]", "0");
+    from_big_endian_bits_helper("[false, false]", "0");
+    from_big_endian_bits_helper("[false, true]", "1");
+    from_big_endian_bits_helper("[false, false, false, false, false, true, true, false]",
+                                "6");
+    from_big_endian_bits_helper("[true, true, false, true, false, false, true]", "105");
 }

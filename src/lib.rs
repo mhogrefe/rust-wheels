@@ -9,6 +9,10 @@ pub mod demos {
     }
 }
 
+pub mod io {
+    pub mod readers;
+}
+
 pub mod iterators {
     pub mod adaptors;
     pub mod iterator_provider;

@@ -322,3 +322,11 @@ pub fn big_endian_bits_padded_integer(size: usize, n: &Integer) -> Vec<bool> {
     }
     bits
 }
+
+pub fn from_big_endian_bits(bits: &[bool]) -> Integer {
+    let mut bits = bits.to_vec();
+    bits.reverse();
+    let mut result = Integer::new();
+    result.assign_bits_unsigned(&bits[..]);
+    result
+}
