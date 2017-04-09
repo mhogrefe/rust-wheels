@@ -2,6 +2,7 @@ extern crate rust_wheels_lib;
 
 use self::rust_wheels_lib::iterators::adaptors::*;
 use std::collections::HashMap;
+use std::fmt::Debug;
 use std::fmt::Display;
 use std::fs::File;
 use std::hash::Hash;
@@ -41,12 +42,14 @@ impl TestOutput {
         self.match_vec_helper(key, to_limited_string_vec(TINY_LIMIT, xs));
     }
 
-    pub fn match_vec_f<I>(&self, key: &str, xs: &mut I)
+    pub fn match_vec_debug<I>(&self, key: &str, xs: &mut I)
         where I: Iterator,
-              <I as Iterator>::Item: Clone + Display + Eq + Hash
+              <I as Iterator>::Item: Debug
     {
-        let (vec, map) =
-            get_limited_string_vec_and_most_common_values(10, TINY_LIMIT, HUGE_LIMIT, xs);
+        self.match_vec_helper(key, to_limited_string_vec_debug(TINY_LIMIT, xs));
+    }
+
+    fn match_vec_f_helper(&self, key: &str, vec: Vec<String>, map: Vec<(String, usize)>) {
         self.match_vec_helper(key, vec);
         let result = self.maps.get(key);
         if !result.is_some() || &map != result.unwrap() {
@@ -64,6 +67,24 @@ impl TestOutput {
             }
             assert!(false, "{}", desired_result_string);
         }
+    }
+
+    pub fn match_vec_f<I>(&self, key: &str, xs: &mut I)
+        where I: Iterator,
+              <I as Iterator>::Item: Clone + Display + Eq + Hash
+    {
+        let (vec, map) =
+            get_limited_string_vec_and_most_common_values(10, TINY_LIMIT, HUGE_LIMIT, xs);
+        self.match_vec_f_helper(key, vec, map);
+    }
+
+    pub fn match_vec_f_debug<I>(&self, key: &str, xs: &mut I)
+        where I: Iterator,
+              <I as Iterator>::Item: Clone + Debug + Eq + Hash
+    {
+        let (vec, map) =
+            get_limited_string_vec_and_most_common_values_debug(10, TINY_LIMIT, HUGE_LIMIT, xs);
+        self.match_vec_f_helper(key, vec, map);
     }
 }
 

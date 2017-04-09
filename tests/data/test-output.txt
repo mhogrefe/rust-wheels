@@ -1,3 +1,7 @@
+exhaustive_bools list 2
+false
+true
+
 exhaustive_i16s list 21
 0
 1
@@ -549,6 +553,16 @@ exhaustive_nonzero_i8s list 21
 10
 -10
 ...
+
+exhaustive_orderings list 3
+Equal
+Less
+Greater
+
+exhaustive_orderings_increasing list 3
+Less
+Equal
+Greater
 
 exhaustive_positive_i16s list 21
 1
@@ -7529,6 +7543,33 @@ exhaustive_u8s_increasing list 21
 19
 ...
 
+random_bools list 21
+true
+true
+false
+false
+true
+true
+false
+true
+false
+false
+true
+false
+false
+true
+true
+false
+false
+true
+true
+false
+...
+
+random_bools map 2
+false: 500172
+true: 499828
+
 random_i16s list 21
 261
 24203
@@ -8088,6 +8129,34 @@ random_nonzero_i8s map 10
 108: 4037
 -7: 4030
 -100: 4027
+
+random_orderings list 21
+Greater
+Less
+Less
+Equal
+Greater
+Less
+Less
+Less
+Less
+Greater
+Less
+Greater
+Greater
+Equal
+Equal
+Less
+Greater
+Greater
+Equal
+Equal
+...
+
+random_orderings map 3
+Equal: 334009
+Less: 333434
+Greater: 332557
 
 random_positive_i16s list 21
 261

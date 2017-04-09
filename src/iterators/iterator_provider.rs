@@ -4,6 +4,8 @@ use itertools::Itertools;
 use rand::{IsaacRng, Rng, SeedableRng};
 use rand::distributions::{IndependentSample, Range};
 use sha3::{Digest, Sha3_256};
+use std::clone::Clone;
+use std::cmp::Ordering;
 use std::iter::*;
 
 const SEED_SIZE: usize = 256;
@@ -66,6 +68,34 @@ pub fn scramble(seed: &[u32; SEED_SIZE], s: &str) -> [u32; SEED_SIZE] {
         scrambled_seed[i] = seed[i] ^ (a << 24 | b << 16 | c << 8 | d)
     }
     scrambled_seed
+}
+
+pub enum Booleans {
+    Exhaustive(u8),
+    Random(IsaacRng),
+}
+
+impl Iterator for Booleans {
+    type Item = bool;
+
+    fn next(&mut self) -> Option<bool> {
+        match self {
+            &mut Booleans::Exhaustive(ref mut i) => {
+                match *i {
+                    0 => {
+                        *i += 1;
+                        Some(false)
+                    }
+                    1 => {
+                        *i += 1;
+                        Some(true)
+                    }
+                    _ => None,
+                }
+            }
+            &mut Booleans::Random(ref mut rng) => Some(rng.gen()),
+        }
+    }
 }
 
 macro_rules! integer_range {
@@ -900,6 +930,32 @@ macro_rules! integer_range_impl_i {
     }
 }
 
+pub struct ExhaustiveFromVector<T> {
+    xs: Vec<T>,
+    range: RangeIncreasingUsize,
+}
+
+impl<T: Clone> Iterator for ExhaustiveFromVector<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<T> {
+        self.range.next().map(|i| self.xs[i].clone())
+    }
+}
+
+pub struct FromVector<T> {
+    xs: Vec<T>,
+    range: RangeUsize,
+}
+
+impl<T: Clone> Iterator for FromVector<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<T> {
+        self.range.next().map(|i| self.xs[i].clone())
+    }
+}
+
 impl IteratorProvider {
     pub fn example_random() -> IteratorProvider {
         let key = "example";
@@ -914,6 +970,15 @@ impl IteratorProvider {
                 IteratorProvider::Random(new_key, scrambled_seed)
             }
             &IteratorProvider::Exhaustive => IteratorProvider::Exhaustive,
+        }
+    }
+
+    pub fn bools(&self) -> Booleans {
+        match self {
+            &IteratorProvider::Exhaustive => Booleans::Exhaustive(0),
+            &IteratorProvider::Random(_, seed) => {
+                Booleans::Random(SeedableRng::from_seed(&seed[..]))
+            }
         }
     }
 
@@ -1303,5 +1368,31 @@ impl IteratorProvider {
                 RangeInteger::Random(SeedableRng::from_seed(&seed[..]), diameter, a)
             }
         }
+    }
+
+    pub fn exhaustive_generate_from_vector<T>(&self, xs: Vec<T>) -> ExhaustiveFromVector<T> {
+        let max = &xs.len() - 1;
+        ExhaustiveFromVector {
+            xs: xs,
+            range: RangeIncreasingUsize::new(0, max),
+        }
+    }
+
+    pub fn generate_from_vector<T>(&self, xs: Vec<T>) -> FromVector<T> {
+        let max = &xs.len() - 1;
+        FromVector {
+            xs: xs,
+            range: self.range_usize(0, max),
+        }
+    }
+
+    pub fn orderings_increasing(&self) -> ExhaustiveFromVector<Ordering> {
+        self.exhaustive_generate_from_vector(vec![Ordering::Less,
+                                                  Ordering::Equal,
+                                                  Ordering::Greater])
+    }
+
+    pub fn orderings(&self) -> FromVector<Ordering> {
+        self.generate_from_vector(vec![Ordering::Equal, Ordering::Less, Ordering::Greater])
     }
 }

@@ -13,6 +13,13 @@ fn prepare_test() -> (TestOutput, IteratorProvider, IteratorProvider) {
      IteratorProvider::example_random())
 }
 
+#[test]
+fn test_bools() {
+    let (eo, ep, rp) = prepare_test();
+    eo.match_vec("exhaustive_bools", &mut ep.bools());
+    eo.match_vec_f("random_bools", &mut rp.bools());
+}
+
 macro_rules! test_integer_range {
     (
         $t: ty,
@@ -1150,4 +1157,18 @@ fn range_integer_fail_3() {
 fn range_integer_fail_4() {
     let p = IteratorProvider::example_random();
     range_integer_fail_helper(&p, "-9", "-10")
+}
+
+#[test]
+fn test_orderings_increasing() {
+    let (eo, p, _) = prepare_test();
+    eo.match_vec_debug("exhaustive_orderings_increasing",
+                       &mut p.orderings_increasing());
+}
+
+#[test]
+fn test_orderings() {
+    let (eo, ep, rp) = prepare_test();
+    eo.match_vec_debug("exhaustive_orderings", &mut ep.orderings());
+    eo.match_vec_f_debug("random_orderings", &mut rp.orderings());
 }
