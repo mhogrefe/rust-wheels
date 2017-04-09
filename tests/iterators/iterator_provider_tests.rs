@@ -1,10 +1,7 @@
-extern crate gmp_to_flint_adaptor_lib;
-extern crate rust_wheels_lib;
-
 use common;
 use common::TestOutput;
-use self::gmp_to_flint_adaptor_lib::integer::Integer;
-use self::rust_wheels_lib::iterators::iterator_provider::IteratorProvider;
+use gmp_to_flint_adaptor_lib::integer::Integer;
+use rust_wheels_lib::iterators::iterator_provider::IteratorProvider;
 use std::str::FromStr;
 
 fn prepare_test() -> (TestOutput, IteratorProvider, IteratorProvider) {

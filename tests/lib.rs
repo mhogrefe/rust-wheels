@@ -1,3 +1,6 @@
+extern crate gmp_to_flint_adaptor_lib;
+extern crate rust_wheels_lib;
+
 pub mod common;
 
 pub mod iterators {

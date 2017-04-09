@@ -1,6 +1,6 @@
 extern crate rust_wheels_lib;
 
-use self::rust_wheels_lib::iterators::adaptors::*;
+use rust_wheels_lib::iterators::adaptors::*;
 use std::collections::HashMap;
 use std::fmt::Debug;
 use std::fmt::Display;
