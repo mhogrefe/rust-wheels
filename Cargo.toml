@@ -13,7 +13,13 @@ path = "src/bin.rs"
 
 [dependencies]
 
-gmp-to-flint-adaptor = { path = "../gmp-to-flint-adaptor" }
+gmp-to-flint-adaptor = { path = "../gmp-to-flint-adaptor", optional = true }
+num-to-flint-adaptor = { path = "../num-to-flint-adaptor", optional = true }
 itertools = "0.5.9"
 rand = "0.3.0"
 sha3 = "0.4.1"
+
+[features]
+default = []
+gmp = ["gmp-to-flint-adaptor"]
+native = ["num-to-flint-adaptor"]

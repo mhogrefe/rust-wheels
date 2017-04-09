@@ -1,4 +1,7 @@
+#[cfg(feature = "gmp")]
 extern crate gmp_to_flint_adaptor_lib;
+#[cfg(feature = "native")]
+extern crate num_to_flint_adaptor_lib;
 extern crate itertools;
 extern crate rand;
 extern crate sha3;

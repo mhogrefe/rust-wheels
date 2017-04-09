@@ -1,4 +1,7 @@
+#[cfg(feature = "gmp")]
 use gmp_to_flint_adaptor_lib::integer::Integer;
+#[cfg(feature = "native")]
+use num_to_flint_adaptor_lib::integer::Integer;
 use std::cmp::Ordering;
 
 pub fn usize_bit_count() -> u32 {

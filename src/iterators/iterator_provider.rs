@@ -1,4 +1,7 @@
+#[cfg(feature = "gmp")]
 use gmp_to_flint_adaptor_lib::integer::Integer;
+#[cfg(feature = "native")]
+use num_to_flint_adaptor_lib::integer::Integer;
 use itertools::Interleave;
 use itertools::Itertools;
 use rand::{IsaacRng, Rng, SeedableRng};
