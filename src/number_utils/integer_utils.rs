@@ -333,3 +333,70 @@ pub fn from_big_endian_bits(bits: &[bool]) -> Integer {
     result.assign_bits_unsigned(&bits[..]);
     result
 }
+
+macro_rules! digits_u {
+    ($t: ty, $d: ident, $cl2: ident) => {
+        pub fn $d(radix: $t, n: $t) -> Vec<$t> {
+            if radix < 2 {
+                panic!("radix must be at least 2. Invalid radix: {}", radix);
+            }
+            let mut digits = Vec::new();
+            let log = $cl2(radix);
+            let mut remaining = n;
+            if 1 << log == radix {
+                let mask = radix - 1;
+                while remaining != 0 {
+                    digits.push(remaining & mask);
+                    remaining >>= log;
+                }
+            } else {
+                while remaining != 0 {
+                    digits.push(remaining % radix);
+                    remaining /= radix;
+                }
+            }
+            digits
+        }
+    }
+}
+
+digits_u!(u8, digits_u8, ceiling_log_2_u8);
+digits_u!(u16, digits_u16, ceiling_log_2_u16);
+digits_u!(u32, digits_u32, ceiling_log_2_u32);
+digits_u!(u64, digits_u64, ceiling_log_2_u64);
+digits_u!(usize, digits_usize, ceiling_log_2_usize);
+
+macro_rules! digits_i {
+    ($t: ty, $d: ident, $cl2: ident) => {
+        pub fn $d(radix: $t, n: $t) -> Vec<$t> {
+            if n < 0 {
+                panic!("n cannot be negative. Invalid n: {}", n);
+            }
+            if radix < 2 {
+                panic!("radix must be at least 2. Invalid radix: {}", radix);
+            }
+            let mut digits = Vec::new();
+            let log = $cl2(radix);
+            let mut remaining = n;
+            if 1 << log == radix {
+                let mask = radix - 1;
+                while remaining != 0 {
+                    digits.push(remaining & mask);
+                    remaining >>= log;
+                }
+            } else {
+                while remaining != 0 {
+                    digits.push(remaining % radix);
+                    remaining /= radix;
+                }
+            }
+            digits
+        }
+    }
+}
+
+digits_i!(i8, digits_i8, ceiling_log_2_i8);
+digits_i!(i16, digits_i16, ceiling_log_2_i16);
+digits_i!(i32, digits_i32, ceiling_log_2_i32);
+digits_i!(i64, digits_i64, ceiling_log_2_i64);
+digits_i!(isize, digits_isize, ceiling_log_2_isize);

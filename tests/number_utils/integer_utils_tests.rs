@@ -213,7 +213,7 @@ test_bits!(i64,
              true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
              true, true, true, true, true, true, true]");
 
-macro_rules! test_bits_s {
+macro_rules! test_bits_i {
     ($t: ty, $f: ident, $fail: ident) => {
         #[test]
         #[should_panic(expected = "n cannot be negative. Invalid n: -5")]
@@ -223,11 +223,11 @@ macro_rules! test_bits_s {
     }
 }
 
-test_bits_s!(i8, bits_i8, bits_i8_fail);
-test_bits_s!(i16, bits_i16, bits_i16_fail);
-test_bits_s!(i32, bits_i32, bits_i32_fail);
-test_bits_s!(i64, bits_i64, bits_i64_fail);
-test_bits_s!(isize, bits_isize, bits_isize_fail);
+test_bits_i!(i8, bits_i8, bits_i8_fail);
+test_bits_i!(i16, bits_i16, bits_i16_fail);
+test_bits_i!(i32, bits_i32, bits_i32_fail);
+test_bits_i!(i64, bits_i64, bits_i64_fail);
+test_bits_i!(isize, bits_isize, bits_isize_fail);
 
 fn bits_integer_helper(n: &str, out: &str) {
     assert_eq!(format!("{:?}", bits_integer(&Integer::from_str(n).unwrap())),
@@ -813,3 +813,154 @@ fn test_from_big_endian_bits() {
                                 "6");
     from_big_endian_bits_helper("[true, true, false, true, false, false, true]", "105");
 }
+
+macro_rules! test_digits {
+    (
+        $t: ty,
+        $f: ident,
+        $test: ident,
+        $helper: ident,
+        $fail_1: ident,
+        $fail_2: ident,
+        $max: expr,
+        $max_digit: expr
+    ) => {
+        fn $helper(radix: $t, n: $t, out: &str) {
+            assert_eq!(format!("{:?}", $f(radix, n)), out);
+        }
+
+        #[test]
+        fn $test() {
+            $helper(2, 0, "[]");
+            $helper(3, 0, "[]");
+            $helper(8, 0, "[]");
+            $helper(10, 0, "[]");
+            $helper(12, 0, "[]");
+            $helper(57, 0, "[]");
+            $helper(2, 1, "[1]");
+            $helper(3, 1, "[1]");
+            $helper(8, 1, "[1]");
+            $helper(10, 1, "[1]");
+            $helper(12, 1, "[1]");
+            $helper(57, 1, "[1]");
+            $helper(2, 10, "[0, 1, 0, 1]");
+            $helper(3, 10, "[1, 0, 1]");
+            $helper(8, 10, "[2, 1]");
+            $helper(10, 10, "[0, 1]");
+            $helper(12, 10, "[10]");
+            $helper(57, 10, "[10]");
+            $helper(2, 107, "[1, 1, 0, 1, 0, 1, 1]");
+            $helper(3, 107, "[2, 2, 2, 0, 1]");
+            $helper(8, 107, "[3, 5, 1]");
+            $helper(10, 107, "[7, 0, 1]");
+            $helper(12, 107, "[11, 8]");
+            $helper(57, 107, "[50, 1]");
+            $helper($max, 0, "[]");
+            $helper($max, 107, "[107]");
+            $helper($max, $max - 1, $max_digit);
+            $helper($max, $max, "[0, 1]");
+        }
+
+        #[test]
+        #[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
+        fn $fail_1() {
+            $f(1, 10);
+        }
+
+        #[test]
+        #[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
+        fn $fail_2() {
+            $f(0, 10);
+        }
+    }
+}
+
+test_digits!(u8,
+             digits_u8,
+             test_digits_u8,
+             digits_u8_helper,
+             digits_u8_fail_1,
+             digits_u8_fail_2,
+             u8::max_value(),
+             "[254]");
+test_digits!(u16,
+             digits_u16,
+             test_digits_u16,
+             digits_u16_helper,
+             digits_u16_fail_1,
+             digits_u16_fail_2,
+             u16::max_value(),
+             "[65534]");
+test_digits!(u32,
+             digits_u32,
+             test_digits_u32,
+             digits_u32_helper,
+             digits_u32_fail_1,
+             digits_u32_fail_2,
+             u32::max_value(),
+             "[4294967294]");
+test_digits!(u64,
+             digits_u64,
+             test_digits_u64,
+             digits_u64_helper,
+             digits_u64_fail_1,
+             digits_u64_fail_2,
+             u64::max_value(),
+             "[18446744073709551614]");
+test_digits!(i8,
+             digits_i8,
+             test_digits_i8,
+             digits_i8_helper,
+             digits_i8_fail_1,
+             digits_i8_fail_2,
+             i8::max_value(),
+             "[126]");
+test_digits!(i16,
+             digits_i16,
+             test_digits_i16,
+             digits_i16_helper,
+             digits_i16_fail_1,
+             digits_i16_fail_2,
+             i16::max_value(),
+             "[32766]");
+test_digits!(i32,
+             digits_i32,
+             test_digits_i32,
+             digits_i32_helper,
+             digits_i32_fail_1,
+             digits_i32_fail_2,
+             i32::max_value(),
+             "[2147483646]");
+test_digits!(i64,
+             digits_i64,
+             test_digits_i64,
+             digits_i64_helper,
+             digits_i64_fail_1,
+             digits_i64_fail_2,
+             i64::max_value(),
+             "[9223372036854775806]");
+
+macro_rules! test_digits_i {
+    ($t: ty, $f: ident, $fail_3: ident, $fail_4: ident) => {
+        #[test]
+        #[should_panic(expected = "n cannot be negative. Invalid n: -1")]
+        fn $fail_3() {
+            $f(2, -1);
+        }
+
+        #[test]
+        #[should_panic(expected = "n cannot be negative. Invalid n: -1")]
+        fn $fail_4() {
+            $f(0, -1);
+        }
+    }
+}
+
+test_digits_i!(i8, digits_i8, digits_i8_fail_3, digits_i8_fail_4);
+test_digits_i!(i16, digits_i16, digits_i16_fail_3, digits_i16_fail_4);
+test_digits_i!(i32, digits_i32, digits_i32_fail_3, digits_i32_fail_4);
+test_digits_i!(i64, digits_i64, digits_i64_fail_3, digits_i64_fail_4);
+test_digits_i!(isize,
+               digits_isize,
+               digits_isize_fail_3,
+               digits_isize_fail_4);
