@@ -1253,3 +1253,19 @@ fn test_positive_u32s_geometric() {
     positive_u32s_geometric_helper(&eo, &p, &format!("{}_v", s), 10);
     positive_u32s_geometric_helper(&eo, &p, &format!("{}_vi", s), 100);
 }
+
+fn natural_u32s_geometric_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, scale: u32) {
+    eo.match_vec_f(key, &mut p.natural_u32s_geometric(scale));
+}
+
+#[test]
+fn test_natural_u32s_geometric() {
+    let (eo, _, p) = prepare_test();
+    let s = "random_natural_u32s_geometric";
+    natural_u32s_geometric_helper(&eo, &p, &format!("{}_i", s), 0);
+    natural_u32s_geometric_helper(&eo, &p, &format!("{}_ii", s), 1);
+    natural_u32s_geometric_helper(&eo, &p, &format!("{}_iii", s), 2);
+    natural_u32s_geometric_helper(&eo, &p, &format!("{}_iv", s), 3);
+    natural_u32s_geometric_helper(&eo, &p, &format!("{}_v", s), 10);
+    natural_u32s_geometric_helper(&eo, &p, &format!("{}_vi", s), 100);
+}

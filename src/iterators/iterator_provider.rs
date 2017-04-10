@@ -1036,6 +1036,31 @@ impl Iterator for PositiveU32sGeometric {
     }
 }
 
+pub enum NaturalU32sGeometric {
+    Exhaustive(RangeIncreasingU32),
+    Random(RandomRangeU32),
+}
+
+impl Iterator for NaturalU32sGeometric {
+    type Item = u32;
+
+    fn next(&mut self) -> Option<u32> {
+        match self {
+            &mut NaturalU32sGeometric::Exhaustive(ref mut it) => it.next(),
+            &mut NaturalU32sGeometric::Random(ref mut it) => {
+                let mut j = 0;
+                loop {
+                    if it.next().unwrap() == 0 {
+                        break;
+                    }
+                    j += 1;
+                }
+                Some(j)
+            }
+        }
+    }
+}
+
 impl IteratorProvider {
     pub fn example_random() -> IteratorProvider {
         let key = "example";
@@ -1482,6 +1507,17 @@ impl IteratorProvider {
             }
             &IteratorProvider::Random(_, seed) => {
                 PositiveU32sGeometric::Random(RandomRangeU32::new(0, scale + 1, &seed))
+            }
+        }
+    }
+
+    pub fn natural_u32s_geometric(&self, scale: u32) -> NaturalU32sGeometric {
+        match self {
+            &IteratorProvider::Exhaustive => {
+                NaturalU32sGeometric::Exhaustive(RangeIncreasingU32::new(0, u32::max_value()))
+            }
+            &IteratorProvider::Random(_, seed) => {
+                NaturalU32sGeometric::Random(RandomRangeU32::new(0, scale + 1, &seed))
             }
         }
     }
