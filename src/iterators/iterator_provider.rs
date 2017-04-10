@@ -254,7 +254,8 @@ macro_rules! integer_range_u {
         $rr_s: ident,
         $rand_s: ident,
         $pos_s: ident,
-        $r_s: ident
+        $r_s: ident,
+        $max: expr
     ) => {
         pub enum $pos_s {
             Exhaustive($ri_s),
@@ -297,7 +298,34 @@ macro_rules! integer_range_u {
 
         pub enum $rr_s {
             Some(bool, IsaacRng, Range<$t>),
-            All($rand_s)
+            All($rand_s),
+        }
+
+        impl $rr_s {
+            fn new(a: $t, b: $t, seed: &[u32]) -> $rr_s {
+                if a == 0 && b == $max {
+                    $rr_s::All($rand_s::new(&seed))
+                } else if b == $max {
+                    $rr_s::Some(true, SeedableRng::from_seed(&seed[..]), Range::new(a - 1, b))
+                } else {
+                    $rr_s::Some(false, SeedableRng::from_seed(&seed[..]), Range::new(a, b + 1))
+                }
+            }
+        }
+
+        impl Iterator for $rr_s {
+            type Item = $t;
+
+            fn next(&mut self) -> Option<$t> {
+                match self {
+                    &mut $rr_s::Some(shift, ref mut rng, ref range) => Some(if shift {
+                        range.ind_sample(rng) + 1
+                    } else {
+                        range.ind_sample(rng)
+                    }),
+                    &mut $rr_s::All(ref mut it) => it.next(),
+                }
+            }
         }
 
         pub enum $r_s {
@@ -311,16 +339,7 @@ macro_rules! integer_range_u {
             fn next(&mut self) -> Option<$t> {
                 match self {
                     &mut $r_s::Exhaustive(ref mut it) => it.next(),
-                    &mut $r_s::Random(ref mut it) => {
-                        match it {
-                            &mut $rr_s::Some(shift, ref mut rng, ref range) => Some(if shift {
-                                range.ind_sample(rng) + 1
-                            } else {
-                                range.ind_sample(rng)
-                            }),
-                            &mut $rr_s::All(ref mut it) => it.next(),
-                        }
-                    },
+                    &mut $r_s::Random(ref mut it) => it.next(),
                 }
             }
         }
@@ -333,35 +352,40 @@ integer_range_u!(u8,
                  RandomRangeU8,
                  RandomU8s,
                  PositiveU8s,
-                 RangeU8);
+                 RangeU8,
+                 u8::max_value());
 integer_range_u!(u16,
                  U16s,
                  RangeIncreasingU16,
                  RandomRangeU16,
                  RandomU16s,
                  PositiveU16s,
-                 RangeU16);
+                 RangeU16,
+                 u16::max_value());
 integer_range_u!(u32,
                  U32s,
                  RangeIncreasingU32,
                  RandomRangeU32,
                  RandomU32s,
                  PositiveU32s,
-                 RangeU32);
+                 RangeU32,
+                 u32::max_value());
 integer_range_u!(u64,
                  U64s,
                  RangeIncreasingU64,
                  RandomRangeU64,
                  RandomU64s,
                  PositiveU64s,
-                 RangeU64);
+                 RangeU64,
+                 u64::max_value());
 integer_range_u!(usize,
                  Usizes,
                  RangeIncreasingUsize,
                  RandomRangeUsize,
                  RandomUsizes,
                  PositiveUsizes,
-                 RangeUsize);
+                 RangeUsize,
+                 usize::max_value());
 
 macro_rules! integer_range_i {
     (
@@ -377,7 +401,9 @@ macro_rules! integer_range_i {
         $rand_s: ident,
         $r_s: ident,
         $er_s: ident,
-        $rr_s: ident
+        $rr_s: ident,
+        $min: expr,
+        $max: expr
 ) => {
         pub enum $pos_s {
             Exhaustive($ri_s),
@@ -484,6 +510,33 @@ macro_rules! integer_range_i {
             All($rand_s),
         }
 
+        impl $rr_s {
+            fn new(a: $t, b: $t, seed: &[u32]) -> $rr_s {
+                if a == $min && b == $max {
+                    $rr_s::All($rand_s::new(&seed))
+                } else if b == $max {
+                    $rr_s::Some(true, SeedableRng::from_seed(seed), Range::new(a - 1, b))
+                } else {
+                    $rr_s::Some(false, SeedableRng::from_seed(seed), Range::new(a, b + 1))
+                }
+            }
+        }
+
+        impl Iterator for $rr_s {
+            type Item = $t;
+
+            fn next(&mut self) -> Option<$t> {
+                match self {
+                    &mut $rr_s::Some(shift, ref mut rng, ref range) => Some(if shift {
+                        range.ind_sample(rng) + 1
+                    } else {
+                        range.ind_sample(rng)
+                    }),
+                    &mut $rr_s::All(ref mut it) => it.next(),
+                }
+            }
+        }
+
         pub enum $r_s {
             Exhaustive($er_s),
             Random($rr_s),
@@ -501,16 +554,7 @@ macro_rules! integer_range_i {
                             &mut $er_s::SomeOfEachSign(ref mut it) => it.next(),
                         }
                     },
-                    &mut $r_s::Random(ref mut it) => {
-                        match it {
-                            &mut $rr_s::Some(shift, ref mut rng, ref range) => Some(if shift {
-                                range.ind_sample(rng) + 1
-                            } else {
-                                range.ind_sample(rng)
-                            }),
-                            &mut $rr_s::All(ref mut it) => it.next(),
-                        }
-                    },
+                    &mut $r_s::Random(ref mut it) => it.next(),
                 }
             }
         }
@@ -529,7 +573,9 @@ integer_range_i!(i8,
                  RandomI8s,
                  RangeI8,
                  ExhaustiveRangeI8,
-                 RandomRangeI8);
+                 RandomRangeI8,
+                 i8::min_value(),
+                 i8::max_value());
 integer_range_i!(i16,
                  u16,
                  PositiveI16s,
@@ -542,7 +588,9 @@ integer_range_i!(i16,
                  RandomI16s,
                  RangeI16,
                  ExhaustiveRangeI16,
-                 RandomRangeI16);
+                 RandomRangeI16,
+                 i16::min_value(),
+                 i16::max_value());
 integer_range_i!(i32,
                  u32,
                  PositiveI32s,
@@ -555,7 +603,9 @@ integer_range_i!(i32,
                  RandomI32s,
                  RangeI32,
                  ExhaustiveRangeI32,
-                 RandomRangeI32);
+                 RandomRangeI32,
+                 i32::min_value(),
+                 i32::max_value());
 integer_range_i!(i64,
                  u64,
                  PositiveI64s,
@@ -568,7 +618,9 @@ integer_range_i!(i64,
                  RandomI64s,
                  RangeI64,
                  ExhaustiveRangeI64,
-                 RandomRangeI64);
+                 RandomRangeI64,
+                 i64::min_value(),
+                 i64::max_value());
 integer_range_i!(isize,
                  usize,
                  PositiveIsizes,
@@ -581,7 +633,9 @@ integer_range_i!(isize,
                  RandomIsizes,
                  RangeIsize,
                  ExhaustiveRangeIsize,
-                 RandomRangeIsize);
+                 RandomRangeIsize,
+                 isize::min_value(),
+                 isize::max_value());
 
 pub struct RangeIncreasingInteger {
     i: Integer,
@@ -822,15 +876,7 @@ macro_rules! integer_range_impl_u {
         pub fn $r_f(&self, a: $t, b: $t) -> $r_s {
             match self {
                 &IteratorProvider::Exhaustive => $r_s::Exhaustive($ri_s::new(a, b)),
-                &IteratorProvider::Random(_, seed) => {
-                    $r_s::Random(if a == 0 && b == $max {
-                        $rr_s::All($rand_s::new(&seed))
-                    } else if b == $max {
-                        $rr_s::Some(true, SeedableRng::from_seed(&seed[..]), Range::new(a - 1, b))
-                    } else {
-                        $rr_s::Some(false, SeedableRng::from_seed(&seed[..]), Range::new(a, b + 1))
-                    })
-                },
+                &IteratorProvider::Random(_, seed) => $r_s::Random($rr_s::new(a, b, &seed[..])),
             }
         }
     }
@@ -925,15 +971,7 @@ macro_rules! integer_range_impl_i {
                         )
                     })
                 },
-                &IteratorProvider::Random(_, seed) => {
-                    $r_s::Random(if a == $min && b == $max {
-                        $rr_s::All($rand_s::new(&seed))
-                    } else if b == $max {
-                        $rr_s::Some(true, SeedableRng::from_seed(&seed[..]), Range::new(a - 1, b))
-                    } else {
-                        $rr_s::Some(false, SeedableRng::from_seed(&seed[..]), Range::new(a, b + 1))
-                    })
-                },
+                &IteratorProvider::Random(_, seed) => $r_s::Random($rr_s::new(a, b, &seed[..]))
             }
         }
     }
@@ -969,6 +1007,31 @@ impl<T: Clone> Iterator for FromVector<T> {
             None
         } else {
             self.range.next().map(|i| self.xs[i].clone())
+        }
+    }
+}
+
+pub enum PositiveU32sGeometric {
+    Exhaustive(RangeIncreasingU32),
+    Random(RandomRangeU32),
+}
+
+impl Iterator for PositiveU32sGeometric {
+    type Item = u32;
+
+    fn next(&mut self) -> Option<u32> {
+        match self {
+            &mut PositiveU32sGeometric::Exhaustive(ref mut it) => it.next(),
+            &mut PositiveU32sGeometric::Random(ref mut it) => {
+                let mut j = 0;
+                loop {
+                    j += 1;
+                    if it.next().unwrap() == 0 {
+                        break;
+                    }
+                }
+                Some(j)
+            }
         }
     }
 }
@@ -1410,5 +1473,16 @@ impl IteratorProvider {
 
     pub fn orderings(&self) -> FromVector<Ordering> {
         self.generate_from_vector(vec![Ordering::Equal, Ordering::Less, Ordering::Greater])
+    }
+
+    pub fn positive_u32s_geometric(&self, scale: u32) -> PositiveU32sGeometric {
+        match self {
+            &IteratorProvider::Exhaustive => {
+                PositiveU32sGeometric::Exhaustive(RangeIncreasingU32::new(1, u32::max_value()))
+            }
+            &IteratorProvider::Random(_, seed) => {
+                PositiveU32sGeometric::Random(RandomRangeU32::new(0, scale + 1, &seed))
+            }
+        }
     }
 }

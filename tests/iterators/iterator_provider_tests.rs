@@ -1237,3 +1237,19 @@ fn test_orderings() {
     eo.match_vec_debug("exhaustive_orderings", &mut ep.orderings());
     eo.match_vec_f_debug("random_orderings", &mut rp.orderings());
 }
+
+fn positive_u32s_geometric_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, scale: u32) {
+    eo.match_vec_f(key, &mut p.positive_u32s_geometric(scale));
+}
+
+#[test]
+fn test_positive_u32s_geometric() {
+    let (eo, _, p) = prepare_test();
+    let s = "random_positive_u32s_geometric";
+    positive_u32s_geometric_helper(&eo, &p, &format!("{}_i", s), 0);
+    positive_u32s_geometric_helper(&eo, &p, &format!("{}_ii", s), 1);
+    positive_u32s_geometric_helper(&eo, &p, &format!("{}_iii", s), 2);
+    positive_u32s_geometric_helper(&eo, &p, &format!("{}_iv", s), 3);
+    positive_u32s_geometric_helper(&eo, &p, &format!("{}_v", s), 10);
+    positive_u32s_geometric_helper(&eo, &p, &format!("{}_vi", s), 100);
+}
