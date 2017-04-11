@@ -7,6 +7,7 @@ use itertools::Itertools;
 use rand::{IsaacRng, Rng, SeedableRng};
 use rand::distributions::{IndependentSample, Range};
 use sha3::{Digest, Sha3_256};
+use std::char;
 use std::clone::Clone;
 use std::cmp::Ordering;
 use std::iter::*;
@@ -636,6 +637,78 @@ integer_range_i!(isize,
                  RandomRangeIsize,
                  isize::min_value(),
                  isize::max_value());
+
+pub struct RangeIncreasingChar {
+    i: char,
+    b: char,
+    done: bool,
+}
+
+impl RangeIncreasingChar {
+    fn new(a: char, b: char) -> RangeIncreasingChar {
+        if a > b {
+            panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
+        }
+        RangeIncreasingChar {
+            i: a,
+            b: b,
+            done: false,
+        }
+    }
+}
+
+impl Iterator for RangeIncreasingChar {
+    type Item = char;
+
+    fn next(&mut self) -> Option<char> {
+        if self.done {
+            None
+        } else {
+            self.done = self.i == self.b;
+            let ret = self.i.clone();
+            if !self.done {
+                self.i = char::from_u32(self.i as u32 + 1).unwrap();
+            }
+            Some(ret)
+        }
+    }
+}
+
+pub struct RangeDecreasingChar {
+    a: char,
+    i: char,
+    done: bool,
+}
+
+impl RangeDecreasingChar {
+    fn new(a: char, b: char) -> RangeDecreasingChar {
+        if a > b {
+            panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
+        }
+        RangeDecreasingChar {
+            a: a,
+            i: b,
+            done: false,
+        }
+    }
+}
+
+impl Iterator for RangeDecreasingChar {
+    type Item = char;
+
+    fn next(&mut self) -> Option<char> {
+        if self.done {
+            None
+        } else {
+            self.done = self.i == self.a;
+            let ret = self.i.clone();
+            if !self.done {
+                self.i = char::from_u32(self.i as u32 - 1).unwrap();
+            }
+            Some(ret)
+        }
+    }
+}
 
 pub struct RangeIncreasingInteger {
     i: Integer,
@@ -1419,6 +1492,46 @@ impl IteratorProvider {
                           RandomRangeIsize,
                           isize::min_value(),
                           isize::max_value());
+
+    pub fn chars_increasing(&self) -> RangeIncreasingChar {
+        RangeIncreasingChar::new('\0', char::MAX)
+    }
+
+    pub fn chars_decreasing(&self) -> RangeDecreasingChar {
+        RangeDecreasingChar::new('\0', char::MAX)
+    }
+
+    pub fn ascii_chars_increasing(&self) -> RangeIncreasingChar {
+        RangeIncreasingChar::new('\0', char::from_u32(127).unwrap())
+    }
+
+    pub fn ascii_chars_decreasing(&self) -> RangeDecreasingChar {
+        RangeDecreasingChar::new('\0', char::from_u32(127).unwrap())
+    }
+
+    pub fn range_up_increasing_char(&self, a: char) -> RangeIncreasingChar {
+        RangeIncreasingChar::new(a, char::MAX)
+    }
+
+    pub fn range_up_decreasing_char(&self, a: char) -> RangeDecreasingChar {
+        RangeDecreasingChar::new(a, char::MAX)
+    }
+
+    pub fn range_down_increasing_char(&self, a: char) -> RangeIncreasingChar {
+        RangeIncreasingChar::new('\0', a)
+    }
+
+    pub fn range_down_decreasing_char(&self, a: char) -> RangeDecreasingChar {
+        RangeDecreasingChar::new('\0', a)
+    }
+
+    pub fn range_increasing_char(&self, a: char, b: char) -> RangeIncreasingChar {
+        RangeIncreasingChar::new(a, b)
+    }
+
+    pub fn range_decreasing_char(&self, a: char, b: char) -> RangeDecreasingChar {
+        RangeDecreasingChar::new(a, b)
+    }
 
     pub fn range_up_increasing_integer(&self, a: Integer) -> RangeIncreasingUnboundedInteger {
         RangeIncreasingUnboundedInteger::new(a)

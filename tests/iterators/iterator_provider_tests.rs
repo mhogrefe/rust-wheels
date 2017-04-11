@@ -3,6 +3,7 @@ use common::TestOutput;
 use gmp_to_flint_adaptor_lib::integer::Integer;
 use rust_wheels_lib::io::readers::parse_vec;
 use rust_wheels_lib::iterators::iterator_provider::IteratorProvider;
+use std::char;
 use std::str::FromStr;
 
 fn prepare_test() -> (TestOutput, IteratorProvider, IteratorProvider) {
@@ -985,6 +986,134 @@ test_integer_range_i!(i64,
                       i64::min_value(),
                       i64::max_value());
 
+#[test]
+fn test_chars_increasing() {
+    let (eo, p, _) = prepare_test();
+    eo.match_vec_debug("exhaustive_chars_increasing", &mut p.chars_increasing());
+}
+
+#[test]
+fn test_chars_decreasing() {
+    let (eo, p, _) = prepare_test();
+    eo.match_vec_debug("exhaustive_chars_decreasing", &mut p.chars_decreasing());
+}
+
+#[test]
+fn test_ascii_chars_increasing() {
+    let (eo, p, _) = prepare_test();
+    eo.match_vec_debug("exhaustive_ascii_chars_increasing",
+                       &mut p.ascii_chars_increasing());
+}
+
+#[test]
+fn test_ascii_chars_decreasing() {
+    let (eo, p, _) = prepare_test();
+    eo.match_vec_debug("exhaustive_ascii_chars_decreasing",
+                       &mut p.ascii_chars_decreasing());
+}
+
+fn range_up_increasing_char_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: char) {
+    eo.match_vec_debug(key, &mut p.range_up_increasing_char(a));
+}
+
+#[test]
+fn test_range_up_increasing_char() {
+    let (eo, p, _) = prepare_test();
+    let s = "exhaustive_range_up_increasing_char";
+    range_up_increasing_char_helper(&eo, &p, &format!("{}_i", s), '\0');
+    range_up_increasing_char_helper(&eo, &p, &format!("{}_ii", s), 'a');
+    range_up_increasing_char_helper(&eo, &p, &format!("{}_iii", s), 'Ш');
+    range_up_increasing_char_helper(&eo, &p, &format!("{}_iv", s), char::MAX);
+}
+
+fn range_up_decreasing_char_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: char) {
+    eo.match_vec_debug(key, &mut p.range_up_decreasing_char(a));
+}
+
+#[test]
+fn test_range_up_decreasing_char() {
+    let (eo, p, _) = prepare_test();
+    let s = "exhaustive_range_up_decreasing_char";
+    range_up_decreasing_char_helper(&eo, &p, &format!("{}_i", s), '\0');
+    range_up_decreasing_char_helper(&eo, &p, &format!("{}_ii", s), 'a');
+    range_up_decreasing_char_helper(&eo, &p, &format!("{}_iii", s), 'Ш');
+    range_up_decreasing_char_helper(&eo, &p, &format!("{}_iv", s), char::MAX);
+}
+
+fn range_down_increasing_char_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: char) {
+    eo.match_vec_debug(key, &mut p.range_down_increasing_char(a));
+}
+
+#[test]
+fn test_range_down_increasing_char() {
+    let (eo, p, _) = prepare_test();
+    let s = "exhaustive_range_down_increasing_char";
+    range_down_increasing_char_helper(&eo, &p, &format!("{}_i", s), '\0');
+    range_down_increasing_char_helper(&eo, &p, &format!("{}_ii", s), 'a');
+    range_down_increasing_char_helper(&eo, &p, &format!("{}_iii", s), 'Ш');
+    range_down_increasing_char_helper(&eo, &p, &format!("{}_iv", s), char::MAX);
+}
+
+fn range_down_decreasing_char_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: char) {
+    eo.match_vec_debug(key, &mut p.range_down_decreasing_char(a));
+}
+
+#[test]
+fn test_range_down_decreasing_char() {
+    let (eo, p, _) = prepare_test();
+    let s = "exhaustive_range_down_decreasing_char";
+    range_down_decreasing_char_helper(&eo, &p, &format!("{}_i", s), '\0');
+    range_down_decreasing_char_helper(&eo, &p, &format!("{}_ii", s), 'a');
+    range_down_decreasing_char_helper(&eo, &p, &format!("{}_iii", s), 'Ш');
+    range_down_decreasing_char_helper(&eo, &p, &format!("{}_iv", s), char::MAX);
+}
+
+fn range_increasing_char_helper(eo: &TestOutput,
+                                p: &IteratorProvider,
+                                key: &str,
+                                a: char,
+                                b: char) {
+    eo.match_vec_debug(key, &mut p.range_increasing_char(a, b));
+}
+
+#[test]
+fn test_range_increasing_char() {
+    let (eo, p, _) = prepare_test();
+    let s = "exhaustive_range_increasing_char";
+    range_increasing_char_helper(&eo, &p, &format!("{}_i", s), 'a', 'z');
+    range_increasing_char_helper(&eo, &p, &format!("{}_ii", s), 'a', 'a');
+    range_increasing_char_helper(&eo, &p, &format!("{}_iii", s), '!', '9');
+}
+
+#[test]
+#[should_panic(expected = "a must be less than or equal to b. a: a, b: A")]
+fn range_increasing_char_fail() {
+    IteratorProvider::Exhaustive.range_increasing_char('a', 'A');
+}
+
+fn range_decreasing_char_helper(eo: &TestOutput,
+                                p: &IteratorProvider,
+                                key: &str,
+                                a: char,
+                                b: char) {
+    eo.match_vec_debug(key, &mut p.range_decreasing_char(a, b));
+}
+
+#[test]
+fn test_range_decreasing_char() {
+    let (eo, p, _) = prepare_test();
+    let s = "exhaustive_range_decreasing_char";
+    range_decreasing_char_helper(&eo, &p, &format!("{}_i", s), 'a', 'z');
+    range_decreasing_char_helper(&eo, &p, &format!("{}_ii", s), 'a', 'a');
+    range_decreasing_char_helper(&eo, &p, &format!("{}_iii", s), '!', '9');
+}
+
+#[test]
+#[should_panic(expected = "a must be less than or equal to b. a: a, b: A")]
+fn range_decreasing_char_fail() {
+    IteratorProvider::Exhaustive.range_decreasing_char('a', 'A');
+}
+
 fn range_up_increasing_integer_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: &str) {
     eo.match_vec(key,
                  &mut p.range_up_increasing_integer(Integer::from_str(a).unwrap()));
@@ -1046,15 +1175,13 @@ fn range_increasing_integer_fail_helper(p: &IteratorProvider, a: &str, b: &str) 
 #[test]
 #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
 fn range_increasing_integer_fail_1() {
-    let p = IteratorProvider::Exhaustive;
-    range_increasing_integer_fail_helper(&p, "10", "9")
+    range_increasing_integer_fail_helper(&IteratorProvider::Exhaustive, "10", "9")
 }
 
 #[test]
 #[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
 fn range_increasing_integer_fail_2() {
-    let p = IteratorProvider::Exhaustive;
-    range_increasing_integer_fail_helper(&p, "-9", "-10")
+    range_increasing_integer_fail_helper(&IteratorProvider::Exhaustive, "-9", "-10")
 }
 
 fn range_decreasing_integer_helper(eo: &TestOutput,
@@ -1087,8 +1214,7 @@ fn range_decreasing_integer_fail_helper(p: &IteratorProvider, a: &str, b: &str) 
 #[test]
 #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
 fn range_decreasing_integer_fail_1() {
-    let p = IteratorProvider::Exhaustive;
-    range_decreasing_integer_fail_helper(&p, "10", "9")
+    range_decreasing_integer_fail_helper(&IteratorProvider::Exhaustive, "10", "9")
 }
 
 #[test]
@@ -1146,29 +1272,25 @@ fn range_integer_fail_helper(p: &IteratorProvider, a: &str, b: &str) {
 #[test]
 #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
 fn range_integer_fail_1() {
-    let p = IteratorProvider::Exhaustive;
-    range_integer_fail_helper(&p, "10", "9")
+    range_integer_fail_helper(&IteratorProvider::Exhaustive, "10", "9")
 }
 
 #[test]
 #[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
 fn range_integer_fail_2() {
-    let p = IteratorProvider::Exhaustive;
-    range_integer_fail_helper(&p, "-9", "-10")
+    range_integer_fail_helper(&IteratorProvider::Exhaustive, "-9", "-10")
 }
 
 #[test]
 #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
 fn range_integer_fail_3() {
-    let p = IteratorProvider::example_random();
-    range_integer_fail_helper(&p, "10", "9")
+    range_integer_fail_helper(&IteratorProvider::example_random(), "10", "9")
 }
 
 #[test]
 #[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
 fn range_integer_fail_4() {
-    let p = IteratorProvider::example_random();
-    range_integer_fail_helper(&p, "-9", "-10")
+    range_integer_fail_helper(&IteratorProvider::example_random(), "-9", "-10")
 }
 
 fn exhaustive_generate_from_vector_helper(eo: &TestOutput,
@@ -1211,7 +1333,6 @@ fn test_generate_from_vector() {
     generate_from_vector_exhaustive_helper(&eo, &ep, &format!("{}_iii", es), "[1, 2, 3]");
     generate_from_vector_exhaustive_helper(&eo, &ep, &format!("{}_iv", es), "[3, 1, 4, 1]");
     let rs = "random_generate_from_vector";
-    //generate_from_vector_helper(&eo, &rp, &format!("{}_i", rs), "[]");
     generate_from_vector_random_helper(&eo, &rp, &format!("{}_i", rs), "[5]");
     generate_from_vector_random_helper(&eo, &rp, &format!("{}_ii", rs), "[1, 2, 3]");
     generate_from_vector_random_helper(&eo, &rp, &format!("{}_iii", rs), "[3, 1, 4, 1]");
@@ -1220,8 +1341,7 @@ fn test_generate_from_vector() {
 #[test]
 #[should_panic(expected = "Cannot randomly generate values from an empty Vec.")]
 fn generate_from_vector_fail() {
-    let p = IteratorProvider::example_random();
-    &mut p.generate_from_vector(Vec::<u32>::new());
+    &mut IteratorProvider::example_random().generate_from_vector(Vec::<u32>::new());
 }
 
 #[test]
