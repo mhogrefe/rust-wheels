@@ -3,6 +3,7 @@ use gmp_to_flint_adaptor_lib::integer::Integer;
 #[cfg(feature = "native")]
 use num_to_flint_adaptor_lib::integer::Integer;
 use std::cmp::Ordering;
+use std::mem;
 
 pub fn usize_bit_count() -> u32 {
     (0 as usize).count_zeros()
@@ -400,3 +401,70 @@ digits_i!(i16, digits_i16, ceiling_log_2_i16);
 digits_i!(i32, digits_i32, ceiling_log_2_i32);
 digits_i!(i64, digits_i64, ceiling_log_2_i64);
 digits_i!(isize, digits_isize, ceiling_log_2_isize);
+
+pub fn digits_integer(radix: &Integer, n: &Integer) -> Vec<Integer> {
+    if *n < 0 {
+        panic!("n cannot be negative. Invalid n: {}", n);
+    }
+    if *radix < 2 {
+        panic!("radix must be at least 2. Invalid radix: {}", radix);
+    }
+    if *n == 0 {
+        return Vec::new();
+    }
+    let log = ceiling_log_2_integer(radix);
+    if Integer::from(1) << log == *radix {
+        let mut digits = Vec::new();
+        let length = n.significant_bits();
+        let mut digit = Integer::from(0);
+        let mut i = 0;
+        let mut j = 0;
+        let mut mask = 1;
+        for x in n.to_u32s() {
+            loop {
+                if x & mask != 0 {
+                    digit.set_bit(j, true);
+                }
+                i += 1;
+                if i == length {
+                    break;
+                }
+                j += 1;
+                if j == log {
+                    let last_index = digits.len();
+                    digits.push(Integer::from(0));
+                    mem::swap(&mut digits[last_index], &mut digit);
+                    j = 0;
+                }
+                if mask == 0 {
+                    break;
+                }
+                mask <<= 1;
+            }
+        }
+        if digit != 0 {
+            let last_index = digits.len();
+            digits.push(Integer::from(0));
+            mem::swap(&mut digits[last_index], &mut digit);
+        }
+        return digits;
+    } else if *radix <= 36 {
+        return n.to_string_radix(radix.to_i32().unwrap())
+                   .chars()
+                   .rev()
+                   .map(|c| {
+                            Integer::from(c as u32 -
+                                          (if c >= '0' && c <= '9' { '0' } else { 'W' } as u32))
+                        })
+                   .collect();
+    } else {
+        let mut digits = Vec::new();
+        let mut remaining = n.clone();
+        while remaining != 0 {
+            let last_index = digits.len();
+            digits.push(radix.clone());
+            remaining.div_rem(&mut digits[last_index]);
+        }
+        return digits;
+    }
+}

@@ -964,3 +964,67 @@ test_digits_i!(isize,
                digits_isize,
                digits_isize_fail_3,
                digits_isize_fail_4);
+
+fn digits_integer_helper(radix: &str, n: &str, out: &str) {
+    assert_eq!(format!("{:?}",
+                       digits_integer(&Integer::from_str(radix).unwrap(),
+                                      &Integer::from_str(n).unwrap())),
+               out);
+}
+
+#[test]
+fn test_digits_integer() {
+    digits_integer_helper("2", "0", "[]");
+    digits_integer_helper("3", "0", "[]");
+    digits_integer_helper("8", "0", "[]");
+    digits_integer_helper("10", "0", "[]");
+    digits_integer_helper("12", "0", "[]");
+    digits_integer_helper("57", "0", "[]");
+    digits_integer_helper("2", "1", "[1]");
+    digits_integer_helper("3", "1", "[1]");
+    digits_integer_helper("8", "1", "[1]");
+    digits_integer_helper("10", "1", "[1]");
+    digits_integer_helper("12", "1", "[1]");
+    digits_integer_helper("57", "1", "[1]");
+    digits_integer_helper("2", "10", "[0, 1, 0, 1]");
+    digits_integer_helper("3", "10", "[1, 0, 1]");
+    digits_integer_helper("8", "10", "[2, 1]");
+    digits_integer_helper("10", "10", "[0, 1]");
+    digits_integer_helper("12", "10", "[10]");
+    digits_integer_helper("57", "10", "[10]");
+    digits_integer_helper("2", "187", "[1, 1, 0, 1, 1, 1, 0, 1]");
+    digits_integer_helper("3", "187", "[1, 2, 2, 0, 2]");
+    digits_integer_helper("8", "187", "[3, 7, 2]");
+    digits_integer_helper("10", "187", "[7, 8, 1]");
+    digits_integer_helper("12", "187", "[7, 3, 1]");
+    digits_integer_helper("57", "187", "[16, 3]");
+}
+
+fn digits_integer_fail_helper(radix: &str, n: &str) {
+    digits_integer(&Integer::from_str(radix).unwrap(),
+                   &Integer::from_str(n).unwrap());
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
+fn digits_integer_fail_1() {
+    digits_integer_fail_helper("1", "10");
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
+fn digits_integer_fail_2() {
+    digits_integer_fail_helper("0", "10");
+}
+
+#[test]
+#[should_panic(expected = "n cannot be negative. Invalid n: -1")]
+fn digits_integer_fail_3() {
+    digits_integer_fail_helper("2", "-1");
+}
+
+#[test]
+#[should_panic(expected = "n cannot be negative. Invalid n: -1")]
+fn digits_integer_fail_4() {
+    digits_integer_fail_helper("0", "-1");
+}
