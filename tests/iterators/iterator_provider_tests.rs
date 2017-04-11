@@ -1114,6 +1114,20 @@ fn range_decreasing_char_fail() {
     IteratorProvider::Exhaustive.range_decreasing_char('a', 'A');
 }
 
+#[test]
+fn test_chars() {
+    let (eo, ep, rp) = prepare_test();
+    eo.match_vec_debug("exhaustive_chars", &mut ep.chars());
+    eo.match_vec_f_debug("random_chars", &mut rp.chars());
+}
+
+#[test]
+fn test_ascii_chars() {
+    let (eo, ep, rp) = prepare_test();
+    eo.match_vec_debug("exhaustive_ascii_chars", &mut ep.ascii_chars());
+    eo.match_vec_f_debug("random_ascii_chars", &mut rp.ascii_chars());
+}
+
 fn range_up_increasing_integer_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: &str) {
     eo.match_vec(key,
                  &mut p.range_up_increasing_integer(Integer::from_str(a).unwrap()));
