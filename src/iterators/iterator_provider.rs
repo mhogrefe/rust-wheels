@@ -667,7 +667,11 @@ impl Iterator for RangeIncreasingChar {
             self.done = self.i == self.b;
             let ret = self.i.clone();
             if !self.done {
-                self.i = char::from_u32(self.i as u32 + 1).unwrap();
+                if self.i == '\u{D7FF}' {
+                    self.i = '\u{E000}'
+                } else {
+                    self.i = char::from_u32(self.i as u32 + 1).unwrap();
+                }
             }
             Some(ret)
         }
@@ -703,7 +707,11 @@ impl Iterator for RangeDecreasingChar {
             self.done = self.i == self.a;
             let ret = self.i.clone();
             if !self.done {
-                self.i = char::from_u32(self.i as u32 - 1).unwrap();
+                if self.i == '\u{E000}' {
+                    self.i = '\u{D7FF}'
+                } else {
+                    self.i = char::from_u32(self.i as u32 - 1).unwrap();
+                }
             }
             Some(ret)
         }
@@ -773,7 +781,7 @@ impl Iterator for AsciiChars {
         match self {
             &mut AsciiChars::Exhaustive(ref mut it) => it.next(),
             &mut AsciiChars::Random(ref mut rng) => {
-                Some(char::from_u32(rng.gen::<char>() as u32 & 0x7f).unwrap())
+                Some(char::from_u32((rng.gen::<u8>() & 0x7f) as u32).unwrap())
             }
         }
     }
@@ -1592,8 +1600,6 @@ impl IteratorProvider {
                                                             RangeIncreasingChar::new('\0',
                                                                                      '\u{1F}'),
                                                             RangeIncreasingChar::new('\u{7F}',
-                                                                                     '\u{D7FF}'),
-                                                            RangeIncreasingChar::new('\u{E000}',
                                                                                      char::MAX)]))
             }
             &IteratorProvider::Random(_, seed) => Chars::Random(SeedableRng::from_seed(&seed[..])),
@@ -1603,7 +1609,8 @@ impl IteratorProvider {
     pub fn ascii_chars(&self) -> AsciiChars {
         match self {
             &IteratorProvider::Exhaustive => {
-                AsciiChars::Exhaustive(ExhaustiveChars::new(vec!(RangeIncreasingChar::new('a', 'z'),
+                AsciiChars::Exhaustive(ExhaustiveChars::new(vec!(
+                                              RangeIncreasingChar::new('a', 'z'),
                                               RangeIncreasingChar::new('A', 'Z'),
                                               RangeIncreasingChar::new('0', '9'),
                                               RangeIncreasingChar::new('!', '/'),

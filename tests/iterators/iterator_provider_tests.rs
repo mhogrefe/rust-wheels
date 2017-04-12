@@ -1023,7 +1023,8 @@ fn test_range_up_increasing_char() {
     range_up_increasing_char_helper(&eo, &p, &format!("{}_i", s), '\0');
     range_up_increasing_char_helper(&eo, &p, &format!("{}_ii", s), 'a');
     range_up_increasing_char_helper(&eo, &p, &format!("{}_iii", s), 'Ш');
-    range_up_increasing_char_helper(&eo, &p, &format!("{}_iv", s), char::MAX);
+    range_up_increasing_char_helper(&eo, &p, &format!("{}_iv", s), '\u{D7FF}');
+    range_up_increasing_char_helper(&eo, &p, &format!("{}_v", s), char::MAX);
 }
 
 fn range_up_decreasing_char_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: char) {
@@ -1037,7 +1038,8 @@ fn test_range_up_decreasing_char() {
     range_up_decreasing_char_helper(&eo, &p, &format!("{}_i", s), '\0');
     range_up_decreasing_char_helper(&eo, &p, &format!("{}_ii", s), 'a');
     range_up_decreasing_char_helper(&eo, &p, &format!("{}_iii", s), 'Ш');
-    range_up_decreasing_char_helper(&eo, &p, &format!("{}_iv", s), char::MAX);
+    range_up_decreasing_char_helper(&eo, &p, &format!("{}_iv", s), '\u{D7FF}');
+    range_up_decreasing_char_helper(&eo, &p, &format!("{}_v", s), char::MAX);
 }
 
 fn range_down_increasing_char_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: char) {
@@ -1051,7 +1053,8 @@ fn test_range_down_increasing_char() {
     range_down_increasing_char_helper(&eo, &p, &format!("{}_i", s), '\0');
     range_down_increasing_char_helper(&eo, &p, &format!("{}_ii", s), 'a');
     range_down_increasing_char_helper(&eo, &p, &format!("{}_iii", s), 'Ш');
-    range_down_increasing_char_helper(&eo, &p, &format!("{}_iv", s), char::MAX);
+    range_down_increasing_char_helper(&eo, &p, &format!("{}_iv", s), '\u{E000}');
+    range_down_increasing_char_helper(&eo, &p, &format!("{}_v", s), char::MAX);
 }
 
 fn range_down_decreasing_char_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: char) {
@@ -1065,7 +1068,8 @@ fn test_range_down_decreasing_char() {
     range_down_decreasing_char_helper(&eo, &p, &format!("{}_i", s), '\0');
     range_down_decreasing_char_helper(&eo, &p, &format!("{}_ii", s), 'a');
     range_down_decreasing_char_helper(&eo, &p, &format!("{}_iii", s), 'Ш');
-    range_down_decreasing_char_helper(&eo, &p, &format!("{}_iv", s), char::MAX);
+    range_down_decreasing_char_helper(&eo, &p, &format!("{}_iv", s), '\u{E000}');
+    range_down_decreasing_char_helper(&eo, &p, &format!("{}_v", s), char::MAX);
 }
 
 fn range_increasing_char_helper(eo: &TestOutput,
@@ -1083,6 +1087,7 @@ fn test_range_increasing_char() {
     range_increasing_char_helper(&eo, &p, &format!("{}_i", s), 'a', 'z');
     range_increasing_char_helper(&eo, &p, &format!("{}_ii", s), 'a', 'a');
     range_increasing_char_helper(&eo, &p, &format!("{}_iii", s), '!', '9');
+    range_increasing_char_helper(&eo, &p, &format!("{}_iv", s), '\u{D7FF}', '\u{E000}');
 }
 
 #[test]
@@ -1106,6 +1111,7 @@ fn test_range_decreasing_char() {
     range_decreasing_char_helper(&eo, &p, &format!("{}_i", s), 'a', 'z');
     range_decreasing_char_helper(&eo, &p, &format!("{}_ii", s), 'a', 'a');
     range_decreasing_char_helper(&eo, &p, &format!("{}_iii", s), '!', '9');
+    range_decreasing_char_helper(&eo, &p, &format!("{}_iv", s), '\u{D7FF}', '\u{E000}');
 }
 
 #[test]
