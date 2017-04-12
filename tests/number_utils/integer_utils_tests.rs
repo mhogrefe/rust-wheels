@@ -1028,3 +1028,190 @@ fn digits_integer_fail_3() {
 fn digits_integer_fail_4() {
     digits_integer_fail_helper("0", "-1");
 }
+
+macro_rules! test_digits_padded {
+    (
+        $t: ty,
+        $f: ident,
+        $test: ident,
+        $helper: ident,
+        $fail_1: ident,
+        $fail_2: ident,
+        $max: expr,
+        $max_digit: expr
+    ) => {
+        fn $helper(size: usize, radix: $t, n: $t, out: &str) {
+            assert_eq!(format!("{:?}", $f(size, radix, n)), out);
+        }
+
+        #[test]
+        fn $test() {
+            $helper(0, 2, 0, "[]");
+            $helper(0, 3, 0, "[]");
+            $helper(0, 57, 0, "[]");
+            $helper(0, 2, 1, "[]");
+            $helper(0, 3, 1, "[]");
+            $helper(0, 57, 1, "[]");
+            $helper(0, 2, 10, "[]");
+            $helper(0, 3, 10, "[]");
+            $helper(0, 57, 10, "[]");
+            $helper(0, 2, 107, "[]");
+            $helper(0, 3, 107, "[]");
+            $helper(0, 57, 107, "[]");
+            $helper(1, 2, 0, "[0]");
+            $helper(1, 3, 0, "[0]");
+            $helper(1, 57, 0, "[0]");
+            $helper(1, 2, 1, "[1]");
+            $helper(1, 3, 1, "[1]");
+            $helper(1, 57, 1, "[1]");
+            $helper(1, 2, 10, "[0]");
+            $helper(1, 3, 10, "[1]");
+            $helper(1, 57, 10, "[10]");
+            $helper(1, 2, 107, "[1]");
+            $helper(1, 3, 107, "[2]");
+            $helper(1, 57, 107, "[50]");
+            $helper(2, 2, 0, "[0, 0]");
+            $helper(2, 3, 0, "[0, 0]");
+            $helper(2, 57, 0, "[0, 0]");
+            $helper(2, 2, 1, "[1, 0]");
+            $helper(2, 3, 1, "[1, 0]");
+            $helper(2, 57, 1, "[1, 0]");
+            $helper(2, 2, 10, "[0, 1]");
+            $helper(2, 3, 10, "[1, 0]");
+            $helper(2, 57, 10, "[10, 0]");
+            $helper(2, 2, 107, "[1, 1]");
+            $helper(2, 3, 107, "[2, 2]");
+            $helper(2, 57, 107, "[50, 1]");
+            $helper(8, 2, 0, "[0, 0, 0, 0, 0, 0, 0, 0]");
+            $helper(8, 3, 0, "[0, 0, 0, 0, 0, 0, 0, 0]");
+            $helper(8, 57, 0, "[0, 0, 0, 0, 0, 0, 0, 0]");
+            $helper(8, 2, 1, "[1, 0, 0, 0, 0, 0, 0, 0]");
+            $helper(8, 3, 1, "[1, 0, 0, 0, 0, 0, 0, 0]");
+            $helper(8, 57, 1, "[1, 0, 0, 0, 0, 0, 0, 0]");
+            $helper(8, 2, 10, "[0, 1, 0, 1, 0, 0, 0, 0]");
+            $helper(8, 3, 10, "[1, 0, 1, 0, 0, 0, 0, 0]");
+            $helper(8, 57, 10, "[10, 0, 0, 0, 0, 0, 0, 0]");
+            $helper(8, 2, 107, "[1, 1, 0, 1, 0, 1, 1, 0]");
+            $helper(8, 3, 107, "[2, 2, 2, 0, 1, 0, 0, 0]");
+            $helper(8, 57, 107, "[50, 1, 0, 0, 0, 0, 0, 0]");
+            $helper(1, $max, 0, "[0]");
+            $helper(1, $max, 107, "[107]");
+            $helper(1, $max, $max - 1, $max_digit);
+            $helper(2, $max, $max, "[0, 1]");
+        }
+
+        #[test]
+        #[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
+        fn $fail_1() {
+            $f(3, 1, 10);
+        }
+
+        #[test]
+        #[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
+        fn $fail_2() {
+            $f(3, 0, 10);
+        }
+    }
+}
+
+test_digits_padded!(u8,
+                    digits_padded_u8,
+                    test_digits_padded_u8,
+                    digits_padded_u8_helper,
+                    digits_padded_u8_fail_1,
+                    digits_padded_u8_fail_2,
+                    u8::max_value(),
+                    "[254]");
+test_digits_padded!(u16,
+                    digits_padded_u16,
+                    test_digits_padded_u16,
+                    digits_padded_u16_helper,
+                    digits_padded_u16_fail_1,
+                    digits_padded_u16_fail_2,
+                    u16::max_value(),
+                    "[65534]");
+test_digits_padded!(u32,
+                    digits_padded_u32,
+                    test_digits_padded_u32,
+                    digits_padded_u32_helper,
+                    digits_padded_u32_fail_1,
+                    digits_padded_u32_fail_2,
+                    u32::max_value(),
+                    "[4294967294]");
+test_digits_padded!(u64,
+                    digits_padded_u64,
+                    test_digits_padded_u64,
+                    digits_u64_padded_helper,
+                    digits_u64_padded_fail_1,
+                    digits_u64_padded_fail_2,
+                    u64::max_value(),
+                    "[18446744073709551614]");
+test_digits_padded!(i8,
+                    digits_padded_i8,
+                    test_digits_padded_i8,
+                    digits_padded_i8_helper,
+                    digits_padded_i8_fail_1,
+                    digits_padded_i8_fail_2,
+                    i8::max_value(),
+                    "[126]");
+test_digits_padded!(i16,
+                    digits_padded_i16,
+                    test_digits_padded_i16,
+                    digits_padded_i16_helper,
+                    digits_padded_i16_fail_1,
+                    digits_padded_i16_fail_2,
+                    i16::max_value(),
+                    "[32766]");
+test_digits_padded!(i32,
+                    digits_padded_i32,
+                    test_digits_padded_i32,
+                    digits_padded_i32_helper,
+                    digits_padded_i32_fail_1,
+                    digits_padded_i32_fail_2,
+                    i32::max_value(),
+                    "[2147483646]");
+test_digits_padded!(i64,
+                    digits_padded_i64,
+                    test_digits_padded_i64,
+                    digits_padded_i64_helper,
+                    digits_padded_i64_fail_1,
+                    digits_padded_i64_fail_2,
+                    i64::max_value(),
+                    "[9223372036854775806]");
+
+macro_rules! test_digits_padded_i {
+    ($t: ty, $f: ident, $fail_3: ident, $fail_4: ident) => {
+        #[test]
+        #[should_panic(expected = "n cannot be negative. Invalid n: -1")]
+        fn $fail_3() {
+            $f(3, 2, -1);
+        }
+
+        #[test]
+        #[should_panic(expected = "n cannot be negative. Invalid n: -1")]
+        fn $fail_4() {
+            $f(3, 0, -1);
+        }
+    }
+}
+
+test_digits_padded_i!(i8,
+                      digits_padded_i8,
+                      digits_padded_i8_fail_3,
+                      digits_padded_i8_fail_4);
+test_digits_padded_i!(i16,
+                      digits_padded_i16,
+                      digits_padded_i16_fail_3,
+                      digits_padded_i16_fail_4);
+test_digits_padded_i!(i32,
+                      digits_padded_i32,
+                      digits_padded_i32_fail_3,
+                      digits_padded_i32_fail_4);
+test_digits_padded_i!(i64,
+                      digits_padded_i64,
+                      digits_padded_i64_fail_3,
+                      digits_padded_i64_fail_4);
+test_digits_padded_i!(isize,
+                      digits_padded_isize,
+                      digits_padded_isize_fail_3,
+                      digits_padded_isize_fail_4);

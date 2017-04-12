@@ -468,3 +468,70 @@ pub fn digits_integer(radix: &Integer, n: &Integer) -> Vec<Integer> {
         return digits;
     }
 }
+
+macro_rules! digits_padded_u {
+    ($t: ty, $dp: ident, $cl2: ident) => {
+        pub fn $dp(size: usize, radix: $t, n: $t) -> Vec<$t> {
+            if radix < 2 {
+                panic!("radix must be at least 2. Invalid radix: {}", radix);
+            }
+            let mut digits = Vec::new();
+            let log = $cl2(radix);
+            let mut remaining = n;
+            if 1 << log == radix {
+                let mask = radix - 1;
+                for _ in 0..size {
+                    digits.push(remaining & mask);
+                    remaining >>= log;
+                }
+            } else {
+                for _ in 0..size {
+                    digits.push(remaining % radix);
+                    remaining /= radix;
+                }
+            }
+            digits
+        }
+    }
+}
+
+digits_padded_u!(u8, digits_padded_u8, ceiling_log_2_u8);
+digits_padded_u!(u16, digits_padded_u16, ceiling_log_2_u16);
+digits_padded_u!(u32, digits_padded_u32, ceiling_log_2_u32);
+digits_padded_u!(u64, digits_padded_u64, ceiling_log_2_u64);
+digits_padded_u!(usize, digits_padded_usize, ceiling_log_2_usize);
+
+macro_rules! digits_padded_i {
+    ($t: ty, $dp: ident, $cl2: ident) => {
+        pub fn $dp(size: usize, radix: $t, n: $t) -> Vec<$t> {
+            if n < 0 {
+                panic!("n cannot be negative. Invalid n: {}", n);
+            }
+            if radix < 2 {
+                panic!("radix must be at least 2. Invalid radix: {}", radix);
+            }
+            let mut digits = Vec::new();
+            let log = $cl2(radix);
+            let mut remaining = n;
+            if 1 << log == radix {
+                let mask = radix - 1;
+                for _ in 0..size {
+                    digits.push(remaining & mask);
+                    remaining >>= log;
+                }
+            } else {
+                for _ in 0..size {
+                    digits.push(remaining % radix);
+                    remaining /= radix;
+                }
+            }
+            digits
+        }
+    }
+}
+
+digits_padded_i!(i8, digits_padded_i8, ceiling_log_2_i8);
+digits_padded_i!(i16, digits_padded_i16, ceiling_log_2_i16);
+digits_padded_i!(i32, digits_padded_i32, ceiling_log_2_i32);
+digits_padded_i!(i64, digits_padded_i64, ceiling_log_2_i64);
+digits_padded_i!(isize, digits_padded_isize, ceiling_log_2_isize);
