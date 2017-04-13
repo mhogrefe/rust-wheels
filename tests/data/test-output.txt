@@ -918,6 +918,59 @@ exhaustive_positive_u8s list 21
 20
 ...
 
+exhaustive_range_char_i list 21
+'a'
+'b'
+'c'
+'d'
+'e'
+'f'
+'g'
+'h'
+'i'
+'j'
+'k'
+'l'
+'m'
+'n'
+'o'
+'p'
+'q'
+'r'
+'s'
+'t'
+...
+
+exhaustive_range_char_ii list 1
+'a'
+
+exhaustive_range_char_iii list 21
+'!'
+'\"'
+'#'
+'$'
+'%'
+'&'
+'\''
+'('
+')'
+'*'
+'+'
+','
+'-'
+'.'
+'/'
+'0'
+'1'
+'2'
+'3'
+'4'
+...
+
+exhaustive_range_char_iv list 2
+'\u{d7ff}'
+'\u{e000}'
+
 exhaustive_range_decreasing_char_i list 21
 'z'
 'y'
@@ -2004,6 +2057,101 @@ exhaustive_range_decreasing_u8_vi list 21
 237
 236
 235
+...
+
+exhaustive_range_down_char_i list 1
+'\u{0}'
+
+exhaustive_range_down_char_ii list 21
+'\u{0}'
+'\u{1}'
+'\u{2}'
+'\u{3}'
+'\u{4}'
+'\u{5}'
+'\u{6}'
+'\u{7}'
+'\u{8}'
+'\t'
+'\n'
+'\u{b}'
+'\u{c}'
+'\r'
+'\u{e}'
+'\u{f}'
+'\u{10}'
+'\u{11}'
+'\u{12}'
+'\u{13}'
+...
+
+exhaustive_range_down_char_iii list 21
+'\u{0}'
+'\u{1}'
+'\u{2}'
+'\u{3}'
+'\u{4}'
+'\u{5}'
+'\u{6}'
+'\u{7}'
+'\u{8}'
+'\t'
+'\n'
+'\u{b}'
+'\u{c}'
+'\r'
+'\u{e}'
+'\u{f}'
+'\u{10}'
+'\u{11}'
+'\u{12}'
+'\u{13}'
+...
+
+exhaustive_range_down_char_iv list 21
+'\u{0}'
+'\u{1}'
+'\u{2}'
+'\u{3}'
+'\u{4}'
+'\u{5}'
+'\u{6}'
+'\u{7}'
+'\u{8}'
+'\t'
+'\n'
+'\u{b}'
+'\u{c}'
+'\r'
+'\u{e}'
+'\u{f}'
+'\u{10}'
+'\u{11}'
+'\u{12}'
+'\u{13}'
+...
+
+exhaustive_range_down_char_v list 21
+'\u{0}'
+'\u{1}'
+'\u{2}'
+'\u{3}'
+'\u{4}'
+'\u{5}'
+'\u{6}'
+'\u{7}'
+'\u{8}'
+'\t'
+'\n'
+'\u{b}'
+'\u{c}'
+'\r'
+'\u{e}'
+'\u{f}'
+'\u{10}'
+'\u{11}'
+'\u{12}'
+'\u{13}'
 ...
 
 exhaustive_range_down_decreasing_char_i list 1
@@ -5936,6 +6084,101 @@ exhaustive_range_u8_vi list 21
 19
 ...
 
+exhaustive_range_up_char_i list 21
+'\u{0}'
+'\u{1}'
+'\u{2}'
+'\u{3}'
+'\u{4}'
+'\u{5}'
+'\u{6}'
+'\u{7}'
+'\u{8}'
+'\t'
+'\n'
+'\u{b}'
+'\u{c}'
+'\r'
+'\u{e}'
+'\u{f}'
+'\u{10}'
+'\u{11}'
+'\u{12}'
+'\u{13}'
+...
+
+exhaustive_range_up_char_ii list 21
+'a'
+'b'
+'c'
+'d'
+'e'
+'f'
+'g'
+'h'
+'i'
+'j'
+'k'
+'l'
+'m'
+'n'
+'o'
+'p'
+'q'
+'r'
+'s'
+'t'
+...
+
+exhaustive_range_up_char_iii list 21
+'Ш'
+'Щ'
+'Ъ'
+'Ы'
+'Ь'
+'Э'
+'Ю'
+'Я'
+'а'
+'б'
+'в'
+'г'
+'д'
+'е'
+'ж'
+'з'
+'и'
+'й'
+'к'
+'л'
+...
+
+exhaustive_range_up_char_iv list 21
+'\u{d7ff}'
+'\u{e000}'
+'\u{e001}'
+'\u{e002}'
+'\u{e003}'
+'\u{e004}'
+'\u{e005}'
+'\u{e006}'
+'\u{e007}'
+'\u{e008}'
+'\u{e009}'
+'\u{e00a}'
+'\u{e00b}'
+'\u{e00c}'
+'\u{e00d}'
+'\u{e00e}'
+'\u{e00f}'
+'\u{e010}'
+'\u{e011}'
+'\u{e012}'
+...
+
+exhaustive_range_up_char_v list 1
+'\u{10ffff}'
+
 exhaustive_range_up_decreasing_char_i list 21
 '\u{10ffff}'
 '\u{10fffe}'
@@ -9666,6 +9909,295 @@ random_positive_u8s map 10
 249: 4030
 156: 4027
 
+random_range_char_i list 21
+'v'
+'l'
+'c'
+'g'
+'r'
+'n'
+'q'
+'n'
+'w'
+'m'
+'r'
+'m'
+'k'
+'d'
+'r'
+'q'
+'k'
+'v'
+'b'
+'u'
+...
+
+random_range_char_i map 10
+'x': 38784
+'o': 38661
+'h': 38603
+'c': 38601
+'e': 38598
+'u': 38597
+'d': 38575
+'y': 38570
+'z': 38548
+'n': 38534
+
+random_range_char_ii list 21
+'a'
+'a'
+'a'
+'a'
+'a'
+'a'
+'a'
+'a'
+'a'
+'a'
+'a'
+'a'
+'a'
+'a'
+'a'
+'a'
+'a'
+'a'
+'a'
+'a'
+...
+
+random_range_char_ii map 1
+'a': 1000000
+
+random_range_char_iii list 21
+'#'
+'\''
+'8'
+'2'
+'%'
+'*'
+'-'
+'.'
+'5'
+'\"'
+'7'
+'7'
+')'
+'!'
+'7'
+'5'
+'0'
+'6'
+'#'
+'/'
+...
+
+random_range_char_iii map 10
+'$': 40479
+'*': 40478
+'+': 40258
+'3': 40185
+'-': 40169
+'.': 40131
+'9': 40120
+'\'': 40047
+'%': 40015
+'&': 39996
+
+random_range_char_iv list 21
+'\u{e000}'
+'\u{e000}'
+'\u{d7ff}'
+'\u{d7ff}'
+'\u{e000}'
+'\u{e000}'
+'\u{d7ff}'
+'\u{e000}'
+'\u{d7ff}'
+'\u{d7ff}'
+'\u{e000}'
+'\u{d7ff}'
+'\u{d7ff}'
+'\u{e000}'
+'\u{e000}'
+'\u{d7ff}'
+'\u{d7ff}'
+'\u{e000}'
+'\u{e000}'
+'\u{d7ff}'
+...
+
+random_range_char_iv map 2
+'\u{d7ff}': 500172
+'\u{e000}': 499828
+
+random_range_down_char_i list 21
+'\u{0}'
+'\u{0}'
+'\u{0}'
+'\u{0}'
+'\u{0}'
+'\u{0}'
+'\u{0}'
+'\u{0}'
+'\u{0}'
+'\u{0}'
+'\u{0}'
+'\u{0}'
+'\u{0}'
+'\u{0}'
+'\u{0}'
+'\u{0}'
+'\u{0}'
+'\u{0}'
+'\u{0}'
+'\u{0}'
+...
+
+random_range_down_char_i map 1
+'\u{0}': 1000000
+
+random_range_down_char_ii list 21
+'\u{13}'
+'\u{1b}'
+'\u{1c}'
+'V'
+'I'
+'A'
+'X'
+'?'
+'2'
+'\u{1a}'
+'O'
+'\\'
+'$'
+'S'
+'\u{15}'
+'8'
+'\u{6}'
+'A'
+'7'
+'8'
+...
+
+random_range_down_char_ii map 10
+'\n': 10495
+'P': 10421
+'R': 10409
+'@': 10408
+'\t': 10407
+'\u{1}': 10406
+'_': 10374
+'3': 10362
+',': 10353
+'\u{13}': 10350
+
+random_range_down_char_iii list 21
+'ϖ'
+'Ƈ'
+'\u{8f}'
+'ϯ'
+'ϻ'
+'þ'
+'>'
+'\r'
+'ǂ'
+'ɔ'
+'\u{7f}'
+'Ï'
+'\u{85}'
+'ʣ'
+'ċ'
+'\u{a0}'
+'æ'
+'Î'
+'̓'
+'©'
+...
+
+random_range_down_char_iii map 10
+'c': 1033
+'̛': 1025
+'\u{38b}': 1023
+'ɓ': 1022
+'ʚ': 1021
+'̴': 1021
+'Ϲ': 1021
+'ı': 1017
+'Ȃ': 1017
+'̊': 1016
+
+random_range_down_char_iv list 21
+'♽'
+'練'
+'场'
+'൮'
+'鵚'
+'ԃ'
+'켊'
+'迎'
+'ᙘ'
+'玅'
+'栭'
+'ꚫ'
+'㦩'
+'制'
+'㰋'
+'⛷'
+'뎶'
+'쯖'
+'笜'
+'盏'
+...
+
+random_range_down_char_iv map 10
+'ゞ': 38
+'䬮': 38
+'➵': 36
+'愙': 36
+'秭': 36
+'\u{202d}': 35
+'鯰': 35
+'싓': 35
+'➦': 34
+'㥪': 34
+
+random_range_down_char_v list 21
+'\u{c9105}'
+'\u{15e8b}'
+'\u{7f4e6}'
+'\u{ed1e4}'
+'\u{8f1af}'
+'\u{5f0e9}'
+'\u{6a834}'
+'\u{94701}'
+'\u{529a6}'
+'\u{c336a}'
+'\u{7d9c7}'
+'\u{9ddd8}'
+'\u{8d768}'
+'핝'
+'\u{4ffaf}'
+'𠷀'
+'꺤'
+'\u{9dd4d}'
+'𘊗'
+'\u{3364e}'
+...
+
+random_range_down_char_v map 10
+'\u{fd321}': 9
+'\u{7f1da}': 8
+'捳': 8
+'\u{101a98}': 7
+'\u{1024ee}': 7
+'\u{11773}': 7
+'\u{41134}': 7
+'\u{430ed}': 7
+'\u{613f9}': 7
+'\u{66772}': 7
+
 random_range_down_i16_i list 21
 -32507
 -8565
@@ -13115,6 +13647,172 @@ random_range_u8_vi map 10
 108: 4037
 249: 4030
 156: 4027
+
+random_range_up_char_i list 21
+'\u{c9105}'
+'\u{15e8b}'
+'\u{7f4e6}'
+'\u{ed1e4}'
+'\u{8f1af}'
+'\u{5f0e9}'
+'\u{6a834}'
+'\u{94701}'
+'\u{529a6}'
+'\u{c336a}'
+'\u{7d9c7}'
+'\u{9ddd8}'
+'\u{8d768}'
+'핝'
+'\u{4ffaf}'
+'𠷀'
+'꺤'
+'\u{9dd4d}'
+'𘊗'
+'\u{3364e}'
+...
+
+random_range_up_char_i map 10
+'\u{fd321}': 9
+'\u{7f1da}': 8
+'捳': 8
+'\u{101a98}': 7
+'\u{1024ee}': 7
+'\u{11773}': 7
+'\u{41134}': 7
+'\u{430ed}': 7
+'\u{613f9}': 7
+'\u{66772}': 7
+
+random_range_up_char_ii list 21
+'\u{d1117}'
+'\u{3a48b}'
+'\u{c6f78}'
+'𧕭'
+'\u{9a11e}'
+'\u{907b0}'
+'\u{80958}'
+'\u{b5f89}'
+'\u{8b157}'
+'\u{e020f}'
+'\u{a9845}'
+'\u{ba914}'
+'\u{a752c}'
+'\u{4b198}'
+'\u{aa536}'
+'\u{61a0f}'
+'\u{2e15c}'
+'\u{cc1af}'
+'\u{1cd9d}'
+'\u{74606}'
+...
+
+random_range_up_char_ii map 10
+'\u{480af}': 9
+'\u{76d63}': 9
+'\u{8fc82}': 8
+'\u{d19c6}': 8
+'聟': 8
+'𤲆': 8
+'\u{107f44}': 7
+'\u{10a9ac}': 7
+'\u{127e3}': 7
+'\u{12986}': 7
+
+random_range_up_char_iii list 21
+'\u{119fd}'
+'\u{95ab3}'
+'\u{63a2e}'
+'\u{e7c9c}'
+'\u{107607}'
+'\u{5eb51}'
+'\u{4d5fc}'
+'\u{f5069}'
+'\u{9fa9e}'
+'\u{f125a}'
+'\u{40bc7}'
+'\u{c9760}'
+'\u{99e30}'
+'\u{8f5e5}'
+'\u{10143f}'
+'\u{c8d68}'
+'\u{7878c}'
+'\u{7aeed}'
+'\u{4b987}'
+'\u{ddb5e}'
+...
+
+random_range_up_char_iii map 10
+'\u{1ebbb}': 8
+'\u{85d9f}': 8
+'\u{ed308}': 8
+'\u{103b5f}': 7
+'\u{1040ae}': 7
+'\u{10da6}': 7
+'\u{1a574}': 7
+'\u{1aa06}': 7
+'\u{2e85e}': 7
+'\u{364ee}': 7
+
+random_range_up_char_iv list 21
+'\u{77fa1}'
+'\u{7583b}'
+'\u{d5876}'
+'\u{c2519}'
+'\u{c97c8}'
+'\u{93055}'
+'\u{2e45f}'
+'\u{ac12f}'
+'𝟘'
+'\u{a6665}'
+'\u{80228}'
+'\u{1098dd}'
+'\u{b12eb}'
+'\u{6babb}'
+'\u{ef801}'
+'\u{3ca82}'
+'\u{a70a0}'
+'\u{dc545}'
+'\u{751c7}'
+'\u{c8b07}'
+...
+
+random_range_up_char_iv map 10
+'\u{d0f0b}': 9
+'\u{31303}': 8
+'\u{bfb44}': 8
+'\u{10a5bb}': 7
+'\u{10d08b}': 7
+'\u{152e6}': 7
+'\u{19a8b}': 7
+'\u{1b947}': 7
+'\u{1fba1}': 7
+'\u{40cd3}': 7
+
+random_range_up_char_v list 21
+'\u{10ffff}'
+'\u{10ffff}'
+'\u{10ffff}'
+'\u{10ffff}'
+'\u{10ffff}'
+'\u{10ffff}'
+'\u{10ffff}'
+'\u{10ffff}'
+'\u{10ffff}'
+'\u{10ffff}'
+'\u{10ffff}'
+'\u{10ffff}'
+'\u{10ffff}'
+'\u{10ffff}'
+'\u{10ffff}'
+'\u{10ffff}'
+'\u{10ffff}'
+'\u{10ffff}'
+'\u{10ffff}'
+'\u{10ffff}'
+...
+
+random_range_up_char_v map 1
+'\u{10ffff}': 1000000
 
 random_range_up_i16_i list 21
 261

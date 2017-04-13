@@ -1134,6 +1134,89 @@ fn test_ascii_chars() {
     eo.match_vec_f_debug("random_ascii_chars", &mut rp.ascii_chars());
 }
 
+fn range_up_char_exhaustive_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: char) {
+    eo.match_vec_debug(key, &mut p.range_up_char(a));
+}
+
+fn range_up_char_random_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: char) {
+    eo.match_vec_f_debug(key, &mut p.range_up_char(a));
+}
+
+#[test]
+fn test_range_up_char() {
+    let (eo, ep, rp) = prepare_test();
+    let es = "exhaustive_range_up_char";
+    range_up_char_exhaustive_helper(&eo, &ep, &format!("{}_i", es), '\0');
+    range_up_char_exhaustive_helper(&eo, &ep, &format!("{}_ii", es), 'a');
+    range_up_char_exhaustive_helper(&eo, &ep, &format!("{}_iii", es), 'Ш');
+    range_up_char_exhaustive_helper(&eo, &ep, &format!("{}_iv", es), '\u{D7FF}');
+    range_up_char_exhaustive_helper(&eo, &ep, &format!("{}_v", es), char::MAX);
+    let rs = "random_range_up_char";
+    range_up_char_random_helper(&eo, &rp, &format!("{}_i", rs), '\0');
+    range_up_char_random_helper(&eo, &rp, &format!("{}_ii", rs), 'a');
+    range_up_char_random_helper(&eo, &rp, &format!("{}_iii", rs), 'Ш');
+    range_up_char_random_helper(&eo, &rp, &format!("{}_iv", rs), '\u{D7FF}');
+    range_up_char_random_helper(&eo, &rp, &format!("{}_v", rs), char::MAX);
+}
+
+fn range_down_char_exhaustive_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: char) {
+    eo.match_vec_debug(key, &mut p.range_down_char(a));
+}
+
+fn range_down_char_random_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: char) {
+    eo.match_vec_f_debug(key, &mut p.range_down_char(a));
+}
+
+#[test]
+fn test_range_down_char() {
+    let (eo, ep, rp) = prepare_test();
+    let es = "exhaustive_range_down_char";
+    range_down_char_exhaustive_helper(&eo, &ep, &format!("{}_i", es), '\0');
+    range_down_char_exhaustive_helper(&eo, &ep, &format!("{}_ii", es), 'a');
+    range_down_char_exhaustive_helper(&eo, &ep, &format!("{}_iii", es), 'Ш');
+    range_down_char_exhaustive_helper(&eo, &ep, &format!("{}_iv", es), '\u{E000}');
+    range_down_char_exhaustive_helper(&eo, &ep, &format!("{}_v", es), char::MAX);
+    let rs = "random_range_down_char";
+    range_down_char_random_helper(&eo, &rp, &format!("{}_i", rs), '\0');
+    range_down_char_random_helper(&eo, &rp, &format!("{}_ii", rs), 'a');
+    range_down_char_random_helper(&eo, &rp, &format!("{}_iii", rs), 'Ш');
+    range_down_char_random_helper(&eo, &rp, &format!("{}_iv", rs), '\u{E000}');
+    range_down_char_random_helper(&eo, &rp, &format!("{}_v", rs), char::MAX);
+}
+
+fn range_char_exhaustive_helper(eo: &TestOutput,
+                                p: &IteratorProvider,
+                                key: &str,
+                                a: char,
+                                b: char) {
+    eo.match_vec_debug(key, &mut p.range_char(a, b));
+}
+
+fn range_char_random_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: char, b: char) {
+    eo.match_vec_f_debug(key, &mut p.range_char(a, b));
+}
+
+#[test]
+fn test_range_char() {
+    let (eo, ep, rp) = prepare_test();
+    let es = "exhaustive_range_char";
+    range_char_exhaustive_helper(&eo, &ep, &format!("{}_i", es), 'a', 'z');
+    range_char_exhaustive_helper(&eo, &ep, &format!("{}_ii", es), 'a', 'a');
+    range_char_exhaustive_helper(&eo, &ep, &format!("{}_iii", es), '!', '9');
+    range_char_exhaustive_helper(&eo, &ep, &format!("{}_iv", es), '\u{D7FF}', '\u{E000}');
+    let rs = "random_range_char";
+    range_char_random_helper(&eo, &rp, &format!("{}_i", rs), 'a', 'z');
+    range_char_random_helper(&eo, &rp, &format!("{}_ii", rs), 'a', 'a');
+    range_char_random_helper(&eo, &rp, &format!("{}_iii", rs), '!', '9');
+    range_char_random_helper(&eo, &rp, &format!("{}_iv", rs), '\u{D7FF}', '\u{E000}');
+}
+
+#[test]
+#[should_panic(expected = "a must be less than or equal to b. a: a, b: A")]
+fn range_char_fail() {
+    IteratorProvider::Exhaustive.range_char('a', 'A');
+}
+
 fn range_up_increasing_integer_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: &str) {
     eo.match_vec(key,
                  &mut p.range_up_increasing_integer(Integer::from_str(a).unwrap()));

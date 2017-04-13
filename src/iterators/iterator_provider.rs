@@ -781,6 +781,24 @@ impl Iterator for AsciiChars {
     }
 }
 
+pub enum RangeChar {
+    Exhaustive(RangeIncreasingChar),
+    Random(IsaacRng, Range<u32>),
+}
+
+impl Iterator for RangeChar {
+    type Item = char;
+
+    fn next(&mut self) -> Option<char> {
+        match self {
+            &mut RangeChar::Exhaustive(ref mut it) => it.next(),
+            &mut RangeChar::Random(ref mut rng, ref range) => {
+                contiguous_range_to_char(range.ind_sample(rng))
+            }
+        }
+    }
+}
+
 pub struct RangeIncreasingInteger {
     i: Integer,
     b: Integer,
@@ -1617,6 +1635,28 @@ impl IteratorProvider {
             }
             &IteratorProvider::Random(_, seed) => {
                 AsciiChars::Random(SeedableRng::from_seed(&seed[..]))
+            }
+        }
+    }
+
+    pub fn range_up_char(&self, a: char) -> RangeChar {
+        self.range_char(a, char::MAX)
+    }
+
+    pub fn range_down_char(&self, a: char) -> RangeChar {
+        self.range_char('\0', a)
+    }
+
+    pub fn range_char(&self, a: char, b: char) -> RangeChar {
+        if a > b {
+            panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
+        }
+        match self {
+            &IteratorProvider::Exhaustive => RangeChar::Exhaustive(RangeIncreasingChar::new(a, b)),
+            &IteratorProvider::Random(_, seed) => {
+                RangeChar::Random(SeedableRng::from_seed(&seed[..]),
+                                  Range::new(char_to_contiguous_range(a),
+                                             char_to_contiguous_range(b) + 1))
             }
         }
     }
