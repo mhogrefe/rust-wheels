@@ -2,8 +2,10 @@
 use gmp_to_flint_adaptor_lib::integer::Integer;
 #[cfg(feature = "native")]
 use num_to_flint_adaptor_lib::integer::Integer;
+
 use itertools::Interleave;
 use itertools::Itertools;
+use prim_utils::char_utils::*;
 use rand::{IsaacRng, Rng, SeedableRng};
 use rand::distributions::{IndependentSample, Range};
 use sha3::{Digest, Sha3_256};
@@ -639,8 +641,8 @@ integer_range_i!(isize,
                  isize::max_value());
 
 pub struct RangeIncreasingChar {
-    i: char,
-    b: char,
+    i: u32,
+    b: u32,
     done: bool,
 }
 
@@ -650,8 +652,8 @@ impl RangeIncreasingChar {
             panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
         }
         RangeIncreasingChar {
-            i: a,
-            b: b,
+            i: char_to_contiguous_range(a),
+            b: char_to_contiguous_range(b),
             done: false,
         }
     }
@@ -667,20 +669,16 @@ impl Iterator for RangeIncreasingChar {
             self.done = self.i == self.b;
             let ret = self.i.clone();
             if !self.done {
-                if self.i == '\u{D7FF}' {
-                    self.i = '\u{E000}'
-                } else {
-                    self.i = char::from_u32(self.i as u32 + 1).unwrap();
-                }
+                self.i += 1;
             }
-            Some(ret)
+            Some(contiguous_range_to_char(ret).unwrap())
         }
     }
 }
 
 pub struct RangeDecreasingChar {
-    a: char,
-    i: char,
+    a: u32,
+    i: u32,
     done: bool,
 }
 
@@ -690,8 +688,8 @@ impl RangeDecreasingChar {
             panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
         }
         RangeDecreasingChar {
-            a: a,
-            i: b,
+            a: char_to_contiguous_range(a),
+            i: char_to_contiguous_range(b),
             done: false,
         }
     }
@@ -707,13 +705,9 @@ impl Iterator for RangeDecreasingChar {
             self.done = self.i == self.a;
             let ret = self.i.clone();
             if !self.done {
-                if self.i == '\u{E000}' {
-                    self.i = '\u{D7FF}'
-                } else {
-                    self.i = char::from_u32(self.i as u32 - 1).unwrap();
-                }
+                self.i -= 1;
             }
-            Some(ret)
+            Some(contiguous_range_to_char(ret).unwrap())
         }
     }
 }

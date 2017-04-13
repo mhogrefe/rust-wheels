@@ -1,6 +1,6 @@
 extern crate rust_wheels_lib;
 
-use rust_wheels_lib::demos::number_utils::integer_utils_demos::*;
+use rust_wheels_lib::demos::prim_utils::integer_utils_demos::*;
 use rust_wheels_lib::iterators::iterator_provider::IteratorProvider;
 use std::env;
 

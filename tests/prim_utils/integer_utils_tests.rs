@@ -1,6 +1,6 @@
 use gmp_to_flint_adaptor_lib::integer::Integer;
 use rust_wheels_lib::io::readers::parse_vec;
-use rust_wheels_lib::number_utils::integer_utils::*;
+use rust_wheels_lib::prim_utils::integer_utils::*;
 use std::str::FromStr;
 
 fn is_power_of_two_helper(n: &str, out: bool) {

@@ -1,5 +1,5 @@
 use iterators::iterator_provider::IteratorProvider;
-use number_utils::integer_utils::*;
+use prim_utils::integer_utils::*;
 
 macro_rules! demo_ceiling_log_2 {
     ($ts: expr, $d: ident, $f: ident, $pt: ident) => {
