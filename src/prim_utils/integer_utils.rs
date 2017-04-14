@@ -196,6 +196,106 @@ impl PrimUnsignedInt for u64 {}
 
 impl PrimUnsignedInt for usize {}
 
+impl Walkable for u8 {
+    fn increment(&mut self) {
+        *self += 1
+    }
+
+    fn decrement(&mut self) {
+        *self -= 1
+    }
+}
+
+impl Walkable for u16 {
+    fn increment(&mut self) {
+        *self += 1
+    }
+
+    fn decrement(&mut self) {
+        *self -= 1
+    }
+}
+
+impl Walkable for u32 {
+    fn increment(&mut self) {
+        *self += 1
+    }
+
+    fn decrement(&mut self) {
+        *self -= 1
+    }
+}
+
+impl Walkable for u64 {
+    fn increment(&mut self) {
+        *self += 1
+    }
+
+    fn decrement(&mut self) {
+        *self -= 1
+    }
+}
+
+impl Walkable for usize {
+    fn increment(&mut self) {
+        *self += 1
+    }
+
+    fn decrement(&mut self) {
+        *self -= 1
+    }
+}
+
+impl Walkable for i8 {
+    fn increment(&mut self) {
+        *self += 1
+    }
+
+    fn decrement(&mut self) {
+        *self -= 1
+    }
+}
+
+impl Walkable for i16 {
+    fn increment(&mut self) {
+        *self += 1
+    }
+
+    fn decrement(&mut self) {
+        *self -= 1
+    }
+}
+
+impl Walkable for i32 {
+    fn increment(&mut self) {
+        *self += 1
+    }
+
+    fn decrement(&mut self) {
+        *self -= 1
+    }
+}
+
+impl Walkable for i64 {
+    fn increment(&mut self) {
+        *self += 1
+    }
+
+    fn decrement(&mut self) {
+        *self -= 1
+    }
+}
+
+impl Walkable for isize {
+    fn increment(&mut self) {
+        *self += 1
+    }
+
+    fn decrement(&mut self) {
+        *self -= 1
+    }
+}
+
 pub fn usize_bit_count() -> u32 {
     (0 as usize).count_zeros()
 }

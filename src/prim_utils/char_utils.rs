@@ -1,3 +1,4 @@
+use prim_utils::traits::*;
 use std::char;
 
 pub const NUMBER_OF_CHARS: u32 = 0x10F800;
@@ -17,5 +18,15 @@ pub fn contiguous_range_to_char(i: u32) -> Option<char> {
         char::from_u32(i + 2048)
     } else {
         None
+    }
+}
+
+impl Walkable for char {
+    fn increment(&mut self) {
+        *self = contiguous_range_to_char(char_to_contiguous_range(*self) + 1).unwrap()
+    }
+
+    fn decrement(&mut self) {
+        *self = contiguous_range_to_char(char_to_contiguous_range(*self) - 1).unwrap()
     }
 }

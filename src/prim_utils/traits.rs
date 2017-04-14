@@ -15,3 +15,9 @@ pub trait PrimInt
 }
 
 pub trait PrimUnsignedInt: PrimInt {}
+
+pub trait Walkable: Copy + Display + Eq + Ord {
+    fn increment(&mut self);
+
+    fn decrement(&mut self);
+}

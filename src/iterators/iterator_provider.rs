@@ -6,6 +6,7 @@ use num_to_flint_adaptor_lib::integer::Integer;
 use itertools::Interleave;
 use itertools::Itertools;
 use prim_utils::char_utils::*;
+use prim_utils::traits::*;
 use rand::{IsaacRng, Rng, SeedableRng};
 use rand::distributions::{IndependentSample, Range};
 use sha3::{Digest, Sha3_256};
@@ -104,80 +105,80 @@ impl Iterator for Booleans {
     }
 }
 
+pub struct RangeIncreasing<T: Walkable> {
+    i: T,
+    b: T,
+    done: bool,
+}
+
+impl<T: Walkable> RangeIncreasing<T> {
+    fn new(a: T, b: T) -> RangeIncreasing<T> {
+        if a > b {
+            panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
+        }
+        RangeIncreasing {
+            i: a,
+            b: b,
+            done: false,
+        }
+    }
+}
+
+impl<T: Walkable> Iterator for RangeIncreasing<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<T> {
+        if self.done {
+            None
+        } else {
+            self.done = self.i == self.b;
+            let ret = self.i;
+            if !self.done {
+                self.i.increment();
+            }
+            Some(ret)
+        }
+    }
+}
+
+pub struct RangeDecreasing<T: Walkable> {
+    a: T,
+    i: T,
+    done: bool,
+}
+
+impl<T: Walkable> RangeDecreasing<T> {
+    fn new(a: T, b: T) -> RangeDecreasing<T> {
+        if a > b {
+            panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
+        }
+        RangeDecreasing {
+            a: a,
+            i: b,
+            done: false,
+        }
+    }
+}
+
+impl<T: Walkable> Iterator for RangeDecreasing<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<T> {
+        if self.done {
+            None
+        } else {
+            self.done = self.i == self.a;
+            let ret = self.i;
+            if !self.done {
+                self.i.decrement();
+            }
+            Some(ret)
+        }
+    }
+}
+
 macro_rules! integer_range {
-    ($t: ty, $ri_s: ident, $rd_s: ident, $rand_s: ident, $max: expr) => {
-        pub struct $ri_s {
-            i: $t,
-            b: $t,
-            done: bool,
-        }
-
-        impl $ri_s {
-            fn new(a: $t, b: $t) -> $ri_s {
-                if a > b {
-                    panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
-                }
-                $ri_s {
-                    i: a,
-                    b: b,
-                    done: false,
-                }
-            }
-        }
-
-        impl Iterator for $ri_s {
-            type Item = $t;
-
-            fn next(&mut self) -> Option<$t> {
-                if self.done {
-                    None
-                } else {
-                    self.done = self.i == self.b;
-                    let ret = self.i;
-                    if !self.done {
-                        self.i += 1
-                    }
-                    Some(ret)
-                }
-            }
-        }
-
-        pub struct $rd_s {
-            a: $t,
-            i: $t,
-            done: bool,
-        }
-
-        impl $rd_s {
-            fn new(a: $t, b: $t) -> $rd_s {
-                if a > b {
-                    panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
-                }
-                $rd_s {
-                    a: a,
-                    i: b,
-                    done: false,
-                }
-            }
-        }
-
-        impl Iterator for $rd_s {
-            type Item = $t;
-
-            fn next(&mut self) -> Option<$t> {
-                if self.done {
-                    None
-                } else {
-                    self.done = self.i == self.a;
-                    let ret = self.i;
-                    if !self.done {
-                        self.i -= 1
-                    }
-                    Some(ret)
-                }
-            }
-        }
-
+    ($t: ty, $rand_s: ident) => {
         pub struct $rand_s {
             rng: IsaacRng,
         }
@@ -198,62 +199,21 @@ macro_rules! integer_range {
     }
 }
 
-integer_range!(u8,
-               RangeIncreasingU8,
-               RangeDecreasingU8,
-               RandomU8s,
-               u8::max_value());
-integer_range!(u16,
-               RangeIncreasingU16,
-               RangeDecreasingU16,
-               RandomU16s,
-               u16::max_value());
-integer_range!(u32,
-               RangeIncreasingU32,
-               RangeDecreasingU32,
-               RandomU32s,
-               u32::max_value());
-integer_range!(u64,
-               RangeIncreasingU64,
-               RangeDecreasingU64,
-               RandomU64s,
-               u64::max_value());
-integer_range!(usize,
-               RangeIncreasingUsize,
-               RangeDecreasingUsize,
-               RandomUsizes,
-               usize::max_value());
-integer_range!(i8,
-               RangeIncreasingI8,
-               RangeDecreasingI8,
-               RandomI8s,
-               i8::max_value());
-integer_range!(i16,
-               RangeIncreasingI16,
-               RangeDecreasingI16,
-               RandomI16s,
-               i16::max_value());
-integer_range!(i32,
-               RangeIncreasingI32,
-               RangeDecreasingI32,
-               RandomI32s,
-               i32::max_value());
-integer_range!(i64,
-               RangeIncreasingI64,
-               RangeDecreasingI64,
-               RandomI64s,
-               i64::max_value());
-integer_range!(isize,
-               RangeIncreasingIsize,
-               RangeDecreasingIsize,
-               RandomIsizes,
-               isize::max_value());
+integer_range!(u8, RandomU8s);
+integer_range!(u16, RandomU16s);
+integer_range!(u32, RandomU32s);
+integer_range!(u64, RandomU64s);
+integer_range!(usize, RandomUsizes);
+integer_range!(i8, RandomI8s);
+integer_range!(i16, RandomI16s);
+integer_range!(i32, RandomI32s);
+integer_range!(i64, RandomI64s);
+integer_range!(isize, RandomIsizes);
 
 macro_rules! integer_range_u {
     (
         $t: ty,
         $all_s: ident,
-        $ri_s: ident,
         $rr_s: ident,
         $rand_s: ident,
         $pos_s: ident,
@@ -261,7 +221,7 @@ macro_rules! integer_range_u {
         $max: expr
     ) => {
         pub enum $pos_s {
-            Exhaustive($ri_s),
+            Exhaustive(RangeIncreasing<$t>),
             Random($rand_s),
         }
 
@@ -284,7 +244,7 @@ macro_rules! integer_range_u {
         }
 
         pub enum $all_s {
-            Exhaustive($ri_s),
+            Exhaustive(RangeIncreasing<$t>),
             Random($rand_s),
         }
 
@@ -332,7 +292,7 @@ macro_rules! integer_range_u {
         }
 
         pub enum $r_s {
-            Exhaustive($ri_s),
+            Exhaustive(RangeIncreasing<$t>),
             Random($rr_s),
         }
 
@@ -351,7 +311,6 @@ macro_rules! integer_range_u {
 
 integer_range_u!(u8,
                  U8s,
-                 RangeIncreasingU8,
                  RandomRangeU8,
                  RandomU8s,
                  PositiveU8s,
@@ -359,7 +318,6 @@ integer_range_u!(u8,
                  u8::max_value());
 integer_range_u!(u16,
                  U16s,
-                 RangeIncreasingU16,
                  RandomRangeU16,
                  RandomU16s,
                  PositiveU16s,
@@ -367,7 +325,6 @@ integer_range_u!(u16,
                  u16::max_value());
 integer_range_u!(u32,
                  U32s,
-                 RangeIncreasingU32,
                  RandomRangeU32,
                  RandomU32s,
                  PositiveU32s,
@@ -375,7 +332,6 @@ integer_range_u!(u32,
                  u32::max_value());
 integer_range_u!(u64,
                  U64s,
-                 RangeIncreasingU64,
                  RandomRangeU64,
                  RandomU64s,
                  PositiveU64s,
@@ -383,7 +339,6 @@ integer_range_u!(u64,
                  u64::max_value());
 integer_range_u!(usize,
                  Usizes,
-                 RangeIncreasingUsize,
                  RandomRangeUsize,
                  RandomUsizes,
                  PositiveUsizes,
@@ -399,8 +354,6 @@ macro_rules! integer_range_i {
         $nat_s: ident,
         $nz_s: ident,
         $all_s: ident,
-        $ri_s: ident,
-        $rd_s: ident,
         $rand_s: ident,
         $r_s: ident,
         $er_s: ident,
@@ -409,7 +362,7 @@ macro_rules! integer_range_i {
         $max: expr
 ) => {
         pub enum $pos_s {
-            Exhaustive($ri_s),
+            Exhaustive(RangeIncreasing<$t>),
             Random($t, $rand_s),
         }
 
@@ -432,7 +385,7 @@ macro_rules! integer_range_i {
         }
 
         pub enum $neg_s {
-            Exhaustive($rd_s),
+            Exhaustive(RangeDecreasing<$t>),
             Random($t, $rand_s),
         }
 
@@ -448,7 +401,7 @@ macro_rules! integer_range_i {
         }
 
         pub enum $nat_s {
-            Exhaustive($ri_s),
+            Exhaustive(RangeIncreasing<$t>),
             Random($t, $rand_s),
         }
 
@@ -503,9 +456,9 @@ macro_rules! integer_range_i {
         }
 
         pub enum $er_s {
-            AllNonNegative($ri_s),
-            AllNonPositive($rd_s),
-            SomeOfEachSign(Chain<Once<$t>, Interleave<$ri_s, $rd_s>>),
+            AllNonNegative(RangeIncreasing<$t>),
+            AllNonPositive(RangeDecreasing<$t>),
+            SomeOfEachSign(Chain<Once<$t>, Interleave<RangeIncreasing<$t>, RangeDecreasing<$t>>>),
         }
 
         pub enum $rr_s {
@@ -571,8 +524,6 @@ integer_range_i!(i8,
                  NaturalI8s,
                  NonzeroI8s,
                  I8s,
-                 RangeIncreasingI8,
-                 RangeDecreasingI8,
                  RandomI8s,
                  RangeI8,
                  ExhaustiveRangeI8,
@@ -586,8 +537,6 @@ integer_range_i!(i16,
                  NaturalI16s,
                  NonzeroI16s,
                  I16s,
-                 RangeIncreasingI16,
-                 RangeDecreasingI16,
                  RandomI16s,
                  RangeI16,
                  ExhaustiveRangeI16,
@@ -601,8 +550,6 @@ integer_range_i!(i32,
                  NaturalI32s,
                  NonzeroI32s,
                  I32s,
-                 RangeIncreasingI32,
-                 RangeDecreasingI32,
                  RandomI32s,
                  RangeI32,
                  ExhaustiveRangeI32,
@@ -616,8 +563,6 @@ integer_range_i!(i64,
                  NaturalI64s,
                  NonzeroI64s,
                  I64s,
-                 RangeIncreasingI64,
-                 RangeDecreasingI64,
                  RandomI64s,
                  RangeI64,
                  ExhaustiveRangeI64,
@@ -631,8 +576,6 @@ integer_range_i!(isize,
                  NaturalIsizes,
                  NonzeroIsizes,
                  Isizes,
-                 RangeIncreasingIsize,
-                 RangeDecreasingIsize,
                  RandomIsizes,
                  RangeIsize,
                  ExhaustiveRangeIsize,
@@ -640,85 +583,13 @@ integer_range_i!(isize,
                  isize::min_value(),
                  isize::max_value());
 
-pub struct RangeIncreasingChar {
-    i: u32,
-    b: u32,
-    done: bool,
-}
-
-impl RangeIncreasingChar {
-    fn new(a: char, b: char) -> RangeIncreasingChar {
-        if a > b {
-            panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
-        }
-        RangeIncreasingChar {
-            i: char_to_contiguous_range(a),
-            b: char_to_contiguous_range(b),
-            done: false,
-        }
-    }
-}
-
-impl Iterator for RangeIncreasingChar {
-    type Item = char;
-
-    fn next(&mut self) -> Option<char> {
-        if self.done {
-            None
-        } else {
-            self.done = self.i == self.b;
-            let ret = self.i.clone();
-            if !self.done {
-                self.i += 1;
-            }
-            Some(contiguous_range_to_char(ret).unwrap())
-        }
-    }
-}
-
-pub struct RangeDecreasingChar {
-    a: u32,
-    i: u32,
-    done: bool,
-}
-
-impl RangeDecreasingChar {
-    fn new(a: char, b: char) -> RangeDecreasingChar {
-        if a > b {
-            panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
-        }
-        RangeDecreasingChar {
-            a: char_to_contiguous_range(a),
-            i: char_to_contiguous_range(b),
-            done: false,
-        }
-    }
-}
-
-impl Iterator for RangeDecreasingChar {
-    type Item = char;
-
-    fn next(&mut self) -> Option<char> {
-        if self.done {
-            None
-        } else {
-            self.done = self.i == self.a;
-            let ret = self.i.clone();
-            if !self.done {
-                self.i -= 1;
-            }
-            Some(contiguous_range_to_char(ret).unwrap())
-        }
-    }
-}
-
 pub struct ExhaustiveChars {
-    ranges: Vec<RangeIncreasingChar>,
+    ranges: Vec<RangeIncreasing<char>>,
     i: usize,
 }
 
 impl ExhaustiveChars {
-    pub fn new(ranges: Vec<RangeIncreasingChar>) -> ExhaustiveChars {
+    pub fn new(ranges: Vec<RangeIncreasing<char>>) -> ExhaustiveChars {
         ExhaustiveChars {
             ranges: ranges,
             i: 0,
@@ -782,7 +653,7 @@ impl Iterator for AsciiChars {
 }
 
 pub enum RangeChar {
-    Exhaustive(RangeIncreasingChar),
+    Exhaustive(RangeIncreasing<char>),
     Random(IsaacRng, Range<u32>),
 }
 
@@ -958,41 +829,39 @@ macro_rules! integer_range_impl {
         $d_f: ident,
         $pos_f: ident,
         $nat_f: ident,
-        $ri_s: ident,
-        $rd_s: ident,
         $min: expr,
         $max: expr
     ) => {
-        pub fn $rui_f(&self, a: $t) -> $ri_s {
-            $ri_s::new(a, $max)
+        pub fn $rui_f(&self, a: $t) -> RangeIncreasing<$t> {
+            RangeIncreasing::new(a, $max)
         }
 
-        pub fn $rud_f(&self, a: $t) -> $rd_s {
-            $rd_s::new(a, $max)
+        pub fn $rud_f(&self, a: $t) -> RangeDecreasing<$t> {
+            RangeDecreasing::new(a, $max)
         }
 
-        pub fn $rdi_f(&self, b: $t) -> $ri_s {
-            $ri_s::new($min, b)
+        pub fn $rdi_f(&self, b: $t) -> RangeIncreasing<$t> {
+            RangeIncreasing::new($min, b)
         }
 
-        pub fn $rdd_f(&self, b: $t) -> $rd_s {
-            $rd_s::new($min, b)
+        pub fn $rdd_f(&self, b: $t) -> RangeDecreasing<$t> {
+            RangeDecreasing::new($min, b)
         }
 
-        pub fn $ri_f(&self, a: $t, b: $t) -> $ri_s {
-            $ri_s::new(a, b)
+        pub fn $ri_f(&self, a: $t, b: $t) -> RangeIncreasing<$t> {
+            RangeIncreasing::new(a, b)
         }
 
-        pub fn $rd_f(&self, a: $t, b: $t) -> $rd_s {
-            $rd_s::new(a, b)
+        pub fn $rd_f(&self, a: $t, b: $t) -> RangeDecreasing<$t> {
+            RangeDecreasing::new(a, b)
         }
 
-        pub fn $i_f(&self) -> $ri_s {
-            $ri_s::new($min, $max)
+        pub fn $i_f(&self) -> RangeIncreasing<$t> {
+            RangeIncreasing::new($min, $max)
         }
 
-        pub fn $d_f(&self) -> $rd_s {
-            $rd_s::new($min, $max)
+        pub fn $d_f(&self) -> RangeDecreasing<$t> {
+            RangeDecreasing::new($min, $max)
         }
     }
 }
@@ -1005,7 +874,6 @@ macro_rules! integer_range_impl_u {
         $ru_f: ident,
         $rd_f: ident,
         $r_f: ident,
-        $ri_s: ident,
         $all_s: ident,
         $rand_s: ident,
         $pos_s: ident,
@@ -1015,14 +883,14 @@ macro_rules! integer_range_impl_u {
     ) => {
         pub fn $pos_f(&self) -> $pos_s {
             match self {
-                &IteratorProvider::Exhaustive => $pos_s::Exhaustive($ri_s::new(1, $max)),
+                &IteratorProvider::Exhaustive => $pos_s::Exhaustive(RangeIncreasing::new(1, $max)),
                 &IteratorProvider::Random(_, seed) => $pos_s::Random($rand_s::new(&seed)),
             }
         }
 
         pub fn $all_f(&self) -> $all_s {
             match self {
-                &IteratorProvider::Exhaustive => $all_s::Exhaustive($ri_s::new(0, $max)),
+                &IteratorProvider::Exhaustive => $all_s::Exhaustive(RangeIncreasing::new(0, $max)),
                 &IteratorProvider::Random(_, seed) => $all_s::Random($rand_s::new(&seed)),
             }
         }
@@ -1037,7 +905,7 @@ macro_rules! integer_range_impl_u {
 
         pub fn $r_f(&self, a: $t, b: $t) -> $r_s {
             match self {
-                &IteratorProvider::Exhaustive => $r_s::Exhaustive($ri_s::new(a, b)),
+                &IteratorProvider::Exhaustive => $r_s::Exhaustive(RangeIncreasing::new(a, b)),
                 &IteratorProvider::Random(_, seed) => $r_s::Random($rr_s::new(a, b, &seed[..])),
             }
         }
@@ -1056,8 +924,6 @@ macro_rules! integer_range_impl_i {
         $ru_f: ident,
         $rd_f: ident,
         $r_f: ident,
-        $ri_s: ident,
-        $rd_s: ident,
         $pos_s: ident,
         $neg_s: ident,
         $nat_s: ident,
@@ -1072,7 +938,7 @@ macro_rules! integer_range_impl_i {
     ) => {
         pub fn $pos_f(&self) -> $pos_s {
             match self {
-                &IteratorProvider::Exhaustive => $pos_s::Exhaustive($ri_s::new(1, $max)),
+                &IteratorProvider::Exhaustive => $pos_s::Exhaustive(RangeIncreasing::new(1, $max)),
                 &IteratorProvider::Random(_, seed) =>
                         $pos_s::Random($max, $rand_s::new(&seed)),
             }
@@ -1080,7 +946,7 @@ macro_rules! integer_range_impl_i {
 
         pub fn $neg_f(&self) -> $neg_s {
             match self {
-                &IteratorProvider::Exhaustive => $neg_s::Exhaustive($rd_s::new($min, -1)),
+                &IteratorProvider::Exhaustive => $neg_s::Exhaustive(RangeDecreasing::new($min, -1)),
                 &IteratorProvider::Random(_, seed) =>
                         $neg_s::Random($max, $rand_s::new(&seed)),
             }
@@ -1088,7 +954,7 @@ macro_rules! integer_range_impl_i {
 
         pub fn $nat_f(&self) -> $nat_s {
             match self {
-                &IteratorProvider::Exhaustive => $nat_s::Exhaustive($ri_s::new(0, $max)),
+                &IteratorProvider::Exhaustive => $nat_s::Exhaustive(RangeIncreasing::new(0, $max)),
                 &IteratorProvider::Random(_, seed) =>
                         $nat_s::Random($max, $rand_s::new(&seed)),
             }
@@ -1124,12 +990,12 @@ macro_rules! integer_range_impl_i {
             match self {
                 &IteratorProvider::Exhaustive => {
                     $r_s::Exhaustive(if a >= 0 {
-                        $er_s::AllNonNegative($ri_s::new(a, b))
+                        $er_s::AllNonNegative(RangeIncreasing::new(a, b))
                     } else if b <= 0 {
-                        $er_s::AllNonPositive($rd_s::new(a, b))
+                        $er_s::AllNonPositive(RangeDecreasing::new(a, b))
                     } else {
                         $er_s::SomeOfEachSign(
-                                once(0).chain($ri_s::new(1, b).interleave($rd_s::new(a, -1)))
+                                once(0).chain(RangeIncreasing::new(1, b).interleave(RangeDecreasing::new(a, -1)))
                         )
                     })
                 },
@@ -1141,7 +1007,7 @@ macro_rules! integer_range_impl_i {
 
 pub struct ExhaustiveFromVector<T> {
     xs: Vec<T>,
-    range: RangeIncreasingUsize,
+    range: RangeIncreasing<usize>,
 }
 
 impl<T: Clone> Iterator for ExhaustiveFromVector<T> {
@@ -1174,7 +1040,7 @@ impl<T: Clone> Iterator for FromVector<T> {
 }
 
 pub enum PositiveU32sGeometric {
-    Exhaustive(RangeIncreasingU32),
+    Exhaustive(RangeIncreasing<u32>),
     Random(RandomRangeU32),
 }
 
@@ -1199,7 +1065,7 @@ impl Iterator for PositiveU32sGeometric {
 }
 
 pub enum NaturalU32sGeometric {
-    Exhaustive(RangeIncreasingU32),
+    Exhaustive(RangeIncreasing<u32>),
     Random(RandomRangeU32),
 }
 
@@ -1260,8 +1126,6 @@ impl IteratorProvider {
                         u8s_decreasing,
                         positive_u8s,
                         natural_u8s,
-                        RangeIncreasingU8,
-                        RangeDecreasingU8,
                         0,
                         u8::max_value());
     integer_range_impl!(u16,
@@ -1275,8 +1139,6 @@ impl IteratorProvider {
                         u16s_decreasing,
                         positive_u16s,
                         natural_u16s,
-                        RangeIncreasingU16,
-                        RangeDecreasingU16,
                         0,
                         u16::max_value());
     integer_range_impl!(u32,
@@ -1290,8 +1152,6 @@ impl IteratorProvider {
                         u32s_decreasing,
                         positive_u32s,
                         natural_u32s,
-                        RangeIncreasingU32,
-                        RangeDecreasingU32,
                         0,
                         u32::max_value());
     integer_range_impl!(u64,
@@ -1305,8 +1165,6 @@ impl IteratorProvider {
                         u64s_decreasing,
                         positive_u64s,
                         natural_u64s,
-                        RangeIncreasingU64,
-                        RangeDecreasingU64,
                         0,
                         u64::max_value());
     integer_range_impl!(usize,
@@ -1320,8 +1178,6 @@ impl IteratorProvider {
                         usizes_decreasing,
                         positive_usizes,
                         natural_usizes,
-                        RangeIncreasingUsize,
-                        RangeDecreasingUsize,
                         0,
                         usize::max_value());
     integer_range_impl!(i8,
@@ -1335,8 +1191,6 @@ impl IteratorProvider {
                         i8s_decreasing,
                         positive_i8s,
                         natural_i8s,
-                        RangeIncreasingI8,
-                        RangeDecreasingI8,
                         i8::min_value(),
                         i8::max_value());
     integer_range_impl!(i16,
@@ -1350,8 +1204,6 @@ impl IteratorProvider {
                         i16s_decreasing,
                         positive_i16s,
                         natural_i16s,
-                        RangeIncreasingI16,
-                        RangeDecreasingI16,
                         i16::min_value(),
                         i16::max_value());
     integer_range_impl!(i32,
@@ -1365,8 +1217,6 @@ impl IteratorProvider {
                         i32s_decreasing,
                         positive_i32s,
                         natural_i32s,
-                        RangeIncreasingI32,
-                        RangeDecreasingI32,
                         i32::min_value(),
                         i32::max_value());
     integer_range_impl!(i64,
@@ -1380,8 +1230,6 @@ impl IteratorProvider {
                         i64s_decreasing,
                         positive_i64s,
                         natural_i64s,
-                        RangeIncreasingI64,
-                        RangeDecreasingI64,
                         i64::min_value(),
                         i64::max_value());
     integer_range_impl!(isize,
@@ -1395,8 +1243,6 @@ impl IteratorProvider {
                         isizes_decreasing,
                         positive_isizes,
                         natural_isizes,
-                        RangeIncreasingIsize,
-                        RangeDecreasingIsize,
                         isize::min_value(),
                         isize::max_value());
 
@@ -1406,7 +1252,6 @@ impl IteratorProvider {
                           range_up_u8,
                           range_down_u8,
                           range_u8,
-                          RangeIncreasingU8,
                           U8s,
                           RandomU8s,
                           PositiveU8s,
@@ -1419,7 +1264,6 @@ impl IteratorProvider {
                           range_up_u16,
                           range_down_u16,
                           range_u16,
-                          RangeIncreasingU16,
                           U16s,
                           RandomU16s,
                           PositiveU16s,
@@ -1432,7 +1276,6 @@ impl IteratorProvider {
                           range_up_u32,
                           range_down_u32,
                           range_u32,
-                          RangeIncreasingU32,
                           U32s,
                           RandomU32s,
                           PositiveU32s,
@@ -1445,7 +1288,6 @@ impl IteratorProvider {
                           range_up_u64,
                           range_down_u64,
                           range_u64,
-                          RangeIncreasingU64,
                           U64s,
                           RandomU64s,
                           PositiveU64s,
@@ -1458,7 +1300,6 @@ impl IteratorProvider {
                           range_up_usize,
                           range_down_usize,
                           range_usize,
-                          RangeIncreasingUsize,
                           Usizes,
                           RandomUsizes,
                           PositiveUsizes,
@@ -1476,8 +1317,6 @@ impl IteratorProvider {
                           range_up_i8,
                           range_down_i8,
                           range_i8,
-                          RangeIncreasingI8,
-                          RangeDecreasingI8,
                           PositiveI8s,
                           NegativeI8s,
                           NaturalI8s,
@@ -1499,8 +1338,6 @@ impl IteratorProvider {
                           range_up_i16,
                           range_down_i16,
                           range_i16,
-                          RangeIncreasingI16,
-                          RangeDecreasingI16,
                           PositiveI16s,
                           NegativeI16s,
                           NaturalI16s,
@@ -1522,8 +1359,6 @@ impl IteratorProvider {
                           range_up_i32,
                           range_down_i32,
                           range_i32,
-                          RangeIncreasingI32,
-                          RangeDecreasingI32,
                           PositiveI32s,
                           NegativeI32s,
                           NaturalI32s,
@@ -1545,8 +1380,6 @@ impl IteratorProvider {
                           range_up_i64,
                           range_down_i64,
                           range_i64,
-                          RangeIncreasingI64,
-                          RangeDecreasingI64,
                           PositiveI64s,
                           NegativeI64s,
                           NaturalI64s,
@@ -1568,8 +1401,6 @@ impl IteratorProvider {
                           range_up_isize,
                           range_down_isize,
                           range_isize,
-                          RangeIncreasingIsize,
-                          RangeDecreasingIsize,
                           PositiveIsizes,
                           NegativeIsizes,
                           NaturalIsizes,
@@ -1582,37 +1413,36 @@ impl IteratorProvider {
                           isize::min_value(),
                           isize::max_value());
 
-    pub fn chars_increasing(&self) -> RangeIncreasingChar {
-        RangeIncreasingChar::new('\0', char::MAX)
+    pub fn chars_increasing(&self) -> RangeIncreasing<char> {
+        RangeIncreasing::new('\0', char::MAX)
     }
 
-    pub fn chars_decreasing(&self) -> RangeDecreasingChar {
-        RangeDecreasingChar::new('\0', char::MAX)
+    pub fn chars_decreasing(&self) -> RangeDecreasing<char> {
+        RangeDecreasing::new('\0', char::MAX)
     }
 
-    pub fn ascii_chars_increasing(&self) -> RangeIncreasingChar {
-        RangeIncreasingChar::new('\0', char::from_u32(127).unwrap())
+    pub fn ascii_chars_increasing(&self) -> RangeIncreasing<char> {
+        RangeIncreasing::new('\0', char::from_u32(127).unwrap())
     }
 
-    pub fn ascii_chars_decreasing(&self) -> RangeDecreasingChar {
-        RangeDecreasingChar::new('\0', char::from_u32(127).unwrap())
+    pub fn ascii_chars_decreasing(&self) -> RangeDecreasing<char> {
+        RangeDecreasing::new('\0', char::from_u32(127).unwrap())
     }
 
     pub fn chars(&self) -> Chars {
         match self {
             &IteratorProvider::Exhaustive => {
-                Chars::Exhaustive(ExhaustiveChars::new(vec![RangeIncreasingChar::new('a', 'z'),
-                                                            RangeIncreasingChar::new('A', 'Z'),
-                                                            RangeIncreasingChar::new('0', '9'),
-                                                            RangeIncreasingChar::new('!', '/'),
-                                                            RangeIncreasingChar::new(':', '@'),
-                                                            RangeIncreasingChar::new('[', '`'),
-                                                            RangeIncreasingChar::new('{', '~'),
-                                                            RangeIncreasingChar::new(' ', ' '),
-                                                            RangeIncreasingChar::new('\0',
-                                                                                     '\u{1F}'),
-                                                            RangeIncreasingChar::new('\u{7F}',
-                                                                                     char::MAX)]))
+                Chars::Exhaustive(ExhaustiveChars::new(vec![RangeIncreasing::new('a', 'z'),
+                                                            RangeIncreasing::new('A', 'Z'),
+                                                            RangeIncreasing::new('0', '9'),
+                                                            RangeIncreasing::new('!', '/'),
+                                                            RangeIncreasing::new(':', '@'),
+                                                            RangeIncreasing::new('[', '`'),
+                                                            RangeIncreasing::new('{', '~'),
+                                                            RangeIncreasing::new(' ', ' '),
+                                                            RangeIncreasing::new('\0', '\u{1F}'),
+                                                            RangeIncreasing::new('\u{7F}',
+                                                                                 char::MAX)]))
             }
             &IteratorProvider::Random(_, seed) => Chars::Random(SeedableRng::from_seed(&seed[..])),
         }
@@ -1621,17 +1451,18 @@ impl IteratorProvider {
     pub fn ascii_chars(&self) -> AsciiChars {
         match self {
             &IteratorProvider::Exhaustive => {
-                AsciiChars::Exhaustive(ExhaustiveChars::new(vec!(
-                                              RangeIncreasingChar::new('a', 'z'),
-                                              RangeIncreasingChar::new('A', 'Z'),
-                                              RangeIncreasingChar::new('0', '9'),
-                                              RangeIncreasingChar::new('!', '/'),
-                                              RangeIncreasingChar::new(':', '@'),
-                                              RangeIncreasingChar::new('[', '`'),
-                                              RangeIncreasingChar::new('{', '~'),
-                                              RangeIncreasingChar::new(' ', ' '),
-                                              RangeIncreasingChar::new('\0', '\u{1F}'),
-                                              RangeIncreasingChar::new('\u{7F}', '\u{7F}'))))
+                AsciiChars::Exhaustive(ExhaustiveChars::new(vec![RangeIncreasing::new('a', 'z'),
+                                                                 RangeIncreasing::new('A', 'Z'),
+                                                                 RangeIncreasing::new('0', '9'),
+                                                                 RangeIncreasing::new('!', '/'),
+                                                                 RangeIncreasing::new(':', '@'),
+                                                                 RangeIncreasing::new('[', '`'),
+                                                                 RangeIncreasing::new('{', '~'),
+                                                                 RangeIncreasing::new(' ', ' '),
+                                                                 RangeIncreasing::new('\0',
+                                                                                      '\u{1F}'),
+                                                                 RangeIncreasing::new('\u{7F}',
+                                                                                      '\u{7F}')]))
             }
             &IteratorProvider::Random(_, seed) => {
                 AsciiChars::Random(SeedableRng::from_seed(&seed[..]))
@@ -1652,7 +1483,7 @@ impl IteratorProvider {
             panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
         }
         match self {
-            &IteratorProvider::Exhaustive => RangeChar::Exhaustive(RangeIncreasingChar::new(a, b)),
+            &IteratorProvider::Exhaustive => RangeChar::Exhaustive(RangeIncreasing::new(a, b)),
             &IteratorProvider::Random(_, seed) => {
                 RangeChar::Random(SeedableRng::from_seed(&seed[..]),
                                   Range::new(char_to_contiguous_range(a),
@@ -1661,28 +1492,28 @@ impl IteratorProvider {
         }
     }
 
-    pub fn range_up_increasing_char(&self, a: char) -> RangeIncreasingChar {
-        RangeIncreasingChar::new(a, char::MAX)
+    pub fn range_up_increasing_char(&self, a: char) -> RangeIncreasing<char> {
+        RangeIncreasing::new(a, char::MAX)
     }
 
-    pub fn range_up_decreasing_char(&self, a: char) -> RangeDecreasingChar {
-        RangeDecreasingChar::new(a, char::MAX)
+    pub fn range_up_decreasing_char(&self, a: char) -> RangeDecreasing<char> {
+        RangeDecreasing::new(a, char::MAX)
     }
 
-    pub fn range_down_increasing_char(&self, a: char) -> RangeIncreasingChar {
-        RangeIncreasingChar::new('\0', a)
+    pub fn range_down_increasing_char(&self, a: char) -> RangeIncreasing<char> {
+        RangeIncreasing::new('\0', a)
     }
 
-    pub fn range_down_decreasing_char(&self, a: char) -> RangeDecreasingChar {
-        RangeDecreasingChar::new('\0', a)
+    pub fn range_down_decreasing_char(&self, a: char) -> RangeDecreasing<char> {
+        RangeDecreasing::new('\0', a)
     }
 
-    pub fn range_increasing_char(&self, a: char, b: char) -> RangeIncreasingChar {
-        RangeIncreasingChar::new(a, b)
+    pub fn range_increasing_char(&self, a: char, b: char) -> RangeIncreasing<char> {
+        RangeIncreasing::new(a, b)
     }
 
-    pub fn range_decreasing_char(&self, a: char, b: char) -> RangeDecreasingChar {
-        RangeDecreasingChar::new(a, b)
+    pub fn range_decreasing_char(&self, a: char, b: char) -> RangeDecreasing<char> {
+        RangeDecreasing::new(a, b)
     }
 
     pub fn range_up_increasing_integer(&self, a: Integer) -> RangeIncreasingUnboundedInteger {
@@ -1738,7 +1569,7 @@ impl IteratorProvider {
         let max = &xs.len() - 1;
         ExhaustiveFromVector {
             xs: xs,
-            range: RangeIncreasingUsize::new(0, max),
+            range: RangeIncreasing::new(0, max),
         }
     }
 
@@ -1768,7 +1599,7 @@ impl IteratorProvider {
     pub fn positive_u32s_geometric(&self, scale: u32) -> PositiveU32sGeometric {
         match self {
             &IteratorProvider::Exhaustive => {
-                PositiveU32sGeometric::Exhaustive(RangeIncreasingU32::new(1, u32::max_value()))
+                PositiveU32sGeometric::Exhaustive(RangeIncreasing::new(1, u32::max_value()))
             }
             &IteratorProvider::Random(_, seed) => {
                 PositiveU32sGeometric::Random(RandomRangeU32::new(0, scale + 1, &seed))
@@ -1779,7 +1610,7 @@ impl IteratorProvider {
     pub fn natural_u32s_geometric(&self, scale: u32) -> NaturalU32sGeometric {
         match self {
             &IteratorProvider::Exhaustive => {
-                NaturalU32sGeometric::Exhaustive(RangeIncreasingU32::new(0, u32::max_value()))
+                NaturalU32sGeometric::Exhaustive(RangeIncreasing::new(0, u32::max_value()))
             }
             &IteratorProvider::Random(_, seed) => {
                 NaturalU32sGeometric::Random(RandomRangeU32::new(0, scale + 1, &seed))
