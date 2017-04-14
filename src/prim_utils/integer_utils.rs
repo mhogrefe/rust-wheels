@@ -187,48 +187,20 @@ pub fn ceiling_log_2_integer(n: &Integer) -> u32 {
     }
 }
 
-macro_rules! bits_u {
-    ($t: ty, $b: ident) => {
-        pub fn $b(n: $t) -> Vec<bool> {
-            let mut bits = Vec::new();
-            let mut remaining = n;
-            while remaining != 0 {
-                bits.push(remaining & 1 != 0);
-                remaining >>= 1;
-            }
-            bits
-        }
+pub fn bits<T: PrimInt>(n: T) -> Vec<bool> {
+    let zero = T::from_u8(0);
+    let one = T::from_u8(1);
+    if n < zero {
+        panic!("n cannot be negative. Invalid n: {}", n);
     }
-}
-
-bits_u!(u8, bits_u8);
-bits_u!(u16, bits_u16);
-bits_u!(u32, bits_u32);
-bits_u!(u64, bits_u64);
-bits_u!(usize, bits_usize);
-
-macro_rules! bits_i {
-    ($t: ty, $b: ident) => {
-        pub fn $b(n: $t) -> Vec<bool> {
-            if n < 0 {
-                panic!("n cannot be negative. Invalid n: {}", n);
-            }
-            let mut bits = Vec::new();
-            let mut remaining = n;
-            while remaining != 0 {
-                bits.push(remaining & 1 != 0);
-                remaining >>= 1;
-            }
-            bits
-        }
+    let mut bits = Vec::new();
+    let mut remaining = n;
+    while remaining != zero {
+        bits.push(remaining & one != zero);
+        remaining >>= one;
     }
+    bits
 }
-
-bits_i!(i8, bits_i8);
-bits_i!(i16, bits_i16);
-bits_i!(i32, bits_i32);
-bits_i!(i64, bits_i64);
-bits_i!(isize, bits_isize);
 
 pub fn bits_integer(n: &Integer) -> Vec<bool> {
     match n.sign() {

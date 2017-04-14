@@ -129,9 +129,9 @@ fn ceiling_log_2_integer_fail_2() {
 }
 
 macro_rules! test_bits {
-    ($t: ty, $f: ident, $test: ident, $helper: ident, $max: expr, $max_bits: expr) => {
+    ($t: ty, $test: ident, $helper: ident, $max: expr, $max_bits: expr) => {
         fn $helper(n: $t, out: &str) {
-            assert_eq!(format!("{:?}", $f(n)), out);
+            assert_eq!(format!("{:?}", bits(n)), out);
         }
 
         #[test]
@@ -146,20 +146,17 @@ macro_rules! test_bits {
 }
 
 test_bits!(u8,
-           bits_u8,
            test_bits_u8,
            bits_u8_helper,
            u8::max_value(),
            "[true, true, true, true, true, true, true, true]");
 test_bits!(u16,
-           bits_u16,
            test_bits_u16,
            bits_u16_helper,
            u16::max_value(),
            "[true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
              true, true]");
 test_bits!(u32,
-           bits_u32,
            test_bits_u32,
            bits_u32_helper,
            u32::max_value(),
@@ -167,7 +164,6 @@ test_bits!(u32,
              true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
              true, true, true, true]");
 test_bits!(u64,
-           bits_u64,
            test_bits_u64,
            bits_u64_helper,
            u64::max_value(),
@@ -177,20 +173,17 @@ test_bits!(u64,
              true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
              true, true, true, true, true, true, true, true]");
 test_bits!(i8,
-           bits_i8,
            test_bits_i8,
            bits_i8_helper,
            i8::max_value(),
            "[true, true, true, true, true, true, true]");
 test_bits!(i16,
-           bits_i16,
            test_bits_i16,
            bits_i16_helper,
            i16::max_value(),
            "[true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
              true]");
 test_bits!(i32,
-           bits_i32,
            test_bits_i32,
            bits_i32_helper,
            i32::max_value(),
@@ -198,7 +191,6 @@ test_bits!(i32,
              true, true, true, true, true, true, true, true, true, true, true, true, true, true, \
              true, true, true]");
 test_bits!(i64,
-           bits_i64,
            test_bits_i64,
            bits_i64_helper,
            i64::max_value(),
@@ -209,20 +201,20 @@ test_bits!(i64,
              true, true, true, true, true, true, true]");
 
 macro_rules! test_bits_i {
-    ($t: ty, $f: ident, $fail: ident) => {
+    ($t: ty, $fail: ident) => {
         #[test]
         #[should_panic(expected = "n cannot be negative. Invalid n: -5")]
         fn $fail() {
-            $f(-5);
+            bits(-5);
         }
     }
 }
 
-test_bits_i!(i8, bits_i8, bits_i8_fail);
-test_bits_i!(i16, bits_i16, bits_i16_fail);
-test_bits_i!(i32, bits_i32, bits_i32_fail);
-test_bits_i!(i64, bits_i64, bits_i64_fail);
-test_bits_i!(isize, bits_isize, bits_isize_fail);
+test_bits_i!(i8, bits_i8_fail);
+test_bits_i!(i16, bits_i16_fail);
+test_bits_i!(i32, bits_i32_fail);
+test_bits_i!(i64, bits_i64_fail);
+test_bits_i!(isize, bits_isize_fail);
 
 fn bits_integer_helper(n: &str, out: &str) {
     assert_eq!(format!("{:?}", bits_integer(&Integer::from_str(n).unwrap())),
