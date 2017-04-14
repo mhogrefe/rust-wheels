@@ -23,14 +23,6 @@ macro_rules! test_integer_range {
     (
         $t: ty,
         $ts: expr,
-        $rui: ident,
-        $rud: ident,
-        $rdi: ident,
-        $rdd: ident,
-        $ri: ident,
-        $rd: ident,
-        $i: ident,
-        $d: ident,
         $pos: ident,
         $all: ident,
         $rup: ident,
@@ -68,7 +60,7 @@ macro_rules! test_integer_range {
         $max: expr
     ) => {
         fn $rui_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t) {
-            eo.match_vec(key, &mut p.$rui(a));
+            eo.match_vec(key, &mut p.range_up_increasing_prim_int(a));
         }
 
         #[test]
@@ -81,7 +73,7 @@ macro_rules! test_integer_range {
         }
 
         fn $rud_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t) {
-            eo.match_vec(key, &mut p.$rud(a));
+            eo.match_vec(key, &mut p.range_up_decreasing_prim_int(a));
         }
 
         #[test]
@@ -94,7 +86,7 @@ macro_rules! test_integer_range {
         }
 
         fn $rdi_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t) {
-            eo.match_vec(key, &mut p.$rdi(a));
+            eo.match_vec(key, &mut p.range_down_increasing_prim_int(a));
         }
 
         #[test]
@@ -107,7 +99,7 @@ macro_rules! test_integer_range {
         }
 
         fn $rdd_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t) {
-            eo.match_vec(key, &mut p.$rdd(a));
+            eo.match_vec(key, &mut p.range_down_decreasing_prim_int(a));
         }
 
         #[test]
@@ -120,7 +112,7 @@ macro_rules! test_integer_range {
         }
 
         fn $ri_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t, b: $t) {
-            eo.match_vec(key, &mut p.$ri(a, b));
+            eo.match_vec(key, &mut p.range_increasing_prim_int(a, b));
         }
 
         #[test]
@@ -138,11 +130,11 @@ macro_rules! test_integer_range {
         #[test]
         #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
         fn $ri_f() {
-            IteratorProvider::Exhaustive.$ri(10, 9);
+            IteratorProvider::Exhaustive.range_increasing_prim_int(10, 9);
         }
 
         fn $rd_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t, b: $t) {
-            eo.match_vec(key, &mut p.$rd(a, b));
+            eo.match_vec(key, &mut p.range_decreasing_prim_int(a, b));
         }
 
         #[test]
@@ -160,19 +152,19 @@ macro_rules! test_integer_range {
         #[test]
         #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
         fn $rd_f() {
-            IteratorProvider::Exhaustive.$rd(10, 9);
+            IteratorProvider::Exhaustive.range_decreasing_prim_int(10, 9);
         }
 
         #[test]
         fn $i_t() {
             let (eo, p, _) = prepare_test();
-            eo.match_vec(&format!("exhaustive_{}s_increasing", $ts), &mut p.$i());
+            eo.match_vec(&format!("exhaustive_{}s_increasing", $ts), &mut p.prim_int_increasing::<$t>());
         }
 
         #[test]
         fn $d_t() {
             let (eo, p, _) = prepare_test();
-            eo.match_vec(&format!("exhaustive_{}s_decreasing", $ts), &mut p.$d());
+            eo.match_vec(&format!("exhaustive_{}s_decreasing", $ts), &mut p.prim_int_decreasing::<$t>());
         }
 
         #[test]
@@ -261,27 +253,19 @@ macro_rules! test_integer_range {
         #[test]
         #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
         fn $r_f_1() {
-            IteratorProvider::Exhaustive.$ri(10, 9);
+            IteratorProvider::Exhaustive.$r(10, 9);
         }
 
         #[test]
         #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
         fn $r_f_2() {
-            IteratorProvider::example_random().$ri(10, 9);
+            IteratorProvider::example_random().$r(10, 9);
         }
     }
 }
 
 test_integer_range!(u8,
                     "u8",
-                    range_up_increasing_u8,
-                    range_up_decreasing_u8,
-                    range_down_increasing_u8,
-                    range_down_decreasing_u8,
-                    range_increasing_u8,
-                    range_decreasing_u8,
-                    u8s_increasing,
-                    u8s_decreasing,
                     positive_u8s,
                     u8s,
                     range_up_u8,
@@ -319,14 +303,6 @@ test_integer_range!(u8,
                     u8::max_value());
 test_integer_range!(u16,
                     "u16",
-                    range_up_increasing_u16,
-                    range_up_decreasing_u16,
-                    range_down_increasing_u16,
-                    range_down_decreasing_u16,
-                    range_increasing_u16,
-                    range_decreasing_u16,
-                    u16s_increasing,
-                    u16s_decreasing,
                     positive_u16s,
                     u16s,
                     range_up_u16,
@@ -364,14 +340,6 @@ test_integer_range!(u16,
                     u16::max_value());
 test_integer_range!(u32,
                     "u32",
-                    range_up_increasing_u32,
-                    range_up_decreasing_u32,
-                    range_down_increasing_u32,
-                    range_down_decreasing_u32,
-                    range_increasing_u32,
-                    range_decreasing_u32,
-                    u32s_increasing,
-                    u32s_decreasing,
                     positive_u32s,
                     u32s,
                     range_up_u32,
@@ -409,14 +377,6 @@ test_integer_range!(u32,
                     u32::max_value());
 test_integer_range!(u64,
                     "u64",
-                    range_up_increasing_u64,
-                    range_up_decreasing_u64,
-                    range_down_increasing_u64,
-                    range_down_decreasing_u64,
-                    range_increasing_u64,
-                    range_decreasing_u64,
-                    u64s_increasing,
-                    u64s_decreasing,
                     positive_u64s,
                     u64s,
                     range_up_u64,
@@ -454,14 +414,6 @@ test_integer_range!(u64,
                     u64::max_value());
 test_integer_range!(i8,
                     "i8",
-                    range_up_increasing_i8,
-                    range_up_decreasing_i8,
-                    range_down_increasing_i8,
-                    range_down_decreasing_i8,
-                    range_increasing_i8,
-                    range_decreasing_i8,
-                    i8s_increasing,
-                    i8s_decreasing,
                     positive_i8s,
                     i8s,
                     range_up_i8,
@@ -499,14 +451,6 @@ test_integer_range!(i8,
                     i8::max_value());
 test_integer_range!(i16,
                     "i16",
-                    range_up_increasing_i16,
-                    range_up_decreasing_i16,
-                    range_down_increasing_i16,
-                    range_down_decreasing_i16,
-                    range_increasing_i16,
-                    range_decreasing_i16,
-                    i16s_increasing,
-                    i16s_decreasing,
                     positive_i16s,
                     i16s,
                     range_up_i16,
@@ -544,14 +488,6 @@ test_integer_range!(i16,
                     i16::max_value());
 test_integer_range!(i32,
                     "i32",
-                    range_up_increasing_i32,
-                    range_up_decreasing_i32,
-                    range_down_increasing_i32,
-                    range_down_decreasing_i32,
-                    range_increasing_i32,
-                    range_decreasing_i32,
-                    i32s_increasing,
-                    i32s_decreasing,
                     positive_i32s,
                     i32s,
                     range_up_i32,
@@ -589,14 +525,6 @@ test_integer_range!(i32,
                     i32::max_value());
 test_integer_range!(i64,
                     "i64",
-                    range_up_increasing_i64,
-                    range_up_decreasing_i64,
-                    range_down_increasing_i64,
-                    range_down_decreasing_i64,
-                    range_increasing_i64,
-                    range_decreasing_i64,
-                    i64s_increasing,
-                    i64s_decreasing,
                     positive_i64s,
                     i64s,
                     range_up_i64,
@@ -641,8 +569,6 @@ macro_rules! test_integer_range_i {
         $rud: ident,
         $rdi: ident,
         $rdd: ident,
-        $ri: ident,
-        $rd: ident,
         $neg: ident,
         $nat: ident,
         $nz: ident,
@@ -723,9 +649,9 @@ macro_rules! test_integer_range_i {
         }
 
         #[test]
-        #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
+        #[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
         fn $ri_f() {
-            IteratorProvider::Exhaustive.$ri(10, 9);
+            IteratorProvider::Exhaustive.range_increasing_prim_int(-9, -10);
         }
 
         #[test]
@@ -742,7 +668,7 @@ macro_rules! test_integer_range_i {
         #[test]
         #[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
         fn $rd_f() {
-            IteratorProvider::Exhaustive.$rd(-9, -10);
+            IteratorProvider::Exhaustive.range_decreasing_prim_int(-9, -10);
         }
 
         #[test]
@@ -819,8 +745,6 @@ test_integer_range_i!(i8,
                       range_up_decreasing_i8,
                       range_down_increasing_i8,
                       range_down_decreasing_i8,
-                      range_increasing_i8,
-                      range_decreasing_i8,
                       negative_i8s,
                       natural_i8s,
                       nonzero_i8s,
@@ -862,8 +786,6 @@ test_integer_range_i!(i16,
                       range_up_decreasing_i16,
                       range_down_increasing_i16,
                       range_down_decreasing_i16,
-                      range_increasing_i16,
-                      range_decreasing_i16,
                       negative_i16s,
                       natural_i16s,
                       nonzero_i16s,
@@ -905,8 +827,6 @@ test_integer_range_i!(i32,
                       range_up_decreasing_i32,
                       range_down_increasing_i32,
                       range_down_decreasing_i32,
-                      range_increasing_i32,
-                      range_decreasing_i32,
                       negative_i32s,
                       natural_i32s,
                       nonzero_i32s,
@@ -948,8 +868,6 @@ test_integer_range_i!(i64,
                       range_up_decreasing_i64,
                       range_down_increasing_i64,
                       range_down_decreasing_i64,
-                      range_increasing_i64,
-                      range_decreasing_i64,
                       negative_i64s,
                       natural_i64s,
                       nonzero_i64s,

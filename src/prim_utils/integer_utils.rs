@@ -11,6 +11,10 @@ impl PrimInt for u8 {
         8
     }
 
+    fn min_value() -> u8 {
+        0
+    }
+
     fn max_value() -> u8 {
         u8::max_value()
     }
@@ -27,6 +31,10 @@ impl PrimInt for u8 {
 impl PrimInt for u16 {
     fn bit_count() -> u32 {
         16
+    }
+
+    fn min_value() -> u16 {
+        0
     }
 
     fn max_value() -> u16 {
@@ -47,6 +55,10 @@ impl PrimInt for u32 {
         32
     }
 
+    fn min_value() -> u32 {
+        0
+    }
+
     fn max_value() -> u32 {
         u32::max_value()
     }
@@ -63,6 +75,10 @@ impl PrimInt for u32 {
 impl PrimInt for u64 {
     fn bit_count() -> u32 {
         64
+    }
+
+    fn min_value() -> u64 {
+        0
     }
 
     fn max_value() -> u64 {
@@ -83,6 +99,10 @@ impl PrimInt for usize {
         (0 as usize).count_zeros()
     }
 
+    fn min_value() -> usize {
+        0
+    }
+
     fn max_value() -> usize {
         usize::max_value()
     }
@@ -99,6 +119,10 @@ impl PrimInt for usize {
 impl PrimInt for i8 {
     fn bit_count() -> u32 {
         8
+    }
+
+    fn min_value() -> i8 {
+        i8::min_value()
     }
 
     fn max_value() -> i8 {
@@ -119,6 +143,10 @@ impl PrimInt for i16 {
         16
     }
 
+    fn min_value() -> i16 {
+        i16::min_value()
+    }
+
     fn max_value() -> i16 {
         i16::max_value()
     }
@@ -135,6 +163,10 @@ impl PrimInt for i16 {
 impl PrimInt for i32 {
     fn bit_count() -> u32 {
         32
+    }
+
+    fn min_value() -> i32 {
+        i32::min_value()
     }
 
     fn max_value() -> i32 {
@@ -155,6 +187,10 @@ impl PrimInt for i64 {
         64
     }
 
+    fn min_value() -> i64 {
+        i64::min_value()
+    }
+
     fn max_value() -> i64 {
         i64::max_value()
     }
@@ -171,6 +207,10 @@ impl PrimInt for i64 {
 impl PrimInt for isize {
     fn bit_count() -> u32 {
         (0 as isize).count_zeros()
+    }
+
+    fn min_value() -> isize {
+        isize::min_value()
     }
 
     fn max_value() -> isize {

@@ -787,56 +787,6 @@ impl Iterator for RangeInteger {
     }
 }
 
-macro_rules! integer_range_impl {
-    (
-        $t: ty,
-        $rui_f: ident,
-        $rud_f: ident,
-        $rdi_f: ident,
-        $rdd_f: ident,
-        $ri_f: ident,
-        $rd_f: ident,
-        $i_f: ident,
-        $d_f: ident,
-        $pos_f: ident,
-        $nat_f: ident,
-        $min: expr,
-        $max: expr
-    ) => {
-        pub fn $rui_f(&self, a: $t) -> RangeIncreasing<$t> {
-            RangeIncreasing::new(a, $max)
-        }
-
-        pub fn $rud_f(&self, a: $t) -> RangeDecreasing<$t> {
-            RangeDecreasing::new(a, $max)
-        }
-
-        pub fn $rdi_f(&self, b: $t) -> RangeIncreasing<$t> {
-            RangeIncreasing::new($min, b)
-        }
-
-        pub fn $rdd_f(&self, b: $t) -> RangeDecreasing<$t> {
-            RangeDecreasing::new($min, b)
-        }
-
-        pub fn $ri_f(&self, a: $t, b: $t) -> RangeIncreasing<$t> {
-            RangeIncreasing::new(a, b)
-        }
-
-        pub fn $rd_f(&self, a: $t, b: $t) -> RangeDecreasing<$t> {
-            RangeDecreasing::new(a, b)
-        }
-
-        pub fn $i_f(&self) -> RangeIncreasing<$t> {
-            RangeIncreasing::new($min, $max)
-        }
-
-        pub fn $d_f(&self) -> RangeDecreasing<$t> {
-            RangeDecreasing::new($min, $max)
-        }
-    }
-}
-
 macro_rules! integer_range_impl_u {
     (
         $t: ty,
@@ -856,8 +806,8 @@ macro_rules! integer_range_impl_u {
 
         pub fn $all_f(&self) -> AllUnsigned<$t> {
             match self {
-                &IteratorProvider::Exhaustive => AllUnsigned::Exhaustive(RangeIncreasing::new(0, $max)),
-                &IteratorProvider::Random(_, seed) => AllUnsigned::Random(Random::new(&seed)),
+                &IteratorProvider::Exhaustive => AllUnsigned::exhaustive(),
+                &IteratorProvider::Random(_, seed) => AllUnsigned::random(&seed[..]),
             }
         }
 
@@ -870,6 +820,9 @@ macro_rules! integer_range_impl_u {
         }
 
         pub fn $r_f(&self, a: $t, b: $t) -> RangeUnsigned<$t> {
+            if a > b {
+                panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
+            }
             match self {
                 &IteratorProvider::Exhaustive => RangeUnsigned::exhaustive(a, b),
                 &IteratorProvider::Random(_, seed) => RangeUnsigned::random(a, b, &seed[..]),
@@ -1088,136 +1041,37 @@ impl IteratorProvider {
         }
     }
 
-    integer_range_impl!(u8,
-                        range_up_increasing_u8,
-                        range_up_decreasing_u8,
-                        range_down_increasing_u8,
-                        range_down_decreasing_u8,
-                        range_increasing_u8,
-                        range_decreasing_u8,
-                        u8s_increasing,
-                        u8s_decreasing,
-                        positive_u8s,
-                        natural_u8s,
-                        0,
-                        u8::max_value());
-    integer_range_impl!(u16,
-                        range_up_increasing_u16,
-                        range_up_decreasing_u16,
-                        range_down_increasing_u16,
-                        range_down_decreasing_u16,
-                        range_increasing_u16,
-                        range_decreasing_u16,
-                        u16s_increasing,
-                        u16s_decreasing,
-                        positive_u16s,
-                        natural_u16s,
-                        0,
-                        u16::max_value());
-    integer_range_impl!(u32,
-                        range_up_increasing_u32,
-                        range_up_decreasing_u32,
-                        range_down_increasing_u32,
-                        range_down_decreasing_u32,
-                        range_increasing_u32,
-                        range_decreasing_u32,
-                        u32s_increasing,
-                        u32s_decreasing,
-                        positive_u32s,
-                        natural_u32s,
-                        0,
-                        u32::max_value());
-    integer_range_impl!(u64,
-                        range_up_increasing_u64,
-                        range_up_decreasing_u64,
-                        range_down_increasing_u64,
-                        range_down_decreasing_u64,
-                        range_increasing_u64,
-                        range_decreasing_u64,
-                        u64s_increasing,
-                        u64s_decreasing,
-                        positive_u64s,
-                        natural_u64s,
-                        0,
-                        u64::max_value());
-    integer_range_impl!(usize,
-                        range_up_increasing_usize,
-                        range_up_decreasing_usize,
-                        range_down_increasing_usize,
-                        range_down_decreasing_usize,
-                        range_increasing_usize,
-                        range_decreasing_usize,
-                        usizes_increasing,
-                        usizes_decreasing,
-                        positive_usizes,
-                        natural_usizes,
-                        0,
-                        usize::max_value());
-    integer_range_impl!(i8,
-                        range_up_increasing_i8,
-                        range_up_decreasing_i8,
-                        range_down_increasing_i8,
-                        range_down_decreasing_i8,
-                        range_increasing_i8,
-                        range_decreasing_i8,
-                        i8s_increasing,
-                        i8s_decreasing,
-                        positive_i8s,
-                        natural_i8s,
-                        i8::min_value(),
-                        i8::max_value());
-    integer_range_impl!(i16,
-                        range_up_increasing_i16,
-                        range_up_decreasing_i16,
-                        range_down_increasing_i16,
-                        range_down_decreasing_i16,
-                        range_increasing_i16,
-                        range_decreasing_i16,
-                        i16s_increasing,
-                        i16s_decreasing,
-                        positive_i16s,
-                        natural_i16s,
-                        i16::min_value(),
-                        i16::max_value());
-    integer_range_impl!(i32,
-                        range_up_increasing_i32,
-                        range_up_decreasing_i32,
-                        range_down_increasing_i32,
-                        range_down_decreasing_i32,
-                        range_increasing_i32,
-                        range_decreasing_i32,
-                        i32s_increasing,
-                        i32s_decreasing,
-                        positive_i32s,
-                        natural_i32s,
-                        i32::min_value(),
-                        i32::max_value());
-    integer_range_impl!(i64,
-                        range_up_increasing_i64,
-                        range_up_decreasing_i64,
-                        range_down_increasing_i64,
-                        range_down_decreasing_i64,
-                        range_increasing_i64,
-                        range_decreasing_i64,
-                        i64s_increasing,
-                        i64s_decreasing,
-                        positive_i64s,
-                        natural_i64s,
-                        i64::min_value(),
-                        i64::max_value());
-    integer_range_impl!(isize,
-                        range_up_increasing_isize,
-                        range_up_decreasing_isize,
-                        range_down_increasing_isize,
-                        range_down_decreasing_isize,
-                        range_increasing_isize,
-                        range_decreasing_isize,
-                        isizes_increasing,
-                        isizes_decreasing,
-                        positive_isizes,
-                        natural_isizes,
-                        isize::min_value(),
-                        isize::max_value());
+    pub fn range_up_increasing_prim_int<T: PrimInt>(&self, a: T) -> RangeIncreasing<T> {
+        RangeIncreasing::new(a, T::max_value())
+    }
+
+    pub fn range_up_decreasing_prim_int<T: PrimInt>(&self, a: T) -> RangeDecreasing<T> {
+        RangeDecreasing::new(a, T::max_value())
+    }
+
+    pub fn range_down_increasing_prim_int<T: PrimInt>(&self, b: T) -> RangeIncreasing<T> {
+        RangeIncreasing::new(T::min_value(), b)
+    }
+
+    pub fn range_down_decreasing_prim_int<T: PrimInt>(&self, b: T) -> RangeDecreasing<T> {
+        RangeDecreasing::new(T::min_value(), b)
+    }
+
+    pub fn range_increasing_prim_int<T: PrimInt>(&self, a: T, b: T) -> RangeIncreasing<T> {
+        RangeIncreasing::new(a, b)
+    }
+
+    pub fn range_decreasing_prim_int<T: PrimInt>(&self, a: T, b: T) -> RangeDecreasing<T> {
+        RangeDecreasing::new(a, b)
+    }
+
+    pub fn prim_int_increasing<T: PrimInt>(&self) -> RangeIncreasing<T> {
+        RangeIncreasing::new(T::min_value(), T::max_value())
+    }
+
+    pub fn prim_int_decreasing<T: PrimInt>(&self) -> RangeDecreasing<T> {
+        RangeDecreasing::new(T::min_value(), T::max_value())
+    }
 
     integer_range_impl_u!(u8,
                           positive_u8s,
