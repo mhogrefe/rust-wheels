@@ -78,8 +78,18 @@ pub fn scramble(seed: &[u32; SEED_SIZE], s: &str) -> [u32; SEED_SIZE] {
 }
 
 pub enum Booleans {
-    Exhaustive(u8),
+    Exhaustive(ExhaustiveFromVector<bool>),
     Random(IsaacRng),
+}
+
+impl Booleans {
+    pub fn exhaustive() -> Booleans {
+        Booleans::Exhaustive(ExhaustiveFromVector::new(vec!(false, true)))
+    }
+
+    pub fn random(seed: &[u32]) -> Booleans {
+        Booleans::Random(SeedableRng::from_seed(seed))
+    }
 }
 
 impl Iterator for Booleans {
@@ -87,19 +97,7 @@ impl Iterator for Booleans {
 
     fn next(&mut self) -> Option<bool> {
         match self {
-            &mut Booleans::Exhaustive(ref mut i) => {
-                match *i {
-                    0 => {
-                        *i += 1;
-                        Some(false)
-                    }
-                    1 => {
-                        *i += 1;
-                        Some(true)
-                    }
-                    _ => None,
-                }
-            }
+            &mut Booleans::Exhaustive(ref mut xs) => xs.next(),
             &mut Booleans::Random(ref mut rng) => Some(rng.gen()),
         }
     }
@@ -1010,6 +1008,16 @@ pub struct ExhaustiveFromVector<T> {
     range: RangeIncreasing<usize>,
 }
 
+impl<T> ExhaustiveFromVector<T> {
+    fn new(xs: Vec<T>) -> ExhaustiveFromVector<T> {
+        let max = &xs.len() - 1;
+        ExhaustiveFromVector {
+            xs: xs,
+            range: RangeIncreasing::new(0, max),
+        }
+    }
+}
+
 impl<T: Clone> Iterator for ExhaustiveFromVector<T> {
     type Item = T;
 
@@ -1108,10 +1116,8 @@ impl IteratorProvider {
 
     pub fn bools(&self) -> Booleans {
         match self {
-            &IteratorProvider::Exhaustive => Booleans::Exhaustive(0),
-            &IteratorProvider::Random(_, seed) => {
-                Booleans::Random(SeedableRng::from_seed(&seed[..]))
-            }
+            &IteratorProvider::Exhaustive => Booleans::exhaustive(),
+            &IteratorProvider::Random(_, seed) => Booleans::random(&seed[..]),
         }
     }
 
@@ -1587,7 +1593,7 @@ impl IteratorProvider {
     }
 
     pub fn orderings_increasing(&self) -> ExhaustiveFromVector<Ordering> {
-        self.exhaustive_generate_from_vector(vec![Ordering::Less,
+        ExhaustiveFromVector::new(vec![Ordering::Less,
                                                   Ordering::Equal,
                                                   Ordering::Greater])
     }
