@@ -2,49 +2,25 @@ use iterators::iterator_provider::IteratorProvider;
 use prim_utils::integer_utils::*;
 
 macro_rules! demo_ceiling_log_2 {
-    ($ts: expr, $d: ident, $f: ident, $pt: ident) => {
+    ($ts: expr, $d: ident, $pt: ident) => {
         pub fn $d(p: &IteratorProvider, limit: usize) {
             for i in p.$pt().take(limit) {
-                println!("ceiling_log_2_{}({}) = {}", $ts, i, $f(i));
+                println!("ceiling_log_2_{}({}) = {}", $ts, i, ceiling_log_2(i));
             }
         }
     }
 }
 
-demo_ceiling_log_2!("u8", demo_ceiling_log_2_u8, ceiling_log_2_u8, positive_u8s);
-demo_ceiling_log_2!("u16",
-                    demo_ceiling_log_2_u16,
-                    ceiling_log_2_u16,
-                    positive_u16s);
-demo_ceiling_log_2!("u32",
-                    demo_ceiling_log_2_u32,
-                    ceiling_log_2_u32,
-                    positive_u32s);
-demo_ceiling_log_2!("u64",
-                    demo_ceiling_log_2_u64,
-                    ceiling_log_2_u64,
-                    positive_u64s);
-demo_ceiling_log_2!("usize",
-                    demo_ceiling_log_2_usize,
-                    ceiling_log_2_usize,
-                    positive_usizes);
-demo_ceiling_log_2!("i8", demo_ceiling_log_2_i8, ceiling_log_2_i8, positive_i8s);
-demo_ceiling_log_2!("i16",
-                    demo_ceiling_log_2_i16,
-                    ceiling_log_2_i16,
-                    positive_i16s);
-demo_ceiling_log_2!("i32",
-                    demo_ceiling_log_2_i32,
-                    ceiling_log_2_i32,
-                    positive_i32s);
-demo_ceiling_log_2!("i64",
-                    demo_ceiling_log_2_i64,
-                    ceiling_log_2_i64,
-                    positive_i64s);
-demo_ceiling_log_2!("isize",
-                    demo_ceiling_log_2_isize,
-                    ceiling_log_2_isize,
-                    positive_isizes);
+demo_ceiling_log_2!("u8", demo_ceiling_log_2_u8, positive_u8s);
+demo_ceiling_log_2!("u16", demo_ceiling_log_2_u16, positive_u16s);
+demo_ceiling_log_2!("u32", demo_ceiling_log_2_u32, positive_u32s);
+demo_ceiling_log_2!("u64", demo_ceiling_log_2_u64, positive_u64s);
+demo_ceiling_log_2!("usize", demo_ceiling_log_2_usize, positive_usizes);
+demo_ceiling_log_2!("i8", demo_ceiling_log_2_i8, positive_i8s);
+demo_ceiling_log_2!("i16", demo_ceiling_log_2_i16, positive_i16s);
+demo_ceiling_log_2!("i32", demo_ceiling_log_2_i32, positive_i32s);
+demo_ceiling_log_2!("i64", demo_ceiling_log_2_i64, positive_i64s);
+demo_ceiling_log_2!("isize", demo_ceiling_log_2_isize, positive_isizes);
 
 macro_rules! demo_bits {
     ($ts: expr, $d: ident, $f: ident, $nt: ident) => {

@@ -35,9 +35,9 @@ fn is_power_of_two_fail_2() {
 }
 
 macro_rules! test_ceiling_log_2 {
-    ($t: ty, $f: ident, $test: ident, $helper: ident, $fail: ident, $len: expr, $max: expr) => {
+    ($t: ty, $test: ident, $helper: ident, $fail: ident, $len: expr, $max: expr) => {
         fn $helper(n: $t, out: u32) {
-            assert_eq!($f(n), out);
+            assert_eq!(ceiling_log_2(n), out);
         }
 
         #[test]
@@ -58,41 +58,36 @@ macro_rules! test_ceiling_log_2 {
         #[test]
         #[should_panic(expected = "n must be positive. Invalid n: 0")]
         fn $fail() {
-            $f(0);
+            ceiling_log_2(0);
         }
     }
 }
 
 test_ceiling_log_2!(u8,
-                    ceiling_log_2_u8,
                     test_ceiling_log_2_u8,
                     ceiling_log_2_u8_helper,
                     test_is_ceiling_log_2_u8_fail,
                     8,
                     u8::max_value());
 test_ceiling_log_2!(u16,
-                    ceiling_log_2_u16,
                     test_ceiling_log_2_u16,
                     ceiling_log_2_u16_helper,
                     test_is_ceiling_log_2_u16_fail,
                     16,
                     u16::max_value());
 test_ceiling_log_2!(u32,
-                    ceiling_log_2_u32,
                     test_ceiling_log_2_u32,
                     ceiling_log_2_u32_helper,
                     test_is_ceiling_log_2_u32_fail,
                     32,
                     u32::max_value());
 test_ceiling_log_2!(u64,
-                    ceiling_log_2_u64,
                     test_ceiling_log_2_u64,
                     ceiling_log_2_u64_helper,
                     test_is_ceiling_log_2_u64_fail,
                     64,
                     u64::max_value());
 test_ceiling_log_2!(usize,
-                    ceiling_log_2_usize,
                     test_ceiling_log_2_usize,
                     ceiling_log_2_usize_helper,
                     test_is_ceiling_log_2_usize_fail,

@@ -2,8 +2,149 @@
 use gmp_to_flint_adaptor_lib::integer::Integer;
 #[cfg(feature = "native")]
 use num_to_flint_adaptor_lib::integer::Integer;
+use prim_utils::traits::*;
 use std::cmp::Ordering;
 use std::mem;
+
+impl PrimInt for u8 {
+    fn leading_zeros(&self) -> u32 {
+        u8::leading_zeros(*self)
+    }
+
+    fn bit_count() -> u32 {
+        8
+    }
+
+    fn from_u8(i: u8) -> u8 {
+        i
+    }
+}
+
+impl PrimInt for u16 {
+    fn leading_zeros(&self) -> u32 {
+        u16::leading_zeros(*self)
+    }
+
+    fn bit_count() -> u32 {
+        16
+    }
+
+    fn from_u8(i: u8) -> u16 {
+        i as u16
+    }
+}
+
+impl PrimInt for u32 {
+    fn leading_zeros(&self) -> u32 {
+        u32::leading_zeros(*self)
+    }
+
+    fn bit_count() -> u32 {
+        32
+    }
+
+    fn from_u8(i: u8) -> u32 {
+        i as u32
+    }
+}
+
+impl PrimInt for u64 {
+    fn leading_zeros(&self) -> u32 {
+        u64::leading_zeros(*self)
+    }
+
+    fn bit_count() -> u32 {
+        64
+    }
+
+    fn from_u8(i: u8) -> u64 {
+        i as u64
+    }
+}
+
+impl PrimInt for usize {
+    fn leading_zeros(&self) -> u32 {
+        usize::leading_zeros(*self)
+    }
+
+    fn bit_count() -> u32 {
+        (0 as usize).count_zeros()
+    }
+
+    fn from_u8(i: u8) -> usize {
+        i as usize
+    }
+}
+
+impl PrimInt for i8 {
+    fn leading_zeros(&self) -> u32 {
+        i8::leading_zeros(*self)
+    }
+
+    fn bit_count() -> u32 {
+        8
+    }
+
+    fn from_u8(i: u8) -> i8 {
+        i as i8
+    }
+}
+
+impl PrimInt for i16 {
+    fn leading_zeros(&self) -> u32 {
+        i16::leading_zeros(*self)
+    }
+
+    fn bit_count() -> u32 {
+        16
+    }
+
+    fn from_u8(i: u8) -> i16 {
+        i as i16
+    }
+}
+
+impl PrimInt for i32 {
+    fn leading_zeros(&self) -> u32 {
+        i32::leading_zeros(*self)
+    }
+
+    fn bit_count() -> u32 {
+        32
+    }
+
+    fn from_u8(i: u8) -> i32 {
+        i as i32
+    }
+}
+
+impl PrimInt for i64 {
+    fn leading_zeros(&self) -> u32 {
+        i64::leading_zeros(*self)
+    }
+
+    fn bit_count() -> u32 {
+        64
+    }
+
+    fn from_u8(i: u8) -> i64 {
+        i as i64
+    }
+}
+
+impl PrimInt for isize {
+    fn leading_zeros(&self) -> u32 {
+        isize::leading_zeros(*self)
+    }
+
+    fn bit_count() -> u32 {
+        (0 as isize).count_zeros()
+    }
+
+    fn from_u8(i: u8) -> isize {
+        i as isize
+    }
+}
 
 pub fn usize_bit_count() -> u32 {
     (0 as usize).count_zeros()
@@ -20,32 +161,19 @@ pub fn is_power_of_two(n: &Integer) -> bool {
     n.find_one(0).unwrap() == n.significant_bits() - 1
 }
 
-macro_rules! ceiling_log_2 {
-    ($cl2: ident, $t: ty, $s: expr) => {
-        pub fn $cl2(n: $t) -> u32 {
-            if n < 1 {
-                panic!("n must be positive. Invalid n: {}", n);
-            }
-            let bit_length = $s - n.leading_zeros();
-            if n & (n - 1) == 0 {
-                bit_length - 1
-            } else {
-                bit_length
-            }
-        }
+pub fn ceiling_log_2<T: PrimInt>(n: T) -> u32 {
+    let zero = T::from_u8(0);
+    let one = T::from_u8(1);
+    if n < one {
+        panic!("n must be positive. Invalid n: {}", n);
+    }
+    let bit_length = T::bit_count() - n.leading_zeros();
+    if n & (n - one) == zero {
+        bit_length - 1
+    } else {
+        bit_length
     }
 }
-
-ceiling_log_2!(ceiling_log_2_u8, u8, 8);
-ceiling_log_2!(ceiling_log_2_u16, u16, 16);
-ceiling_log_2!(ceiling_log_2_u32, u32, 32);
-ceiling_log_2!(ceiling_log_2_u64, u64, 64);
-ceiling_log_2!(ceiling_log_2_usize, usize, usize_bit_count());
-ceiling_log_2!(ceiling_log_2_i8, i8, 8);
-ceiling_log_2!(ceiling_log_2_i16, i16, 16);
-ceiling_log_2!(ceiling_log_2_i32, i32, 32);
-ceiling_log_2!(ceiling_log_2_i64, i64, 64);
-ceiling_log_2!(ceiling_log_2_isize, isize, isize_bit_count());
 
 pub fn ceiling_log_2_integer(n: &Integer) -> u32 {
     if n.sign() != Ordering::Greater {
@@ -336,13 +464,13 @@ pub fn from_big_endian_bits(bits: &[bool]) -> Integer {
 }
 
 macro_rules! digits_u {
-    ($t: ty, $d: ident, $cl2: ident) => {
+    ($t: ty, $d: ident) => {
         pub fn $d(radix: $t, n: $t) -> Vec<$t> {
             if radix < 2 {
                 panic!("radix must be at least 2. Invalid radix: {}", radix);
             }
             let mut digits = Vec::new();
-            let log = $cl2(radix);
+            let log = ceiling_log_2(radix);
             let mut remaining = n;
             if 1 << log == radix {
                 let mask = radix - 1;
@@ -361,14 +489,14 @@ macro_rules! digits_u {
     }
 }
 
-digits_u!(u8, digits_u8, ceiling_log_2_u8);
-digits_u!(u16, digits_u16, ceiling_log_2_u16);
-digits_u!(u32, digits_u32, ceiling_log_2_u32);
-digits_u!(u64, digits_u64, ceiling_log_2_u64);
-digits_u!(usize, digits_usize, ceiling_log_2_usize);
+digits_u!(u8, digits_u8);
+digits_u!(u16, digits_u16);
+digits_u!(u32, digits_u32);
+digits_u!(u64, digits_u64);
+digits_u!(usize, digits_usize);
 
 macro_rules! digits_i {
-    ($t: ty, $d: ident, $cl2: ident) => {
+    ($t: ty, $d: ident) => {
         pub fn $d(radix: $t, n: $t) -> Vec<$t> {
             if n < 0 {
                 panic!("n cannot be negative. Invalid n: {}", n);
@@ -377,7 +505,7 @@ macro_rules! digits_i {
                 panic!("radix must be at least 2. Invalid radix: {}", radix);
             }
             let mut digits = Vec::new();
-            let log = $cl2(radix);
+            let log = ceiling_log_2(radix);
             let mut remaining = n;
             if 1 << log == radix {
                 let mask = radix - 1;
@@ -396,11 +524,11 @@ macro_rules! digits_i {
     }
 }
 
-digits_i!(i8, digits_i8, ceiling_log_2_i8);
-digits_i!(i16, digits_i16, ceiling_log_2_i16);
-digits_i!(i32, digits_i32, ceiling_log_2_i32);
-digits_i!(i64, digits_i64, ceiling_log_2_i64);
-digits_i!(isize, digits_isize, ceiling_log_2_isize);
+digits_i!(i8, digits_i8);
+digits_i!(i16, digits_i16);
+digits_i!(i32, digits_i32);
+digits_i!(i64, digits_i64);
+digits_i!(isize, digits_isize);
 
 pub fn digits_integer(radix: &Integer, n: &Integer) -> Vec<Integer> {
     if *n < 0 {
@@ -470,13 +598,13 @@ pub fn digits_integer(radix: &Integer, n: &Integer) -> Vec<Integer> {
 }
 
 macro_rules! digits_padded_u {
-    ($t: ty, $dp: ident, $cl2: ident) => {
+    ($t: ty, $dp: ident) => {
         pub fn $dp(size: usize, radix: $t, n: $t) -> Vec<$t> {
             if radix < 2 {
                 panic!("radix must be at least 2. Invalid radix: {}", radix);
             }
             let mut digits = Vec::new();
-            let log = $cl2(radix);
+            let log = ceiling_log_2(radix);
             let mut remaining = n;
             if 1 << log == radix {
                 let mask = radix - 1;
@@ -495,14 +623,14 @@ macro_rules! digits_padded_u {
     }
 }
 
-digits_padded_u!(u8, digits_padded_u8, ceiling_log_2_u8);
-digits_padded_u!(u16, digits_padded_u16, ceiling_log_2_u16);
-digits_padded_u!(u32, digits_padded_u32, ceiling_log_2_u32);
-digits_padded_u!(u64, digits_padded_u64, ceiling_log_2_u64);
-digits_padded_u!(usize, digits_padded_usize, ceiling_log_2_usize);
+digits_padded_u!(u8, digits_padded_u8);
+digits_padded_u!(u16, digits_padded_u16);
+digits_padded_u!(u32, digits_padded_u32);
+digits_padded_u!(u64, digits_padded_u64);
+digits_padded_u!(usize, digits_padded_usize);
 
 macro_rules! digits_padded_i {
-    ($t: ty, $dp: ident, $cl2: ident) => {
+    ($t: ty, $dp: ident) => {
         pub fn $dp(size: usize, radix: $t, n: $t) -> Vec<$t> {
             if n < 0 {
                 panic!("n cannot be negative. Invalid n: {}", n);
@@ -511,7 +639,7 @@ macro_rules! digits_padded_i {
                 panic!("radix must be at least 2. Invalid radix: {}", radix);
             }
             let mut digits = Vec::new();
-            let log = $cl2(radix);
+            let log = ceiling_log_2(radix);
             let mut remaining = n;
             if 1 << log == radix {
                 let mask = radix - 1;
@@ -530,8 +658,8 @@ macro_rules! digits_padded_i {
     }
 }
 
-digits_padded_i!(i8, digits_padded_i8, ceiling_log_2_i8);
-digits_padded_i!(i16, digits_padded_i16, ceiling_log_2_i16);
-digits_padded_i!(i32, digits_padded_i32, ceiling_log_2_i32);
-digits_padded_i!(i64, digits_padded_i64, ceiling_log_2_i64);
-digits_padded_i!(isize, digits_padded_isize, ceiling_log_2_isize);
+digits_padded_i!(i8, digits_padded_i8);
+digits_padded_i!(i16, digits_padded_i16);
+digits_padded_i!(i32, digits_padded_i32);
+digits_padded_i!(i64, digits_padded_i64);
+digits_padded_i!(isize, digits_padded_isize);

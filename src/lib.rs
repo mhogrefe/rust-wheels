@@ -24,4 +24,5 @@ pub mod iterators {
 pub mod prim_utils {
     pub mod char_utils;
     pub mod integer_utils;
+    pub mod traits;
 }
