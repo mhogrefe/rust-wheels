@@ -1,9 +1,12 @@
+use rand::distributions::range::SampleRange;
+use rand::Rand;
 use std::fmt::Display;
 use std::ops::*;
 
 pub trait PrimInt
     : BitAnd<Output = Self> + BitOr<Output = Self> + BitXor<Output = Self> + Copy + Display + Eq +
-      Ord + ShlAssign<Self> + ShrAssign + Add<Output = Self> + Sub<Output = Self> {
+      Ord + ShlAssign<Self> + ShrAssign + Add<Output = Self> + Sub<Output = Self> + Rand +
+      SampleRange + Walkable {
 
     fn bit_count() -> u32;
 

@@ -203,7 +203,7 @@ pub enum PositiveUnsigned<T: Rand + Walkable> {
     Random(Random<T>),
 }
 
-impl<T: PrimUnsignedInt + Rand + Walkable> PositiveUnsigned<T> {
+impl<T: PrimUnsignedInt> PositiveUnsigned<T> {
     pub fn exhaustive() -> PositiveUnsigned<T> {
         PositiveUnsigned::Exhaustive(RangeIncreasing::new(T::from_u8(1), T::max_value()))
     }
@@ -213,7 +213,7 @@ impl<T: PrimUnsignedInt + Rand + Walkable> PositiveUnsigned<T> {
     }
 }
 
-impl<T: PrimUnsignedInt + Rand + Walkable> Iterator for PositiveUnsigned<T> {
+impl<T: PrimUnsignedInt> Iterator for PositiveUnsigned<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
@@ -232,12 +232,12 @@ impl<T: PrimUnsignedInt + Rand + Walkable> Iterator for PositiveUnsigned<T> {
     }
 }
 
-pub enum AllUnsigned<T: PrimUnsignedInt + Rand + Walkable> {
+pub enum AllUnsigned<T: PrimUnsignedInt> {
     Exhaustive(RangeIncreasing<T>),
     Random(Random<T>),
 }
 
-impl<T: PrimUnsignedInt + Rand + Walkable> AllUnsigned<T> {
+impl<T: PrimUnsignedInt> AllUnsigned<T> {
     pub fn exhaustive() -> AllUnsigned<T> {
         AllUnsigned::Exhaustive(RangeIncreasing::new(T::from_u8(0), T::max_value()))
     }
@@ -247,7 +247,7 @@ impl<T: PrimUnsignedInt + Rand + Walkable> AllUnsigned<T> {
     }
 }
 
-impl<T: PrimUnsignedInt + Rand + Walkable> Iterator for AllUnsigned<T> {
+impl<T: PrimUnsignedInt> Iterator for AllUnsigned<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
@@ -258,68 +258,69 @@ impl<T: PrimUnsignedInt + Rand + Walkable> Iterator for AllUnsigned<T> {
     }
 }
 
-macro_rules! integer_range_u {
-    (
-        $t: ty,
-        $rr_s: ident,
-        $r_s: ident,
-        $max: expr
-    ) => {
-        pub enum $rr_s {
-            Some(bool, IsaacRng, Range<$t>),
-            All(Random<$t>),
-        }
+pub enum RandomRangeUnsigned<T: Rand> {
+    Some(bool, IsaacRng, Range<T>),
+    All(Random<T>),
+}
 
-        impl $rr_s {
-            fn new(a: $t, b: $t, seed: &[u32]) -> $rr_s {
-                if a == 0 && b == $max {
-                    $rr_s::All(Random::new(&seed))
-                } else if b == $max {
-                    $rr_s::Some(true, SeedableRng::from_seed(&seed[..]), Range::new(a - 1, b))
-                } else {
-                    $rr_s::Some(false, SeedableRng::from_seed(&seed[..]), Range::new(a, b + 1))
-                }
-            }
-        }
-
-        impl Iterator for $rr_s {
-            type Item = $t;
-
-            fn next(&mut self) -> Option<$t> {
-                match self {
-                    &mut $rr_s::Some(shift, ref mut rng, ref range) => Some(if shift {
-                        range.ind_sample(rng) + 1
-                    } else {
-                        range.ind_sample(rng)
-                    }),
-                    &mut $rr_s::All(ref mut it) => it.next(),
-                }
-            }
-        }
-
-        pub enum $r_s {
-            Exhaustive(RangeIncreasing<$t>),
-            Random($rr_s),
-        }
-
-        impl Iterator for $r_s {
-            type Item = $t;
-
-            fn next(&mut self) -> Option<$t> {
-                match self {
-                    &mut $r_s::Exhaustive(ref mut it) => it.next(),
-                    &mut $r_s::Random(ref mut it) => it.next(),
-                }
-            }
+impl<T: PrimUnsignedInt> RandomRangeUnsigned<T> {
+    pub fn new(a: T, b: T, seed: &[u32]) -> RandomRangeUnsigned<T> {
+        if a == T::from_u8(0) && b == T::max_value() {
+            RandomRangeUnsigned::All(Random::new(&seed))
+        } else if b == T::max_value() {
+            RandomRangeUnsigned::Some(true,
+                                      SeedableRng::from_seed(&seed[..]),
+                                      Range::new(a - T::from_u8(1), b))
+        } else {
+            RandomRangeUnsigned::Some(false,
+                                      SeedableRng::from_seed(&seed[..]),
+                                      Range::new(a, b + T::from_u8(1)))
         }
     }
 }
 
-integer_range_u!(u8, RandomRangeU8, RangeU8, u8::max_value());
-integer_range_u!(u16, RandomRangeU16, RangeU16, u16::max_value());
-integer_range_u!(u32, RandomRangeU32, RangeU32, u32::max_value());
-integer_range_u!(u64, RandomRangeU64, RangeU64, u64::max_value());
-integer_range_u!(usize, RandomRangeUsize, RangeUsize, usize::max_value());
+impl<T: PrimUnsignedInt> Iterator for RandomRangeUnsigned<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<T> {
+        match self {
+            &mut RandomRangeUnsigned::Some(shift, ref mut rng, ref range) => {
+                Some(if shift {
+                         range.ind_sample(rng) + T::from_u8(1)
+                     } else {
+                         range.ind_sample(rng)
+                     })
+            }
+            &mut RandomRangeUnsigned::All(ref mut xs) => xs.next(),
+        }
+    }
+}
+
+pub enum RangeUnsigned<T: Rand + Walkable> {
+    Exhaustive(RangeIncreasing<T>),
+    Random(RandomRangeUnsigned<T>),
+}
+
+impl<T: PrimUnsignedInt> RangeUnsigned<T> {
+    pub fn exhaustive(a: T, b: T) -> RangeUnsigned<T> {
+        RangeUnsigned::Exhaustive(RangeIncreasing::new(a, b))
+    }
+
+    pub fn random(a: T, b: T, seed: &[u32]) -> RangeUnsigned<T> {
+        RangeUnsigned::Random(RandomRangeUnsigned::new(a, b, seed))
+    }
+}
+
+impl<T: PrimUnsignedInt> Iterator for RangeUnsigned<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<T> {
+        match self {
+            &mut RangeUnsigned::Exhaustive(ref mut xs) => xs.next(),
+            &mut RangeUnsigned::Random(ref mut xs) => xs.next(),
+        }
+    }
+}
 
 macro_rules! integer_range_i {
     (
@@ -844,8 +845,6 @@ macro_rules! integer_range_impl_u {
         $ru_f: ident,
         $rd_f: ident,
         $r_f: ident,
-        $r_s: ident,
-        $rr_s: ident,
         $max: expr
     ) => {
         pub fn $pos_f(&self) -> PositiveUnsigned<$t> {
@@ -862,18 +861,18 @@ macro_rules! integer_range_impl_u {
             }
         }
 
-        pub fn $ru_f(&self, a: $t) -> $r_s {
+        pub fn $ru_f(&self, a: $t) -> RangeUnsigned<$t> {
             self.$r_f(a, $max)
         }
 
-        pub fn $rd_f(&self, a: $t) -> $r_s {
+        pub fn $rd_f(&self, a: $t) -> RangeUnsigned<$t> {
             self.$r_f(0, a)
         }
 
-        pub fn $r_f(&self, a: $t, b: $t) -> $r_s {
+        pub fn $r_f(&self, a: $t, b: $t) -> RangeUnsigned<$t> {
             match self {
-                &IteratorProvider::Exhaustive => $r_s::Exhaustive(RangeIncreasing::new(a, b)),
-                &IteratorProvider::Random(_, seed) => $r_s::Random($rr_s::new(a, b, &seed[..])),
+                &IteratorProvider::Exhaustive => RangeUnsigned::exhaustive(a, b),
+                &IteratorProvider::Random(_, seed) => RangeUnsigned::random(a, b, &seed[..]),
             }
         }
     }
@@ -1000,7 +999,7 @@ impl<T: Clone> Iterator for ExhaustiveFromVector<T> {
 
 pub struct FromVector<T> {
     xs: Vec<T>,
-    range: RangeUsize,
+    range: RangeUnsigned<usize>,
 }
 
 impl<T: Clone> Iterator for FromVector<T> {
@@ -1017,7 +1016,7 @@ impl<T: Clone> Iterator for FromVector<T> {
 
 pub enum PositiveU32sGeometric {
     Exhaustive(RangeIncreasing<u32>),
-    Random(RandomRangeU32),
+    Random(RandomRangeUnsigned<u32>),
 }
 
 impl Iterator for PositiveU32sGeometric {
@@ -1042,7 +1041,7 @@ impl Iterator for PositiveU32sGeometric {
 
 pub enum NaturalU32sGeometric {
     Exhaustive(RangeIncreasing<u32>),
-    Random(RandomRangeU32),
+    Random(RandomRangeUnsigned<u32>),
 }
 
 impl Iterator for NaturalU32sGeometric {
@@ -1226,8 +1225,6 @@ impl IteratorProvider {
                           range_up_u8,
                           range_down_u8,
                           range_u8,
-                          RangeU8,
-                          RandomRangeU8,
                           u8::max_value());
     integer_range_impl_u!(u16,
                           positive_u16s,
@@ -1235,8 +1232,6 @@ impl IteratorProvider {
                           range_up_u16,
                           range_down_u16,
                           range_u16,
-                          RangeU16,
-                          RandomRangeU16,
                           u16::max_value());
     integer_range_impl_u!(u32,
                           positive_u32s,
@@ -1244,8 +1239,6 @@ impl IteratorProvider {
                           range_up_u32,
                           range_down_u32,
                           range_u32,
-                          RangeU32,
-                          RandomRangeU32,
                           u32::max_value());
     integer_range_impl_u!(u64,
                           positive_u64s,
@@ -1253,8 +1246,6 @@ impl IteratorProvider {
                           range_up_u64,
                           range_down_u64,
                           range_u64,
-                          RangeU64,
-                          RandomRangeU64,
                           u64::max_value());
     integer_range_impl_u!(usize,
                           positive_usizes,
@@ -1262,8 +1253,6 @@ impl IteratorProvider {
                           range_up_usize,
                           range_down_usize,
                           range_usize,
-                          RangeUsize,
-                          RandomRangeUsize,
                           usize::max_value());
 
     integer_range_impl_i!(i8,
@@ -1554,7 +1543,7 @@ impl IteratorProvider {
                 PositiveU32sGeometric::Exhaustive(RangeIncreasing::new(1, u32::max_value()))
             }
             &IteratorProvider::Random(_, seed) => {
-                PositiveU32sGeometric::Random(RandomRangeU32::new(0, scale + 1, &seed))
+                PositiveU32sGeometric::Random(RandomRangeUnsigned::new(0, scale + 1, &seed))
             }
         }
     }
@@ -1565,7 +1554,7 @@ impl IteratorProvider {
                 NaturalU32sGeometric::Exhaustive(RangeIncreasing::new(0, u32::max_value()))
             }
             &IteratorProvider::Random(_, seed) => {
-                NaturalU32sGeometric::Random(RandomRangeU32::new(0, scale + 1, &seed))
+                NaturalU32sGeometric::Random(RandomRangeUnsigned::new(0, scale + 1, &seed))
             }
         }
     }
