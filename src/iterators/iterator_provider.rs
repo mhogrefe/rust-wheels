@@ -764,128 +764,6 @@ impl Iterator for RangeInteger {
     }
 }
 
-macro_rules! integer_range_impl_u {
-    (
-        $t: ty,
-        $pos_f: ident,
-        $all_f: ident,
-        $ru_f: ident,
-        $rd_f: ident,
-        $r_f: ident,
-        $max: expr
-    ) => {
-        pub fn $pos_f(&self) -> PositiveU<$t> {
-            match self {
-                &IteratorProvider::Exhaustive => PositiveU::exhaustive(),
-                &IteratorProvider::Random(_, seed) => PositiveU::random(&seed[..]),
-            }
-        }
-
-        pub fn $all_f(&self) -> AllU<$t> {
-            match self {
-                &IteratorProvider::Exhaustive => AllU::exhaustive(),
-                &IteratorProvider::Random(_, seed) => AllU::random(&seed[..]),
-            }
-        }
-
-        pub fn $ru_f(&self, a: $t) -> RangeU<$t> {
-            self.$r_f(a, $max)
-        }
-
-        pub fn $rd_f(&self, a: $t) -> RangeU<$t> {
-            self.$r_f(0, a)
-        }
-
-        pub fn $r_f(&self, a: $t, b: $t) -> RangeU<$t> {
-            if a > b {
-                panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
-            }
-            match self {
-                &IteratorProvider::Exhaustive => RangeU::exhaustive(a, b),
-                &IteratorProvider::Random(_, seed) => RangeU::random(a, b, &seed[..]),
-            }
-        }
-    }
-}
-
-macro_rules! integer_range_impl_i {
-    (
-        $t: ty,
-        $ut: ty,
-        $pos_f: ident,
-        $neg_f: ident,
-        $nat_f: ident,
-        $nz_f: ident,
-        $all_f: ident,
-        $ru_f: ident,
-        $rd_f: ident,
-        $r_f: ident,
-        $pos_s: ident,
-        $neg_s: ident,
-        $nat_s: ident,
-        $nz_s: ident,
-        $all_s: ident,
-        $r_s: ident,
-        $er_s: ident,
-        $rr_s: ident,
-        $min: expr,
-        $max: expr
-    ) => {
-        pub fn $pos_f(&self) -> PositiveI<$t> {
-            match self {
-                &IteratorProvider::Exhaustive => PositiveI::exhaustive(),
-                &IteratorProvider::Random(_, seed) => PositiveI::random(&seed[..]),
-            }
-        }
-
-        pub fn $neg_f(&self) -> NegativeI<$t> {
-            match self {
-                &IteratorProvider::Exhaustive => NegativeI::exhaustive(),
-                &IteratorProvider::Random(_, seed) => NegativeI::random(&seed[..]),
-            }
-        }
-
-        pub fn $nat_f(&self) -> NaturalI<$t> {
-            match self {
-                &IteratorProvider::Exhaustive => NaturalI::exhaustive(),
-                &IteratorProvider::Random(_, seed) => NaturalI::random(&seed[..]),
-            }
-        }
-
-        pub fn $nz_f(&self) -> NonzeroI<$t> {
-            match self {
-                &IteratorProvider::Exhaustive => NonzeroI::exhaustive(),
-                &IteratorProvider::Random(_, seed) => NonzeroI::random(&seed[..]),
-            }
-        }
-
-        pub fn $all_f(&self) -> AllI<$t> {
-            match self {
-                &IteratorProvider::Exhaustive => AllI::exhaustive(),
-                &IteratorProvider::Random(_, seed) => AllI::random(&seed[..]),
-            }
-        }
-
-        pub fn $ru_f(&self, a: $t) -> RangeI<$t> {
-            self.$r_f(a, $max)
-        }
-
-        pub fn $rd_f(&self, a: $t) -> RangeI<$t> {
-            self.$r_f($min, a)
-        }
-
-        pub fn $r_f(&self, a: $t, b: $t) -> RangeI<$t> {
-            if a > b {
-                panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
-            }
-            match self {
-                &IteratorProvider::Exhaustive => RangeI::exhaustive(a, b),
-                &IteratorProvider::Random(_, seed) => RangeI::random(a, b, &seed[..]),
-            }
-        }
-    }
-}
-
 pub struct ExhaustiveFromVector<T> {
     xs: Vec<T>,
     range: RangeIncreasing<usize>,
@@ -1036,142 +914,90 @@ impl IteratorProvider {
         RangeDecreasing::new(T::min_value(), T::max_value())
     }
 
-    integer_range_impl_u!(u8,
-                          positive_u8s,
-                          u8s,
-                          range_up_u8,
-                          range_down_u8,
-                          range_u8,
-                          u8::max_value());
-    integer_range_impl_u!(u16,
-                          positive_u16s,
-                          u16s,
-                          range_up_u16,
-                          range_down_u16,
-                          range_u16,
-                          u16::max_value());
-    integer_range_impl_u!(u32,
-                          positive_u32s,
-                          u32s,
-                          range_up_u32,
-                          range_down_u32,
-                          range_u32,
-                          u32::max_value());
-    integer_range_impl_u!(u64,
-                          positive_u64s,
-                          u64s,
-                          range_up_u64,
-                          range_down_u64,
-                          range_u64,
-                          u64::max_value());
-    integer_range_impl_u!(usize,
-                          positive_usizes,
-                          usizes,
-                          range_up_usize,
-                          range_down_usize,
-                          range_usize,
-                          usize::max_value());
+    pub fn positive_u<T: PrimUnsignedInt>(&self) -> PositiveU<T> {
+        match self {
+            &IteratorProvider::Exhaustive => PositiveU::exhaustive(),
+            &IteratorProvider::Random(_, seed) => PositiveU::random(&seed[..]),
+        }
+    }
 
-    integer_range_impl_i!(i8,
-                          u8,
-                          positive_i8s,
-                          negative_i8s,
-                          natural_i8s,
-                          nonzero_i8s,
-                          i8s,
-                          range_up_i8,
-                          range_down_i8,
-                          range_i8,
-                          PositiveI8s,
-                          NegativeI8s,
-                          NaturalI8s,
-                          NonzeroI8s,
-                          I8s,
-                          RangeI8,
-                          ExhaustiveRangeI8,
-                          RandomRangeI8,
-                          i8::min_value(),
-                          i8::max_value());
-    integer_range_impl_i!(i16,
-                          u16,
-                          positive_i16s,
-                          negative_i16s,
-                          natural_i16s,
-                          nonzero_i16s,
-                          i16s,
-                          range_up_i16,
-                          range_down_i16,
-                          range_i16,
-                          PositiveI16s,
-                          NegativeI16s,
-                          NaturalI16s,
-                          NonzeroI16s,
-                          I16s,
-                          RangeI16,
-                          ExhaustiveRangeI16,
-                          RandomRangeI16,
-                          i16::min_value(),
-                          i16::max_value());
-    integer_range_impl_i!(i32,
-                          u32,
-                          positive_i32s,
-                          negative_i32s,
-                          natural_i32s,
-                          nonzero_i32s,
-                          i32s,
-                          range_up_i32,
-                          range_down_i32,
-                          range_i32,
-                          PositiveI32s,
-                          NegativeI32s,
-                          NaturalI32s,
-                          NonzeroI32s,
-                          I32s,
-                          RangeI32,
-                          ExhaustiveRangeI32,
-                          RandomRangeI32,
-                          i32::min_value(),
-                          i32::max_value());
-    integer_range_impl_i!(i64,
-                          u64,
-                          positive_i64s,
-                          negative_i64s,
-                          natural_i64s,
-                          nonzero_i64s,
-                          i64s,
-                          range_up_i64,
-                          range_down_i64,
-                          range_i64,
-                          PositiveI64s,
-                          NegativeI64s,
-                          NaturalI64s,
-                          NonzeroI64s,
-                          I64s,
-                          RangeI64,
-                          ExhaustiveRangeI64,
-                          RandomRangeI64,
-                          i64::min_value(),
-                          i64::max_value());
-    integer_range_impl_i!(isize,
-                          usize,
-                          positive_isizes,
-                          negative_isizes,
-                          natural_isizes,
-                          nonzero_isizes,
-                          isizes,
-                          range_up_isize,
-                          range_down_isize,
-                          range_isize,
-                          PositiveIsizes,
-                          NegativeIsizes,
-                          NaturalIsizes,
-                          NonzeroIsizes,
-                          Isizes,
-                          RangeIsize,
-                          ExhaustiveRangeIsize,
-                          RandomRangeIsize,
-                          isize::min_value(),
-                          isize::max_value());
+    pub fn all_u<T: PrimUnsignedInt>(&self) -> AllU<T> {
+        match self {
+            &IteratorProvider::Exhaustive => AllU::exhaustive(),
+            &IteratorProvider::Random(_, seed) => AllU::random(&seed[..]),
+        }
+    }
+
+    pub fn range_up_u<T: PrimUnsignedInt>(&self, a: T) -> RangeU<T> {
+        self.range_u(a, T::max_value())
+    }
+
+    pub fn range_down_u<T: PrimUnsignedInt>(&self, a: T) -> RangeU<T> {
+        self.range_u(T::from_u8(0), a)
+    }
+
+    pub fn range_u<T: PrimUnsignedInt>(&self, a: T, b: T) -> RangeU<T> {
+        if a > b {
+            panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
+        }
+        match self {
+            &IteratorProvider::Exhaustive => RangeU::exhaustive(a, b),
+            &IteratorProvider::Random(_, seed) => RangeU::random(a, b, &seed[..]),
+        }
+    }
+
+    pub fn positive_i<T: PrimSignedInt>(&self) -> PositiveI<T> {
+        match self {
+            &IteratorProvider::Exhaustive => PositiveI::exhaustive(),
+            &IteratorProvider::Random(_, seed) => PositiveI::random(&seed[..]),
+        }
+    }
+
+    pub fn negative_i<T: PrimSignedInt>(&self) -> NegativeI<T> {
+        match self {
+            &IteratorProvider::Exhaustive => NegativeI::exhaustive(),
+            &IteratorProvider::Random(_, seed) => NegativeI::random(&seed[..]),
+        }
+    }
+
+    pub fn natural_i<T: PrimSignedInt>(&self) -> NaturalI<T> {
+        match self {
+            &IteratorProvider::Exhaustive => NaturalI::exhaustive(),
+            &IteratorProvider::Random(_, seed) => NaturalI::random(&seed[..]),
+        }
+    }
+
+    pub fn nonzero_i<T: PrimSignedInt>(&self) -> NonzeroI<T> {
+        match self {
+            &IteratorProvider::Exhaustive => NonzeroI::exhaustive(),
+            &IteratorProvider::Random(_, seed) => NonzeroI::random(&seed[..]),
+        }
+    }
+
+    pub fn all_i<T: PrimSignedInt>(&self) -> AllI<T> {
+        match self {
+            &IteratorProvider::Exhaustive => AllI::exhaustive(),
+            &IteratorProvider::Random(_, seed) => AllI::random(&seed[..]),
+        }
+    }
+
+    pub fn range_up_i<T: PrimSignedInt>(&self, a: T) -> RangeI<T> {
+        self.range_i(a, T::max_value())
+    }
+
+    pub fn range_down_i<T: PrimSignedInt>(&self, a: T) -> RangeI<T> {
+        self.range_i(T::min_value(), a)
+    }
+
+    pub fn range_i<T: PrimSignedInt>(&self, a: T, b: T) -> RangeI<T> {
+        if a > b {
+            panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
+        }
+        match self {
+            &IteratorProvider::Exhaustive => RangeI::exhaustive(a, b),
+            &IteratorProvider::Random(_, seed) => RangeI::random(a, b, &seed[..]),
+        }
+    }
 
     pub fn chars_increasing(&self) -> RangeIncreasing<char> {
         RangeIncreasing::new('\0', char::MAX)
@@ -1342,7 +1168,7 @@ impl IteratorProvider {
         let max = &xs.len() - 1;
         FromVector {
             xs: xs,
-            range: self.range_usize(0, max),
+            range: self.range_u(0, max),
         }
     }
 
