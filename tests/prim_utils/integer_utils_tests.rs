@@ -363,14 +363,14 @@ macro_rules! test_big_endian_bits_padded_u {
 }
 
 test_big_endian_bits_padded_u!(u8,
-                               big_endian_bits_padded_u8,
+                               big_endian_bits_padded_u,
                                test_big_endian_bits_padded_u8,
                                big_endian_bits_padded_u8_helper,
                                u8::max_value(),
                                8,
                                "[true, true, true, true, true, true, true, true]");
 test_big_endian_bits_padded_u!(u16,
-                               big_endian_bits_padded_u16,
+                               big_endian_bits_padded_u,
                                test_big_endian_bits_padded_u16,
                                big_endian_bits_padded_u16_helper,
                                u16::max_value(),
@@ -378,7 +378,7 @@ test_big_endian_bits_padded_u!(u16,
                                "[true, true, true, true, true, true, true, true, true, true, true, \
                                  true, true, true, true, true]");
 test_big_endian_bits_padded_u!(u32,
-                               big_endian_bits_padded_u32,
+                               big_endian_bits_padded_u,
                                test_big_endian_bits_padded_u32,
                                big_endian_bits_padded_u32_helper,
                                u32::max_value(),
@@ -387,7 +387,7 @@ test_big_endian_bits_padded_u!(u32,
                                  true, true, true, true, true, true, true, true, true, true, true, \
                                  true, true, true, true, true, true, true, true, true, true]");
 test_big_endian_bits_padded_u!(u64,
-                               big_endian_bits_padded_u64,
+                               big_endian_bits_padded_u,
                                test_big_endian_bits_padded_u64,
                                big_endian_bits_padded_u64_helper,
                                u64::max_value(),
@@ -517,19 +517,19 @@ macro_rules! test_digits {
         #[test]
         #[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
         fn $fail_1() {
-            $f(1, 10);
+            $f(1 as $t, 10 as $t);
         }
 
         #[test]
         #[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
         fn $fail_2() {
-            $f(0, 10);
+            $f(0 as $t, 10 as $t);
         }
     }
 }
 
 test_digits!(u8,
-             digits_u8,
+             digits_u,
              test_digits_u8,
              digits_u8_helper,
              digits_u8_fail_1,
@@ -537,7 +537,7 @@ test_digits!(u8,
              u8::max_value(),
              "[254]");
 test_digits!(u16,
-             digits_u16,
+             digits_u,
              test_digits_u16,
              digits_u16_helper,
              digits_u16_fail_1,
@@ -545,7 +545,7 @@ test_digits!(u16,
              u16::max_value(),
              "[65534]");
 test_digits!(u32,
-             digits_u32,
+             digits_u,
              test_digits_u32,
              digits_u32_helper,
              digits_u32_fail_1,
@@ -553,7 +553,7 @@ test_digits!(u32,
              u32::max_value(),
              "[4294967294]");
 test_digits!(u64,
-             digits_u64,
+             digits_u,
              test_digits_u64,
              digits_u64_helper,
              digits_u64_fail_1,
@@ -699,19 +699,19 @@ macro_rules! test_digits_padded {
         #[test]
         #[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
         fn $fail_1() {
-            $f(3, 1, 10);
+            $f(3, 1 as $t, 10 as $t);
         }
 
         #[test]
         #[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
         fn $fail_2() {
-            $f(3, 0, 10);
+            $f(3, 0 as $t, 10 as $t);
         }
     }
 }
 
 test_digits_padded!(u8,
-                    digits_padded_u8,
+                    digits_padded_u,
                     test_digits_padded_u8,
                     digits_padded_u8_helper,
                     digits_padded_u8_fail_1,
@@ -719,7 +719,7 @@ test_digits_padded!(u8,
                     u8::max_value(),
                     "[254]");
 test_digits_padded!(u16,
-                    digits_padded_u16,
+                    digits_padded_u,
                     test_digits_padded_u16,
                     digits_padded_u16_helper,
                     digits_padded_u16_fail_1,
@@ -727,7 +727,7 @@ test_digits_padded!(u16,
                     u16::max_value(),
                     "[65534]");
 test_digits_padded!(u32,
-                    digits_padded_u32,
+                    digits_padded_u,
                     test_digits_padded_u32,
                     digits_padded_u32_helper,
                     digits_padded_u32_fail_1,
@@ -735,7 +735,7 @@ test_digits_padded!(u32,
                     u32::max_value(),
                     "[4294967294]");
 test_digits_padded!(u64,
-                    digits_padded_u64,
+                    digits_padded_u,
                     test_digits_padded_u64,
                     digits_u64_padded_helper,
                     digits_u64_padded_fail_1,

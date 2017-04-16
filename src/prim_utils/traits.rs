@@ -5,8 +5,9 @@ use std::ops::*;
 
 pub trait PrimInt
     : BitAnd<Output=Self> + BitOr<Output=Self> + BitXor<Output=Self> + Copy + Display + Eq + Ord +
-    Shl<u32, Output=Self> + ShlAssign<u32> + Shr<u32, Output=Self> + ShrAssign +
-    Add<Output = Self> + Sub<Output = Self> + Not<Output=Self> + Rand + SampleRange + Walkable {
+    Shl<u32, Output=Self> + ShlAssign<u32> + Shr<u32, Output=Self> + ShrAssign<u32> +
+    Add<Output=Self> + Sub<Output=Self> + Rem<Output=Self> + DivAssign + Not<Output=Self> + Rand +
+    SampleRange + Walkable {
 
     fn bit_count() -> u32;
 

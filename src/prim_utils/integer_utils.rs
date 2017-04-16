@@ -115,7 +115,7 @@ pub fn bits_u<T: PrimUnsignedInt>(n: T) -> Vec<bool> {
     let mut remaining = n;
     while remaining != zero {
         bits.push(remaining & one != zero);
-        remaining >>= one;
+        remaining >>= 1;
     }
     bits
 }
@@ -142,7 +142,7 @@ pub fn bits_padded_u<T: PrimUnsignedInt>(size: usize, n: T) -> Vec<bool> {
     let mut remaining = n;
     for _ in 0..size {
         bits.push(remaining & one != zero);
-        remaining >>= one;
+        remaining >>= 1;
     }
     bits
 }
@@ -168,7 +168,7 @@ pub fn big_endian_bits_u<T: PrimUnsignedInt>(n: T) -> Vec<bool> {
     let mut mask: T = one << (T::bit_count() - n.leading_zeros() - 1);
     while mask != zero {
         bits.push(n & mask != zero);
-        mask >>= one;
+        mask >>= 1;
     }
     bits
 }
@@ -194,36 +194,26 @@ pub fn big_endian_bits_integer(n: &Integer) -> Vec<bool> {
     }
 }
 
-macro_rules! big_endian_bits_padded_u {
-    ($t: ty, $bebp: ident, $max_bits: expr) => {
-        pub fn $bebp(size: usize, n: $t) -> Vec<bool> {
-            let mut bits = Vec::new();
-            if size == 0 {
-                return bits;
-            }
-            let mut size = size;
-            let max_bits = $max_bits;
-            while size > max_bits {
-                bits.push(false);
-                size -= 1;
-            }
-            let mut mask = 1 << (size - 1);
-            while mask != 0 {
-                bits.push(n & mask != 0);
-                mask >>= 1;
-            }
-            bits
-        }
+pub fn big_endian_bits_padded_u<T: PrimUnsignedInt>(size: usize, n: T) -> Vec<bool> {
+    let mut bits = Vec::new();
+    if size == 0 {
+        return bits;
     }
+    let mut size = size;
+    let max_bits = T::bit_count();
+    while (size as u32) > max_bits {
+        bits.push(false);
+        size -= 1;
+    }
+    let zero = T::from_u8(0);
+    let one = T::from_u8(1);
+    let mut mask = one << (size as u32 - 1);
+    while mask != zero {
+        bits.push(n & mask != zero);
+        mask >>= 1;
+    }
+    bits
 }
-
-big_endian_bits_padded_u!(u8, big_endian_bits_padded_u8, 8);
-big_endian_bits_padded_u!(u16, big_endian_bits_padded_u16, 16);
-big_endian_bits_padded_u!(u32, big_endian_bits_padded_u32, 32);
-big_endian_bits_padded_u!(u64, big_endian_bits_padded_u64, 64);
-big_endian_bits_padded_u!(usize,
-                          big_endian_bits_padded_usize,
-                          usize::bit_count() as usize);
 
 pub fn big_endian_bits_padded_integer(size: usize, n: &Integer) -> Vec<bool> {
     if n.sign() == Ordering::Less {
@@ -253,37 +243,29 @@ pub fn from_big_endian_bits(bits: &[bool]) -> Integer {
     result
 }
 
-macro_rules! digits_u {
-    ($t: ty, $d: ident) => {
-        pub fn $d(radix: $t, n: $t) -> Vec<$t> {
-            if radix < 2 {
-                panic!("radix must be at least 2. Invalid radix: {}", radix);
-            }
-            let mut digits = Vec::new();
-            let log = ceiling_log_2_u(radix);
-            let mut remaining = n;
-            if 1 << log == radix {
-                let mask = radix - 1;
-                while remaining != 0 {
-                    digits.push(remaining & mask);
-                    remaining >>= log;
-                }
-            } else {
-                while remaining != 0 {
-                    digits.push(remaining % radix);
-                    remaining /= radix;
-                }
-            }
-            digits
+pub fn digits_u<T: PrimUnsignedInt>(radix: T, n: T) -> Vec<T> {
+    if radix < T::from_u8(2) {
+        panic!("radix must be at least 2. Invalid radix: {}", radix);
+    }
+    let zero = T::from_u8(0);
+    let one = T::from_u8(1);
+    let mut digits = Vec::new();
+    let log = ceiling_log_2_u(radix);
+    let mut remaining = n;
+    if one << log == radix {
+        let mask = radix - one;
+        while remaining != zero {
+            digits.push(remaining & mask);
+            remaining >>= log;
+        }
+    } else {
+        while remaining != zero {
+            digits.push(remaining % radix);
+            remaining /= radix;
         }
     }
+    digits
 }
-
-digits_u!(u8, digits_u8);
-digits_u!(u16, digits_u16);
-digits_u!(u32, digits_u32);
-digits_u!(u64, digits_u64);
-digits_u!(usize, digits_usize);
 
 pub fn digits_integer(radix: &Integer, n: &Integer) -> Vec<Integer> {
     if *n < 0 {
@@ -352,34 +334,25 @@ pub fn digits_integer(radix: &Integer, n: &Integer) -> Vec<Integer> {
     }
 }
 
-macro_rules! digits_padded_u {
-    ($t: ty, $dp: ident) => {
-        pub fn $dp(size: usize, radix: $t, n: $t) -> Vec<$t> {
-            if radix < 2 {
-                panic!("radix must be at least 2. Invalid radix: {}", radix);
-            }
-            let mut digits = Vec::new();
-            let log = ceiling_log_2_u(radix);
-            let mut remaining = n;
-            if 1 << log == radix {
-                let mask = radix - 1;
-                for _ in 0..size {
-                    digits.push(remaining & mask);
-                    remaining >>= log;
-                }
-            } else {
-                for _ in 0..size {
-                    digits.push(remaining % radix);
-                    remaining /= radix;
-                }
-            }
-            digits
+pub fn digits_padded_u<T: PrimUnsignedInt>(size: usize, radix: T, n: T) -> Vec<T> {
+    if radix < T::from_u8(2) {
+        panic!("radix must be at least 2. Invalid radix: {}", radix);
+    }
+    let one = T::from_u8(1);
+    let mut digits = Vec::new();
+    let log = ceiling_log_2_u(radix);
+    let mut remaining = n;
+    if one << log == radix {
+        let mask = radix - one;
+        for _ in 0..size {
+            digits.push(remaining & mask);
+            remaining >>= log;
+        }
+    } else {
+        for _ in 0..size {
+            digits.push(remaining % radix);
+            remaining /= radix;
         }
     }
+    digits
 }
-
-digits_padded_u!(u8, digits_padded_u8);
-digits_padded_u!(u16, digits_padded_u16);
-digits_padded_u!(u32, digits_padded_u32);
-digits_padded_u!(u64, digits_padded_u64);
-digits_padded_u!(usize, digits_padded_usize);
