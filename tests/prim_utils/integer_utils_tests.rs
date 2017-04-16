@@ -143,17 +143,13 @@ fn test_bits_u() {
                               true, true, true, true, true, true, true, true, true]);
 }
 
-fn bits_integer_helper(n: &str, out: &str) {
-    assert_eq!(format!("{:?}", bits_integer(&Integer::from_str(n).unwrap())),
-               out);
-}
-
 #[test]
 fn test_bits_integer() {
-    bits_integer_helper("0", "[]");
-    bits_integer_helper("1", "[true]");
-    bits_integer_helper("6", "[false, true, true]");
-    bits_integer_helper("105", "[true, false, false, true, false, true, true]");
+    let test = |n, out| assert_eq!(bits_integer(&Integer::from_str(n).unwrap()), out);
+    test("0", vec![]);
+    test("1", vec![true]);
+    test("6", vec![false, true, true]);
+    test("105", vec![true, false, false, true, false, true, true]);
 }
 
 #[test]
@@ -162,78 +158,56 @@ fn bits_integer_fail() {
     bits_integer(&Integer::from(-5));
 }
 
-macro_rules! test_bits_padded_u {
-    (
-            $t: ty,
-            $test: ident,
-            $helper: ident,
-            $max: expr,
-            $max_pos_bit_length: expr,
-            $max_bits: expr
-    ) => {
-        fn $helper(size: usize, n: $t, out: &str) {
-            assert_eq!(format!("{:?}", bits_padded_u(size, n)), out);
-        }
-
-        #[test]
-        fn $test() {
-            $helper(8, 0, "[false, false, false, false, false, false, false, false]");
-            $helper(8, 1, "[true, false, false, false, false, false, false, false]");
-            $helper(8, 6, "[false, true, true, false, false, false, false, false]");
-            $helper(8, 105, "[true, false, false, true, false, true, true, false]");
-            $helper(2, 104, "[false, false]");
-            $helper(2, 105, "[true, false]");
-            $helper(1, 104, "[false]");
-            $helper(1, 105, "[true]");
-            $helper(0, 104, "[]");
-            $helper(100, 105,
-                    "[true, false, false, true, false, true, true, false, false, false, false, \
-                     false, false, false, false, false, false, false, false, false, false, false, \
-                     false, false, false, false, false, false, false, false, false, false, false, \
-                     false, false, false, false, false, false, false, false, false, false, false, \
-                     false, false, false, false, false, false, false, false, false, false, false, \
-                     false, false, false, false, false, false, false, false, false, false, false, \
-                     false, false, false, false, false, false, false, false, false, false, false, \
-                     false, false, false, false, false, false, false, false, false, false, false, \
-                     false, false, false, false, false, false, false, false, false, false, false, \
-                     false]");
-            $helper($max_pos_bit_length, $max, $max_bits);
-        }
-    }
+fn bits_padded_u_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
+    let test = |size, n, out| assert_eq!(bits_padded_u(size, n), out);
+    test(8,
+         T::from_u8(0),
+         vec![false, false, false, false, false, false, false, false]);
+    test(8,
+         T::from_u8(1),
+         vec![true, false, false, false, false, false, false, false]);
+    test(8,
+         T::from_u8(6),
+         vec![false, true, true, false, false, false, false, false]);
+    test(8,
+         T::from_u8(105),
+         vec![true, false, false, true, false, true, true, false]);
+    test(2, T::from_u8(104), vec![false, false]);
+    test(2, T::from_u8(105), vec![true, false]);
+    test(1, T::from_u8(104), vec![false]);
+    test(1, T::from_u8(105), vec![true]);
+    test(0, T::from_u8(104), vec![]);
+    test(100,
+         T::from_u8(105),
+         vec![true, false, false, true, false, true, true, false, false, false, false, false,
+              false, false, false, false, false, false, false, false, false, false, false, false,
+              false, false, false, false, false, false, false, false, false, false, false, false,
+              false, false, false, false, false, false, false, false, false, false, false, false,
+              false, false, false, false, false, false, false, false, false, false, false, false,
+              false, false, false, false, false, false, false, false, false, false, false, false,
+              false, false, false, false, false, false, false, false, false, false, false, false,
+              false, false, false, false, false, false, false, false, false, false, false, false,
+              false, false, false, false]);
+    test(T::bit_count() as usize, T::max_value(), max_bits);
 }
 
-test_bits_padded_u!(u8,
-                    test_bits_padded_u8,
-                    bits_padded_u8_helper,
-                    u8::max_value(),
-                    8,
-                    "[true, true, true, true, true, true, true, true]");
-test_bits_padded_u!(u16,
-                    test_bits_padded_u16,
-                    bits_padded_u16_helper,
-                    u16::max_value(),
-                    16,
-                    "[true, true, true, true, true, true, true, true, true, true, true, true, \
-                      true, true, true, true]");
-test_bits_padded_u!(u32,
-                    test_bits_padded_u32,
-                    bits_padded_u32_helper,
-                    u32::max_value(),
-                    32,
-                    "[true, true, true, true, true, true, true, true, true, true, true, true, \
-                      true, true, true, true, true, true, true, true, true, true, true, true, \
-                      true, true, true, true, true, true, true, true]");
-test_bits_padded_u!(u64,
-                    test_bits_padded_u64,
-                    bits_padded_u64_helper,
-                    u64::max_value(),
-                    64,
-                    "[true, true, true, true, true, true, true, true, true, true, true, true, \
-                      true, true, true, true, true, true, true, true, true, true, true, true, \
-                      true, true, true, true, true, true, true, true, true, true, true, true, \
-                      true, true, true, true, true, true, true, true, true, true, true, true, \
-                      true, true, true, true, true, true, true, true, true, true, true, true, \
-                      true, true, true, true]");
+#[test]
+fn test_bits_padded_u() {
+    bits_padded_u_helper::<u8>(vec![true, true, true, true, true, true, true, true]);
+    bits_padded_u_helper::<u16>(vec![true, true, true, true, true, true, true, true, true, true,
+                                     true, true, true, true, true, true]);
+    bits_padded_u_helper::<u32>(vec![true, true, true, true, true, true, true, true, true, true,
+                                     true, true, true, true, true, true, true, true, true, true,
+                                     true, true, true, true, true, true, true, true, true, true,
+                                     true, true]);
+    bits_padded_u_helper::<u64>(vec![true, true, true, true, true, true, true, true, true, true,
+                                     true, true, true, true, true, true, true, true, true, true,
+                                     true, true, true, true, true, true, true, true, true, true,
+                                     true, true, true, true, true, true, true, true, true, true,
+                                     true, true, true, true, true, true, true, true, true, true,
+                                     true, true, true, true, true, true, true, true, true, true,
+                                     true, true, true, true]);
+}
 
 fn bits_padded_integer_helper(size: usize, n: &str, out: &str) {
     assert_eq!(format!("{:?}",
