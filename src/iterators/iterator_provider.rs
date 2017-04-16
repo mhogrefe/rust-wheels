@@ -78,6 +78,39 @@ pub fn scramble(seed: &[u32; SEED_SIZE], s: &str) -> [u32; SEED_SIZE] {
     scrambled_seed
 }
 
+
+pub struct ExhaustiveFromVector<T> {
+    xs: Vec<T>,
+    range: RangeIncreasing<usize>,
+}
+
+impl<T> ExhaustiveFromVector<T> {
+    fn new(xs: Vec<T>) -> ExhaustiveFromVector<T> {
+        let max = &xs.len() - 1;
+        ExhaustiveFromVector {
+            xs: xs,
+            range: RangeIncreasing::new(0, max),
+        }
+    }
+}
+
+impl<T: Clone> Iterator for ExhaustiveFromVector<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<T> {
+        if self.xs.is_empty() {
+            None
+        } else {
+            self.range.next().map(|i| self.xs[i].clone())
+        }
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let len = self.xs.len();
+        (len, Some(len))
+    }
+}
+
 pub enum Booleans {
     Exhaustive(ExhaustiveFromVector<bool>),
     Random(IsaacRng),
@@ -100,6 +133,13 @@ impl Iterator for Booleans {
         match self {
             &mut Booleans::Exhaustive(ref mut xs) => xs.next(),
             &mut Booleans::Random(ref mut rng) => Some(rng.gen()),
+        }
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        match self {
+            &Booleans::Exhaustive(_) => (2, Some(2)),
+            &Booleans::Random(_) => (0, None),
         }
     }
 }
@@ -318,6 +358,65 @@ impl<T: PrimUnsignedInt> Iterator for RangeU<T> {
         match self {
             &mut RangeU::Exhaustive(ref mut xs) => xs.next(),
             &mut RangeU::Random(ref mut xs) => xs.next(),
+        }
+    }
+}
+
+pub struct RandomFromVector<T> {
+    xs: Vec<T>,
+    range: RangeU<usize>,
+}
+
+impl<T> RandomFromVector<T> {
+    pub fn new(xs: Vec<T>, seed: &[u32]) -> RandomFromVector<T> {
+        let limit = &xs.len() - 1;
+        RandomFromVector {
+            xs: xs,
+            range: RangeU::random(0, limit, seed),
+        }
+    }
+}
+
+impl<T: Clone> Iterator for RandomFromVector<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<T> {
+        self.range.next().map(|i| self.xs[i].clone())
+    }
+}
+
+pub enum FromVector<T> {
+    Exhaustive(ExhaustiveFromVector<T>),
+    Random(RandomFromVector<T>),
+}
+
+impl<T> FromVector<T> {
+    pub fn exhaustive(xs: Vec<T>) -> FromVector<T> {
+        FromVector::Exhaustive(ExhaustiveFromVector::new(xs))
+    }
+
+    pub fn random(xs: Vec<T>, seed: &[u32]) -> FromVector<T> {
+        FromVector::Random(RandomFromVector::new(xs, seed))
+    }
+}
+
+impl<T: Clone> Iterator for FromVector<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<T> {
+        match self {
+            &mut FromVector::Exhaustive(ref mut xs) => xs.next(),
+            &mut FromVector::Random(ref mut xs) => xs.next(),
+        }
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        match self {
+            &FromVector::Exhaustive(ExhaustiveFromVector { ref xs, range: _ }) => {
+                let len = xs.len();
+                (len, Some(len))
+            }
+            &FromVector::Random(_) => (0, None),
         }
     }
 }
@@ -764,50 +863,6 @@ impl Iterator for RangeInteger {
     }
 }
 
-pub struct ExhaustiveFromVector<T> {
-    xs: Vec<T>,
-    range: RangeIncreasing<usize>,
-}
-
-impl<T> ExhaustiveFromVector<T> {
-    fn new(xs: Vec<T>) -> ExhaustiveFromVector<T> {
-        let max = &xs.len() - 1;
-        ExhaustiveFromVector {
-            xs: xs,
-            range: RangeIncreasing::new(0, max),
-        }
-    }
-}
-
-impl<T: Clone> Iterator for ExhaustiveFromVector<T> {
-    type Item = T;
-
-    fn next(&mut self) -> Option<T> {
-        if self.xs.is_empty() {
-            None
-        } else {
-            self.range.next().map(|i| self.xs[i].clone())
-        }
-    }
-}
-
-pub struct FromVector<T> {
-    xs: Vec<T>,
-    range: RangeU<usize>,
-}
-
-impl<T: Clone> Iterator for FromVector<T> {
-    type Item = T;
-
-    fn next(&mut self) -> Option<T> {
-        if self.xs.is_empty() {
-            None
-        } else {
-            self.range.next().map(|i| self.xs[i].clone())
-        }
-    }
-}
-
 pub enum PositiveU32sGeometric {
     Exhaustive(RangeIncreasing<u32>),
     Random(RandomRange<u32>),
@@ -1152,11 +1207,7 @@ impl IteratorProvider {
     }
 
     pub fn exhaustive_generate_from_vector<T>(&self, xs: Vec<T>) -> ExhaustiveFromVector<T> {
-        let max = &xs.len() - 1;
-        ExhaustiveFromVector {
-            xs: xs,
-            range: RangeIncreasing::new(0, max),
-        }
+        ExhaustiveFromVector::new(xs)
     }
 
     pub fn generate_from_vector<T>(&self, xs: Vec<T>) -> FromVector<T> {
@@ -1165,10 +1216,9 @@ impl IteratorProvider {
                 panic!("Cannot randomly generate values from an empty Vec.");
             }
         }
-        let max = &xs.len() - 1;
-        FromVector {
-            xs: xs,
-            range: self.range_u(0, max),
+        match self {
+            &IteratorProvider::Exhaustive => FromVector::exhaustive(xs),
+            &IteratorProvider::Random(_, seed) => FromVector::random(xs, &seed[..]),
         }
     }
 
