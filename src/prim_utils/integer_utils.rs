@@ -6,225 +6,52 @@ use prim_utils::traits::*;
 use std::cmp::Ordering;
 use std::mem;
 
-impl PrimInt for u8 {
-    fn bit_count() -> u32 {
-        8
-    }
+macro_rules! prim_impls {
+    ($t: ident, $bit_count: expr) => {
+        impl PrimInt for $t {
+            fn bit_count() -> u32 {
+                $bit_count
+            }
 
-    fn min_value() -> u8 {
-        0
-    }
+            fn min_value() -> $t {
+                $t::min_value()
+            }
 
-    fn max_value() -> u8 {
-        u8::max_value()
-    }
+            fn max_value() -> $t {
+                $t::max_value()
+            }
 
-    fn from_u8(i: u8) -> u8 {
-        i
-    }
+            fn from_u8(i: u8) -> $t {
+                i as $t
+            }
 
-    fn leading_zeros(&self) -> u32 {
-        u8::leading_zeros(*self)
+            fn leading_zeros(&self) -> u32 {
+                $t::leading_zeros(*self)
+            }
+        }
+
+        impl Walkable for $t {
+            fn increment(&mut self) {
+                *self += 1
+            }
+
+            fn decrement(&mut self) {
+                *self -= 1
+            }
+        }
     }
 }
 
-impl PrimInt for u16 {
-    fn bit_count() -> u32 {
-        16
-    }
-
-    fn min_value() -> u16 {
-        0
-    }
-
-    fn max_value() -> u16 {
-        u16::max_value()
-    }
-
-    fn from_u8(i: u8) -> u16 {
-        i as u16
-    }
-
-    fn leading_zeros(&self) -> u32 {
-        u16::leading_zeros(*self)
-    }
-}
-
-impl PrimInt for u32 {
-    fn bit_count() -> u32 {
-        32
-    }
-
-    fn min_value() -> u32 {
-        0
-    }
-
-    fn max_value() -> u32 {
-        u32::max_value()
-    }
-
-    fn from_u8(i: u8) -> u32 {
-        i as u32
-    }
-
-    fn leading_zeros(&self) -> u32 {
-        u32::leading_zeros(*self)
-    }
-}
-
-impl PrimInt for u64 {
-    fn bit_count() -> u32 {
-        64
-    }
-
-    fn min_value() -> u64 {
-        0
-    }
-
-    fn max_value() -> u64 {
-        u64::max_value()
-    }
-
-    fn from_u8(i: u8) -> u64 {
-        i as u64
-    }
-
-    fn leading_zeros(&self) -> u32 {
-        u64::leading_zeros(*self)
-    }
-}
-
-impl PrimInt for usize {
-    fn bit_count() -> u32 {
-        (0 as usize).count_zeros()
-    }
-
-    fn min_value() -> usize {
-        0
-    }
-
-    fn max_value() -> usize {
-        usize::max_value()
-    }
-
-    fn from_u8(i: u8) -> usize {
-        i as usize
-    }
-
-    fn leading_zeros(&self) -> u32 {
-        usize::leading_zeros(*self)
-    }
-}
-
-impl PrimInt for i8 {
-    fn bit_count() -> u32 {
-        8
-    }
-
-    fn min_value() -> i8 {
-        i8::min_value()
-    }
-
-    fn max_value() -> i8 {
-        i8::max_value()
-    }
-
-    fn from_u8(i: u8) -> i8 {
-        i as i8
-    }
-
-    fn leading_zeros(&self) -> u32 {
-        i8::leading_zeros(*self)
-    }
-}
-
-impl PrimInt for i16 {
-    fn bit_count() -> u32 {
-        16
-    }
-
-    fn min_value() -> i16 {
-        i16::min_value()
-    }
-
-    fn max_value() -> i16 {
-        i16::max_value()
-    }
-
-    fn from_u8(i: u8) -> i16 {
-        i as i16
-    }
-
-    fn leading_zeros(&self) -> u32 {
-        i16::leading_zeros(*self)
-    }
-}
-
-impl PrimInt for i32 {
-    fn bit_count() -> u32 {
-        32
-    }
-
-    fn min_value() -> i32 {
-        i32::min_value()
-    }
-
-    fn max_value() -> i32 {
-        i32::max_value()
-    }
-
-    fn from_u8(i: u8) -> i32 {
-        i as i32
-    }
-
-    fn leading_zeros(&self) -> u32 {
-        i32::leading_zeros(*self)
-    }
-}
-
-impl PrimInt for i64 {
-    fn bit_count() -> u32 {
-        64
-    }
-
-    fn min_value() -> i64 {
-        i64::min_value()
-    }
-
-    fn max_value() -> i64 {
-        i64::max_value()
-    }
-
-    fn from_u8(i: u8) -> i64 {
-        i as i64
-    }
-
-    fn leading_zeros(&self) -> u32 {
-        i64::leading_zeros(*self)
-    }
-}
-
-impl PrimInt for isize {
-    fn bit_count() -> u32 {
-        (0 as isize).count_zeros()
-    }
-
-    fn min_value() -> isize {
-        isize::min_value()
-    }
-
-    fn max_value() -> isize {
-        isize::max_value()
-    }
-
-    fn from_u8(i: u8) -> isize {
-        i as isize
-    }
-
-    fn leading_zeros(&self) -> u32 {
-        isize::leading_zeros(*self)
-    }
-}
+prim_impls!(u8, 8);
+prim_impls!(u16, 16);
+prim_impls!(u32, 32);
+prim_impls!(u64, 64);
+prim_impls!(usize, (0 as usize).count_zeros());
+prim_impls!(i8, 8);
+prim_impls!(i16, 16);
+prim_impls!(i32, 32);
+prim_impls!(i64, 64);
+prim_impls!(isize, (0 as isize).count_zeros());
 
 impl PrimUnsignedInt for u8 {}
 
@@ -235,114 +62,6 @@ impl PrimUnsignedInt for u32 {}
 impl PrimUnsignedInt for u64 {}
 
 impl PrimUnsignedInt for usize {}
-
-impl Walkable for u8 {
-    fn increment(&mut self) {
-        *self += 1
-    }
-
-    fn decrement(&mut self) {
-        *self -= 1
-    }
-}
-
-impl Walkable for u16 {
-    fn increment(&mut self) {
-        *self += 1
-    }
-
-    fn decrement(&mut self) {
-        *self -= 1
-    }
-}
-
-impl Walkable for u32 {
-    fn increment(&mut self) {
-        *self += 1
-    }
-
-    fn decrement(&mut self) {
-        *self -= 1
-    }
-}
-
-impl Walkable for u64 {
-    fn increment(&mut self) {
-        *self += 1
-    }
-
-    fn decrement(&mut self) {
-        *self -= 1
-    }
-}
-
-impl Walkable for usize {
-    fn increment(&mut self) {
-        *self += 1
-    }
-
-    fn decrement(&mut self) {
-        *self -= 1
-    }
-}
-
-impl Walkable for i8 {
-    fn increment(&mut self) {
-        *self += 1
-    }
-
-    fn decrement(&mut self) {
-        *self -= 1
-    }
-}
-
-impl Walkable for i16 {
-    fn increment(&mut self) {
-        *self += 1
-    }
-
-    fn decrement(&mut self) {
-        *self -= 1
-    }
-}
-
-impl Walkable for i32 {
-    fn increment(&mut self) {
-        *self += 1
-    }
-
-    fn decrement(&mut self) {
-        *self -= 1
-    }
-}
-
-impl Walkable for i64 {
-    fn increment(&mut self) {
-        *self += 1
-    }
-
-    fn decrement(&mut self) {
-        *self -= 1
-    }
-}
-
-impl Walkable for isize {
-    fn increment(&mut self) {
-        *self += 1
-    }
-
-    fn decrement(&mut self) {
-        *self -= 1
-    }
-}
-
-pub fn usize_bit_count() -> u32 {
-    (0 as usize).count_zeros()
-}
-
-pub fn isize_bit_count() -> u32 {
-    (0 as isize).count_zeros()
-}
 
 pub fn is_power_of_two(n: &Integer) -> bool {
     if n.sign() != Ordering::Greater {
@@ -454,7 +173,7 @@ big_endian_bits_u!(u8, big_endian_bits_u8, 8);
 big_endian_bits_u!(u16, big_endian_bits_u16, 16);
 big_endian_bits_u!(u32, big_endian_bits_u32, 32);
 big_endian_bits_u!(u64, big_endian_bits_u64, 64);
-big_endian_bits_u!(usize, big_endian_bits_usize, usize_bit_count());
+big_endian_bits_u!(usize, big_endian_bits_usize, usize::bit_count());
 
 pub fn big_endian_bits_integer(n: &Integer) -> Vec<bool> {
     match n.sign() {
@@ -506,7 +225,7 @@ big_endian_bits_padded_u!(u32, big_endian_bits_padded_u32, 32);
 big_endian_bits_padded_u!(u64, big_endian_bits_padded_u64, 64);
 big_endian_bits_padded_u!(usize,
                           big_endian_bits_padded_usize,
-                          usize_bit_count() as usize);
+                          usize::bit_count() as usize);
 
 pub fn big_endian_bits_padded_integer(size: usize, n: &Integer) -> Vec<bool> {
     if n.sign() == Ordering::Less {
