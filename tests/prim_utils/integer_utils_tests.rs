@@ -412,99 +412,105 @@ fn test_from_big_endian_bits() {
     from_big_endian_bits_helper(vec![true, true, false, true, false, false, true], "105");
 }
 
-macro_rules! test_digits {
-    (
-        $t: ty,
-        $f: ident,
-        $test: ident,
-        $helper: ident,
-        $fail_1: ident,
-        $fail_2: ident,
-        $max: expr,
-        $max_digit: expr
-    ) => {
-        fn $helper(radix: $t, n: $t, out: &str) {
-            assert_eq!(format!("{:?}", $f(radix, n)), out);
-        }
-
-        #[test]
-        fn $test() {
-            $helper(2, 0, "[]");
-            $helper(3, 0, "[]");
-            $helper(8, 0, "[]");
-            $helper(10, 0, "[]");
-            $helper(12, 0, "[]");
-            $helper(57, 0, "[]");
-            $helper(2, 1, "[1]");
-            $helper(3, 1, "[1]");
-            $helper(8, 1, "[1]");
-            $helper(10, 1, "[1]");
-            $helper(12, 1, "[1]");
-            $helper(57, 1, "[1]");
-            $helper(2, 10, "[0, 1, 0, 1]");
-            $helper(3, 10, "[1, 0, 1]");
-            $helper(8, 10, "[2, 1]");
-            $helper(10, 10, "[0, 1]");
-            $helper(12, 10, "[10]");
-            $helper(57, 10, "[10]");
-            $helper(2, 107, "[1, 1, 0, 1, 0, 1, 1]");
-            $helper(3, 107, "[2, 2, 2, 0, 1]");
-            $helper(8, 107, "[3, 5, 1]");
-            $helper(10, 107, "[7, 0, 1]");
-            $helper(12, 107, "[11, 8]");
-            $helper(57, 107, "[50, 1]");
-            $helper($max, 0, "[]");
-            $helper($max, 107, "[107]");
-            $helper($max, $max - 1, $max_digit);
-            $helper($max, $max, "[0, 1]");
-        }
-
-        #[test]
-        #[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
-        fn $fail_1() {
-            $f(1 as $t, 10 as $t);
-        }
-
-        #[test]
-        #[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
-        fn $fail_2() {
-            $f(0 as $t, 10 as $t);
-        }
-    }
+fn digits_u_helper<T: PrimUnsignedInt>(max_digit: &str) {
+    let test = |radix, n, out| assert_eq!(format!("{:?}", digits_u(radix, n)), out);
+    test(T::from_u8(2), T::from_u8(0), "[]");
+    test(T::from_u8(3), T::from_u8(0), "[]");
+    test(T::from_u8(8), T::from_u8(0), "[]");
+    test(T::from_u8(10), T::from_u8(0), "[]");
+    test(T::from_u8(12), T::from_u8(0), "[]");
+    test(T::from_u8(57), T::from_u8(0), "[]");
+    test(T::from_u8(2), T::from_u8(1), "[1]");
+    test(T::from_u8(3), T::from_u8(1), "[1]");
+    test(T::from_u8(8), T::from_u8(1), "[1]");
+    test(T::from_u8(10), T::from_u8(1), "[1]");
+    test(T::from_u8(12), T::from_u8(1), "[1]");
+    test(T::from_u8(57), T::from_u8(1), "[1]");
+    test(T::from_u8(2), T::from_u8(10), "[0, 1, 0, 1]");
+    test(T::from_u8(3), T::from_u8(10), "[1, 0, 1]");
+    test(T::from_u8(8), T::from_u8(10), "[2, 1]");
+    test(T::from_u8(10), T::from_u8(10), "[0, 1]");
+    test(T::from_u8(12), T::from_u8(10), "[10]");
+    test(T::from_u8(57), T::from_u8(10), "[10]");
+    test(T::from_u8(2), T::from_u8(107), "[1, 1, 0, 1, 0, 1, 1]");
+    test(T::from_u8(3), T::from_u8(107), "[2, 2, 2, 0, 1]");
+    test(T::from_u8(8), T::from_u8(107), "[3, 5, 1]");
+    test(T::from_u8(10), T::from_u8(107), "[7, 0, 1]");
+    test(T::from_u8(12), T::from_u8(107), "[11, 8]");
+    test(T::from_u8(57), T::from_u8(107), "[50, 1]");
+    test(T::max_value(), T::from_u8(0), "[]");
+    test(T::max_value(), T::from_u8(107), "[107]");
+    test(T::max_value(), T::max_value() - T::from_u8(1), max_digit);
+    test(T::max_value(), T::max_value(), "[0, 1]");
 }
 
-test_digits!(u8,
-             digits_u,
-             test_digits_u8,
-             digits_u8_helper,
-             digits_u8_fail_1,
-             digits_u8_fail_2,
-             u8::max_value(),
-             "[254]");
-test_digits!(u16,
-             digits_u,
-             test_digits_u16,
-             digits_u16_helper,
-             digits_u16_fail_1,
-             digits_u16_fail_2,
-             u16::max_value(),
-             "[65534]");
-test_digits!(u32,
-             digits_u,
-             test_digits_u32,
-             digits_u32_helper,
-             digits_u32_fail_1,
-             digits_u32_fail_2,
-             u32::max_value(),
-             "[4294967294]");
-test_digits!(u64,
-             digits_u,
-             test_digits_u64,
-             digits_u64_helper,
-             digits_u64_fail_1,
-             digits_u64_fail_2,
-             u64::max_value(),
-             "[18446744073709551614]");
+#[test]
+fn test_digits_u() {
+    digits_u_helper::<u8>("[254]");
+    digits_u_helper::<u16>("[65534]");
+    digits_u_helper::<u32>("[4294967294]");
+    digits_u_helper::<u64>("[18446744073709551614]");
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
+fn digits_u8_fail_1() {
+    digits_u::<u8>(1, 10);
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
+fn digits_u8_fail_2() {
+    digits_u::<u8>(0, 10);
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
+fn digits_u16_fail_1() {
+    digits_u::<u16>(1, 10);
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
+fn digits_u16_fail_2() {
+    digits_u::<u16>(0, 10);
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
+fn digits_u32_fail_1() {
+    digits_u::<u32>(1, 10);
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
+fn digits_u32_fail_2() {
+    digits_u::<u32>(0, 10);
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
+fn digits_u64_fail_1() {
+    digits_u::<u64>(1, 10);
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
+fn digits_u64_fail_2() {
+    digits_u::<u64>(0, 10);
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
+fn digits_usize_fail_1() {
+    digits_u::<usize>(1, 10);
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
+fn digits_usize_fail_2() {
+    digits_u::<usize>(0, 10);
+}
 
 fn digits_integer_helper(radix: &str, n: &str, out: &str) {
     assert_eq!(format!("{:?}",
