@@ -321,20 +321,20 @@ macro_rules! test_big_endian_bits {
 }
 
 test_big_endian_bits!(u8,
-                      big_endian_bits_u8,
+                      big_endian_bits_u,
                       test_big_endian_bits_u8,
                       big_endian_bits_u8_helper,
                       u8::max_value(),
                       "[true, true, true, true, true, true, true, true]");
 test_big_endian_bits!(u16,
-                      big_endian_bits_u16,
+                      big_endian_bits_u,
                       test_big_endian_bits_u16,
                       big_endian_bits_u16_helper,
                       u16::max_value(),
                       "[true, true, true, true, true, true, true, true, true, true, true, true, \
                       true, true, true, true]");
 test_big_endian_bits!(u32,
-                      big_endian_bits_u32,
+                      big_endian_bits_u,
                       test_big_endian_bits_u32,
                       big_endian_bits_u32_helper,
                       u32::max_value(),
@@ -342,7 +342,7 @@ test_big_endian_bits!(u32,
                         true, true, true, true, true, true, true, true, true, true, true, true, \
                         true, true, true, true, true, true, true, true]");
 test_big_endian_bits!(u64,
-                      big_endian_bits_u64,
+                      big_endian_bits_u,
                       test_big_endian_bits_u64,
                       big_endian_bits_u64_helper,
                       u64::max_value(),

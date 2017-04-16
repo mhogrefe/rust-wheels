@@ -99,9 +99,6 @@ pub fn ceiling_log_2_integer(n: &Integer) -> u32 {
 pub fn bits_u<T: PrimUnsignedInt>(n: T) -> Vec<bool> {
     let zero = T::from_u8(0);
     let one = T::from_u8(1);
-    if n < zero {
-        panic!("n cannot be negative. Invalid n: {}", n);
-    }
     let mut bits = Vec::new();
     let mut remaining = n;
     while remaining != zero {
@@ -129,9 +126,6 @@ pub fn bits_integer(n: &Integer) -> Vec<bool> {
 pub fn bits_padded_u<T: PrimUnsignedInt>(size: usize, n: T) -> Vec<bool> {
     let zero = T::from_u8(0);
     let one = T::from_u8(1);
-    if n < zero {
-        panic!("n cannot be negative. Invalid n: {}", n);
-    }
     let mut bits = Vec::with_capacity(size);
     let mut remaining = n;
     for _ in 0..size {
@@ -152,28 +146,20 @@ pub fn bits_padded_integer(size: usize, n: &Integer) -> Vec<bool> {
     bits
 }
 
-macro_rules! big_endian_bits_u {
-    ($t: ty, $beb: ident, $size: expr) => {
-        pub fn $beb(n: $t) -> Vec<bool> {
-            let mut bits = Vec::new();
-            if n == 0 {
-                return bits;
-            }
-            let mut mask = 1 << ($size - n.leading_zeros() - 1);
-            while mask != 0 {
-                bits.push(n & mask != 0);
-                mask >>= 1;
-            }
-            bits
-        }
+pub fn big_endian_bits_u<T: PrimUnsignedInt>(n: T) -> Vec<bool> {
+    let zero = T::from_u8(0);
+    let one = T::from_u8(1);
+    let mut bits = Vec::new();
+    if n == zero {
+        return bits;
     }
+    let mut mask: T = one << (T::bit_count() - n.leading_zeros() - 1);
+    while mask != zero {
+        bits.push(n & mask != zero);
+        mask >>= one;
+    }
+    bits
 }
-
-big_endian_bits_u!(u8, big_endian_bits_u8, 8);
-big_endian_bits_u!(u16, big_endian_bits_u16, 16);
-big_endian_bits_u!(u32, big_endian_bits_u32, 32);
-big_endian_bits_u!(u64, big_endian_bits_u64, 64);
-big_endian_bits_u!(usize, big_endian_bits_usize, usize::bit_count());
 
 pub fn big_endian_bits_integer(n: &Integer) -> Vec<bool> {
     match n.sign() {
