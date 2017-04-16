@@ -5,7 +5,7 @@ macro_rules! demo_ceiling_log_2 {
     ($ts: expr, $d: ident, $pt: ident) => {
         pub fn $d(p: &IteratorProvider, limit: usize) {
             for i in p.$pt().take(limit) {
-                println!("ceiling_log_2_{}({}) = {}", $ts, i, ceiling_log_2(i));
+                println!("ceiling_log_2_{}({}) = {}", $ts, i, ceiling_log_2_u(i));
             }
         }
     }
@@ -21,7 +21,7 @@ macro_rules! demo_bits {
     ($ts: expr, $d: ident, $nt: ident) => {
         pub fn $d(p: &IteratorProvider, limit: usize) {
             for i in p.$nt().take(limit) {
-                println!("bits_{}({}) = {:?}", $ts, i, bits(i));
+                println!("bits_{}({}) = {:?}", $ts, i, bits_u(i));
             }
         }
     }

@@ -32,8 +32,8 @@ fn is_power_of_two_fail_2() {
     is_power_of_two_fail_helper("-5");
 }
 
-fn ceiling_log_2_helper<T: PrimUnsignedInt>() {
-    let test = |n, out| assert_eq!(ceiling_log_2(n), out);
+fn ceiling_log_2_u_helper<T: PrimUnsignedInt>() {
+    let test = |n, out| assert_eq!(ceiling_log_2_u(n), out);
     test(T::from_u8(1), 0);
     test(T::from_u8(2), 1);
     test(T::from_u8(3), 2);
@@ -48,42 +48,42 @@ fn ceiling_log_2_helper<T: PrimUnsignedInt>() {
 }
 
 #[test]
-fn test_ceiling_log_2() {
-    ceiling_log_2_helper::<u8>();
-    ceiling_log_2_helper::<u16>();
-    ceiling_log_2_helper::<u32>();
-    ceiling_log_2_helper::<u64>();
-    ceiling_log_2_helper::<usize>();
+fn test_ceiling_log_2_u() {
+    ceiling_log_2_u_helper::<u8>();
+    ceiling_log_2_u_helper::<u16>();
+    ceiling_log_2_u_helper::<u32>();
+    ceiling_log_2_u_helper::<u64>();
+    ceiling_log_2_u_helper::<usize>();
 }
 
 #[test]
 #[should_panic(expected = "n must be positive. Invalid n: 0")]
 fn test_ceiling_log_2_u8_fail() {
-    ceiling_log_2(0u8);
+    ceiling_log_2_u(0u8);
 }
 
 #[test]
 #[should_panic(expected = "n must be positive. Invalid n: 0")]
 fn test_ceiling_log_2_u16_fail() {
-    ceiling_log_2(0u16);
+    ceiling_log_2_u(0u16);
 }
 
 #[test]
 #[should_panic(expected = "n must be positive. Invalid n: 0")]
 fn test_ceiling_log_2_u32_fail() {
-    ceiling_log_2(0u32);
+    ceiling_log_2_u(0u32);
 }
 
 #[test]
 #[should_panic(expected = "n must be positive. Invalid n: 0")]
 fn test_ceiling_log_2_u64_fail() {
-    ceiling_log_2(0u64);
+    ceiling_log_2_u(0u64);
 }
 
 #[test]
 #[should_panic(expected = "n must be positive. Invalid n: 0")]
 fn test_ceiling_log_2_usize_fail() {
-    ceiling_log_2(0usize);
+    ceiling_log_2_u(0usize);
 }
 
 fn ceiling_log_2_integer_helper(n: &str, out: u32) {
@@ -123,7 +123,7 @@ fn ceiling_log_2_integer_fail_2() {
 macro_rules! test_bits {
     ($t: ty, $test: ident, $helper: ident, $max: expr, $max_bits: expr) => {
         fn $helper(n: $t, out: &str) {
-            assert_eq!(format!("{:?}", bits(n)), out);
+            assert_eq!(format!("{:?}", bits_u(n)), out);
         }
 
         #[test]
@@ -194,7 +194,7 @@ macro_rules! test_bits_padded_u {
             $max_bits: expr
     ) => {
         fn $helper(size: usize, n: $t, out: &str) {
-            assert_eq!(format!("{:?}", bits_padded(size, n)), out);
+            assert_eq!(format!("{:?}", bits_padded_u(size, n)), out);
         }
 
         #[test]

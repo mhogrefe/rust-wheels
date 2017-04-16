@@ -70,7 +70,7 @@ pub fn is_power_of_two(n: &Integer) -> bool {
     n.find_one(0).unwrap() == n.significant_bits() - 1
 }
 
-pub fn ceiling_log_2<T: PrimUnsignedInt>(n: T) -> u32 {
+pub fn ceiling_log_2_u<T: PrimUnsignedInt>(n: T) -> u32 {
     let zero = T::from_u8(0);
     let one = T::from_u8(1);
     if n < one {
@@ -96,7 +96,7 @@ pub fn ceiling_log_2_integer(n: &Integer) -> u32 {
     }
 }
 
-pub fn bits<T: PrimUnsignedInt>(n: T) -> Vec<bool> {
+pub fn bits_u<T: PrimUnsignedInt>(n: T) -> Vec<bool> {
     let zero = T::from_u8(0);
     let one = T::from_u8(1);
     if n < zero {
@@ -126,7 +126,7 @@ pub fn bits_integer(n: &Integer) -> Vec<bool> {
     }
 }
 
-pub fn bits_padded<T: PrimUnsignedInt>(size: usize, n: T) -> Vec<bool> {
+pub fn bits_padded_u<T: PrimUnsignedInt>(size: usize, n: T) -> Vec<bool> {
     let zero = T::from_u8(0);
     let one = T::from_u8(1);
     if n < zero {
@@ -262,7 +262,7 @@ macro_rules! digits_u {
                 panic!("radix must be at least 2. Invalid radix: {}", radix);
             }
             let mut digits = Vec::new();
-            let log = ceiling_log_2(radix);
+            let log = ceiling_log_2_u(radix);
             let mut remaining = n;
             if 1 << log == radix {
                 let mask = radix - 1;
@@ -361,7 +361,7 @@ macro_rules! digits_padded_u {
                 panic!("radix must be at least 2. Invalid radix: {}", radix);
             }
             let mut digits = Vec::new();
-            let log = ceiling_log_2(radix);
+            let log = ceiling_log_2_u(radix);
             let mut remaining = n;
             if 1 << log == radix {
                 let mask = radix - 1;
