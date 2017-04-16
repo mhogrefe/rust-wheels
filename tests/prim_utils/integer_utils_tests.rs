@@ -209,44 +209,40 @@ fn test_bits_padded_u() {
                                      true, true, true, true]);
 }
 
-fn bits_padded_integer_helper(size: usize, n: &str, out: &str) {
-    assert_eq!(format!("{:?}",
-                       bits_padded_integer(size, &Integer::from_str(n).unwrap())),
-               out);
-}
-
 #[test]
 fn test_bits_padded_integer() {
-    bits_padded_integer_helper(8,
-                               "0",
-                               "[false, false, false, false, false, false, false, false]");
-    bits_padded_integer_helper(8,
-                               "1",
-                               "[true, false, false, false, false, false, false, false]");
-    bits_padded_integer_helper(8,
-                               "6",
-                               "[false, true, true, false, false, false, false, false]");
-    bits_padded_integer_helper(8,
-                               "105",
-                               "[true, false, false, true, false, true, true, false]");
-    bits_padded_integer_helper(2, "104", "[false, false]");
-    bits_padded_integer_helper(2, "105", "[true, false]");
-    bits_padded_integer_helper(1, "104", "[false]");
-    bits_padded_integer_helper(1, "105", "[true]");
-    bits_padded_integer_helper(0, "104", "[]");
-    bits_padded_integer_helper(100,
-                               "105",
-                               "[true, false, false, true, false, true, true, false, false, false, \
-                                 false, false, false, false, false, false, false, false, false, \
-                                 false, false, false, false, false, false, false, false, false, \
-                                 false, false, false, false, false, false, false, false, false, \
-                                 false, false, false, false, false, false, false, false, false, \
-                                 false, false, false, false, false, false, false, false, false, \
-                                 false, false, false, false, false, false, false, false, false, \
-                                 false, false, false, false, false, false, false, false, false, \
-                                 false, false, false, false, false, false, false, false, false, \
-                                 false, false, false, false, false, false, false, false, false, \
-                                 false, false, false, false, false, false, false, false, false]");
+    let test = |size, n, out| {
+        assert_eq!(bits_padded_integer(size, &Integer::from_str(n).unwrap()),
+                   out)
+    };
+    test(8,
+         "0",
+         vec![false, false, false, false, false, false, false, false]);
+    test(8,
+         "1",
+         vec![true, false, false, false, false, false, false, false]);
+    test(8,
+         "6",
+         vec![false, true, true, false, false, false, false, false]);
+    test(8,
+         "105",
+         vec![true, false, false, true, false, true, true, false]);
+    test(2, "104", vec![false, false]);
+    test(2, "105", vec![true, false]);
+    test(1, "104", vec![false]);
+    test(1, "105", vec![true]);
+    test(0, "104", vec![]);
+    test(100,
+         "105",
+         vec![true, false, false, true, false, true, true, false, false, false, false, false,
+              false, false, false, false, false, false, false, false, false, false, false, false,
+              false, false, false, false, false, false, false, false, false, false, false, false,
+              false, false, false, false, false, false, false, false, false, false, false, false,
+              false, false, false, false, false, false, false, false, false, false, false, false,
+              false, false, false, false, false, false, false, false, false, false, false, false,
+              false, false, false, false, false, false, false, false, false, false, false, false,
+              false, false, false, false, false, false, false, false, false, false, false, false,
+              false, false, false, false]);
 }
 
 #[test]
