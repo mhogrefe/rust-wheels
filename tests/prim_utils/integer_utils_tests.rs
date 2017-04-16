@@ -251,68 +251,94 @@ fn bits_padded_integer_fail() {
     bits_padded_integer(8, &Integer::from(-1));
 }
 
-macro_rules! test_big_endian_bits {
-    ($t: ty, $f: ident, $test: ident, $helper: ident, $max: expr, $max_bits: expr) => {
-        fn $helper(n: $t, out: &str) {
-            assert_eq!(format!("{:?}", $f(n)), out);
-        }
-
-        #[test]
-        fn $test() {
-            $helper(0, "[]");
-            $helper(1, "[true]");
-            $helper(6, "[true, true, false]");
-            $helper(105, "[true, true, false, true, false, false, true]");
-            $helper($max, $max_bits);
-        }
-    }
-}
-
-test_big_endian_bits!(u8,
-                      big_endian_bits_u,
-                      test_big_endian_bits_u8,
-                      big_endian_bits_u8_helper,
-                      u8::max_value(),
-                      "[true, true, true, true, true, true, true, true]");
-test_big_endian_bits!(u16,
-                      big_endian_bits_u,
-                      test_big_endian_bits_u16,
-                      big_endian_bits_u16_helper,
-                      u16::max_value(),
-                      "[true, true, true, true, true, true, true, true, true, true, true, true, \
-                      true, true, true, true]");
-test_big_endian_bits!(u32,
-                      big_endian_bits_u,
-                      test_big_endian_bits_u32,
-                      big_endian_bits_u32_helper,
-                      u32::max_value(),
-                      "[true, true, true, true, true, true, true, true, true, true, true, true, \
-                        true, true, true, true, true, true, true, true, true, true, true, true, \
-                        true, true, true, true, true, true, true, true]");
-test_big_endian_bits!(u64,
-                      big_endian_bits_u,
-                      test_big_endian_bits_u64,
-                      big_endian_bits_u64_helper,
-                      u64::max_value(),
-                      "[true, true, true, true, true, true, true, true, true, true, true, true, \
-                        true, true, true, true, true, true, true, true, true, true, true, true, \
-                        true, true, true, true, true, true, true, true, true, true, true, true, \
-                        true, true, true, true, true, true, true, true, true, true, true, true, \
-                        true, true, true, true, true, true, true, true, true, true, true, true, \
-                        true, true, true, true]");
-
-fn big_endian_bits_integer_helper(n: &str, out: &str) {
-    assert_eq!(format!("{:?}",
-                       big_endian_bits_integer(&Integer::from_str(n).unwrap())),
-               out);
+fn big_endian_bits_u_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
+    let test = |n, out| assert_eq!(big_endian_bits_u(n), out);
+    test(T::from_u8(0), vec![]);
+    test(T::from_u8(1), vec![true]);
+    test(T::from_u8(6), vec![true, true, false]);
+    test(T::from_u8(105),
+         vec![true, true, false, true, false, false, true]);
+    test(T::max_value(), max_bits);
 }
 
 #[test]
-fn test_big_endian_bits_integer() {
-    big_endian_bits_integer_helper("0", "[]");
-    big_endian_bits_integer_helper("1", "[true]");
-    big_endian_bits_integer_helper("6", "[true, true, false]");
-    big_endian_bits_integer_helper("105", "[true, true, false, true, false, false, true]");
+fn big_endian_test_bits_u() {
+    big_endian_bits_u_helper::<u8>(vec![true, true, true, true, true, true, true, true]);
+    big_endian_bits_u_helper::<u16>(vec![true, true, true, true, true, true, true, true, true,
+                                         true, true, true, true, true, true, true]);
+    big_endian_bits_u_helper::<u32>(vec![true, true, true, true, true, true, true, true, true,
+                                         true, true, true, true, true, true, true, true, true,
+                                         true, true, true, true, true, true, true, true, true,
+                                         true, true, true, true, true]);
+    big_endian_bits_u_helper::<u64>(vec![true, true, true, true, true, true, true, true, true,
+                                         true, true, true, true, true, true, true, true, true,
+                                         true, true, true, true, true, true, true, true, true,
+                                         true, true, true, true, true, true, true, true, true,
+                                         true, true, true, true, true, true, true, true, true,
+                                         true, true, true, true, true, true, true, true, true,
+                                         true, true, true, true, true, true, true, true, true,
+                                         true]);
+}
+
+#[test]
+fn big_endian_bits_integer_helper() {
+    let test = |n, out| assert_eq!(big_endian_bits_integer(&Integer::from_str(n).unwrap()), out);
+    test("0", vec![]);
+    test("1", vec![true]);
+    test("6", vec![true, true, false]);
+    test("105", vec![true, true, false, true, false, false, true]);
+}
+
+fn big_endian_bits_padded_u_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
+    let test = |size, n, out| assert_eq!(big_endian_bits_padded_u(size, n), out);
+    test(8,
+         T::from_u8(0),
+         vec![false, false, false, false, false, false, false, false]);
+    test(8,
+         T::from_u8(1),
+         vec![false, false, false, false, false, false, false, true]);
+    test(8,
+         T::from_u8(6),
+         vec![false, false, false, false, false, true, true, false]);
+    test(8,
+         T::from_u8(105),
+         vec![false, true, true, false, true, false, false, true]);
+    test(2, T::from_u8(104), vec![false, false]);
+    test(2, T::from_u8(105), vec![false, true]);
+    test(1, T::from_u8(104), vec![false]);
+    test(1, T::from_u8(105), vec![true]);
+    test(0, T::from_u8(104), vec![]);
+    test(100,
+         T::from_u8(105),
+         vec![false, false, false, false, false, false, false, false, false, false, false, false,
+              false, false, false, false, false, false, false, false, false, false, false, false,
+              false, false, false, false, false, false, false, false, false, false, false, false,
+              false, false, false, false, false, false, false, false, false, false, false, false,
+              false, false, false, false, false, false, false, false, false, false, false, false,
+              false, false, false, false, false, false, false, false, false, false, false, false,
+              false, false, false, false, false, false, false, false, false, false, false, false,
+              false, false, false, false, false, false, false, false, false, true, true, false,
+              true, false, false, true]);
+    test(T::bit_count() as usize, T::max_value(), max_bits);
+}
+
+#[test]
+fn test_big_endian_bits_padded_u() {
+    big_endian_bits_padded_u_helper::<u8>(vec![true, true, true, true, true, true, true, true]);
+    big_endian_bits_padded_u_helper::<u16>(vec![true, true, true, true, true, true, true, true,
+                                                true, true, true, true, true, true, true, true]);
+    big_endian_bits_padded_u_helper::<u32>(vec![true, true, true, true, true, true, true, true,
+                                                true, true, true, true, true, true, true, true,
+                                                true, true, true, true, true, true, true, true,
+                                                true, true, true, true, true, true, true, true]);
+    big_endian_bits_padded_u_helper::<u64>(vec![true, true, true, true, true, true, true, true,
+                                                true, true, true, true, true, true, true, true,
+                                                true, true, true, true, true, true, true, true,
+                                                true, true, true, true, true, true, true, true,
+                                                true, true, true, true, true, true, true, true,
+                                                true, true, true, true, true, true, true, true,
+                                                true, true, true, true, true, true, true, true,
+                                                true, true, true, true, true, true, true, true]);
 }
 
 #[test]
@@ -320,84 +346,6 @@ fn test_big_endian_bits_integer() {
 fn big_endian_bits_integer_fail() {
     big_endian_bits_integer(&Integer::from(-5));
 }
-
-macro_rules! test_big_endian_bits_padded_u {
-    (
-            $t: ty,
-            $f: ident,
-            $test: ident,
-            $helper: ident,
-            $max: expr,
-            $max_pos_bit_length: expr,
-            $max_bits: expr
-    ) => {
-        fn $helper(size: usize, n: $t, out: &str) {
-            assert_eq!(format!("{:?}", $f(size, n)), out);
-        }
-
-        #[test]
-        fn $test() {
-            $helper(8, 0, "[false, false, false, false, false, false, false, false]");
-            $helper(8, 1, "[false, false, false, false, false, false, false, true]");
-            $helper(8, 6, "[false, false, false, false, false, true, true, false]");
-            $helper(8, 105, "[false, true, true, false, true, false, false, true]");
-            $helper(2, 104, "[false, false]");
-            $helper(2, 105, "[false, true]");
-            $helper(1, 104, "[false]");
-            $helper(1, 105, "[true]");
-            $helper(0, 104, "[]");
-            $helper(100, 105,
-                    "[false, false, false, false, false, false, false, false, false, false, false, \
-                      false, false, false, false, false, false, false, false, false, false, false, \
-                      false, false, false, false, false, false, false, false, false, false, false, \
-                      false, false, false, false, false, false, false, false, false, false, false, \
-                      false, false, false, false, false, false, false, false, false, false, false, \
-                      false, false, false, false, false, false, false, false, false, false, false, \
-                      false, false, false, false, false, false, false, false, false, false, false, \
-                      false, false, false, false, false, false, false, false, false, false, false, \
-                      false, false, false, false, false, true, true, false, true, false, false, \
-                      true]");
-            $helper($max_pos_bit_length, $max, $max_bits);
-        }
-    }
-}
-
-test_big_endian_bits_padded_u!(u8,
-                               big_endian_bits_padded_u,
-                               test_big_endian_bits_padded_u8,
-                               big_endian_bits_padded_u8_helper,
-                               u8::max_value(),
-                               8,
-                               "[true, true, true, true, true, true, true, true]");
-test_big_endian_bits_padded_u!(u16,
-                               big_endian_bits_padded_u,
-                               test_big_endian_bits_padded_u16,
-                               big_endian_bits_padded_u16_helper,
-                               u16::max_value(),
-                               16,
-                               "[true, true, true, true, true, true, true, true, true, true, true, \
-                                 true, true, true, true, true]");
-test_big_endian_bits_padded_u!(u32,
-                               big_endian_bits_padded_u,
-                               test_big_endian_bits_padded_u32,
-                               big_endian_bits_padded_u32_helper,
-                               u32::max_value(),
-                               32,
-                               "[true, true, true, true, true, true, true, true, true, true, true, \
-                                 true, true, true, true, true, true, true, true, true, true, true, \
-                                 true, true, true, true, true, true, true, true, true, true]");
-test_big_endian_bits_padded_u!(u64,
-                               big_endian_bits_padded_u,
-                               test_big_endian_bits_padded_u64,
-                               big_endian_bits_padded_u64_helper,
-                               u64::max_value(),
-                               64,
-                               "[true, true, true, true, true, true, true, true, true, true, true, \
-                                 true, true, true, true, true, true, true, true, true, true, true, \
-                                 true, true, true, true, true, true, true, true, true, true, true, \
-                                 true, true, true, true, true, true, true, true, true, true, true, \
-                                 true, true, true, true, true, true, true, true, true, true, true, \
-                                 true, true, true, true, true, true, true, true, true]");
 
 fn big_endian_bits_padded_integer_helper(size: usize, n: &str, out: &str) {
     assert_eq!(format!("{:?}",
