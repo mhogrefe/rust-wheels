@@ -4,9 +4,9 @@ use std::fmt::Display;
 use std::ops::*;
 
 pub trait PrimInt
-    : BitAnd<Output = Self> + BitOr<Output = Self> + BitXor<Output = Self> + Copy + Display + Eq +
-      Ord + Shl<u32, Output=Self> + ShlAssign<u32> + Shr<u32, Output=Self> + ShrAssign +
-      Add<Output = Self> + Sub<Output = Self> + Rand + SampleRange + Walkable {
+    : BitAnd<Output=Self> + BitOr<Output=Self> + BitXor<Output=Self> + Copy + Display + Eq + Ord +
+    Shl<u32, Output=Self> + ShlAssign<u32> + Shr<u32, Output=Self> + ShrAssign +
+    Add<Output = Self> + Sub<Output = Self> + Not<Output=Self> + Rand + SampleRange + Walkable {
 
     fn bit_count() -> u32;
 
@@ -20,6 +20,10 @@ pub trait PrimInt
 }
 
 pub trait PrimUnsignedInt: PrimInt {}
+
+pub trait PrimSignedInt: PrimInt {
+    fn from_i8(i: i8) -> Self;
+}
 
 pub trait Walkable: Copy + Display + Eq + Ord {
     fn increment(&mut self);

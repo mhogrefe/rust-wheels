@@ -54,14 +54,26 @@ prim_impls!(i64, 64);
 prim_impls!(isize, (0 as isize).count_zeros());
 
 impl PrimUnsignedInt for u8 {}
-
 impl PrimUnsignedInt for u16 {}
-
 impl PrimUnsignedInt for u32 {}
-
 impl PrimUnsignedInt for u64 {}
-
 impl PrimUnsignedInt for usize {}
+
+macro_rules! prim_impls_i {
+    ($t: ident) => {
+        impl PrimSignedInt for $t {
+            fn from_i8(i: i8) -> $t {
+                i as $t
+            }
+        }
+    }
+}
+
+prim_impls_i!(i8);
+prim_impls_i!(i16);
+prim_impls_i!(i32);
+prim_impls_i!(i64);
+prim_impls_i!(isize);
 
 pub fn is_power_of_two(n: &Integer) -> bool {
     if n.sign() != Ordering::Greater {

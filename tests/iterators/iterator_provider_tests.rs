@@ -60,7 +60,7 @@ macro_rules! test_integer_range {
         $max: expr
     ) => {
         fn $rui_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t) {
-            eo.match_vec(key, &mut p.range_up_increasing_prim_int(a));
+            eo.match_vec(key, &mut p.range_up_increasing_x(a));
         }
 
         #[test]
@@ -73,7 +73,7 @@ macro_rules! test_integer_range {
         }
 
         fn $rud_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t) {
-            eo.match_vec(key, &mut p.range_up_decreasing_prim_int(a));
+            eo.match_vec(key, &mut p.range_up_decreasing_x(a));
         }
 
         #[test]
@@ -86,7 +86,7 @@ macro_rules! test_integer_range {
         }
 
         fn $rdi_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t) {
-            eo.match_vec(key, &mut p.range_down_increasing_prim_int(a));
+            eo.match_vec(key, &mut p.range_down_increasing_x(a));
         }
 
         #[test]
@@ -99,7 +99,7 @@ macro_rules! test_integer_range {
         }
 
         fn $rdd_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t) {
-            eo.match_vec(key, &mut p.range_down_decreasing_prim_int(a));
+            eo.match_vec(key, &mut p.range_down_decreasing_x(a));
         }
 
         #[test]
@@ -112,7 +112,7 @@ macro_rules! test_integer_range {
         }
 
         fn $ri_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t, b: $t) {
-            eo.match_vec(key, &mut p.range_increasing_prim_int(a, b));
+            eo.match_vec(key, &mut p.range_increasing_x(a, b));
         }
 
         #[test]
@@ -130,11 +130,11 @@ macro_rules! test_integer_range {
         #[test]
         #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
         fn $ri_f() {
-            IteratorProvider::Exhaustive.range_increasing_prim_int(10, 9);
+            IteratorProvider::Exhaustive.range_increasing_x(10, 9);
         }
 
         fn $rd_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t, b: $t) {
-            eo.match_vec(key, &mut p.range_decreasing_prim_int(a, b));
+            eo.match_vec(key, &mut p.range_decreasing_x(a, b));
         }
 
         #[test]
@@ -152,19 +152,19 @@ macro_rules! test_integer_range {
         #[test]
         #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
         fn $rd_f() {
-            IteratorProvider::Exhaustive.range_decreasing_prim_int(10, 9);
+            IteratorProvider::Exhaustive.range_decreasing_x(10, 9);
         }
 
         #[test]
         fn $i_t() {
             let (eo, p, _) = prepare_test();
-            eo.match_vec(&format!("exhaustive_{}s_increasing", $ts), &mut p.prim_int_increasing::<$t>());
+            eo.match_vec(&format!("exhaustive_{}s_increasing", $ts), &mut p.x_increasing::<$t>());
         }
 
         #[test]
         fn $d_t() {
             let (eo, p, _) = prepare_test();
-            eo.match_vec(&format!("exhaustive_{}s_decreasing", $ts), &mut p.prim_int_decreasing::<$t>());
+            eo.match_vec(&format!("exhaustive_{}s_decreasing", $ts), &mut p.x_decreasing::<$t>());
         }
 
         #[test]
@@ -651,7 +651,7 @@ macro_rules! test_integer_range_i {
         #[test]
         #[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
         fn $ri_f() {
-            IteratorProvider::Exhaustive.range_increasing_prim_int(-9, -10);
+            IteratorProvider::Exhaustive.range_increasing_x(-9, -10);
         }
 
         #[test]
@@ -668,7 +668,7 @@ macro_rules! test_integer_range_i {
         #[test]
         #[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
         fn $rd_f() {
-            IteratorProvider::Exhaustive.range_decreasing_prim_int(-9, -10);
+            IteratorProvider::Exhaustive.range_decreasing_x(-9, -10);
         }
 
         #[test]
