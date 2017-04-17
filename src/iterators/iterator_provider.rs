@@ -3,6 +3,7 @@ use gmp_to_flint_adaptor_lib::integer::Integer;
 #[cfg(feature = "native")]
 use num_to_flint_adaptor_lib::integer::Integer;
 
+use iterators::adaptors::MultiChain;
 use itertools::Interleave;
 use itertools::Itertools;
 use prim_utils::char_utils::*;
@@ -630,43 +631,8 @@ impl<T: PrimSignedInt> Iterator for RangeI<T> {
     }
 }
 
-pub struct ExhaustiveChars {
-    ranges: Vec<RangeIncreasing<char>>,
-    i: usize,
-}
-
-impl ExhaustiveChars {
-    pub fn new(ranges: Vec<RangeIncreasing<char>>) -> ExhaustiveChars {
-        ExhaustiveChars {
-            ranges: ranges,
-            i: 0,
-        }
-    }
-}
-
-impl Iterator for ExhaustiveChars {
-    type Item = char;
-
-    fn next(&mut self) -> Option<char> {
-        if self.i == self.ranges.len() {
-            None
-        } else {
-            if let Some(c) = self.ranges[self.i].next() {
-                Some(c)
-            } else {
-                self.i += 1;
-                if self.i == self.ranges.len() {
-                    None
-                } else {
-                    self.ranges[self.i].next()
-                }
-            }
-        }
-    }
-}
-
 pub enum Chars {
-    Exhaustive(ExhaustiveChars),
+    Exhaustive(MultiChain<RangeIncreasing<char>>),
     Random(IsaacRng),
 }
 
@@ -682,7 +648,7 @@ impl Iterator for Chars {
 }
 
 pub enum AsciiChars {
-    Exhaustive(ExhaustiveChars),
+    Exhaustive(MultiChain<RangeIncreasing<char>>),
     Random(IsaacRng),
 }
 
@@ -1073,7 +1039,25 @@ impl IteratorProvider {
     pub fn chars(&self) -> Chars {
         match self {
             &IteratorProvider::Exhaustive => {
-                Chars::Exhaustive(ExhaustiveChars::new(vec![RangeIncreasing::new('a', 'z'),
+                Chars::Exhaustive(MultiChain::new(vec![RangeIncreasing::new('a', 'z'),
+                                                       RangeIncreasing::new('A', 'Z'),
+                                                       RangeIncreasing::new('0', '9'),
+                                                       RangeIncreasing::new('!', '/'),
+                                                       RangeIncreasing::new(':', '@'),
+                                                       RangeIncreasing::new('[', '`'),
+                                                       RangeIncreasing::new('{', '~'),
+                                                       RangeIncreasing::new(' ', ' '),
+                                                       RangeIncreasing::new('\0', '\u{1F}'),
+                                                       RangeIncreasing::new('\u{7F}', char::MAX)]))
+            }
+            &IteratorProvider::Random(_, seed) => Chars::Random(SeedableRng::from_seed(&seed[..])),
+        }
+    }
+
+    pub fn ascii_chars(&self) -> AsciiChars {
+        match self {
+            &IteratorProvider::Exhaustive => {
+                AsciiChars::Exhaustive(MultiChain::new(vec![RangeIncreasing::new('a', 'z'),
                                                             RangeIncreasing::new('A', 'Z'),
                                                             RangeIncreasing::new('0', '9'),
                                                             RangeIncreasing::new('!', '/'),
@@ -1083,27 +1067,7 @@ impl IteratorProvider {
                                                             RangeIncreasing::new(' ', ' '),
                                                             RangeIncreasing::new('\0', '\u{1F}'),
                                                             RangeIncreasing::new('\u{7F}',
-                                                                                 char::MAX)]))
-            }
-            &IteratorProvider::Random(_, seed) => Chars::Random(SeedableRng::from_seed(&seed[..])),
-        }
-    }
-
-    pub fn ascii_chars(&self) -> AsciiChars {
-        match self {
-            &IteratorProvider::Exhaustive => {
-                AsciiChars::Exhaustive(ExhaustiveChars::new(vec![RangeIncreasing::new('a', 'z'),
-                                                                 RangeIncreasing::new('A', 'Z'),
-                                                                 RangeIncreasing::new('0', '9'),
-                                                                 RangeIncreasing::new('!', '/'),
-                                                                 RangeIncreasing::new(':', '@'),
-                                                                 RangeIncreasing::new('[', '`'),
-                                                                 RangeIncreasing::new('{', '~'),
-                                                                 RangeIncreasing::new(' ', ' '),
-                                                                 RangeIncreasing::new('\0',
-                                                                                      '\u{1F}'),
-                                                                 RangeIncreasing::new('\u{7F}',
-                                                                                      '\u{7F}')]))
+                                                                                 '\u{7F}')]))
             }
             &IteratorProvider::Random(_, seed) => {
                 AsciiChars::Random(SeedableRng::from_seed(&seed[..]))

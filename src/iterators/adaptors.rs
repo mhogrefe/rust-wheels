@@ -210,3 +210,40 @@ pub fn get_limited_string_vec_and_most_common_values_debug<I>
     let (vec, map) = get_limited_string_vec_and_frequency_map_debug(small_limit, large_limit, xs);
     (vec, get_most_common_values_debug(tiny_limit, map))
 }
+
+pub struct MultiChain<I> {
+    ranges: Vec<I>,
+    i: usize,
+}
+
+impl<I> MultiChain<I> {
+    pub fn new(ranges: Vec<I>) -> MultiChain<I> {
+        MultiChain {
+            ranges: ranges,
+            i: 0,
+        }
+    }
+}
+
+impl<I> Iterator for MultiChain<I>
+    where I: Iterator
+{
+    type Item = I::Item;
+
+    fn next(&mut self) -> Option<I::Item> {
+        if self.i == self.ranges.len() {
+            None
+        } else {
+            loop {
+                if let Some(x) = self.ranges[self.i].next() {
+                    return Some(x);
+                } else {
+                    self.i += 1;
+                    if self.i == self.ranges.len() {
+                        return None;
+                    }
+                }
+            }
+        }
+    }
+}
