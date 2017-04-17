@@ -10,6 +10,8 @@ pub trait PrimInt
     Add<Output=Self> + Sub<Output=Self> + Rem<Output=Self> + DivAssign + Not<Output=Self> + Rand +
     SampleRange + Walkable {
 
+    fn name() -> &'static str;
+
     fn bit_count() -> u32;
 
     fn min_value() -> Self;

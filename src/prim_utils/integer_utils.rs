@@ -7,8 +7,12 @@ use std::cmp::Ordering;
 use std::mem;
 
 macro_rules! prim_impls {
-    ($t: ident, $bit_count: expr) => {
+    ($t: ident, $name: expr, $bit_count: expr) => {
         impl PrimInt for $t {
+            fn name() -> &'static str {
+                $name
+            }
+
             fn bit_count() -> u32 {
                 $bit_count
             }
@@ -42,16 +46,16 @@ macro_rules! prim_impls {
     }
 }
 
-prim_impls!(u8, 8);
-prim_impls!(u16, 16);
-prim_impls!(u32, 32);
-prim_impls!(u64, 64);
-prim_impls!(usize, (0 as usize).count_zeros());
-prim_impls!(i8, 8);
-prim_impls!(i16, 16);
-prim_impls!(i32, 32);
-prim_impls!(i64, 64);
-prim_impls!(isize, (0 as isize).count_zeros());
+prim_impls!(u8, "u8", 8);
+prim_impls!(u16, "u16", 16);
+prim_impls!(u32, "u32", 32);
+prim_impls!(u64, "u64", 64);
+prim_impls!(usize, "usize", (0 as usize).count_zeros());
+prim_impls!(i8, "i8", 8);
+prim_impls!(i16, "i16", 16);
+prim_impls!(i32, "i32", 32);
+prim_impls!(i64, "i64", 64);
+prim_impls!(isize, "isize", (0 as isize).count_zeros());
 
 impl PrimUnsignedInt for u8 {}
 impl PrimUnsignedInt for u16 {}
