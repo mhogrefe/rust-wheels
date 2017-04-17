@@ -512,39 +512,38 @@ fn digits_usize_fail_2() {
     digits_u::<usize>(0, 10);
 }
 
-fn digits_integer_helper(radix: &str, n: &str, out: &str) {
-    assert_eq!(format!("{:?}",
-                       digits_integer(&Integer::from_str(radix).unwrap(),
-                                      &Integer::from_str(n).unwrap())),
-               out);
-}
-
 #[test]
 fn test_digits_integer() {
-    digits_integer_helper("2", "0", "[]");
-    digits_integer_helper("3", "0", "[]");
-    digits_integer_helper("8", "0", "[]");
-    digits_integer_helper("10", "0", "[]");
-    digits_integer_helper("12", "0", "[]");
-    digits_integer_helper("57", "0", "[]");
-    digits_integer_helper("2", "1", "[1]");
-    digits_integer_helper("3", "1", "[1]");
-    digits_integer_helper("8", "1", "[1]");
-    digits_integer_helper("10", "1", "[1]");
-    digits_integer_helper("12", "1", "[1]");
-    digits_integer_helper("57", "1", "[1]");
-    digits_integer_helper("2", "10", "[0, 1, 0, 1]");
-    digits_integer_helper("3", "10", "[1, 0, 1]");
-    digits_integer_helper("8", "10", "[2, 1]");
-    digits_integer_helper("10", "10", "[0, 1]");
-    digits_integer_helper("12", "10", "[10]");
-    digits_integer_helper("57", "10", "[10]");
-    digits_integer_helper("2", "187", "[1, 1, 0, 1, 1, 1, 0, 1]");
-    digits_integer_helper("3", "187", "[1, 2, 2, 0, 2]");
-    digits_integer_helper("8", "187", "[3, 7, 2]");
-    digits_integer_helper("10", "187", "[7, 8, 1]");
-    digits_integer_helper("12", "187", "[7, 3, 1]");
-    digits_integer_helper("57", "187", "[16, 3]");
+    let test = |radix, n, out| {
+        assert_eq!(format!("{:?}",
+                           digits_integer(&Integer::from_str(radix).unwrap(),
+                                          &Integer::from_str(n).unwrap())),
+                   out)
+    };
+    test("2", "0", "[]");
+    test("3", "0", "[]");
+    test("8", "0", "[]");
+    test("10", "0", "[]");
+    test("12", "0", "[]");
+    test("57", "0", "[]");
+    test("2", "1", "[1]");
+    test("3", "1", "[1]");
+    test("8", "1", "[1]");
+    test("10", "1", "[1]");
+    test("12", "1", "[1]");
+    test("57", "1", "[1]");
+    test("2", "10", "[0, 1, 0, 1]");
+    test("3", "10", "[1, 0, 1]");
+    test("8", "10", "[2, 1]");
+    test("10", "10", "[0, 1]");
+    test("12", "10", "[10]");
+    test("57", "10", "[10]");
+    test("2", "187", "[1, 1, 0, 1, 1, 1, 0, 1]");
+    test("3", "187", "[1, 2, 2, 0, 2]");
+    test("8", "187", "[3, 7, 2]");
+    test("10", "187", "[7, 8, 1]");
+    test("12", "187", "[7, 3, 1]");
+    test("57", "187", "[16, 3]");
 }
 
 fn digits_integer_fail_helper(radix: &str, n: &str) {
@@ -576,120 +575,139 @@ fn digits_integer_fail_4() {
     digits_integer_fail_helper("0", "-1");
 }
 
-macro_rules! test_digits_padded {
-    (
-        $t: ty,
-        $f: ident,
-        $test: ident,
-        $helper: ident,
-        $fail_1: ident,
-        $fail_2: ident,
-        $max: expr,
-        $max_digit: expr
-    ) => {
-        fn $helper(size: usize, radix: $t, n: $t, out: &str) {
-            assert_eq!(format!("{:?}", $f(size, radix, n)), out);
-        }
-
-        #[test]
-        fn $test() {
-            $helper(0, 2, 0, "[]");
-            $helper(0, 3, 0, "[]");
-            $helper(0, 57, 0, "[]");
-            $helper(0, 2, 1, "[]");
-            $helper(0, 3, 1, "[]");
-            $helper(0, 57, 1, "[]");
-            $helper(0, 2, 10, "[]");
-            $helper(0, 3, 10, "[]");
-            $helper(0, 57, 10, "[]");
-            $helper(0, 2, 107, "[]");
-            $helper(0, 3, 107, "[]");
-            $helper(0, 57, 107, "[]");
-            $helper(1, 2, 0, "[0]");
-            $helper(1, 3, 0, "[0]");
-            $helper(1, 57, 0, "[0]");
-            $helper(1, 2, 1, "[1]");
-            $helper(1, 3, 1, "[1]");
-            $helper(1, 57, 1, "[1]");
-            $helper(1, 2, 10, "[0]");
-            $helper(1, 3, 10, "[1]");
-            $helper(1, 57, 10, "[10]");
-            $helper(1, 2, 107, "[1]");
-            $helper(1, 3, 107, "[2]");
-            $helper(1, 57, 107, "[50]");
-            $helper(2, 2, 0, "[0, 0]");
-            $helper(2, 3, 0, "[0, 0]");
-            $helper(2, 57, 0, "[0, 0]");
-            $helper(2, 2, 1, "[1, 0]");
-            $helper(2, 3, 1, "[1, 0]");
-            $helper(2, 57, 1, "[1, 0]");
-            $helper(2, 2, 10, "[0, 1]");
-            $helper(2, 3, 10, "[1, 0]");
-            $helper(2, 57, 10, "[10, 0]");
-            $helper(2, 2, 107, "[1, 1]");
-            $helper(2, 3, 107, "[2, 2]");
-            $helper(2, 57, 107, "[50, 1]");
-            $helper(8, 2, 0, "[0, 0, 0, 0, 0, 0, 0, 0]");
-            $helper(8, 3, 0, "[0, 0, 0, 0, 0, 0, 0, 0]");
-            $helper(8, 57, 0, "[0, 0, 0, 0, 0, 0, 0, 0]");
-            $helper(8, 2, 1, "[1, 0, 0, 0, 0, 0, 0, 0]");
-            $helper(8, 3, 1, "[1, 0, 0, 0, 0, 0, 0, 0]");
-            $helper(8, 57, 1, "[1, 0, 0, 0, 0, 0, 0, 0]");
-            $helper(8, 2, 10, "[0, 1, 0, 1, 0, 0, 0, 0]");
-            $helper(8, 3, 10, "[1, 0, 1, 0, 0, 0, 0, 0]");
-            $helper(8, 57, 10, "[10, 0, 0, 0, 0, 0, 0, 0]");
-            $helper(8, 2, 107, "[1, 1, 0, 1, 0, 1, 1, 0]");
-            $helper(8, 3, 107, "[2, 2, 2, 0, 1, 0, 0, 0]");
-            $helper(8, 57, 107, "[50, 1, 0, 0, 0, 0, 0, 0]");
-            $helper(1, $max, 0, "[0]");
-            $helper(1, $max, 107, "[107]");
-            $helper(1, $max, $max - 1, $max_digit);
-            $helper(2, $max, $max, "[0, 1]");
-        }
-
-        #[test]
-        #[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
-        fn $fail_1() {
-            $f(3, 1 as $t, 10 as $t);
-        }
-
-        #[test]
-        #[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
-        fn $fail_2() {
-            $f(3, 0 as $t, 10 as $t);
-        }
-    }
+fn digits_padded_u_helper<T: PrimUnsignedInt>(max_digit: &str) {
+    let test =
+        |size, radix, n, out| assert_eq!(format!("{:?}", digits_padded_u(size, radix, n)), out);
+    test(0, T::from_u8(2), T::from_u8(0), "[]");
+    test(0, T::from_u8(3), T::from_u8(0), "[]");
+    test(0, T::from_u8(57), T::from_u8(0), "[]");
+    test(0, T::from_u8(2), T::from_u8(1), "[]");
+    test(0, T::from_u8(3), T::from_u8(1), "[]");
+    test(0, T::from_u8(57), T::from_u8(1), "[]");
+    test(0, T::from_u8(2), T::from_u8(10), "[]");
+    test(0, T::from_u8(3), T::from_u8(10), "[]");
+    test(0, T::from_u8(57), T::from_u8(10), "[]");
+    test(0, T::from_u8(2), T::from_u8(107), "[]");
+    test(0, T::from_u8(3), T::from_u8(107), "[]");
+    test(0, T::from_u8(57), T::from_u8(107), "[]");
+    test(1, T::from_u8(2), T::from_u8(0), "[0]");
+    test(1, T::from_u8(3), T::from_u8(0), "[0]");
+    test(1, T::from_u8(57), T::from_u8(0), "[0]");
+    test(1, T::from_u8(2), T::from_u8(1), "[1]");
+    test(1, T::from_u8(3), T::from_u8(1), "[1]");
+    test(1, T::from_u8(57), T::from_u8(1), "[1]");
+    test(1, T::from_u8(2), T::from_u8(10), "[0]");
+    test(1, T::from_u8(3), T::from_u8(10), "[1]");
+    test(1, T::from_u8(57), T::from_u8(10), "[10]");
+    test(1, T::from_u8(2), T::from_u8(107), "[1]");
+    test(1, T::from_u8(3), T::from_u8(107), "[2]");
+    test(1, T::from_u8(57), T::from_u8(107), "[50]");
+    test(2, T::from_u8(2), T::from_u8(0), "[0, 0]");
+    test(2, T::from_u8(3), T::from_u8(0), "[0, 0]");
+    test(2, T::from_u8(57), T::from_u8(0), "[0, 0]");
+    test(2, T::from_u8(2), T::from_u8(1), "[1, 0]");
+    test(2, T::from_u8(3), T::from_u8(1), "[1, 0]");
+    test(2, T::from_u8(57), T::from_u8(1), "[1, 0]");
+    test(2, T::from_u8(2), T::from_u8(10), "[0, 1]");
+    test(2, T::from_u8(3), T::from_u8(10), "[1, 0]");
+    test(2, T::from_u8(57), T::from_u8(10), "[10, 0]");
+    test(2, T::from_u8(2), T::from_u8(107), "[1, 1]");
+    test(2, T::from_u8(3), T::from_u8(107), "[2, 2]");
+    test(2, T::from_u8(57), T::from_u8(107), "[50, 1]");
+    test(8, T::from_u8(2), T::from_u8(0), "[0, 0, 0, 0, 0, 0, 0, 0]");
+    test(8, T::from_u8(3), T::from_u8(0), "[0, 0, 0, 0, 0, 0, 0, 0]");
+    test(8, T::from_u8(57), T::from_u8(0), "[0, 0, 0, 0, 0, 0, 0, 0]");
+    test(8, T::from_u8(2), T::from_u8(1), "[1, 0, 0, 0, 0, 0, 0, 0]");
+    test(8, T::from_u8(3), T::from_u8(1), "[1, 0, 0, 0, 0, 0, 0, 0]");
+    test(8, T::from_u8(57), T::from_u8(1), "[1, 0, 0, 0, 0, 0, 0, 0]");
+    test(8, T::from_u8(2), T::from_u8(10), "[0, 1, 0, 1, 0, 0, 0, 0]");
+    test(8, T::from_u8(3), T::from_u8(10), "[1, 0, 1, 0, 0, 0, 0, 0]");
+    test(8,
+         T::from_u8(57),
+         T::from_u8(10),
+         "[10, 0, 0, 0, 0, 0, 0, 0]");
+    test(8,
+         T::from_u8(2),
+         T::from_u8(107),
+         "[1, 1, 0, 1, 0, 1, 1, 0]");
+    test(8,
+         T::from_u8(3),
+         T::from_u8(107),
+         "[2, 2, 2, 0, 1, 0, 0, 0]");
+    test(8,
+         T::from_u8(57),
+         T::from_u8(107),
+         "[50, 1, 0, 0, 0, 0, 0, 0]");
+    test(1, T::max_value(), T::from_u8(0), "[0]");
+    test(1, T::max_value(), T::from_u8(107), "[107]");
+    test(1, T::max_value(), T::max_value() - T::from_u8(1), max_digit);
+    test(2, T::max_value(), T::max_value(), "[0, 1]");
 }
 
-test_digits_padded!(u8,
-                    digits_padded_u,
-                    test_digits_padded_u8,
-                    digits_padded_u8_helper,
-                    digits_padded_u8_fail_1,
-                    digits_padded_u8_fail_2,
-                    u8::max_value(),
-                    "[254]");
-test_digits_padded!(u16,
-                    digits_padded_u,
-                    test_digits_padded_u16,
-                    digits_padded_u16_helper,
-                    digits_padded_u16_fail_1,
-                    digits_padded_u16_fail_2,
-                    u16::max_value(),
-                    "[65534]");
-test_digits_padded!(u32,
-                    digits_padded_u,
-                    test_digits_padded_u32,
-                    digits_padded_u32_helper,
-                    digits_padded_u32_fail_1,
-                    digits_padded_u32_fail_2,
-                    u32::max_value(),
-                    "[4294967294]");
-test_digits_padded!(u64,
-                    digits_padded_u,
-                    test_digits_padded_u64,
-                    digits_u64_padded_helper,
-                    digits_u64_padded_fail_1,
-                    digits_u64_padded_fail_2,
-                    u64::max_value(),
-                    "[18446744073709551614]");
+#[test]
+fn test_digits_padded_u() {
+    digits_padded_u_helper::<u8>("[254]");
+    digits_padded_u_helper::<u16>("[65534]");
+    digits_padded_u_helper::<u32>("[4294967294]");
+    digits_padded_u_helper::<u64>("[18446744073709551614]");
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
+fn digits_padded_u8_fail_1() {
+    digits_padded_u::<u8>(3, 1, 10);
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
+fn digits_padded_u8_fail_2() {
+    digits_padded_u::<u8>(3, 0, 10);
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
+fn digits_padded_u16_fail_1() {
+    digits_padded_u::<u16>(3, 1, 10);
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
+fn digits_padded_u16_fail_2() {
+    digits_padded_u::<u16>(3, 0, 10);
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
+fn digits_padded_u32_fail_1() {
+    digits_padded_u::<u32>(3, 1, 10);
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
+fn digits_padded_u32_fail_2() {
+    digits_padded_u::<u32>(3, 0, 10);
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
+fn digits_padded_u64_fail_1() {
+    digits_padded_u::<u64>(3, 1, 10);
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
+fn digits_padded_u64_fail_2() {
+    digits_padded_u::<u64>(3, 0, 10);
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
+fn digits_padded_usize_fail_1() {
+    digits_padded_u::<usize>(3, 1, 10);
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
+fn digits_padded_usize_fail_2() {
+    digits_padded_u::<usize>(3, 0, 10);
+}
