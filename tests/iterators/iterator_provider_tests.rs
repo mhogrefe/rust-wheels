@@ -3,6 +3,7 @@ use common::TestOutput;
 use gmp_to_flint_adaptor_lib::integer::Integer;
 use rust_wheels_lib::io::readers::parse_vec;
 use rust_wheels_lib::iterators::iterator_provider::IteratorProvider;
+use rust_wheels_lib::prim_utils::traits::*;
 use std::char;
 use std::str::FromStr;
 
@@ -17,6 +18,174 @@ fn test_bools() {
     let (eo, ep, rp) = prepare_test();
     eo.match_vec("exhaustive_bools", &mut ep.bools());
     eo.match_vec_f("random_bools", &mut rp.bools());
+}
+
+fn range_up_increasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput, p: &IteratorProvider) {
+    let s = "exhaustive_range_up_increasing";
+    let test = |number, a| {
+        eo.match_vec(&format!("{}_{}_{}", s, T::name(), number),
+                     &mut p.range_up_increasing_x(a))
+    };
+    test("i", T::from_u8(0));
+    test("ii", T::from_u8(5));
+    test("iii", T::max_value());
+}
+
+#[test]
+fn test_range_up_increasing_u() {
+    let (eo, p, _) = prepare_test();
+    range_up_increasing_u_helper::<u8>(&eo, &p);
+    range_up_increasing_u_helper::<u16>(&eo, &p);
+    range_up_increasing_u_helper::<u32>(&eo, &p);
+    range_up_increasing_u_helper::<u64>(&eo, &p);
+}
+
+fn range_up_increasing_i_helper<T: PrimSignedInt>(eo: &TestOutput, p: &IteratorProvider) {
+    let s = "exhaustive_range_up_increasing";
+    let test = |number, a| {
+        eo.match_vec(&format!("{}_{}_{}", s, T::name(), number),
+                     &mut p.range_up_increasing_x(a))
+    };
+    test("i", T::from_u8(0));
+    test("ii", T::from_u8(5));
+    test("iii", T::max_value());
+    test("iv", T::from_i8(-5));
+    test("v", T::min_value());
+}
+
+#[test]
+fn test_range_up_increasing_i() {
+    let (eo, p, _) = prepare_test();
+    range_up_increasing_i_helper::<i8>(&eo, &p);
+    range_up_increasing_i_helper::<i16>(&eo, &p);
+    range_up_increasing_i_helper::<i32>(&eo, &p);
+    range_up_increasing_i_helper::<i64>(&eo, &p);
+}
+
+fn range_up_decreasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput, p: &IteratorProvider) {
+    let s = "exhaustive_range_up_decreasing";
+    let test = |number, a| {
+        eo.match_vec(&format!("{}_{}_{}", s, T::name(), number),
+                     &mut p.range_up_decreasing_x(a))
+    };
+    test("i", T::from_u8(0));
+    test("ii", T::from_u8(5));
+    test("iii", T::max_value());
+}
+
+#[test]
+fn test_range_up_decreasing_u() {
+    let (eo, p, _) = prepare_test();
+    range_up_decreasing_u_helper::<u8>(&eo, &p);
+    range_up_decreasing_u_helper::<u16>(&eo, &p);
+    range_up_decreasing_u_helper::<u32>(&eo, &p);
+    range_up_decreasing_u_helper::<u64>(&eo, &p);
+}
+
+fn range_up_decreasing_i_helper<T: PrimSignedInt>(eo: &TestOutput, p: &IteratorProvider) {
+    let s = "exhaustive_range_up_decreasing";
+    let test = |number, a| {
+        eo.match_vec(&format!("{}_{}_{}", s, T::name(), number),
+                     &mut p.range_up_decreasing_x(a))
+    };
+    test("i", T::from_u8(0));
+    test("ii", T::from_u8(5));
+    test("iii", T::max_value());
+    test("iv", T::from_i8(-5));
+    test("v", T::min_value());
+}
+
+#[test]
+fn test_range_up_decreasing_i() {
+    let (eo, p, _) = prepare_test();
+    range_up_decreasing_i_helper::<i8>(&eo, &p);
+    range_up_decreasing_i_helper::<i16>(&eo, &p);
+    range_up_decreasing_i_helper::<i32>(&eo, &p);
+    range_up_decreasing_i_helper::<i64>(&eo, &p);
+}
+
+fn range_down_increasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput, p: &IteratorProvider) {
+    let s = "exhaustive_range_down_increasing";
+    let test = |number, a| {
+        eo.match_vec(&format!("{}_{}_{}", s, T::name(), number),
+                     &mut p.range_down_increasing_x(a))
+    };
+    test("i", T::from_u8(0));
+    test("ii", T::from_u8(5));
+    test("iii", T::max_value());
+}
+
+#[test]
+fn test_range_down_increasing_u() {
+    let (eo, p, _) = prepare_test();
+    range_down_increasing_u_helper::<u8>(&eo, &p);
+    range_down_increasing_u_helper::<u16>(&eo, &p);
+    range_down_increasing_u_helper::<u32>(&eo, &p);
+    range_down_increasing_u_helper::<u64>(&eo, &p);
+}
+
+fn range_down_increasing_i_helper<T: PrimSignedInt>(eo: &TestOutput, p: &IteratorProvider) {
+    let s = "exhaustive_range_down_increasing";
+    let test = |number, a| {
+        eo.match_vec(&format!("{}_{}_{}", s, T::name(), number),
+                     &mut p.range_down_increasing_x(a))
+    };
+    test("i", T::from_u8(0));
+    test("ii", T::from_u8(5));
+    test("iii", T::max_value());
+    test("iv", T::from_i8(-5));
+    test("v", T::min_value());
+}
+
+#[test]
+fn test_range_down_increasing_i() {
+    let (eo, p, _) = prepare_test();
+    range_down_increasing_i_helper::<i8>(&eo, &p);
+    range_down_increasing_i_helper::<i16>(&eo, &p);
+    range_down_increasing_i_helper::<i32>(&eo, &p);
+    range_down_increasing_i_helper::<i64>(&eo, &p);
+}
+
+fn range_down_decreasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput, p: &IteratorProvider) {
+    let s = "exhaustive_range_down_decreasing";
+    let test = |number, a| {
+        eo.match_vec(&format!("{}_{}_{}", s, T::name(), number),
+                     &mut p.range_down_decreasing_x(a))
+    };
+    test("i", T::from_u8(0));
+    test("ii", T::from_u8(5));
+    test("iii", T::max_value());
+}
+
+#[test]
+fn test_range_down_decreasing_u() {
+    let (eo, p, _) = prepare_test();
+    range_down_decreasing_u_helper::<u8>(&eo, &p);
+    range_down_decreasing_u_helper::<u16>(&eo, &p);
+    range_down_decreasing_u_helper::<u32>(&eo, &p);
+    range_down_decreasing_u_helper::<u64>(&eo, &p);
+}
+
+fn range_down_decreasing_i_helper<T: PrimSignedInt>(eo: &TestOutput, p: &IteratorProvider) {
+    let s = "exhaustive_range_down_decreasing";
+    let test = |number, a| {
+        eo.match_vec(&format!("{}_{}_{}", s, T::name(), number),
+                     &mut p.range_down_decreasing_x(a))
+    };
+    test("i", T::from_u8(0));
+    test("ii", T::from_u8(5));
+    test("iii", T::max_value());
+    test("iv", T::from_i8(-5));
+    test("v", T::min_value());
+}
+
+#[test]
+fn test_range_down_decreasing_i() {
+    let (eo, p, _) = prepare_test();
+    range_down_decreasing_i_helper::<i8>(&eo, &p);
+    range_down_decreasing_i_helper::<i16>(&eo, &p);
+    range_down_decreasing_i_helper::<i32>(&eo, &p);
+    range_down_decreasing_i_helper::<i64>(&eo, &p);
 }
 
 macro_rules! test_integer_range {
@@ -55,58 +224,6 @@ macro_rules! test_integer_range {
         $rd_f: ident,
         $max: expr
     ) => {
-        fn $rui_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t) {
-            eo.match_vec(key, &mut p.range_up_increasing_x(a));
-        }
-
-        #[test]
-        fn $rui_t() {
-            let (eo, p, _) = prepare_test();
-            let s = "exhaustive_range_up_increasing";
-            $rui_th(&eo, &p, &format!("{}_{}_i", s, $ts), 0);
-            $rui_th(&eo, &p, &format!("{}_{}_ii", s, $ts), 5);
-            $rui_th(&eo, &p, &format!("{}_{}_iii", s, $ts), $max);
-        }
-
-        fn $rud_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t) {
-            eo.match_vec(key, &mut p.range_up_decreasing_x(a));
-        }
-
-        #[test]
-        fn $rud_t() {
-            let (eo, p, _) = prepare_test();
-            let s = "exhaustive_range_up_decreasing";
-            $rud_th(&eo, &p, &format!("{}_{}_i", s, $ts), 0);
-            $rud_th(&eo, &p, &format!("{}_{}_ii", s, $ts), 5);
-            $rud_th(&eo, &p, &format!("{}_{}_iii", s, $ts), $max);
-        }
-
-        fn $rdi_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t) {
-            eo.match_vec(key, &mut p.range_down_increasing_x(a));
-        }
-
-        #[test]
-        fn $rdi_t() {
-            let (eo, p, _) = prepare_test();
-            let s = "exhaustive_range_down_increasing";
-            $rdi_th(&eo, &p, &format!("{}_{}_i", s, $ts), 0);
-            $rdi_th(&eo, &p, &format!("{}_{}_ii", s, $ts), 5);
-            $rdi_th(&eo, &p, &format!("{}_{}_iii", s, $ts), $max);
-        }
-
-        fn $rdd_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t) {
-            eo.match_vec(key, &mut p.range_down_decreasing_x(a));
-        }
-
-        #[test]
-        fn $rdd_t() {
-            let (eo, p, _) = prepare_test();
-            let s = "exhaustive_range_down_decreasing";
-            $rdd_th(&eo, &p, &format!("{}_{}_i", s, $ts), 0);
-            $rdd_th(&eo, &p, &format!("{}_{}_ii", s, $ts), 5);
-            $rdd_th(&eo, &p, &format!("{}_{}_iii", s, $ts), $max);
-        }
-
         fn $ri_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t, b: $t) {
             eo.match_vec(key, &mut p.range_increasing_x(a, b));
         }
@@ -611,38 +728,6 @@ macro_rules! test_integer_range_i {
         $r_f_1: ident,
         $r_f_2: ident
     ) => {
-        #[test]
-        fn $rui_t() {
-            let (eo, p, _) = prepare_test();
-            let s = "exhaustive_range_up_increasing";
-            $rui_th(&eo, &p, &format!("{}_{}_iv", s, $ts), -5);
-            $rui_th(&eo, &p, &format!("{}_{}_v", s, $ts), $min);
-        }
-
-        #[test]
-        fn $rud_t() {
-            let (eo, p, _) = prepare_test();
-            let s = "exhaustive_range_up_decreasing";
-            $rud_th(&eo, &p, &format!("{}_{}_iv", s, $ts), -5);
-            $rud_th(&eo, &p, &format!("{}_{}_v", s, $ts), $min);
-        }
-
-        #[test]
-        fn $rdi_t() {
-            let (eo, p, _) = prepare_test();
-            let s = "exhaustive_range_down_increasing";
-            $rdi_th(&eo, &p, &format!("{}_{}_iv", s, $ts), -5);
-            $rdi_th(&eo, &p, &format!("{}_{}_v", s, $ts), $min);
-        }
-
-        #[test]
-        fn $rdd_t() {
-            let (eo, p, _) = prepare_test();
-            let s = "exhaustive_range_down_decreasing";
-            $rdd_th(&eo, &p, &format!("{}_{}_iv", s, $ts), -5);
-            $rdd_th(&eo, &p, &format!("{}_{}_v", s, $ts), $min);
-        }
-
         #[test]
         fn $ri_t() {
             let (eo, p, _) = prepare_test();
