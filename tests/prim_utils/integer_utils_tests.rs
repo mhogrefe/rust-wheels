@@ -570,7 +570,7 @@ fn digits_integer_fail_3() {
 }
 
 #[test]
-#[should_panic(expected = "n cannot be negative. Invalid n: -1")]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
 fn digits_integer_fail_4() {
     digits_integer_fail_helper("0", "-1");
 }
@@ -710,4 +710,81 @@ fn digits_padded_usize_fail_1() {
 #[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
 fn digits_padded_usize_fail_2() {
     digits_padded_u::<usize>(3, 0, 10);
+}
+
+#[test]
+fn test_digits_padded_integer() {
+    let test = |size, radix, n, out| {
+        assert_eq!(format!("{:?}",
+                           digits_padded_integer(size,
+                                                 &Integer::from_str(radix).unwrap(),
+                                                 &Integer::from_str(n).unwrap())),
+                   out)
+    };
+    test(0, "2", "0", "[]");
+    test(0, "3", "0", "[]");
+    test(0, "57", "0", "[]");
+    test(0, "2", "1", "[]");
+    test(0, "3", "1", "[]");
+    test(0, "57", "1", "[]");
+    test(0, "2", "10", "[]");
+    test(0, "3", "10", "[]");
+    test(0, "57", "10", "[]");
+    test(0, "2", "107", "[]");
+    test(0, "3", "107", "[]");
+    test(0, "57", "107", "[]");
+    test(1, "2", "0", "[0]");
+    test(1, "3", "0", "[0]");
+    test(1, "57", "0", "[0]");
+    test(1, "2", "1", "[1]");
+    test(1, "3", "1", "[1]");
+    test(1, "57", "1", "[1]");
+    test(1, "2", "10", "[0]");
+    test(1, "3", "10", "[1]");
+    test(1, "57", "10", "[10]");
+    test(1, "2", "107", "[1]");
+    test(1, "3", "107", "[2]");
+    test(1, "57", "107", "[50]");
+    test(2, "2", "0", "[0, 0]");
+    test(2, "3", "0", "[0, 0]");
+    test(2, "57", "0", "[0, 0]");
+    test(2, "2", "1", "[1, 0]");
+    test(2, "3", "1", "[1, 0]");
+    test(2, "57", "1", "[1, 0]");
+    test(2, "2", "10", "[0, 1]");
+    test(2, "3", "10", "[1, 0]");
+    test(2, "57", "10", "[10, 0]");
+    test(2, "2", "107", "[1, 1]");
+    test(2, "3", "107", "[2, 2]");
+    test(2, "57", "107", "[50, 1]");
+    test(8, "2", "0", "[0, 0, 0, 0, 0, 0, 0, 0]");
+    test(8, "3", "0", "[0, 0, 0, 0, 0, 0, 0, 0]");
+    test(8, "57", "0", "[0, 0, 0, 0, 0, 0, 0, 0]");
+    test(8, "2", "1", "[1, 0, 0, 0, 0, 0, 0, 0]");
+    test(8, "3", "1", "[1, 0, 0, 0, 0, 0, 0, 0]");
+    test(8, "57", "1", "[1, 0, 0, 0, 0, 0, 0, 0]");
+    test(8, "2", "10", "[0, 1, 0, 1, 0, 0, 0, 0]");
+    test(8, "3", "10", "[1, 0, 1, 0, 0, 0, 0, 0]");
+    test(8, "57", "10", "[10, 0, 0, 0, 0, 0, 0, 0]");
+    test(8, "2", "107", "[1, 1, 0, 1, 0, 1, 1, 0]");
+    test(8, "3", "107", "[2, 2, 2, 0, 1, 0, 0, 0]");
+    test(8, "57", "107", "[50, 1, 0, 0, 0, 0, 0, 0]");
+}
+
+fn digits_padded_integer_fail_helper(size: usize, radix: &str, n: &str) {
+    digits_padded_integer(size,
+                          &Integer::from_str(radix).unwrap(),
+                          &Integer::from_str(n).unwrap());
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
+fn digits_padded_integer_fail_1() {
+    digits_padded_integer_fail_helper(3, "1", "10");
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
+fn digits_padded_integer_fail_2() {
+    digits_padded_integer_fail_helper(3, "0", "10");
 }

@@ -4,6 +4,7 @@ use gmp_to_flint_adaptor_lib::integer::Integer;
 use num_to_flint_adaptor_lib::integer::Integer;
 use prim_utils::traits::*;
 use std::cmp::Ordering;
+use std::iter;
 use std::mem;
 
 macro_rules! prim_impls {
@@ -272,17 +273,16 @@ pub fn digits_u<T: PrimUnsignedInt>(radix: T, n: T) -> Vec<T> {
 }
 
 pub fn digits_integer(radix: &Integer, n: &Integer) -> Vec<Integer> {
-    if *n < 0 {
-        panic!("n cannot be negative. Invalid n: {}", n);
-    }
     if *radix < 2 {
         panic!("radix must be at least 2. Invalid radix: {}", radix);
     }
-    if *n == 0 {
+    let sign = n.sign();
+    if sign == Ordering::Less {
+        panic!("n cannot be negative. Invalid n: {}", n);
+    } else if sign == Ordering::Equal {
         return Vec::new();
-    }
-    let log = ceiling_log_2_integer(radix);
-    if Integer::from(1) << log == *radix {
+    } else if is_power_of_two(radix) {
+        let log = ceiling_log_2_integer(radix);
         let mut digits = Vec::new();
         let length = n.significant_bits();
         let mut digit = Integer::from(0);
@@ -359,4 +359,76 @@ pub fn digits_padded_u<T: PrimUnsignedInt>(size: usize, radix: T, n: T) -> Vec<T
         }
     }
     digits
+}
+
+pub fn digits_padded_integer(size: usize, radix: &Integer, n: &Integer) -> Vec<Integer> {
+    if *radix < 2 {
+        panic!("radix must be at least 2. Invalid radix: {}", radix);
+    }
+    let sign = n.sign();
+    if sign == Ordering::Less {
+        panic!("n cannot be negative. Invalid n: {}", n);
+    } else if size == 0 {
+        return Vec::new();
+    } else if sign == Ordering::Equal {
+        return iter::repeat(Integer::from(0)).take(size).collect();
+    } else if is_power_of_two(radix) {
+        let log = ceiling_log_2_integer(radix);
+        let mut digits = Vec::new();
+        let mut digit = Integer::from(0);
+        let mut i = 0;
+        let mut j = 0;
+        let mut mask = 1;
+        for x in n.to_u32s() {
+            loop {
+                if i == size {
+                    break;
+                }
+                if x & mask != 0 {
+                    digit.set_bit(j, true);
+                }
+                i += 1;
+                j += 1;
+                if j == log {
+                    let last_index = digits.len();
+                    digits.push(Integer::from(0));
+                    mem::swap(&mut digits[last_index], &mut digit);
+                    j = 0;
+                }
+                if mask == 0 {
+                    break;
+                }
+                mask <<= 1;
+            }
+        }
+        if digit != 0 {
+            let last_index = digits.len();
+            digits.push(Integer::from(0));
+            mem::swap(&mut digits[last_index], &mut digit);
+        }
+        return digits;
+    } else if *radix <= 36 {
+        return n.to_string_radix(radix.to_i32().unwrap())
+                   .chars()
+                   .rev()
+                   .map(|c| {
+                            Integer::from(c as u32 -
+                                          (if c >= '0' && c <= '9' { '0' } else { 'W' } as u32))
+                        })
+                   .chain(iter::repeat(Integer::from(0)))
+                   .take(size)
+                   .collect();
+    } else {
+        let mut digits = Vec::new();
+        let mut remaining = n.clone();
+        for i in 0..size {
+            if remaining == 0 {
+                digits.push(Integer::from(0));
+            } else {
+                digits.push(radix.clone());
+                remaining.div_rem(&mut digits[i]);
+            }
+        }
+        return digits;
+    }
 }
