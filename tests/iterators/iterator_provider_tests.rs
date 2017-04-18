@@ -13,6 +13,73 @@ fn prepare_test() -> (TestOutput, IteratorProvider, IteratorProvider) {
      IteratorProvider::example_random())
 }
 
+macro_rules! prim_fail {
+    ($t: ty, $range_increasing_fail: ident, $range_decreasing_fail: ident) => {
+        #[test]
+        #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
+        fn $range_increasing_fail() {
+            IteratorProvider::Exhaustive.range_increasing_x::<$t>(10, 9);
+        }
+
+        #[test]
+        #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
+        fn $range_decreasing_fail() {
+            IteratorProvider::Exhaustive.range_decreasing_x::<$t>(10, 9);
+        }
+    }
+}
+
+prim_fail!(u8, range_increasing_u8_fail, range_decreasing_u8_fail);
+prim_fail!(u16, range_increasing_u16_fail, range_decreasing_u16_fail);
+prim_fail!(u32, range_increasing_u32_fail, range_decreasing_u32_fail);
+prim_fail!(u64, range_increasing_u64_fail, range_decreasing_u64_fail);
+prim_fail!(usize,
+           range_increasing_usize_fail,
+           range_decreasing_usize_fail);
+prim_fail!(i8, range_increasing_i8_fail_1, range_decreasing_i8_fail_1);
+prim_fail!(i16,
+           range_increasing_i16_fail_1,
+           range_decreasing_i16_fail_1);
+prim_fail!(i32,
+           range_increasing_i32_fail_1,
+           range_decreasing_i32_fail_1);
+prim_fail!(i64,
+           range_increasing_i64_fail_1,
+           range_decreasing_i64_fail_1);
+prim_fail!(isize,
+           range_increasing_isize_fail_1,
+           range_decreasing_isize_fail_1);
+
+macro_rules! prim_fail_i {
+    ($t: ty, $range_increasing_fail: ident, $range_decreasing_fail: ident) => {
+        #[test]
+        #[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
+        fn $range_increasing_fail() {
+            IteratorProvider::Exhaustive.range_increasing_x::<i8>(-9, -10);
+        }
+
+        #[test]
+        #[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
+        fn $range_decreasing_fail() {
+            IteratorProvider::Exhaustive.range_decreasing_x::<i8>(-9, -10);
+        }
+    }
+}
+
+prim_fail_i!(i8, range_increasing_i8_fail_2, range_decreasing_i8_fail_2);
+prim_fail_i!(i16,
+             range_increasing_i16_fail_2,
+             range_decreasing_i16_fail_2);
+prim_fail_i!(i32,
+             range_increasing_i32_fail_2,
+             range_decreasing_i32_fail_2);
+prim_fail_i!(i64,
+             range_increasing_i64_fail_2,
+             range_decreasing_i64_fail_2);
+prim_fail_i!(isize,
+             range_increasing_isize_fail_2,
+             range_decreasing_isize_fail_2);
+
 #[test]
 fn test_bools() {
     let (eo, ep, rp) = prepare_test();
@@ -188,6 +255,112 @@ fn test_range_down_decreasing_i() {
     range_down_decreasing_i_helper::<i64>(&eo, &p);
 }
 
+fn range_increasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput, p: &IteratorProvider) {
+    let s = "exhaustive_range_increasing";
+    let test = |number, a, b| {
+        eo.match_vec(&format!("{}_{}_{}", s, T::name(), number),
+                     &mut p.range_increasing_x(a, b))
+    };
+    test("i", T::from_u8(0), T::from_u8(0));
+    test("ii", T::from_u8(0), T::from_u8(10));
+    test("iii", T::from_u8(10), T::from_u8(20));
+    test("iv", T::from_u8(10), T::from_u8(10));
+    test("v", T::from_u8(0), T::max_value());
+    test("vi", T::from_u8(0), T::max_value() - T::from_u8(1));
+}
+
+#[test]
+fn test_range_increasing_u() {
+    let (eo, p, _) = prepare_test();
+    range_increasing_u_helper::<u8>(&eo, &p);
+    range_increasing_u_helper::<u16>(&eo, &p);
+    range_increasing_u_helper::<u32>(&eo, &p);
+    range_increasing_u_helper::<u64>(&eo, &p);
+}
+
+fn range_increasing_i_helper<T: PrimSignedInt>(eo: &TestOutput, p: &IteratorProvider) {
+    let s = "exhaustive_range_increasing";
+    let test = |number, a, b| {
+        eo.match_vec(&format!("{}_{}_{}", s, T::name(), number),
+                     &mut p.range_increasing_x(a, b))
+    };
+    test("i", T::from_u8(0), T::from_u8(0));
+    test("ii", T::from_u8(0), T::from_u8(10));
+    test("iii", T::from_u8(10), T::from_u8(20));
+    test("iv", T::from_u8(10), T::from_u8(10));
+    test("v", T::from_u8(0), T::max_value());
+    test("vi", T::from_u8(0), T::max_value() - T::from_u8(1));
+    test("vii", T::from_i8(-10), T::from_i8(-10));
+    test("viii", T::from_i8(-20), T::from_i8(-10));
+    test("ix", T::from_i8(-100), T::from_u8(100));
+    test("x", T::min_value(), T::max_value());
+    test("xi",
+         T::min_value() + T::from_u8(1),
+         T::max_value() - T::from_u8(1));
+}
+
+#[test]
+fn test_range_increasing_i() {
+    let (eo, p, _) = prepare_test();
+    range_increasing_i_helper::<i8>(&eo, &p);
+    range_increasing_i_helper::<i16>(&eo, &p);
+    range_increasing_i_helper::<i32>(&eo, &p);
+    range_increasing_i_helper::<i64>(&eo, &p);
+}
+
+fn range_decreasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput, p: &IteratorProvider) {
+    let s = "exhaustive_range_decreasing";
+    let test = |number, a, b| {
+        eo.match_vec(&format!("{}_{}_{}", s, T::name(), number),
+                     &mut p.range_decreasing_x(a, b))
+    };
+    test("i", T::from_u8(0), T::from_u8(0));
+    test("ii", T::from_u8(0), T::from_u8(10));
+    test("iii", T::from_u8(10), T::from_u8(20));
+    test("iv", T::from_u8(10), T::from_u8(10));
+    test("v", T::from_u8(0), T::max_value());
+    test("vi", T::from_u8(0), T::max_value() - T::from_u8(1));
+}
+
+#[test]
+fn test_range_decreasing_u() {
+    let (eo, p, _) = prepare_test();
+    range_decreasing_u_helper::<u8>(&eo, &p);
+    range_decreasing_u_helper::<u16>(&eo, &p);
+    range_decreasing_u_helper::<u32>(&eo, &p);
+    range_decreasing_u_helper::<u64>(&eo, &p);
+}
+
+fn range_decreasing_i_helper<T: PrimSignedInt>(eo: &TestOutput, p: &IteratorProvider) {
+    let s = "exhaustive_range_decreasing";
+    let test = |number, a, b| {
+        eo.match_vec(&format!("{}_{}_{}", s, T::name(), number),
+                     &mut p.range_decreasing_x(a, b))
+    };
+    test("i", T::from_u8(0), T::from_u8(0));
+    test("ii", T::from_u8(0), T::from_u8(10));
+    test("iii", T::from_u8(10), T::from_u8(20));
+    test("iv", T::from_u8(10), T::from_u8(10));
+    test("v", T::from_u8(0), T::max_value());
+    test("vi", T::from_u8(0), T::max_value() - T::from_u8(1));
+    test("vii", T::from_i8(-10), T::from_i8(-10));
+    test("viii", T::from_i8(-20), T::from_i8(-10));
+    test("ix", T::from_i8(-100), T::from_u8(100));
+    test("x", T::min_value(), T::max_value());
+    test("xi",
+         T::min_value() + T::from_u8(1),
+         T::max_value() - T::from_u8(1));
+}
+
+#[test]
+fn test_range_decreasing_i() {
+    let (eo, p, _) = prepare_test();
+    range_decreasing_i_helper::<i8>(&eo, &p);
+    range_decreasing_i_helper::<i16>(&eo, &p);
+    range_decreasing_i_helper::<i32>(&eo, &p);
+    range_decreasing_i_helper::<i64>(&eo, &p);
+}
+
 macro_rules! test_integer_range {
     (
         $t: ty,
@@ -224,50 +397,6 @@ macro_rules! test_integer_range {
         $rd_f: ident,
         $max: expr
     ) => {
-        fn $ri_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t, b: $t) {
-            eo.match_vec(key, &mut p.range_increasing_x(a, b));
-        }
-
-        #[test]
-        fn $ri_t() {
-            let (eo, p, _) = prepare_test();
-            let s = "exhaustive_range_increasing";
-            $ri_th(&eo, &p, &format!("{}_{}_i", s, $ts), 0, 0);
-            $ri_th(&eo, &p, &format!("{}_{}_ii", s, $ts), 0, 10);
-            $ri_th(&eo, &p, &format!("{}_{}_iii", s, $ts), 10, 20);
-            $ri_th(&eo, &p, &format!("{}_{}_iv", s, $ts), 10, 10);
-            $ri_th(&eo, &p, &format!("{}_{}_v", s, $ts), 0, $max);
-            $ri_th(&eo, &p, &format!("{}_{}_vi", s, $ts), 0, $max - 1);
-        }
-
-        #[test]
-        #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
-        fn $ri_f() {
-            IteratorProvider::Exhaustive.range_increasing_x(10, 9);
-        }
-
-        fn $rd_th(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t, b: $t) {
-            eo.match_vec(key, &mut p.range_decreasing_x(a, b));
-        }
-
-        #[test]
-        fn $rd_t() {
-            let (eo, p, _) = prepare_test();
-            let s = "exhaustive_range_decreasing";
-            $rd_th(&eo, &p, &format!("{}_{}_i", s, $ts), 0, 0);
-            $rd_th(&eo, &p, &format!("{}_{}_ii", s, $ts), 0, 10);
-            $rd_th(&eo, &p, &format!("{}_{}_iii", s, $ts), 10, 20);
-            $rd_th(&eo, &p, &format!("{}_{}_iv", s, $ts), 10, 10);
-            $rd_th(&eo, &p, &format!("{}_{}_v", s, $ts), 0, $max);
-            $rd_th(&eo, &p, &format!("{}_{}_vi", s, $ts), 0, $max - 1);
-        }
-
-        #[test]
-        #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
-        fn $rd_f() {
-            IteratorProvider::Exhaustive.range_decreasing_x(10, 9);
-        }
-
         #[test]
         fn $i_t() {
             let (eo, p, _) = prepare_test();
@@ -728,40 +857,6 @@ macro_rules! test_integer_range_i {
         $r_f_1: ident,
         $r_f_2: ident
     ) => {
-        #[test]
-        fn $ri_t() {
-            let (eo, p, _) = prepare_test();
-            let s = "exhaustive_range_increasing";
-            $ri_th(&eo, &p, &format!("{}_{}_vii", s, $ts), -10, -10);
-            $ri_th(&eo, &p, &format!("{}_{}_viii", s, $ts), -20, -10);
-            $ri_th(&eo, &p, &format!("{}_{}_ix", s, $ts), -100, 100);
-            $ri_th(&eo, &p, &format!("{}_{}_x", s, $ts), $min, $max);
-            $ri_th(&eo, &p, &format!("{}_{}_xi", s, $ts), $min + 1, $max - 1);
-        }
-
-        #[test]
-        #[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
-        fn $ri_f() {
-            IteratorProvider::Exhaustive.range_increasing_x(-9, -10);
-        }
-
-        #[test]
-        fn $rd_t() {
-            let (eo, p, _) = prepare_test();
-            let s = "exhaustive_range_decreasing";
-            $rd_th(&eo, &p, &format!("{}_{}_vii", s, $ts), -10, -10);
-            $rd_th(&eo, &p, &format!("{}_{}_viii", s, $ts), -20, -10);
-            $rd_th(&eo, &p, &format!("{}_{}_ix", s, $ts), -100, 100);
-            $rd_th(&eo, &p, &format!("{}_{}_x", s, $ts), $min, $max);
-            $rd_th(&eo, &p, &format!("{}_{}_xi", s, $ts), $min + 1, $max - 1);
-        }
-
-        #[test]
-        #[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
-        fn $rd_f() {
-            IteratorProvider::Exhaustive.range_decreasing_x(-9, -10);
-        }
-
         #[test]
         fn $pos_t() {
             let (eo, ep, rp) = prepare_test();
