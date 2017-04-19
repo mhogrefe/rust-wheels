@@ -923,6 +923,16 @@ pub enum PositiveU32sGeometric {
     Random(RandomRange<u32>),
 }
 
+impl PositiveU32sGeometric {
+    pub fn exhaustive() -> PositiveU32sGeometric {
+        PositiveU32sGeometric::Exhaustive(RangeIncreasing::new(1, u32::max_value()))
+    }
+
+    pub fn random(scale: u32, seed: &[u32]) -> PositiveU32sGeometric {
+        PositiveU32sGeometric::Random(RandomRange::new(0, scale + 1, seed))
+    }
+}
+
 impl Iterator for PositiveU32sGeometric {
     type Item = u32;
 
@@ -946,6 +956,16 @@ impl Iterator for PositiveU32sGeometric {
 pub enum NaturalU32sGeometric {
     Exhaustive(RangeIncreasing<u32>),
     Random(RandomRange<u32>),
+}
+
+impl NaturalU32sGeometric {
+    pub fn exhaustive() -> NaturalU32sGeometric {
+        NaturalU32sGeometric::Exhaustive(RangeIncreasing::new(0, u32::max_value()))
+    }
+
+    pub fn random(scale: u32, seed: &[u32]) -> NaturalU32sGeometric {
+        NaturalU32sGeometric::Random(RandomRange::new(0, scale + 1, seed))
+    }
 }
 
 impl Iterator for NaturalU32sGeometric {
@@ -1234,23 +1254,15 @@ impl IteratorProvider {
 
     pub fn positive_u32s_geometric(&self, scale: u32) -> PositiveU32sGeometric {
         match self {
-            &IteratorProvider::Exhaustive => {
-                PositiveU32sGeometric::Exhaustive(RangeIncreasing::new(1, u32::max_value()))
-            }
-            &IteratorProvider::Random(_, seed) => {
-                PositiveU32sGeometric::Random(RandomRange::new(0, scale + 1, &seed))
-            }
+            &IteratorProvider::Exhaustive => PositiveU32sGeometric::exhaustive(),
+            &IteratorProvider::Random(_, seed) => PositiveU32sGeometric::random(scale, &seed[..]),
         }
     }
 
     pub fn natural_u32s_geometric(&self, scale: u32) -> NaturalU32sGeometric {
         match self {
-            &IteratorProvider::Exhaustive => {
-                NaturalU32sGeometric::Exhaustive(RangeIncreasing::new(0, u32::max_value()))
-            }
-            &IteratorProvider::Random(_, seed) => {
-                NaturalU32sGeometric::Random(RandomRange::new(0, scale + 1, &seed))
-            }
+            &IteratorProvider::Exhaustive => NaturalU32sGeometric::exhaustive(),
+            &IteratorProvider::Random(_, seed) => NaturalU32sGeometric::random(scale, &seed[..]),
         }
     }
 }
