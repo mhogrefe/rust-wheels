@@ -2,11 +2,12 @@ use rand::distributions::range::SampleRange;
 use rand::Rand;
 use std::fmt::Debug;
 use std::fmt::Display;
+use std::hash::Hash;
 use std::ops::*;
 
 pub trait PrimInt
     : BitAnd<Output=Self> + BitOr<Output=Self> + BitXor<Output=Self> + Copy + Display + Debug + Eq +
-    Ord + Shl<u32, Output=Self> + ShlAssign<u32> + Shr<u32, Output=Self> + ShrAssign<u32> +
+    Hash + Ord + Shl<u32, Output=Self> + ShlAssign<u32> + Shr<u32, Output=Self> + ShrAssign<u32> +
     Add<Output=Self> + Sub<Output=Self> + Rem<Output=Self> + DivAssign + Not<Output=Self> + Rand +
     SampleRange + Walkable {
 
