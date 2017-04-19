@@ -3,6 +3,102 @@ use rust_wheels_lib::prim_utils::integer_utils::*;
 use rust_wheels_lib::prim_utils::traits::*;
 use std::str::FromStr;
 
+macro_rules! prim_fail {
+    (
+        $t: ty,
+        $ceiling_log_2_fail: ident,
+        $digits_fail_1: ident,
+        $digits_fail_2: ident,
+        $digits_padded_fail_1: ident,
+        $digits_padded_fail_2: ident,
+        $big_endian_digits_fail_1: ident,
+        $big_endian_digits_fail_2: ident
+    ) => {
+        #[test]
+        #[should_panic(expected = "n must be positive. Invalid n: 0")]
+        fn $ceiling_log_2_fail() {
+            ceiling_log_2_u::<$t>(0);
+        }
+
+        #[test]
+        #[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
+        fn $digits_fail_1() {
+            digits_u::<$t>(1, 10);
+        }
+
+        #[test]
+        #[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
+        fn $digits_fail_2() {
+            digits_u::<$t>(0, 10);
+        }
+
+        #[test]
+        #[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
+        fn $digits_padded_fail_1() {
+            digits_padded_u::<$t>(3, 1, 10);
+        }
+
+        #[test]
+        #[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
+        fn $digits_padded_fail_2() {
+            digits_padded_u::<$t>(3, 0, 10);
+        }
+
+        #[test]
+        #[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
+        fn $big_endian_digits_fail_1() {
+            big_endian_digits_u::<$t>(1, 10);
+        }
+
+        #[test]
+        #[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
+        fn $big_endian_digits_fail_2() {
+            big_endian_digits_u::<$t>(0, 10);
+        }
+    }
+}
+
+prim_fail!(u8,
+           ceiling_log_2_u8_fail,
+           digits_u8_fail_1,
+           digits_u8_fail_2,
+           digits_padded_u8_fail_1,
+           digits_padded_u8_fail_2,
+           big_endian_digits_u8_fail_1,
+           big_endian_digits_u8_fail_2);
+prim_fail!(u16,
+           ceiling_log_2_u16_fail,
+           digits_u16_fail_1,
+           digits_u16_fail_2,
+           digits_padded_u16_fail_1,
+           digits_padded_u16_fail_2,
+           big_endian_digits_u16_fail_1,
+           big_endian_digits_u16_fail_2);
+prim_fail!(u32,
+           ceiling_log_2_u32_fail,
+           digits_u32_fail_1,
+           digits_u32_fail_2,
+           digits_padded_u32_fail_1,
+           digits_padded_u32_fail_2,
+           big_endian_digits_u32_fail_1,
+           big_endian_digits_u32_fail_2);
+prim_fail!(u64,
+           ceiling_log_2_u64_fail,
+           digits_u64_fail_1,
+           digits_u64_fail_2,
+           digits_padded_u64_fail_1,
+           digits_padded_u64_fail_2,
+           big_endian_digits_u64_fail_1,
+           big_endian_digits_u64_fail_2);
+prim_fail!(usize,
+           ceiling_log_2_usize_fail,
+           digits_usize_fail_1,
+           digits_usize_fail_2,
+           digits_padded_usize_fail_1,
+           digits_padded_usize_fail_2,
+           big_endian_digits_usize_fail_1,
+           big_endian_digits_usize_fail_2);
+
 #[test]
 fn test_is_power_of_two() {
     let test = |n, out| assert_eq!(is_power_of_two(&Integer::from_str(n).unwrap()), out);
@@ -53,36 +149,6 @@ fn test_ceiling_log_2_u() {
     ceiling_log_2_u_helper::<u32>();
     ceiling_log_2_u_helper::<u64>();
     ceiling_log_2_u_helper::<usize>();
-}
-
-#[test]
-#[should_panic(expected = "n must be positive. Invalid n: 0")]
-fn test_ceiling_log_2_u8_fail() {
-    ceiling_log_2_u(0u8);
-}
-
-#[test]
-#[should_panic(expected = "n must be positive. Invalid n: 0")]
-fn test_ceiling_log_2_u16_fail() {
-    ceiling_log_2_u(0u16);
-}
-
-#[test]
-#[should_panic(expected = "n must be positive. Invalid n: 0")]
-fn test_ceiling_log_2_u32_fail() {
-    ceiling_log_2_u(0u32);
-}
-
-#[test]
-#[should_panic(expected = "n must be positive. Invalid n: 0")]
-fn test_ceiling_log_2_u64_fail() {
-    ceiling_log_2_u(0u64);
-}
-
-#[test]
-#[should_panic(expected = "n must be positive. Invalid n: 0")]
-fn test_ceiling_log_2_usize_fail() {
-    ceiling_log_2_u(0usize);
 }
 
 #[test]
@@ -453,66 +519,6 @@ fn test_digits_u() {
 }
 
 #[test]
-#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
-fn digits_u8_fail_1() {
-    digits_u::<u8>(1, 10);
-}
-
-#[test]
-#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
-fn digits_u8_fail_2() {
-    digits_u::<u8>(0, 10);
-}
-
-#[test]
-#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
-fn digits_u16_fail_1() {
-    digits_u::<u16>(1, 10);
-}
-
-#[test]
-#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
-fn digits_u16_fail_2() {
-    digits_u::<u16>(0, 10);
-}
-
-#[test]
-#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
-fn digits_u32_fail_1() {
-    digits_u::<u32>(1, 10);
-}
-
-#[test]
-#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
-fn digits_u32_fail_2() {
-    digits_u::<u32>(0, 10);
-}
-
-#[test]
-#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
-fn digits_u64_fail_1() {
-    digits_u::<u64>(1, 10);
-}
-
-#[test]
-#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
-fn digits_u64_fail_2() {
-    digits_u::<u64>(0, 10);
-}
-
-#[test]
-#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
-fn digits_usize_fail_1() {
-    digits_u::<usize>(1, 10);
-}
-
-#[test]
-#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
-fn digits_usize_fail_2() {
-    digits_u::<usize>(0, 10);
-}
-
-#[test]
 fn test_digits_integer() {
     let test = |radix, n, out| {
         assert_eq!(format!("{:?}",
@@ -653,66 +659,6 @@ fn test_digits_padded_u() {
 }
 
 #[test]
-#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
-fn digits_padded_u8_fail_1() {
-    digits_padded_u::<u8>(3, 1, 10);
-}
-
-#[test]
-#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
-fn digits_padded_u8_fail_2() {
-    digits_padded_u::<u8>(3, 0, 10);
-}
-
-#[test]
-#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
-fn digits_padded_u16_fail_1() {
-    digits_padded_u::<u16>(3, 1, 10);
-}
-
-#[test]
-#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
-fn digits_padded_u16_fail_2() {
-    digits_padded_u::<u16>(3, 0, 10);
-}
-
-#[test]
-#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
-fn digits_padded_u32_fail_1() {
-    digits_padded_u::<u32>(3, 1, 10);
-}
-
-#[test]
-#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
-fn digits_padded_u32_fail_2() {
-    digits_padded_u::<u32>(3, 0, 10);
-}
-
-#[test]
-#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
-fn digits_padded_u64_fail_1() {
-    digits_padded_u::<u64>(3, 1, 10);
-}
-
-#[test]
-#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
-fn digits_padded_u64_fail_2() {
-    digits_padded_u::<u64>(3, 0, 10);
-}
-
-#[test]
-#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
-fn digits_padded_usize_fail_1() {
-    digits_padded_u::<usize>(3, 1, 10);
-}
-
-#[test]
-#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
-fn digits_padded_usize_fail_2() {
-    digits_padded_u::<usize>(3, 0, 10);
-}
-
-#[test]
 fn test_digits_padded_integer() {
     let test = |size, radix, n, out| {
         assert_eq!(format!("{:?}",
@@ -787,4 +733,78 @@ fn digits_padded_integer_fail_1() {
 #[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
 fn digits_padded_integer_fail_2() {
     digits_padded_integer_fail_helper(3, "0", "10");
+}
+
+fn big_endian_digits_u_helper<T: PrimUnsignedInt>(max_digit: &str) {
+    let test = |radix, n, out| assert_eq!(format!("{:?}", big_endian_digits_u(radix, n)), out);
+    test(T::from_u8(2), T::from_u8(0), "[]");
+    test(T::from_u8(3), T::from_u8(0), "[]");
+    test(T::from_u8(8), T::from_u8(0), "[]");
+    test(T::from_u8(10), T::from_u8(0), "[]");
+    test(T::from_u8(12), T::from_u8(0), "[]");
+    test(T::from_u8(57), T::from_u8(0), "[]");
+    test(T::from_u8(2), T::from_u8(1), "[1]");
+    test(T::from_u8(3), T::from_u8(1), "[1]");
+    test(T::from_u8(8), T::from_u8(1), "[1]");
+    test(T::from_u8(10), T::from_u8(1), "[1]");
+    test(T::from_u8(12), T::from_u8(1), "[1]");
+    test(T::from_u8(57), T::from_u8(1), "[1]");
+    test(T::from_u8(2), T::from_u8(10), "[1, 0, 1, 0]");
+    test(T::from_u8(3), T::from_u8(10), "[1, 0, 1]");
+    test(T::from_u8(8), T::from_u8(10), "[1, 2]");
+    test(T::from_u8(10), T::from_u8(10), "[1, 0]");
+    test(T::from_u8(12), T::from_u8(10), "[10]");
+    test(T::from_u8(57), T::from_u8(10), "[10]");
+    test(T::from_u8(2), T::from_u8(107), "[1, 1, 0, 1, 0, 1, 1]");
+    test(T::from_u8(3), T::from_u8(107), "[1, 0, 2, 2, 2]");
+    test(T::from_u8(8), T::from_u8(107), "[1, 5, 3]");
+    test(T::from_u8(10), T::from_u8(107), "[1, 0, 7]");
+    test(T::from_u8(12), T::from_u8(107), "[8, 11]");
+    test(T::from_u8(57), T::from_u8(107), "[1, 50]");
+    test(T::max_value(), T::from_u8(0), "[]");
+    test(T::max_value(), T::from_u8(107), "[107]");
+    test(T::max_value(), T::max_value() - T::from_u8(1), max_digit);
+    test(T::max_value(), T::max_value(), "[1, 0]");
+}
+
+#[test]
+fn test_big_endian_digits_u() {
+    big_endian_digits_u_helper::<u8>("[254]");
+    big_endian_digits_u_helper::<u16>("[65534]");
+    big_endian_digits_u_helper::<u32>("[4294967294]");
+    big_endian_digits_u_helper::<u64>("[18446744073709551614]");
+}
+
+#[test]
+fn test_big_endian_digits_integer() {
+    let test = |radix, n, out| {
+        assert_eq!(format!("{:?}",
+                           big_endian_digits_integer(&Integer::from_str(radix).unwrap(),
+                                                     &Integer::from_str(n).unwrap())),
+                   out)
+    };
+    test("2", "0", "[]");
+    test("3", "0", "[]");
+    test("8", "0", "[]");
+    test("10", "0", "[]");
+    test("12", "0", "[]");
+    test("57", "0", "[]");
+    test("2", "1", "[1]");
+    test("3", "1", "[1]");
+    test("8", "1", "[1]");
+    test("10", "1", "[1]");
+    test("12", "1", "[1]");
+    test("57", "1", "[1]");
+    test("2", "10", "[1, 0, 1, 0]");
+    test("3", "10", "[1, 0, 1]");
+    test("8", "10", "[1, 2]");
+    test("10", "10", "[1, 0]");
+    test("12", "10", "[10]");
+    test("57", "10", "[10]");
+    test("2", "187", "[1, 0, 1, 1, 1, 0, 1, 1]");
+    test("3", "187", "[2, 0, 2, 2, 1]");
+    test("8", "187", "[2, 7, 3]");
+    test("10", "187", "[1, 8, 7]");
+    test("12", "187", "[1, 3, 7]");
+    test("57", "187", "[3, 16]");
 }

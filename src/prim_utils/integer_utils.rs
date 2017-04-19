@@ -280,7 +280,7 @@ pub fn digits_integer(radix: &Integer, n: &Integer) -> Vec<Integer> {
     if sign == Ordering::Less {
         panic!("n cannot be negative. Invalid n: {}", n);
     } else if sign == Ordering::Equal {
-        return Vec::new();
+        Vec::new()
     } else if is_power_of_two(radix) {
         let log = ceiling_log_2_integer(radix);
         let mut digits = Vec::new();
@@ -316,16 +316,9 @@ pub fn digits_integer(radix: &Integer, n: &Integer) -> Vec<Integer> {
             digits.push(Integer::from(0));
             mem::swap(&mut digits[last_index], &mut digit);
         }
-        return digits;
+        digits
     } else if *radix <= 36 {
-        return n.to_string_radix(radix.to_i32().unwrap())
-                   .chars()
-                   .rev()
-                   .map(|c| {
-                            Integer::from(c as u32 -
-                                          (if c >= '0' && c <= '9' { '0' } else { 'W' } as u32))
-                        })
-                   .collect();
+        big_endian_digits_integer(radix, n).into_iter().rev().collect()
     } else {
         let mut digits = Vec::new();
         let mut remaining = n.clone();
@@ -334,7 +327,7 @@ pub fn digits_integer(radix: &Integer, n: &Integer) -> Vec<Integer> {
             digits.push(radix.clone());
             remaining.div_rem(&mut digits[last_index]);
         }
-        return digits;
+        digits
     }
 }
 
@@ -369,9 +362,9 @@ pub fn digits_padded_integer(size: usize, radix: &Integer, n: &Integer) -> Vec<I
     if sign == Ordering::Less {
         panic!("n cannot be negative. Invalid n: {}", n);
     } else if size == 0 {
-        return Vec::new();
+        Vec::new()
     } else if sign == Ordering::Equal {
-        return iter::repeat(Integer::from(0)).take(size).collect();
+        iter::repeat(Integer::from(0)).take(size).collect()
     } else if is_power_of_two(radix) {
         let log = ceiling_log_2_integer(radix);
         let mut digits = Vec::new();
@@ -406,7 +399,7 @@ pub fn digits_padded_integer(size: usize, radix: &Integer, n: &Integer) -> Vec<I
             digits.push(Integer::from(0));
             mem::swap(&mut digits[last_index], &mut digit);
         }
-        return digits;
+        digits
     } else if *radix <= 36 {
         return n.to_string_radix(radix.to_i32().unwrap())
                    .chars()
@@ -429,6 +422,31 @@ pub fn digits_padded_integer(size: usize, radix: &Integer, n: &Integer) -> Vec<I
                 remaining.div_rem(&mut digits[i]);
             }
         }
-        return digits;
+        digits
+    }
+}
+
+pub fn big_endian_digits_u<T: PrimUnsignedInt>(radix: T, n: T) -> Vec<T> {
+    digits_u(radix, n).into_iter().rev().collect()
+}
+
+pub fn big_endian_digits_integer(radix: &Integer, n: &Integer) -> Vec<Integer> {
+    if *radix < 2 {
+        panic!("radix must be at least 2. Invalid radix: {}", radix);
+    }
+    let sign = n.sign();
+    if sign == Ordering::Less {
+        panic!("n cannot be negative. Invalid n: {}", n);
+    } else if sign == Ordering::Equal {
+        Vec::new()
+    } else if *radix <= 36 {
+        n.to_string_radix(radix.to_i32().unwrap())
+            .chars()
+            .map(|c| {
+                     Integer::from(c as u32 - (if c >= '0' && c <= '9' { '0' } else { 'W' } as u32))
+                 })
+            .collect()
+    } else {
+        digits_integer(radix, n).into_iter().rev().collect()
     }
 }
