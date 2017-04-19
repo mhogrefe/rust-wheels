@@ -708,6 +708,17 @@ pub enum RangeChar {
     Random(IsaacRng, Range<u32>),
 }
 
+impl RangeChar {
+    pub fn exhaustive(a: char, b: char) -> RangeChar {
+        RangeChar::Exhaustive(RangeIncreasing::new(a, b))
+    }
+
+    pub fn random(a: char, b: char, seed: &[u32]) -> RangeChar {
+        RangeChar::Random(SeedableRng::from_seed(seed),
+                          Range::new(char_to_contiguous_range(a), char_to_contiguous_range(b) + 1))
+    }
+}
+
 impl Iterator for RangeChar {
     type Item = char;
 
@@ -840,9 +851,55 @@ pub enum ExhaustiveRangeInteger {
                          Interleave<RangeIncreasingInteger, RangeDecreasingInteger>>),
 }
 
+impl ExhaustiveRangeInteger {
+    pub fn new(a: Integer, b: Integer) -> ExhaustiveRangeInteger {
+        if a >= 0 {
+            ExhaustiveRangeInteger::AllNonNegative(RangeIncreasingInteger::new(a, b))
+        } else if b <= 0 {
+            ExhaustiveRangeInteger::AllNonPositive(RangeDecreasingInteger::new(a, b))
+        } else {
+            ExhaustiveRangeInteger::SomeOfEachSign(
+                once(Integer::from(0)).chain(
+                    RangeIncreasingInteger::new(Integer::from(1), b)
+                        .interleave(
+                            RangeDecreasingInteger::new(
+                                a,
+                                Integer::from(-1)
+                            )
+                        )
+                )
+            )
+        }
+    }
+}
+
+impl Iterator for ExhaustiveRangeInteger {
+    type Item = Integer;
+
+    fn next(&mut self) -> Option<Integer> {
+        match self {
+            &mut ExhaustiveRangeInteger::AllNonNegative(ref mut xs) => xs.next(),
+            &mut ExhaustiveRangeInteger::AllNonPositive(ref mut xs) => xs.next(),
+            &mut ExhaustiveRangeInteger::SomeOfEachSign(ref mut xs) => xs.next(),
+        }
+    }
+}
+
 pub enum RangeInteger {
     Exhaustive(ExhaustiveRangeInteger),
     Random(IsaacRng, Integer, Integer),
+}
+
+impl RangeInteger {
+    pub fn exhaustive(a: Integer, b: Integer) -> RangeInteger {
+        RangeInteger::Exhaustive(ExhaustiveRangeInteger::new(a, b))
+    }
+
+    pub fn random(a: Integer, b: Integer, seed: &[u32]) -> RangeInteger {
+        let mut diameter = b - &a;
+        diameter += 1;
+        RangeInteger::Random(SeedableRng::from_seed(seed), diameter, a)
+    }
 }
 
 impl Iterator for RangeInteger {
@@ -850,17 +907,11 @@ impl Iterator for RangeInteger {
 
     fn next(&mut self) -> Option<Integer> {
         match self {
-            &mut RangeInteger::Exhaustive(ref mut it) => {
-                match it {
-                    &mut ExhaustiveRangeInteger::AllNonNegative(ref mut it) => it.next(),
-                    &mut ExhaustiveRangeInteger::AllNonPositive(ref mut it) => it.next(),
-                    &mut ExhaustiveRangeInteger::SomeOfEachSign(ref mut it) => it.next(),
-                }
-            }
-            &mut RangeInteger::Random(ref mut rng, ref diameter, ref lower) => {
+            &mut RangeInteger::Exhaustive(ref mut xs) => xs.next(),
+            &mut RangeInteger::Random(ref mut rng, ref diameter, ref a) => {
                 let mut random = diameter.clone();
                 random.random_below(rng);
-                random += lower;
+                random += a;
                 Some(random)
             }
         }
@@ -1005,6 +1056,23 @@ impl IteratorProvider {
         }
     }
 
+
+    pub fn exhaustive_generate_from_vector<T>(&self, xs: Vec<T>) -> ExhaustiveFromVector<T> {
+        ExhaustiveFromVector::new(xs)
+    }
+
+    pub fn generate_from_vector<T>(&self, xs: Vec<T>) -> FromVector<T> {
+        if xs.is_empty() {
+            if let IteratorProvider::Random(_, _) = *self {
+                panic!("Cannot randomly generate values from an empty Vec.");
+            }
+        }
+        match self {
+            &IteratorProvider::Exhaustive => FromVector::exhaustive(xs),
+            &IteratorProvider::Random(_, seed) => FromVector::random(xs, &seed[..]),
+        }
+    }
+
     pub fn positive_i<T: PrimSignedInt>(&self) -> PositiveI<T> {
         match self {
             &IteratorProvider::Exhaustive => PositiveI::exhaustive(),
@@ -1101,12 +1169,8 @@ impl IteratorProvider {
             panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
         }
         match self {
-            &IteratorProvider::Exhaustive => RangeChar::Exhaustive(RangeIncreasing::new(a, b)),
-            &IteratorProvider::Random(_, seed) => {
-                RangeChar::Random(SeedableRng::from_seed(&seed[..]),
-                                  Range::new(char_to_contiguous_range(a),
-                                             char_to_contiguous_range(b) + 1))
-            }
+            &IteratorProvider::Exhaustive => RangeChar::exhaustive(a, b),
+            &IteratorProvider::Random(_, seed) => RangeChar::random(a, b, &seed[..]),
         }
     }
 
@@ -1155,47 +1219,8 @@ impl IteratorProvider {
             panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
         }
         match self {
-            &IteratorProvider::Exhaustive => {
-                let xs = if a >= 0 {
-                    ExhaustiveRangeInteger::AllNonNegative(RangeIncreasingInteger::new(a, b))
-                } else if b <= 0 {
-                    ExhaustiveRangeInteger::AllNonPositive(RangeDecreasingInteger::new(a, b))
-                } else {
-                    ExhaustiveRangeInteger::SomeOfEachSign(
-                            once(Integer::from(0)).chain(
-                                    RangeIncreasingInteger::new(Integer::from(1), b)
-                                            .interleave(
-                                                    RangeDecreasingInteger::new(
-                                                            a,
-                                                            Integer::from(-1)
-                                                    )
-                                            )
-                            )
-                    )
-                };
-                RangeInteger::Exhaustive(xs)
-            }
-            &IteratorProvider::Random(_, seed) => {
-                let mut diameter = b - &a;
-                diameter += 1;
-                RangeInteger::Random(SeedableRng::from_seed(&seed[..]), diameter, a)
-            }
-        }
-    }
-
-    pub fn exhaustive_generate_from_vector<T>(&self, xs: Vec<T>) -> ExhaustiveFromVector<T> {
-        ExhaustiveFromVector::new(xs)
-    }
-
-    pub fn generate_from_vector<T>(&self, xs: Vec<T>) -> FromVector<T> {
-        if xs.is_empty() {
-            if let IteratorProvider::Random(_, _) = *self {
-                panic!("Cannot randomly generate values from an empty Vec.");
-            }
-        }
-        match self {
-            &IteratorProvider::Exhaustive => FromVector::exhaustive(xs),
-            &IteratorProvider::Random(_, seed) => FromVector::random(xs, &seed[..]),
+            &IteratorProvider::Exhaustive => RangeInteger::exhaustive(a, b),
+            &IteratorProvider::Random(_, seed) => RangeInteger::random(a, b, &seed[..]),
         }
     }
 
