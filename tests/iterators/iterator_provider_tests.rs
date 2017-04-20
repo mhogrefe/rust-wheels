@@ -461,6 +461,40 @@ fn test_x_decreasing() {
     x_decreasing_helper::<i64>(&eo, &p);
 }
 
+fn positive_u_helper<T: PrimUnsignedInt>(eo: &TestOutput,
+                                         ep: &IteratorProvider,
+                                         rp: &IteratorProvider) {
+    eo.match_vec(&format!("exhaustive_positive_{}s", T::name()),
+                 &mut ep.positive_u::<T>());
+    eo.match_vec_f(&format!("random_positive_{}s", T::name()),
+                   &mut rp.positive_u::<T>());
+}
+
+#[test]
+fn test_positive_u() {
+    let (eo, ep, rp) = prepare_test();
+    positive_u_helper::<u8>(&eo, &ep, &rp);
+    positive_u_helper::<u16>(&eo, &ep, &rp);
+    positive_u_helper::<u32>(&eo, &ep, &rp);
+    positive_u_helper::<u64>(&eo, &ep, &rp);
+}
+
+fn all_u_helper<T: PrimUnsignedInt>(eo: &TestOutput,
+                                    ep: &IteratorProvider,
+                                    rp: &IteratorProvider) {
+    eo.match_vec(&format!("exhaustive_{}s", T::name()), &mut ep.all_u::<T>());
+    eo.match_vec_f(&format!("random_{}s", T::name()), &mut rp.all_u::<T>());
+}
+
+#[test]
+fn test_all_u() {
+    let (eo, ep, rp) = prepare_test();
+    all_u_helper::<u8>(&eo, &ep, &rp);
+    all_u_helper::<u16>(&eo, &ep, &rp);
+    all_u_helper::<u32>(&eo, &ep, &rp);
+    all_u_helper::<u64>(&eo, &ep, &rp);
+}
+
 fn range_up_u_helper<T: PrimUnsignedInt>(eo: &TestOutput,
                                          ep: &IteratorProvider,
                                          rp: &IteratorProvider) {
@@ -662,56 +696,6 @@ fn test_range_i() {
     range_i_helper::<i32>(&eo, &ep, &rp);
     range_i_helper::<i64>(&eo, &ep, &rp);
 }
-
-macro_rules! test_integer_range_u {
-    (
-        $t: ty,
-        $ts: expr,
-        $pos_t: ident,
-        $all_t: ident,
-        $r_f_1: ident,
-        $r_f_2: ident
-    ) => {
-        #[test]
-        fn $pos_t() {
-            let (eo, ep, rp) = prepare_test();
-            eo.match_vec(&format!("exhaustive_positive_{}s", $ts), &mut ep.positive_u::<$t>());
-            eo.match_vec_f(&format!("random_positive_{}s", $ts), &mut rp.positive_u::<$t>());
-        }
-
-        #[test]
-        fn $all_t() {
-            let (eo, ep, rp) = prepare_test();
-            eo.match_vec(&format!("exhaustive_{}s", $ts), &mut ep.all_u::<$t>());
-            eo.match_vec_f(&format!("random_{}s", $ts), &mut rp.all_u::<$t>());
-        }
-    }
-}
-
-test_integer_range_u!(u8,
-                      "u8",
-                      test_positive_u8s,
-                      test_u8s,
-                      range_u8_fail_1,
-                      range_u8_fail_2);
-test_integer_range_u!(u16,
-                      "u16",
-                      test_positive_u16s,
-                      test_u16s,
-                      range_u16_fail_1,
-                      range_u16_fail_2);
-test_integer_range_u!(u32,
-                      "u32",
-                      test_positive_u32s,
-                      test_u32s,
-                      range_u32_fail_1,
-                      range_u32_fail_2);
-test_integer_range_u!(u64,
-                      "u64",
-                      test_positive_u64s,
-                      test_u64s,
-                      range_u64_fail_1,
-                      range_u64_fail_2);
 
 macro_rules! test_integer_range_i {
     (
