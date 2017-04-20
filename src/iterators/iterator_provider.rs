@@ -1051,48 +1051,6 @@ impl IteratorProvider {
         }
     }
 
-    pub fn all_u<T: PrimUnsignedInt>(&self) -> AllU<T> {
-        match self {
-            &IteratorProvider::Exhaustive => AllU::exhaustive(),
-            &IteratorProvider::Random(_, seed) => AllU::random(&seed[..]),
-        }
-    }
-
-    pub fn range_up_u<T: PrimUnsignedInt>(&self, a: T) -> RangeU<T> {
-        self.range_u(a, T::max_value())
-    }
-
-    pub fn range_down_u<T: PrimUnsignedInt>(&self, a: T) -> RangeU<T> {
-        self.range_u(T::from_u8(0), a)
-    }
-
-    pub fn range_u<T: PrimUnsignedInt>(&self, a: T, b: T) -> RangeU<T> {
-        if a > b {
-            panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
-        }
-        match self {
-            &IteratorProvider::Exhaustive => RangeU::exhaustive(a, b),
-            &IteratorProvider::Random(_, seed) => RangeU::random(a, b, &seed[..]),
-        }
-    }
-
-
-    pub fn exhaustive_generate_from_vector<T>(&self, xs: Vec<T>) -> ExhaustiveFromVector<T> {
-        ExhaustiveFromVector::new(xs)
-    }
-
-    pub fn generate_from_vector<T>(&self, xs: Vec<T>) -> FromVector<T> {
-        if xs.is_empty() {
-            if let IteratorProvider::Random(_, _) = *self {
-                panic!("Cannot randomly generate values from an empty Vec.");
-            }
-        }
-        match self {
-            &IteratorProvider::Exhaustive => FromVector::exhaustive(xs),
-            &IteratorProvider::Random(_, seed) => FromVector::random(xs, &seed[..]),
-        }
-    }
-
     pub fn positive_i<T: PrimSignedInt>(&self) -> PositiveI<T> {
         match self {
             &IteratorProvider::Exhaustive => PositiveI::exhaustive(),
@@ -1121,6 +1079,13 @@ impl IteratorProvider {
         }
     }
 
+    pub fn all_u<T: PrimUnsignedInt>(&self) -> AllU<T> {
+        match self {
+            &IteratorProvider::Exhaustive => AllU::exhaustive(),
+            &IteratorProvider::Random(_, seed) => AllU::random(&seed[..]),
+        }
+    }
+
     pub fn all_i<T: PrimSignedInt>(&self) -> AllI<T> {
         match self {
             &IteratorProvider::Exhaustive => AllI::exhaustive(),
@@ -1128,12 +1093,30 @@ impl IteratorProvider {
         }
     }
 
+    pub fn range_up_u<T: PrimUnsignedInt>(&self, a: T) -> RangeU<T> {
+        self.range_u(a, T::max_value())
+    }
+
     pub fn range_up_i<T: PrimSignedInt>(&self, a: T) -> RangeI<T> {
         self.range_i(a, T::max_value())
     }
 
+    pub fn range_down_u<T: PrimUnsignedInt>(&self, a: T) -> RangeU<T> {
+        self.range_u(T::from_u8(0), a)
+    }
+
     pub fn range_down_i<T: PrimSignedInt>(&self, a: T) -> RangeI<T> {
         self.range_i(T::min_value(), a)
+    }
+
+    pub fn range_u<T: PrimUnsignedInt>(&self, a: T, b: T) -> RangeU<T> {
+        if a > b {
+            panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
+        }
+        match self {
+            &IteratorProvider::Exhaustive => RangeU::exhaustive(a, b),
+            &IteratorProvider::Random(_, seed) => RangeU::random(a, b, &seed[..]),
+        }
     }
 
     pub fn range_i<T: PrimSignedInt>(&self, a: T, b: T) -> RangeI<T> {
@@ -1143,6 +1126,22 @@ impl IteratorProvider {
         match self {
             &IteratorProvider::Exhaustive => RangeI::exhaustive(a, b),
             &IteratorProvider::Random(_, seed) => RangeI::random(a, b, &seed[..]),
+        }
+    }
+
+    pub fn exhaustive_generate_from_vector<T>(&self, xs: Vec<T>) -> ExhaustiveFromVector<T> {
+        ExhaustiveFromVector::new(xs)
+    }
+
+    pub fn generate_from_vector<T>(&self, xs: Vec<T>) -> FromVector<T> {
+        if xs.is_empty() {
+            if let IteratorProvider::Random(_, _) = *self {
+                panic!("Cannot randomly generate values from an empty Vec.");
+            }
+        }
+        match self {
+            &IteratorProvider::Exhaustive => FromVector::exhaustive(xs),
+            &IteratorProvider::Random(_, seed) => FromVector::random(xs, &seed[..]),
         }
     }
 

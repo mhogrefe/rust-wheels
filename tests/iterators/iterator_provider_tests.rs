@@ -479,6 +479,78 @@ fn test_positive_u() {
     positive_u_helper::<u64>(&eo, &ep, &rp);
 }
 
+fn positive_i_helper<T: PrimSignedInt>(eo: &TestOutput,
+                                       ep: &IteratorProvider,
+                                       rp: &IteratorProvider) {
+    eo.match_vec(&format!("exhaustive_positive_{}s", T::name()),
+                 &mut ep.positive_i::<T>());
+    eo.match_vec_f(&format!("random_positive_{}s", T::name()),
+                   &mut rp.positive_i::<T>());
+}
+
+#[test]
+fn test_positive_i() {
+    let (eo, ep, rp) = prepare_test();
+    positive_i_helper::<i8>(&eo, &ep, &rp);
+    positive_i_helper::<i16>(&eo, &ep, &rp);
+    positive_i_helper::<i32>(&eo, &ep, &rp);
+    positive_i_helper::<i64>(&eo, &ep, &rp);
+}
+
+fn negative_i_helper<T: PrimSignedInt>(eo: &TestOutput,
+                                       ep: &IteratorProvider,
+                                       rp: &IteratorProvider) {
+    eo.match_vec(&format!("exhaustive_negative_{}s", T::name()),
+                 &mut ep.negative_i::<T>());
+    eo.match_vec_f(&format!("random_negative_{}s", T::name()),
+                   &mut rp.negative_i::<T>());
+}
+
+#[test]
+fn test_negative_i() {
+    let (eo, ep, rp) = prepare_test();
+    negative_i_helper::<i8>(&eo, &ep, &rp);
+    negative_i_helper::<i16>(&eo, &ep, &rp);
+    negative_i_helper::<i32>(&eo, &ep, &rp);
+    negative_i_helper::<i64>(&eo, &ep, &rp);
+}
+
+fn natural_i_helper<T: PrimSignedInt>(eo: &TestOutput,
+                                      ep: &IteratorProvider,
+                                      rp: &IteratorProvider) {
+    eo.match_vec(&format!("exhaustive_natural_{}s", T::name()),
+                 &mut ep.natural_i::<T>());
+    eo.match_vec_f(&format!("random_natural_{}s", T::name()),
+                   &mut rp.natural_i::<T>());
+}
+
+#[test]
+fn test_natural_i() {
+    let (eo, ep, rp) = prepare_test();
+    natural_i_helper::<i8>(&eo, &ep, &rp);
+    natural_i_helper::<i16>(&eo, &ep, &rp);
+    natural_i_helper::<i32>(&eo, &ep, &rp);
+    natural_i_helper::<i64>(&eo, &ep, &rp);
+}
+
+fn nonzero_i_helper<T: PrimSignedInt>(eo: &TestOutput,
+                                      ep: &IteratorProvider,
+                                      rp: &IteratorProvider) {
+    eo.match_vec(&format!("exhaustive_nonzero_{}s", T::name()),
+                 &mut ep.nonzero_i::<T>());
+    eo.match_vec_f(&format!("random_nonzero_{}s", T::name()),
+                   &mut rp.nonzero_i::<T>());
+}
+
+#[test]
+fn test_nonzero_i() {
+    let (eo, ep, rp) = prepare_test();
+    nonzero_i_helper::<i8>(&eo, &ep, &rp);
+    nonzero_i_helper::<i16>(&eo, &ep, &rp);
+    nonzero_i_helper::<i32>(&eo, &ep, &rp);
+    nonzero_i_helper::<i64>(&eo, &ep, &rp);
+}
+
 fn all_u_helper<T: PrimUnsignedInt>(eo: &TestOutput,
                                     ep: &IteratorProvider,
                                     rp: &IteratorProvider) {
@@ -493,6 +565,20 @@ fn test_all_u() {
     all_u_helper::<u16>(&eo, &ep, &rp);
     all_u_helper::<u32>(&eo, &ep, &rp);
     all_u_helper::<u64>(&eo, &ep, &rp);
+}
+
+fn all_i_helper<T: PrimSignedInt>(eo: &TestOutput, ep: &IteratorProvider, rp: &IteratorProvider) {
+    eo.match_vec(&format!("exhaustive_{}s", T::name()), &mut ep.all_i::<T>());
+    eo.match_vec_f(&format!("random_{}s", T::name()), &mut rp.all_i::<T>());
+}
+
+#[test]
+fn test_all_i() {
+    let (eo, ep, rp) = prepare_test();
+    all_i_helper::<i8>(&eo, &ep, &rp);
+    all_i_helper::<i16>(&eo, &ep, &rp);
+    all_i_helper::<i32>(&eo, &ep, &rp);
+    all_i_helper::<i64>(&eo, &ep, &rp);
 }
 
 fn range_up_u_helper<T: PrimUnsignedInt>(eo: &TestOutput,
@@ -696,282 +782,6 @@ fn test_range_i() {
     range_i_helper::<i32>(&eo, &ep, &rp);
     range_i_helper::<i64>(&eo, &ep, &rp);
 }
-
-macro_rules! test_integer_range_i {
-    (
-        $t: ty,
-        $ts: expr,
-        $rui: ident,
-        $rud: ident,
-        $rdi: ident,
-        $rdd: ident,
-        $pos: ident,
-        $all: ident,
-        $neg: ident,
-        $nat: ident,
-        $nz: ident,
-        $rup: ident,
-        $rdn: ident,
-        $r: ident,
-        $rui_th: ident,
-        $rud_th: ident,
-        $rdi_th: ident,
-        $rdd_th: ident,
-        $ri_th: ident,
-        $rd_th: ident,
-        $rup_eth: ident,
-        $rup_rth: ident,
-        $rdn_eth: ident,
-        $rdn_rth: ident,
-        $r_eth: ident,
-        $r_rth: ident,
-        $rui_t: ident,
-        $rud_t: ident,
-        $rdi_t: ident,
-        $rdd_t: ident,
-        $ri_t: ident,
-        $rd_t: ident,
-        $pos_t: ident,
-        $all_t: ident,
-        $neg_t: ident,
-        $nat_t: ident,
-        $nz_t: ident,
-        $rup_t: ident,
-        $rdn_t: ident,
-        $r_t: ident,
-        $ri_f: ident,
-        $rd_f: ident,
-        $r_f: ident,
-        $min: expr,
-        $max: expr,
-        $r_f_1: ident,
-        $r_f_2: ident
-    ) => {
-        #[test]
-        fn $pos_t() {
-            let (eo, ep, rp) = prepare_test();
-            eo.match_vec(&format!("exhaustive_positive_{}s", $ts), &mut ep.positive_i::<$t>());
-            eo.match_vec_f(&format!("random_positive_{}s", $ts), &mut rp.positive_i::<$t>());
-        }
-
-        #[test]
-        fn $all_t() {
-            let (eo, ep, rp) = prepare_test();
-            eo.match_vec(&format!("exhaustive_{}s", $ts), &mut ep.all_i::<$t>());
-            eo.match_vec_f(&format!("random_{}s", $ts), &mut rp.all_i::<$t>());
-        }
-
-        #[test]
-        fn $neg_t() {
-            let (eo, ep, rp) = prepare_test();
-            eo.match_vec(&format!("exhaustive_negative_{}s", $ts), &mut ep.negative_i::<$t>());
-            eo.match_vec_f(&format!("random_negative_{}s", $ts), &mut rp.negative_i::<$t>());
-        }
-
-        #[test]
-        fn $nat_t() {
-            let (eo, ep, rp) = prepare_test();
-            eo.match_vec(&format!("exhaustive_natural_{}s", $ts), &mut ep.natural_i::<$t>());
-            eo.match_vec_f(&format!("random_natural_{}s", $ts), &mut rp.natural_i::<$t>());
-        }
-
-        #[test]
-        fn $nz_t() {
-            let (eo, ep, rp) = prepare_test();
-            eo.match_vec(&format!("exhaustive_nonzero_{}s", $ts), &mut ep.nonzero_i::<$t>());
-            eo.match_vec_f(&format!("random_nonzero_{}s", $ts), &mut rp.nonzero_i::<$t>());
-        }
-    }
-}
-
-test_integer_range_i!(i8,
-                      "i8",
-                      range_up_increasing_i8,
-                      range_up_decreasing_i8,
-                      range_down_increasing_i8,
-                      range_down_decreasing_i8,
-                      positive_i8s,
-                      i8s,
-                      negative_i8s,
-                      natural_i8s,
-                      nonzero_i8s,
-                      range_up_i8,
-                      range_down_i8,
-                      range_i8,
-                      range_up_increasing_i8_helper,
-                      range_up_decreasing_i8_helper,
-                      range_down_increasing_i8_helper,
-                      range_down_decreasing_i8_helper,
-                      range_increasing_i8_helper,
-                      range_decreasing_i8_helper,
-                      range_up_exhaustive_i8_helper,
-                      range_up_random_i8_helper,
-                      range_down_exhaustive_i8_helper,
-                      range_down_random_i8_helper,
-                      range_exhaustive_i8_helper,
-                      range_random_i8_helper,
-                      test_range_up_increasing_i8_i,
-                      test_range_up_decreasing_i8_i,
-                      test_range_down_increasing_i8_i,
-                      test_range_down_decreasing_i8_i,
-                      test_range_increasing_i8_i,
-                      test_range_decreasing_i8_i,
-                      test_positive_i8s,
-                      test_i8s,
-                      test_negative_i8s,
-                      test_natural_i8s,
-                      test_nonzero_i8s,
-                      test_range_up_i8_i,
-                      test_range_down_i8_i,
-                      test_range_i8_i,
-                      range_increasing_i8_fail_i,
-                      range_decreasing_i8_fail_i,
-                      range_i8_fail_i,
-                      i8::min_value(),
-                      i8::max_value(),
-                      range_i8_fail_1,
-                      range_i8_fail_2);
-test_integer_range_i!(i16,
-                      "i16",
-                      range_up_increasing_i16,
-                      range_up_decreasing_i16,
-                      range_down_increasing_i16,
-                      range_down_decreasing_i16,
-                      positive_i16s,
-                      i16s,
-                      negative_i16s,
-                      natural_i16s,
-                      nonzero_i16s,
-                      range_up_i16,
-                      range_down_i16,
-                      range_i16,
-                      range_up_increasing_i16_helper,
-                      range_up_decreasing_i16_helper,
-                      range_down_increasing_i16_helper,
-                      range_down_decreasing_i16_helper,
-                      range_increasing_i16_helper,
-                      range_decreasing_i16_helper,
-                      range_up_exhaustive_i16_helper,
-                      range_up_random_i16_helper,
-                      range_down_exhaustive_i16_helper,
-                      range_down_random_i16_helper,
-                      range_exhaustive_i16_helper,
-                      range_random_i16_helper,
-                      test_range_up_increasing_i16_i,
-                      test_range_up_decreasing_i16_i,
-                      test_range_down_increasing_i16_i,
-                      test_range_down_decreasing_i16_i,
-                      test_range_increasing_i16_i,
-                      test_range_decreasing_i16_i,
-                      test_positive_i16s,
-                      test_i16s,
-                      test_negative_i16s,
-                      test_natural_i16s,
-                      test_nonzero_i16s,
-                      test_range_up_i16_i,
-                      test_range_down_i16_i,
-                      test_range_i16_i,
-                      range_increasing_i16_fail_i,
-                      range_decreasing_i16_fail_i,
-                      range_i16_fail_i,
-                      i16::min_value(),
-                      i16::max_value(),
-                      range_i16_fail_1,
-                      range_i16_fail_2);
-test_integer_range_i!(i32,
-                      "i32",
-                      range_up_increasing_i32,
-                      range_up_decreasing_i32,
-                      range_down_increasing_i32,
-                      range_down_decreasing_i32,
-                      positive_i32s,
-                      i32s,
-                      negative_i32s,
-                      natural_i32s,
-                      nonzero_i32s,
-                      range_up_i32,
-                      range_down_i32,
-                      range_i32,
-                      range_up_increasing_i32_helper,
-                      range_up_decreasing_i32_helper,
-                      range_down_increasing_i32_helper,
-                      range_down_decreasing_i32_helper,
-                      range_increasing_i32_helper,
-                      range_decreasing_i32_helper,
-                      range_up_exhaustive_i32_helper,
-                      range_up_random_i32_helper,
-                      range_down_exhaustive_i32_helper,
-                      range_down_random_i32_helper,
-                      range_exhaustive_i32_helper,
-                      range_random_i32_helper,
-                      test_range_up_increasing_i32_i,
-                      test_range_up_decreasing_i32_i,
-                      test_range_down_increasing_i32_i,
-                      test_range_down_decreasing_i32_i,
-                      test_range_increasing_i32_i,
-                      test_range_decreasing_i32_i,
-                      test_positive_i32s,
-                      test_i32s,
-                      test_negative_i32s,
-                      test_natural_i32s,
-                      test_nonzero_i32s,
-                      test_range_up_i32_i,
-                      test_range_down_i32_i,
-                      test_range_i32_i,
-                      range_increasing_i32_fail_i,
-                      range_decreasing_i32_fail_i,
-                      range_i32_fail_i,
-                      i32::min_value(),
-                      i32::max_value(),
-                      range_i32_fail_1,
-                      range_i32_fail_2);
-test_integer_range_i!(i64,
-                      "i64",
-                      range_up_increasing_i64,
-                      range_up_decreasing_i64,
-                      range_down_increasing_i64,
-                      range_down_decreasing_i64,
-                      positive_i64s,
-                      i64s,
-                      negative_i64s,
-                      natural_i64s,
-                      nonzero_i64s,
-                      range_up_i64,
-                      range_down_i64,
-                      range_i64,
-                      range_up_increasing_i64_helper,
-                      range_up_decreasing_i64_helper,
-                      range_down_increasing_i64_helper,
-                      range_down_decreasing_i64_helper,
-                      range_increasing_i64_helper,
-                      range_decreasing_i64_helper,
-                      range_up_exhaustive_i64_helper,
-                      range_up_random_i64_helper,
-                      range_down_exhaustive_i64_helper,
-                      range_down_random_i64_helper,
-                      range_exhaustive_i64_helper,
-                      range_random_i64_helper,
-                      test_range_up_increasing_i64_i,
-                      test_range_up_decreasing_i64_i,
-                      test_range_down_increasing_i64_i,
-                      test_range_down_decreasing_i64_i,
-                      test_range_increasing_i64_i,
-                      test_range_decreasing_i64_i,
-                      test_positive_i64s,
-                      test_i64s,
-                      test_negative_i64s,
-                      test_natural_i64s,
-                      test_nonzero_i64s,
-                      test_range_up_i64_i,
-                      test_range_down_i64_i,
-                      test_range_i64_i,
-                      range_increasing_i64_fail_i,
-                      range_decreasing_i64_fail_i,
-                      range_i64_fail_i,
-                      i64::min_value(),
-                      i64::max_value(),
-                      range_i64_fail_1,
-                      range_i64_fail_2);
 
 #[test]
 fn test_chars_increasing() {
