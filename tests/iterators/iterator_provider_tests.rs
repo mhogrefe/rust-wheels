@@ -50,8 +50,38 @@ prim_fail!(isize,
            range_increasing_isize_fail_1,
            range_decreasing_isize_fail_1);
 
+macro_rules! prim_fail_u {
+    ($t: ty, $range_fail_1: ident, $range_fail_2: ident) => {
+        #[test]
+        #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
+        fn $range_fail_1() {
+            IteratorProvider::Exhaustive.range_u::<$t>(10, 9);
+        }
+
+        #[test]
+        #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
+        fn $range_fail_2() {
+            IteratorProvider::example_random().range_u::<$t>(10, 9);
+        }
+    }
+}
+
+prim_fail_u!(u8, range_fail_u8_1, range_fail_u8_2);
+prim_fail_u!(u16, range_fail_u16_1, range_fail_u16_2);
+prim_fail_u!(u32, range_fail_u32_1, range_fail_u32_2);
+prim_fail_u!(u64, range_fail_u64_1, range_fail_u64_2);
+prim_fail_u!(usize, range_fail_usize_1, range_fail_usize_2);
+
 macro_rules! prim_fail_i {
-    ($t: ty, $range_increasing_fail: ident, $range_decreasing_fail: ident) => {
+    (
+        $t: ty,
+        $range_increasing_fail: ident,
+        $range_decreasing_fail: ident,
+        $range_fail_1: ident,
+        $range_fail_2: ident,
+        $range_fail_3: ident,
+        $range_fail_4: ident
+    ) => {
         #[test]
         #[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
         fn $range_increasing_fail() {
@@ -63,22 +93,68 @@ macro_rules! prim_fail_i {
         fn $range_decreasing_fail() {
             IteratorProvider::Exhaustive.range_decreasing_x::<i8>(-9, -10);
         }
+
+        #[test]
+        #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
+        fn $range_fail_1() {
+            IteratorProvider::Exhaustive.range_i::<$t>(10, 9);
+        }
+
+        #[test]
+        #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
+        fn $range_fail_2() {
+            IteratorProvider::example_random().range_i::<$t>(10, 9);
+        }
+
+        #[test]
+        #[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
+        fn $range_fail_3() {
+            IteratorProvider::Exhaustive.range_i::<$t>(-9, -10);
+        }
+
+        #[test]
+        #[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
+        fn $range_fail_4() {
+            IteratorProvider::example_random().range_i::<$t>(-9, -10);
+        }
     }
 }
 
-prim_fail_i!(i8, range_increasing_i8_fail_2, range_decreasing_i8_fail_2);
+prim_fail_i!(i8,
+             range_increasing_i8_fail_2,
+             range_decreasing_i8_fail_2,
+             range_fail_i8_1,
+             range_fail_i8_2,
+             range_fail_i8_3,
+             range_fail_i8_4);
 prim_fail_i!(i16,
              range_increasing_i16_fail_2,
-             range_decreasing_i16_fail_2);
+             range_decreasing_i16_fail_2,
+             range_fail_i16_1,
+             range_fail_i16_2,
+             range_fail_i16_3,
+             range_fail_i16_4);
 prim_fail_i!(i32,
              range_increasing_i32_fail_2,
-             range_decreasing_i32_fail_2);
+             range_decreasing_i32_fail_2,
+             range_fail_i32_1,
+             range_fail_i32_2,
+             range_fail_i32_3,
+             range_fail_i32_4);
 prim_fail_i!(i64,
              range_increasing_i64_fail_2,
-             range_decreasing_i64_fail_2);
+             range_decreasing_i64_fail_2,
+             range_fail_i64_1,
+             range_fail_i64_2,
+             range_fail_i64_3,
+             range_fail_i64_4);
 prim_fail_i!(isize,
              range_increasing_isize_fail_2,
-             range_decreasing_isize_fail_2);
+             range_decreasing_isize_fail_2,
+             range_fail_isize_1,
+             range_fail_isize_2,
+             range_fail_isize_3,
+             range_fail_isize_4);
 
 #[test]
 fn test_bools() {
@@ -505,335 +581,87 @@ fn test_range_down_i() {
     range_down_i_helper::<i64>(&eo, &ep, &rp);
 }
 
-macro_rules! test_integer_range {
-    (
-        $t: ty,
-        $ts: expr,
-        $rup: ident,
-        $rdn: ident,
-        $r: ident,
-        $rui_th: ident,
-        $rud_th: ident,
-        $rdi_th: ident,
-        $rdd_th: ident,
-        $ri_th: ident,
-        $rd_th: ident,
-        $rup_eth: ident,
-        $rup_rth: ident,
-        $rdn_eth: ident,
-        $rdn_rth: ident,
-        $r_eth: ident,
-        $r_rth: ident,
-        $rui_t: ident,
-        $rud_t: ident,
-        $rdi_t: ident,
-        $rdd_t: ident,
-        $ri_t: ident,
-        $rd_t: ident,
-        $i_t: ident,
-        $d_t: ident,
-        $pos_t: ident,
-        $all_t: ident,
-        $rup_t: ident,
-        $rdn_t: ident,
-        $r_t: ident,
-        $ri_f: ident,
-        $rd_f: ident,
-        $max: expr
-    ) => {
-        fn $r_eth(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t, b: $t) {
-            eo.match_vec(key, &mut p.$r(a, b));
-        }
-
-        fn $r_rth(eo: &TestOutput, p: &IteratorProvider, key: &str, a: $t, b: $t) {
-            eo.match_vec_f(key, &mut p.$r(a, b));
-        }
-
-        #[test]
-        fn $r_t() {
-            let (eo, ep, rp) = prepare_test();
-            let es = "exhaustive_range";
-            $r_eth(&eo, &ep, &format!("{}_{}_i", es, $ts), 0, 0);
-            $r_eth(&eo, &ep, &format!("{}_{}_ii", es, $ts), 0, 10);
-            $r_eth(&eo, &ep, &format!("{}_{}_iii", es, $ts), 10, 20);
-            $r_eth(&eo, &ep, &format!("{}_{}_iv", es, $ts), 10, 10);
-            $r_eth(&eo, &ep, &format!("{}_{}_v", es, $ts), 0, $max);
-            $r_eth(&eo, &ep, &format!("{}_{}_vi", es, $ts), 0, $max - 1);
-            let rs = "random_range";
-            $r_rth(&eo, &rp, &format!("{}_{}_i", rs, $ts), 0, 0);
-            $r_rth(&eo, &rp, &format!("{}_{}_ii", rs, $ts), 0, 10);
-            $r_rth(&eo, &rp, &format!("{}_{}_iii", rs, $ts), 10, 20);
-            $r_rth(&eo, &rp, &format!("{}_{}_iv", rs, $ts), 10, 10);
-            $r_rth(&eo, &rp, &format!("{}_{}_v", rs, $ts), 0, $max);
-            $r_rth(&eo, &rp, &format!("{}_{}_vi", rs, $ts), 0, $max - 1);
-        }
-    }
+fn range_u_helper<T: PrimUnsignedInt>(eo: &TestOutput,
+                                      ep: &IteratorProvider,
+                                      rp: &IteratorProvider) {
+    let e_test = |number, a, b| {
+        eo.match_vec(&format!("exhaustive_range_{}_{}", T::name(), number),
+                     &mut ep.range_u::<T>(a, b))
+    };
+    e_test("i", T::from_u8(0), T::from_u8(0));
+    e_test("ii", T::from_u8(0), T::from_u8(10));
+    e_test("iii", T::from_u8(10), T::from_u8(20));
+    e_test("iv", T::from_u8(10), T::from_u8(10));
+    e_test("v", T::from_u8(0), T::max_value());
+    e_test("vi", T::from_u8(0), T::max_value() - T::from_u8(1));
+    let r_test = |number, a, b| {
+        eo.match_vec_f(&format!("random_range_{}_{}", T::name(), number),
+                       &mut rp.range_u::<T>(a, b))
+    };
+    r_test("i", T::from_u8(0), T::from_u8(0));
+    r_test("ii", T::from_u8(0), T::from_u8(10));
+    r_test("iii", T::from_u8(10), T::from_u8(20));
+    r_test("iv", T::from_u8(10), T::from_u8(10));
+    r_test("v", T::from_u8(0), T::max_value());
+    r_test("vi", T::from_u8(0), T::max_value() - T::from_u8(1));
 }
 
-test_integer_range!(u8,
-                    "u8",
-                    range_up_u,
-                    range_down_u,
-                    range_u,
-                    range_up_increasing_u8_helper,
-                    range_up_decreasing_u8_helper,
-                    range_down_increasing_u8_helper,
-                    range_down_decreasing_u8_helper,
-                    range_increasing_u8_helper,
-                    range_decreasing_u8_helper,
-                    range_up_exhaustive_u8_helper,
-                    range_up_random_u8_helper,
-                    range_down_exhaustive_u8_helper,
-                    range_down_random_u8_helper,
-                    range_exhaustive_u8_helper,
-                    range_random_u8_helper,
-                    test_range_up_increasing_u8,
-                    test_range_up_decreasing_u8,
-                    test_range_down_increasing_u8,
-                    test_range_down_decreasing_u8,
-                    test_range_increasing_u8,
-                    test_range_decreasing_u8,
-                    test_u8s_increasing,
-                    test_u8s_decreasing,
-                    test_positive_u8s,
-                    test_u8s,
-                    test_range_up_u8,
-                    test_range_down_u8,
-                    test_range_u8,
-                    range_increasing_u8_fail,
-                    range_decreasing_u8_fail,
-                    u8::max_value());
-test_integer_range!(u16,
-                    "u16",
-                    range_up_u,
-                    range_down_u,
-                    range_u,
-                    range_up_increasing_u16_helper,
-                    range_up_decreasing_u16_helper,
-                    range_down_increasing_u16_helper,
-                    range_down_decreasing_u16_helper,
-                    range_increasing_u16_helper,
-                    range_decreasing_u16_helper,
-                    range_up_exhaustive_u16_helper,
-                    range_up_random_u16_helper,
-                    range_down_exhaustive_u16_helper,
-                    range_down_random_u16_helper,
-                    range_exhaustive_u16_helper,
-                    range_random_u16_helper,
-                    test_range_up_increasing_u16,
-                    test_range_up_decreasing_u16,
-                    test_range_down_increasing_u16,
-                    test_range_down_decreasing_u16,
-                    test_range_increasing_u16,
-                    test_range_decreasing_u16,
-                    test_u16s_increasing,
-                    test_u16s_decreasing,
-                    test_positive_u16s,
-                    test_u16s,
-                    test_range_up_u16,
-                    test_range_down_u16,
-                    test_range_u16,
-                    range_increasing_u16_fail,
-                    range_decreasing_u16_fail,
-                    u16::max_value());
-test_integer_range!(u32,
-                    "u32",
-                    range_up_u,
-                    range_down_u,
-                    range_u,
-                    range_up_increasing_u32_helper,
-                    range_up_decreasing_u32_helper,
-                    range_down_increasing_u32_helper,
-                    range_down_decreasing_u32_helper,
-                    range_increasing_u32_helper,
-                    range_decreasing_u32_helper,
-                    range_up_exhaustive_u32_helper,
-                    range_up_random_u32_helper,
-                    range_down_exhaustive_u32_helper,
-                    range_down_random_u32_helper,
-                    range_exhaustive_u32_helper,
-                    range_random_u32_helper,
-                    test_range_up_increasing_u32,
-                    test_range_up_decreasing_u32,
-                    test_range_down_increasing_u32,
-                    test_range_down_decreasing_u32,
-                    test_range_increasing_u32,
-                    test_range_decreasing_u32,
-                    test_u32s_increasing,
-                    test_u32s_decreasing,
-                    test_positive_u32s,
-                    test_u32s,
-                    test_range_up_u32,
-                    test_range_down_u32,
-                    test_range_u32,
-                    range_increasing_u32_fail,
-                    range_decreasing_u32_fail,
-                    u32::max_value());
-test_integer_range!(u64,
-                    "u64",
-                    range_up_u,
-                    range_down_u,
-                    range_u,
-                    range_up_increasing_u64_helper,
-                    range_up_decreasing_u64_helper,
-                    range_down_increasing_u64_helper,
-                    range_down_decreasing_u64_helper,
-                    range_increasing_u64_helper,
-                    range_decreasing_u64_helper,
-                    range_up_exhaustive_u64_helper,
-                    range_up_random_u64_helper,
-                    range_down_exhaustive_u64_helper,
-                    range_down_random_u64_helper,
-                    range_exhaustive_u64_helper,
-                    range_random_u64_helper,
-                    test_range_up_increasing_u64,
-                    test_range_up_decreasing_u64,
-                    test_range_down_increasing_u64,
-                    test_range_down_decreasing_u64,
-                    test_range_increasing_u64,
-                    test_range_decreasing_u64,
-                    test_u64s_increasing,
-                    test_u64s_decreasing,
-                    test_positive_u64s,
-                    test_u64s,
-                    test_range_up_u64,
-                    test_range_down_u64,
-                    test_range_u64,
-                    range_increasing_u64_fail,
-                    range_decreasing_u64_fail,
-                    u64::max_value());
-test_integer_range!(i8,
-                    "i8",
-                    range_up_i,
-                    range_down_i,
-                    range_i,
-                    range_up_increasing_i8_helper,
-                    range_up_decreasing_i8_helper,
-                    range_down_increasing_i8_helper,
-                    range_down_decreasing_i8_helper,
-                    range_increasing_i8_helper,
-                    range_decreasing_i8_helper,
-                    range_up_exhaustive_i8_helper,
-                    range_up_random_i8_helper,
-                    range_down_exhaustive_i8_helper,
-                    range_down_random_i8_helper,
-                    range_exhaustive_i8_helper,
-                    range_random_i8_helper,
-                    test_range_up_increasing_i8,
-                    test_range_up_decreasing_i8,
-                    test_range_down_increasing_i8,
-                    test_range_down_decreasing_i8,
-                    test_range_increasing_i8,
-                    test_range_decreasing_i8,
-                    test_i8s_increasing,
-                    test_i8s_decreasing,
-                    test_positive_i8s,
-                    test_i8s,
-                    test_range_up_i8,
-                    test_range_down_i8,
-                    test_range_i8,
-                    range_increasing_i8_fail,
-                    range_decreasing_i8_fail,
-                    i8::max_value());
-test_integer_range!(i16,
-                    "i16",
-                    range_up_i,
-                    range_down_i,
-                    range_i,
-                    range_up_increasing_i16_helper,
-                    range_up_decreasing_i16_helper,
-                    range_down_increasing_i16_helper,
-                    range_down_decreasing_i16_helper,
-                    range_increasing_i16_helper,
-                    range_decreasing_i16_helper,
-                    range_up_exhaustive_i16_helper,
-                    range_up_random_i16_helper,
-                    range_down_exhaustive_i16_helper,
-                    range_down_random_i16_helper,
-                    range_exhaustive_i16_helper,
-                    range_random_i16_helper,
-                    test_range_up_increasing_i16,
-                    test_range_up_decreasing_i16,
-                    test_range_down_increasing_i16,
-                    test_range_down_decreasing_i16,
-                    test_range_increasing_i16,
-                    test_range_decreasing_i16,
-                    test_i16s_increasing,
-                    test_i16s_decreasing,
-                    test_positive_i16s,
-                    test_i16s,
-                    test_range_up_i16,
-                    test_range_down_i16,
-                    test_range_i16,
-                    range_increasing_i16_fail,
-                    range_decreasing_i16_fail,
-                    i16::max_value());
-test_integer_range!(i32,
-                    "i32",
-                    range_up_i,
-                    range_down_i,
-                    range_i,
-                    range_up_increasing_i32_helper,
-                    range_up_decreasing_i32_helper,
-                    range_down_increasing_i32_helper,
-                    range_down_decreasing_i32_helper,
-                    range_increasing_i32_helper,
-                    range_decreasing_i32_helper,
-                    range_up_exhaustive_i32_helper,
-                    range_up_random_i32_helper,
-                    range_down_exhaustive_i32_helper,
-                    range_down_random_i32_helper,
-                    range_exhaustive_i32_helper,
-                    range_random_i32_helper,
-                    test_range_up_increasing_i32,
-                    test_range_up_decreasing_i32,
-                    test_range_down_increasing_i32,
-                    test_range_down_decreasing_i32,
-                    test_range_increasing_i32,
-                    test_range_decreasing_i32,
-                    test_i32s_increasing,
-                    test_i32s_decreasing,
-                    test_positive_i32s,
-                    test_i32s,
-                    test_range_up_i32,
-                    test_range_down_i32,
-                    test_range_i32,
-                    range_increasing_i32_fail,
-                    range_decreasing_i32_fail,
-                    i32::max_value());
-test_integer_range!(i64,
-                    "i64",
-                    range_up_i,
-                    range_down_i,
-                    range_i,
-                    range_up_increasing_i64_helper,
-                    range_up_decreasing_i64_helper,
-                    range_down_increasing_i64_helper,
-                    range_down_decreasing_i64_helper,
-                    range_increasing_i64_helper,
-                    range_decreasing_i64_helper,
-                    range_up_exhaustive_i64_helper,
-                    range_up_random_i64_helper,
-                    range_down_exhaustive_i64_helper,
-                    range_down_random_i64_helper,
-                    range_exhaustive_i64_helper,
-                    range_random_i64_helper,
-                    test_range_up_increasing_i64,
-                    test_range_up_decreasing_i64,
-                    test_range_down_increasing_i64,
-                    test_range_down_decreasing_i64,
-                    test_range_increasing_i64,
-                    test_range_decreasing_i64,
-                    test_i64s_increasing,
-                    test_i64s_decreasing,
-                    test_positive_i64s,
-                    test_i64s,
-                    test_range_up_i64,
-                    test_range_down_i64,
-                    test_range_i64,
-                    range_increasing_i64_fail,
-                    range_decreasing_i64_fail,
-                    i64::max_value());
+#[test]
+fn test_range_u() {
+    let (eo, ep, rp) = prepare_test();
+    range_u_helper::<u8>(&eo, &ep, &rp);
+    range_u_helper::<u16>(&eo, &ep, &rp);
+    range_u_helper::<u32>(&eo, &ep, &rp);
+    range_u_helper::<u64>(&eo, &ep, &rp);
+}
+
+fn range_i_helper<T: PrimSignedInt>(eo: &TestOutput,
+                                    ep: &IteratorProvider,
+                                    rp: &IteratorProvider) {
+    let e_test = |number, a, b| {
+        eo.match_vec(&format!("exhaustive_range_{}_{}", T::name(), number),
+                     &mut ep.range_i::<T>(a, b))
+    };
+    e_test("i", T::from_u8(0), T::from_u8(0));
+    e_test("ii", T::from_u8(0), T::from_u8(10));
+    e_test("iii", T::from_u8(10), T::from_u8(20));
+    e_test("iv", T::from_u8(10), T::from_u8(10));
+    e_test("v", T::from_u8(0), T::max_value());
+    e_test("vi", T::from_u8(0), T::max_value() - T::from_u8(1));
+    e_test("vii", T::from_i8(-10), T::from_i8(-10));
+    e_test("viii", T::from_i8(-20), T::from_i8(-10));
+    e_test("ix", T::from_i8(-100), T::from_u8(100));
+    e_test("x", T::min_value(), T::max_value());
+    e_test("xi",
+           T::min_value() + T::from_u8(1),
+           T::max_value() - T::from_u8(1));
+    let r_test = |number, a, b| {
+        eo.match_vec_f(&format!("random_range_{}_{}", T::name(), number),
+                       &mut rp.range_i::<T>(a, b))
+    };
+    r_test("i", T::from_u8(0), T::from_u8(0));
+    r_test("ii", T::from_u8(0), T::from_u8(10));
+    r_test("iii", T::from_u8(10), T::from_u8(20));
+    r_test("iv", T::from_u8(10), T::from_u8(10));
+    r_test("v", T::from_u8(0), T::max_value());
+    r_test("vi", T::from_u8(0), T::max_value() - T::from_u8(1));
+    r_test("vii", T::from_i8(-10), T::from_i8(-10));
+    r_test("viii", T::from_i8(-20), T::from_i8(-10));
+    r_test("ix", T::from_i8(-100), T::from_u8(100));
+    r_test("x", T::min_value(), T::max_value());
+    r_test("xi",
+           T::min_value() + T::from_u8(1),
+           T::max_value() - T::from_u8(1));
+}
+
+#[test]
+fn test_range_i() {
+    let (eo, ep, rp) = prepare_test();
+    range_i_helper::<i8>(&eo, &ep, &rp);
+    range_i_helper::<i16>(&eo, &ep, &rp);
+    range_i_helper::<i32>(&eo, &ep, &rp);
+    range_i_helper::<i64>(&eo, &ep, &rp);
+}
 
 macro_rules! test_integer_range_u {
     (
@@ -856,18 +684,6 @@ macro_rules! test_integer_range_u {
             let (eo, ep, rp) = prepare_test();
             eo.match_vec(&format!("exhaustive_{}s", $ts), &mut ep.all_u::<$t>());
             eo.match_vec_f(&format!("random_{}s", $ts), &mut rp.all_u::<$t>());
-        }
-
-        #[test]
-        #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
-        fn $r_f_1() {
-            IteratorProvider::Exhaustive.range_u::<$t>(10, 9);
-        }
-
-        #[test]
-        #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
-        fn $r_f_2() {
-            IteratorProvider::example_random().range_u::<$t>(10, 9);
         }
     }
 }
@@ -980,41 +796,6 @@ macro_rules! test_integer_range_i {
             let (eo, ep, rp) = prepare_test();
             eo.match_vec(&format!("exhaustive_nonzero_{}s", $ts), &mut ep.nonzero_i::<$t>());
             eo.match_vec_f(&format!("random_nonzero_{}s", $ts), &mut rp.nonzero_i::<$t>());
-        }
-
-        #[test]
-        fn $r_t() {
-            let (eo, ep, rp) = prepare_test();
-            let es = "exhaustive_range";
-            $r_eth(&eo, &ep, &format!("{}_{}_vii", es, $ts), -10, -10);
-            $r_eth(&eo, &ep, &format!("{}_{}_viii", es, $ts), -20, -10);
-            $r_eth(&eo, &ep, &format!("{}_{}_ix", es, $ts), -100, 100);
-            $r_eth(&eo, &ep, &format!("{}_{}_x", es, $ts), $min, $max);
-            $r_eth(&eo, &ep, &format!("{}_{}_xi", es, $ts), $min + 1, $max - 1);
-            let rs = "random_range";
-            $r_rth(&eo, &rp, &format!("{}_{}_vii", rs, $ts), -10, -10);
-            $r_rth(&eo, &rp, &format!("{}_{}_viii", rs, $ts), -20, -10);
-            $r_rth(&eo, &rp, &format!("{}_{}_ix", rs, $ts), -100, 100);
-            $r_rth(&eo, &rp, &format!("{}_{}_x", rs, $ts), $min, $max);
-            $r_rth(&eo, &rp, &format!("{}_{}_xi", rs, $ts), $min + 1, $max - 1);
-        }
-
-        #[test]
-        #[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
-        fn $r_f() {
-            IteratorProvider::Exhaustive.range_i::<$t>(-9, -10);
-        }
-
-        #[test]
-        #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
-        fn $r_f_1() {
-            IteratorProvider::Exhaustive.range_i::<$t>(10, 9);
-        }
-
-        #[test]
-        #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
-        fn $r_f_2() {
-            IteratorProvider::example_random().range_i::<$t>(10, 9);
         }
     }
 }
