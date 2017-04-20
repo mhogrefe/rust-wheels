@@ -1,5 +1,6 @@
-use std::collections::BTreeMap;
+use std::collections::BinaryHeap;
 use std::collections::HashMap;
+use std::cmp::Ordering;
 use std::fmt::Debug;
 use std::fmt::Display;
 use std::hash::Hash;
@@ -59,13 +60,34 @@ pub fn to_frequency_map<I>(xs: &mut I) -> HashMap<I::Item, usize>
     map
 }
 
+#[derive(Eq, PartialEq)]
+struct FrequencyRecord {
+    item: String,
+    frequency: usize,
+}
+
+impl Ord for FrequencyRecord {
+    fn cmp(&self, other: &FrequencyRecord) -> Ordering {
+        match other.frequency.cmp(&self.frequency) {
+            Ordering::Equal => self.item.cmp(&other.item),
+            c => c,
+        }
+    }
+}
+
+impl PartialOrd for FrequencyRecord {
+    fn partial_cmp(&self, other: &FrequencyRecord) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
 fn get_most_common_values_helper<T>(limit: usize,
                                     map: HashMap<T, usize>,
                                     f: &Fn(&T) -> String)
                                     -> Vec<(String, usize)>
-    where T: Clone + Eq + Hash
+    where T: Eq + Hash
 {
-    let mut inverse_frequency_map: BTreeMap<usize, Vec<T>> = BTreeMap::new();
+    let mut inverse_frequency_map: HashMap<usize, Vec<T>> = HashMap::new();
     for (x, frequency) in map {
         if inverse_frequency_map.contains_key(&frequency) {
             inverse_frequency_map.get_mut(&frequency).unwrap().push(x);
@@ -75,33 +97,37 @@ fn get_most_common_values_helper<T>(limit: usize,
             inverse_frequency_map.insert(frequency, xs);
         }
     }
-    let mut most_common_values = Vec::new();
+    let mut most_common_values = BinaryHeap::new();
     let mut i = 0;
-    for (&frequency, xs) in inverse_frequency_map.iter().rev() {
-        let mut sorted_xs = xs.clone();
-        sorted_xs.sort_by(|a, b| f(a).cmp(&f(b)));
-        for x in sorted_xs {
-            if i == limit {
-                break;
+    for (&frequency, xs) in inverse_frequency_map.iter() {
+        for x in xs {
+            most_common_values.push(FrequencyRecord {
+                                        item: f(x),
+                                        frequency: frequency,
+                                    });
+            if i < limit {
+                i += 1;
+            } else {
+                most_common_values.pop();
             }
-            most_common_values.push((f(&x), frequency));
-            i += 1;
-        }
-        if i == limit {
-            break;
         }
     }
-    most_common_values
+    let mut result = Vec::new();
+    while let Some(record) = most_common_values.pop() {
+        result.push((record.item, record.frequency));
+    }
+    result.reverse();
+    result
 }
 
 pub fn get_most_common_values<T>(limit: usize, map: HashMap<T, usize>) -> Vec<(String, usize)>
-    where T: Clone + Eq + Hash + Display
+    where T: Eq + Hash + Display
 {
     get_most_common_values_helper(limit, map, &|x| x.to_string())
 }
 
 pub fn get_most_common_values_debug<T>(limit: usize, map: HashMap<T, usize>) -> Vec<(String, usize)>
-    where T: Clone + Eq + Hash + Debug
+    where T: Eq + Hash + Debug
 {
     get_most_common_values_helper(limit, map, &|x| format!("{:?}", x))
 }
