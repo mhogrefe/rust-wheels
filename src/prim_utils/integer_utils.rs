@@ -450,3 +450,11 @@ pub fn big_endian_digits_integer(radix: &Integer, n: &Integer) -> Vec<Integer> {
         digits_integer(radix, n).into_iter().rev().collect()
     }
 }
+
+pub fn big_endian_digits_padded_u<T: PrimUnsignedInt>(size: usize, radix: T, n: T) -> Vec<T> {
+    digits_padded_u(size, radix, n).into_iter().rev().collect()
+}
+
+pub fn big_endian_digits_padded_integer(size: usize, radix: &Integer, n: &Integer) -> Vec<Integer> {
+    digits_padded_integer(size, radix, n).into_iter().rev().collect()
+}
