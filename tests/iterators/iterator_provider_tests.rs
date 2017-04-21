@@ -809,82 +809,73 @@ fn test_ascii_chars_decreasing() {
                        &mut p.ascii_chars_decreasing());
 }
 
-fn range_up_increasing_char_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: char) {
-    eo.match_vec_debug(key, &mut p.range_up_increasing_char(a));
-}
-
 #[test]
 fn test_range_up_increasing_char() {
     let (eo, p, _) = prepare_test();
-    let s = "exhaustive_range_up_increasing_char";
-    range_up_increasing_char_helper(&eo, &p, &format!("{}_i", s), '\0');
-    range_up_increasing_char_helper(&eo, &p, &format!("{}_ii", s), 'a');
-    range_up_increasing_char_helper(&eo, &p, &format!("{}_iii", s), 'Ш');
-    range_up_increasing_char_helper(&eo, &p, &format!("{}_iv", s), '\u{D7FF}');
-    range_up_increasing_char_helper(&eo, &p, &format!("{}_v", s), char::MAX);
-}
-
-fn range_up_decreasing_char_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: char) {
-    eo.match_vec_debug(key, &mut p.range_up_decreasing_char(a));
+    let test = |number, a| {
+        eo.match_vec_debug(&format!("exhaustive_range_up_increasing_char_{}", number),
+                           &mut p.range_up_increasing_char(a))
+    };
+    test("i", '\0');
+    test("ii", 'a');
+    test("iii", 'Ш');
+    test("iv", '\u{D7FF}');
+    test("v", char::MAX);
 }
 
 #[test]
 fn test_range_up_decreasing_char() {
     let (eo, p, _) = prepare_test();
-    let s = "exhaustive_range_up_decreasing_char";
-    range_up_decreasing_char_helper(&eo, &p, &format!("{}_i", s), '\0');
-    range_up_decreasing_char_helper(&eo, &p, &format!("{}_ii", s), 'a');
-    range_up_decreasing_char_helper(&eo, &p, &format!("{}_iii", s), 'Ш');
-    range_up_decreasing_char_helper(&eo, &p, &format!("{}_iv", s), '\u{D7FF}');
-    range_up_decreasing_char_helper(&eo, &p, &format!("{}_v", s), char::MAX);
-}
-
-fn range_down_increasing_char_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: char) {
-    eo.match_vec_debug(key, &mut p.range_down_increasing_char(a));
+    let test = |number, a| {
+        eo.match_vec_debug(&format!("exhaustive_range_up_decreasing_char_{}", number),
+                           &mut p.range_up_decreasing_char(a))
+    };
+    test("i", '\0');
+    test("ii", 'a');
+    test("iii", 'Ш');
+    test("iv", '\u{D7FF}');
+    test("v", char::MAX);
 }
 
 #[test]
 fn test_range_down_increasing_char() {
     let (eo, p, _) = prepare_test();
-    let s = "exhaustive_range_down_increasing_char";
-    range_down_increasing_char_helper(&eo, &p, &format!("{}_i", s), '\0');
-    range_down_increasing_char_helper(&eo, &p, &format!("{}_ii", s), 'a');
-    range_down_increasing_char_helper(&eo, &p, &format!("{}_iii", s), 'Ш');
-    range_down_increasing_char_helper(&eo, &p, &format!("{}_iv", s), '\u{E000}');
-    range_down_increasing_char_helper(&eo, &p, &format!("{}_v", s), char::MAX);
-}
-
-fn range_down_decreasing_char_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: char) {
-    eo.match_vec_debug(key, &mut p.range_down_decreasing_char(a));
+    let test = |number, a| {
+        eo.match_vec_debug(&format!("exhaustive_range_down_increasing_char_{}", number),
+                           &mut p.range_down_increasing_char(a))
+    };
+    test("i", '\0');
+    test("ii", 'a');
+    test("iii", 'Ш');
+    test("iv", '\u{E000}');
+    test("v", char::MAX);
 }
 
 #[test]
 fn test_range_down_decreasing_char() {
     let (eo, p, _) = prepare_test();
-    let s = "exhaustive_range_down_decreasing_char";
-    range_down_decreasing_char_helper(&eo, &p, &format!("{}_i", s), '\0');
-    range_down_decreasing_char_helper(&eo, &p, &format!("{}_ii", s), 'a');
-    range_down_decreasing_char_helper(&eo, &p, &format!("{}_iii", s), 'Ш');
-    range_down_decreasing_char_helper(&eo, &p, &format!("{}_iv", s), '\u{E000}');
-    range_down_decreasing_char_helper(&eo, &p, &format!("{}_v", s), char::MAX);
-}
-
-fn range_increasing_char_helper(eo: &TestOutput,
-                                p: &IteratorProvider,
-                                key: &str,
-                                a: char,
-                                b: char) {
-    eo.match_vec_debug(key, &mut p.range_increasing_char(a, b));
+    let test = |number, a| {
+        eo.match_vec_debug(&format!("exhaustive_range_down_decreasing_char_{}", number),
+                           &mut p.range_down_decreasing_char(a))
+    };
+    test("i", '\0');
+    test("ii", 'a');
+    test("iii", 'Ш');
+    test("iv", '\u{E000}');
+    test("v", char::MAX);
 }
 
 #[test]
 fn test_range_increasing_char() {
     let (eo, p, _) = prepare_test();
-    let s = "exhaustive_range_increasing_char";
-    range_increasing_char_helper(&eo, &p, &format!("{}_i", s), 'a', 'z');
-    range_increasing_char_helper(&eo, &p, &format!("{}_ii", s), 'a', 'a');
-    range_increasing_char_helper(&eo, &p, &format!("{}_iii", s), '!', '9');
-    range_increasing_char_helper(&eo, &p, &format!("{}_iv", s), '\u{D7FF}', '\u{E000}');
+    let test = |number, a, b| {
+        eo.match_vec_debug(&format!("exhaustive_range_increasing_char_{}", number),
+                           &mut p.range_increasing_char(a, b))
+    };
+    test("i", 'a', 'z');
+    test("ii", 'a', 'a');
+    test("iii", '!', '9');
+    test("iv", '\u{D7FF}', '\u{E000}');
 }
 
 #[test]
@@ -893,22 +884,17 @@ fn range_increasing_char_fail() {
     IteratorProvider::Exhaustive.range_increasing_char('a', 'A');
 }
 
-fn range_decreasing_char_helper(eo: &TestOutput,
-                                p: &IteratorProvider,
-                                key: &str,
-                                a: char,
-                                b: char) {
-    eo.match_vec_debug(key, &mut p.range_decreasing_char(a, b));
-}
-
 #[test]
 fn test_range_decreasing_char() {
     let (eo, p, _) = prepare_test();
-    let s = "exhaustive_range_decreasing_char";
-    range_decreasing_char_helper(&eo, &p, &format!("{}_i", s), 'a', 'z');
-    range_decreasing_char_helper(&eo, &p, &format!("{}_ii", s), 'a', 'a');
-    range_decreasing_char_helper(&eo, &p, &format!("{}_iii", s), '!', '9');
-    range_decreasing_char_helper(&eo, &p, &format!("{}_iv", s), '\u{D7FF}', '\u{E000}');
+    let test = |number, a, b| {
+        eo.match_vec_debug(&format!("exhaustive_range_decreasing_char_{}", number),
+                           &mut p.range_decreasing_char(a, b))
+    };
+    test("i", 'a', 'z');
+    test("ii", 'a', 'a');
+    test("iii", '!', '9');
+    test("iv", '\u{D7FF}', '\u{E000}');
 }
 
 #[test]
@@ -931,81 +917,71 @@ fn test_ascii_chars() {
     eo.match_vec_f_debug("random_ascii_chars", &mut rp.ascii_chars());
 }
 
-fn range_up_char_exhaustive_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: char) {
-    eo.match_vec_debug(key, &mut p.range_up_char(a));
-}
-
-fn range_up_char_random_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: char) {
-    eo.match_vec_f_debug(key, &mut p.range_up_char(a));
-}
-
 #[test]
 fn test_range_up_char() {
     let (eo, ep, rp) = prepare_test();
-    let es = "exhaustive_range_up_char";
-    range_up_char_exhaustive_helper(&eo, &ep, &format!("{}_i", es), '\0');
-    range_up_char_exhaustive_helper(&eo, &ep, &format!("{}_ii", es), 'a');
-    range_up_char_exhaustive_helper(&eo, &ep, &format!("{}_iii", es), 'Ш');
-    range_up_char_exhaustive_helper(&eo, &ep, &format!("{}_iv", es), '\u{D7FF}');
-    range_up_char_exhaustive_helper(&eo, &ep, &format!("{}_v", es), char::MAX);
-    let rs = "random_range_up_char";
-    range_up_char_random_helper(&eo, &rp, &format!("{}_i", rs), '\0');
-    range_up_char_random_helper(&eo, &rp, &format!("{}_ii", rs), 'a');
-    range_up_char_random_helper(&eo, &rp, &format!("{}_iii", rs), 'Ш');
-    range_up_char_random_helper(&eo, &rp, &format!("{}_iv", rs), '\u{D7FF}');
-    range_up_char_random_helper(&eo, &rp, &format!("{}_v", rs), char::MAX);
-}
-
-fn range_down_char_exhaustive_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: char) {
-    eo.match_vec_debug(key, &mut p.range_down_char(a));
-}
-
-fn range_down_char_random_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: char) {
-    eo.match_vec_f_debug(key, &mut p.range_down_char(a));
+    let e_test = |number, a| {
+        eo.match_vec_debug(&format!("exhaustive_range_up_char_{}", number),
+                           &mut ep.range_up_char(a))
+    };
+    e_test("i", '\0');
+    e_test("ii", 'a');
+    e_test("iii", 'Ш');
+    e_test("iv", '\u{D7FF}');
+    e_test("v", char::MAX);
+    let r_test = |number, a| {
+        eo.match_vec_f_debug(&format!("random_range_up_char_{}", number),
+                             &mut rp.range_up_char(a))
+    };
+    r_test("i", '\0');
+    r_test("ii", 'a');
+    r_test("iii", 'Ш');
+    r_test("iv", '\u{D7FF}');
+    r_test("v", char::MAX);
 }
 
 #[test]
 fn test_range_down_char() {
     let (eo, ep, rp) = prepare_test();
-    let es = "exhaustive_range_down_char";
-    range_down_char_exhaustive_helper(&eo, &ep, &format!("{}_i", es), '\0');
-    range_down_char_exhaustive_helper(&eo, &ep, &format!("{}_ii", es), 'a');
-    range_down_char_exhaustive_helper(&eo, &ep, &format!("{}_iii", es), 'Ш');
-    range_down_char_exhaustive_helper(&eo, &ep, &format!("{}_iv", es), '\u{E000}');
-    range_down_char_exhaustive_helper(&eo, &ep, &format!("{}_v", es), char::MAX);
-    let rs = "random_range_down_char";
-    range_down_char_random_helper(&eo, &rp, &format!("{}_i", rs), '\0');
-    range_down_char_random_helper(&eo, &rp, &format!("{}_ii", rs), 'a');
-    range_down_char_random_helper(&eo, &rp, &format!("{}_iii", rs), 'Ш');
-    range_down_char_random_helper(&eo, &rp, &format!("{}_iv", rs), '\u{E000}');
-    range_down_char_random_helper(&eo, &rp, &format!("{}_v", rs), char::MAX);
-}
-
-fn range_char_exhaustive_helper(eo: &TestOutput,
-                                p: &IteratorProvider,
-                                key: &str,
-                                a: char,
-                                b: char) {
-    eo.match_vec_debug(key, &mut p.range_char(a, b));
-}
-
-fn range_char_random_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: char, b: char) {
-    eo.match_vec_f_debug(key, &mut p.range_char(a, b));
+    let e_test = |number, a| {
+        eo.match_vec_debug(&format!("exhaustive_range_down_char_{}", number),
+                           &mut ep.range_down_char(a))
+    };
+    e_test("i", '\0');
+    e_test("ii", 'a');
+    e_test("iii", 'Ш');
+    e_test("iv", '\u{E000}');
+    e_test("v", char::MAX);
+    let r_test = |number, a| {
+        eo.match_vec_f_debug(&format!("random_range_down_char_{}", number),
+                             &mut rp.range_down_char(a))
+    };
+    r_test("i", '\0');
+    r_test("ii", 'a');
+    r_test("iii", 'Ш');
+    r_test("iv", '\u{E000}');
+    r_test("v", char::MAX);
 }
 
 #[test]
 fn test_range_char() {
     let (eo, ep, rp) = prepare_test();
-    let es = "exhaustive_range_char";
-    range_char_exhaustive_helper(&eo, &ep, &format!("{}_i", es), 'a', 'z');
-    range_char_exhaustive_helper(&eo, &ep, &format!("{}_ii", es), 'a', 'a');
-    range_char_exhaustive_helper(&eo, &ep, &format!("{}_iii", es), '!', '9');
-    range_char_exhaustive_helper(&eo, &ep, &format!("{}_iv", es), '\u{D7FF}', '\u{E000}');
-    let rs = "random_range_char";
-    range_char_random_helper(&eo, &rp, &format!("{}_i", rs), 'a', 'z');
-    range_char_random_helper(&eo, &rp, &format!("{}_ii", rs), 'a', 'a');
-    range_char_random_helper(&eo, &rp, &format!("{}_iii", rs), '!', '9');
-    range_char_random_helper(&eo, &rp, &format!("{}_iv", rs), '\u{D7FF}', '\u{E000}');
+    let e_test = |number, a, b| {
+        eo.match_vec_debug(&format!("exhaustive_range_char_{}", number),
+                           &mut ep.range_char(a, b))
+    };
+    e_test("i", 'a', 'z');
+    e_test("ii", 'a', 'a');
+    e_test("iii", '!', '9');
+    e_test("iv", '\u{D7FF}', '\u{E000}');
+    let r_test = |number, a, b| {
+        eo.match_vec_f_debug(&format!("random_range_char_{}", number),
+                             &mut rp.range_char(a, b))
+    };
+    r_test("i", 'a', 'z');
+    r_test("ii", 'a', 'a');
+    r_test("iii", '!', '9');
+    r_test("iv", '\u{D7FF}', '\u{E000}');
 }
 
 #[test]
@@ -1014,58 +990,45 @@ fn range_char_fail() {
     IteratorProvider::Exhaustive.range_char('a', 'A');
 }
 
-fn range_up_increasing_integer_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, a: &str) {
-    eo.match_vec(key,
-                 &mut p.range_up_increasing_integer(Integer::from_str(a).unwrap()));
-}
-
 #[test]
 fn test_range_up_increasing_integer() {
     let (eo, p, _) = prepare_test();
-    let s = "exhaustive_range_up_increasing_integer";
-    range_up_increasing_integer_helper(&eo, &p, &format!("{}_i", s), "0");
-    range_up_increasing_integer_helper(&eo, &p, &format!("{}_ii", s), "5");
-    range_up_increasing_integer_helper(&eo, &p, &format!("{}_iii", s), "-5");
-}
-
-fn range_down_decreasing_integer_helper(eo: &TestOutput,
-                                        p: &IteratorProvider,
-                                        key: &str,
-                                        a: &str) {
-    eo.match_vec(key,
-                 &mut p.range_down_decreasing_integer(Integer::from_str(a).unwrap()));
+    let test = |number, a| {
+        eo.match_vec(&format!("exhaustive_range_up_increasing_integer_{}", number),
+                     &mut p.range_up_increasing_integer(Integer::from_str(a).unwrap()))
+    };
+    test("i", "0");
+    test("ii", "5");
+    test("iii", "-5");
 }
 
 #[test]
 fn test_range_down_decreasing_integer() {
     let (eo, p, _) = prepare_test();
-    let s = "exhaustive_range_down_decreasing_integer";
-    range_down_decreasing_integer_helper(&eo, &p, &format!("{}_i", s), "0");
-    range_down_decreasing_integer_helper(&eo, &p, &format!("{}_ii", s), "5");
-    range_down_decreasing_integer_helper(&eo, &p, &format!("{}_iii", s), "-5");
-}
-
-fn range_increasing_integer_helper(eo: &TestOutput,
-                                   p: &IteratorProvider,
-                                   key: &str,
-                                   a: &str,
-                                   b: &str) {
-    eo.match_vec(key,
-                 &mut p.range_increasing_integer(Integer::from_str(a).unwrap(),
-                                                 Integer::from_str(b).unwrap()));
+    let test = |number, a| {
+        eo.match_vec(&format!("exhaustive_range_down_decreasing_integer_{}", number),
+                     &mut p.range_down_decreasing_integer(Integer::from_str(a).unwrap()))
+    };
+    test("i", "0");
+    test("ii", "5");
+    test("iii", "-5");
 }
 
 #[test]
 fn test_range_increasing_integer() {
     let (eo, p, _) = prepare_test();
-    let s = "exhaustive_range_increasing_integer";
-    range_increasing_integer_helper(&eo, &p, &format!("{}_i", s), "0", "0");
-    range_increasing_integer_helper(&eo, &p, &format!("{}_ii", s), "0", "10");
-    range_increasing_integer_helper(&eo, &p, &format!("{}_iii", s), "10", "20");
-    range_increasing_integer_helper(&eo, &p, &format!("{}_iv", s), "10", "10");
-    range_increasing_integer_helper(&eo, &p, &format!("{}_v", s), "-10", "-10");
-    range_increasing_integer_helper(&eo, &p, &format!("{}_vi", s), "-20", "-10");
-    range_increasing_integer_helper(&eo, &p, &format!("{}_vii", s), "-100", "100");
+    let test = |number, a, b| {
+        eo.match_vec(&format!("exhaustive_range_increasing_integer_{}", number),
+                     &mut p.range_increasing_integer(Integer::from_str(a).unwrap(),
+                                                     Integer::from_str(b).unwrap()))
+    };
+    test("i", "0", "0");
+    test("ii", "0", "10");
+    test("iii", "10", "20");
+    test("iv", "10", "10");
+    test("v", "-10", "-10");
+    test("vi", "-20", "-10");
+    test("vii", "-100", "100");
 }
 
 fn range_increasing_integer_fail_helper(p: &IteratorProvider, a: &str, b: &str) {
@@ -1084,27 +1047,21 @@ fn range_increasing_integer_fail_2() {
     range_increasing_integer_fail_helper(&IteratorProvider::Exhaustive, "-9", "-10")
 }
 
-fn range_decreasing_integer_helper(eo: &TestOutput,
-                                   p: &IteratorProvider,
-                                   key: &str,
-                                   a: &str,
-                                   b: &str) {
-    eo.match_vec(key,
-                 &mut p.range_decreasing_integer(Integer::from_str(a).unwrap(),
-                                                 Integer::from_str(b).unwrap()));
-}
-
 #[test]
 fn test_range_decreasing_integer() {
     let (eo, p, _) = prepare_test();
-    let s = "exhaustive_range_decreasing_integer";
-    range_decreasing_integer_helper(&eo, &p, &format!("{}_i", s), "0", "0");
-    range_decreasing_integer_helper(&eo, &p, &format!("{}_ii", s), "0", "10");
-    range_decreasing_integer_helper(&eo, &p, &format!("{}_iii", s), "10", "20");
-    range_decreasing_integer_helper(&eo, &p, &format!("{}_iv", s), "10", "10");
-    range_decreasing_integer_helper(&eo, &p, &format!("{}_v", s), "-10", "-10");
-    range_decreasing_integer_helper(&eo, &p, &format!("{}_vi", s), "-20", "-10");
-    range_decreasing_integer_helper(&eo, &p, &format!("{}_vii", s), "-100", "100");
+    let test = |number, a, b| {
+        eo.match_vec(&format!("exhaustive_range_decreasing_integer_{}", number),
+                     &mut p.range_decreasing_integer(Integer::from_str(a).unwrap(),
+                                                     Integer::from_str(b).unwrap()))
+    };
+    test("i", "0", "0");
+    test("ii", "0", "10");
+    test("iii", "10", "20");
+    test("iv", "10", "10");
+    test("v", "-10", "-10");
+    test("vi", "-20", "-10");
+    test("vii", "-100", "100");
 }
 
 fn range_decreasing_integer_fail_helper(p: &IteratorProvider, a: &str, b: &str) {
@@ -1124,45 +1081,33 @@ fn range_decreasing_integer_fail_2() {
     range_decreasing_integer_fail_helper(&p, "-9", "-10")
 }
 
-fn range_integer_exhaustive_helper(eo: &TestOutput,
-                                   p: &IteratorProvider,
-                                   key: &str,
-                                   a: &str,
-                                   b: &str) {
-    eo.match_vec(key,
-                 &mut p.range_integer(Integer::from_str(a).unwrap(),
-                                      Integer::from_str(b).unwrap()));
-}
-
-fn range_integer_random_helper(eo: &TestOutput,
-                               p: &IteratorProvider,
-                               key: &str,
-                               a: &str,
-                               b: &str) {
-    eo.match_vec_f(key,
-                   &mut p.range_integer(Integer::from_str(a).unwrap(),
-                                        Integer::from_str(b).unwrap()));
-}
-
 #[test]
 fn test_range_integer() {
     let (eo, ep, rp) = prepare_test();
-    let es = "exhaustive_range_integer";
-    range_integer_exhaustive_helper(&eo, &ep, &format!("{}_i", es), "0", "0");
-    range_integer_exhaustive_helper(&eo, &ep, &format!("{}_ii", es), "0", "10");
-    range_integer_exhaustive_helper(&eo, &ep, &format!("{}_iii", es), "10", "20");
-    range_integer_exhaustive_helper(&eo, &ep, &format!("{}_iv", es), "10", "10");
-    range_integer_exhaustive_helper(&eo, &ep, &format!("{}_v", es), "-10", "-10");
-    range_integer_exhaustive_helper(&eo, &ep, &format!("{}_vi", es), "-20", "-10");
-    range_integer_exhaustive_helper(&eo, &ep, &format!("{}_vii", es), "-100", "100");
-    let rs = "random_range_integer";
-    range_integer_random_helper(&eo, &rp, &format!("{}_i", rs), "0", "0");
-    range_integer_random_helper(&eo, &rp, &format!("{}_ii", rs), "0", "10");
-    range_integer_random_helper(&eo, &rp, &format!("{}_iii", rs), "10", "20");
-    range_integer_random_helper(&eo, &rp, &format!("{}_iv", rs), "10", "10");
-    range_integer_random_helper(&eo, &rp, &format!("{}_v", rs), "-10", "-10");
-    range_integer_random_helper(&eo, &rp, &format!("{}_vi", rs), "-20", "-10");
-    range_integer_random_helper(&eo, &rp, &format!("{}_vii", rs), "-100", "100");
+    let e_test = |number, a, b| {
+        eo.match_vec(&format!("exhaustive_range_integer_{}", number),
+                     &mut ep.range_integer(Integer::from_str(a).unwrap(),
+                                           Integer::from_str(b).unwrap()))
+    };
+    e_test("i", "0", "0");
+    e_test("ii", "0", "10");
+    e_test("iii", "10", "20");
+    e_test("iv", "10", "10");
+    e_test("v", "-10", "-10");
+    e_test("vi", "-20", "-10");
+    e_test("vii", "-100", "100");
+    let r_test = |number, a, b| {
+        eo.match_vec_f(&format!("random_range_integer_{}", number),
+                       &mut rp.range_integer(Integer::from_str(a).unwrap(),
+                                             Integer::from_str(b).unwrap()))
+    };
+    r_test("i", "0", "0");
+    r_test("ii", "0", "10");
+    r_test("iii", "10", "20");
+    r_test("iv", "10", "10");
+    r_test("v", "-10", "-10");
+    r_test("vi", "-20", "-10");
+    r_test("vii", "-100", "100");
 }
 
 fn range_integer_fail_helper(p: &IteratorProvider, a: &str, b: &str) {
