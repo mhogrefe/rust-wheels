@@ -1,4 +1,5 @@
 use gmp_to_flint_adaptor_lib::integer::Integer;
+use rust_wheels_lib::io::readers::parse_vec;
 use rust_wheels_lib::prim_utils::integer_utils::*;
 use rust_wheels_lib::prim_utils::traits::*;
 use std::str::FromStr;
@@ -502,6 +503,29 @@ fn test_from_big_endian_bits() {
     from_big_endian_bits_helper(vec![true, true, false, true, false, false, true], "105");
 }
 
+#[test]
+fn test_digit_to_char() {
+    let test = |i, out| assert_eq!(digit_to_char(i), out);
+    test(0, Some('0'));
+    test(6, Some('6'));
+    test(10, Some('a'));
+    test(20, Some('k'));
+    test(35, Some('z'));
+    test(36, None);
+}
+
+#[test]
+fn test_char_to_digit() {
+    let test = |c, out| assert_eq!(char_to_digit(c), out);
+    test('0', Some(0));
+    test('6', Some(6));
+    test('a', Some(10));
+    test('k', Some(20));
+    test('z', Some(35));
+    test(' ', None);
+    test('A', None);
+}
+
 fn digits_u_helper<T: PrimUnsignedInt>(max_digit: &str) {
     let test = |radix, n, out| assert_eq!(format!("{:?}", digits_u(radix, n)), out);
     test(T::from_u8(2), T::from_u8(0), "[]");
@@ -987,4 +1011,200 @@ fn big_endian_digits_padded_integer_fail_1() {
 #[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
 fn big_endian_digits_padded_integer_fail_2() {
     big_endian_digits_padded_integer_fail_helper(3, "0", "10");
+}
+
+#[test]
+fn test_from_digits() {
+    let test = |radix, digits, out| {
+        assert_eq!(format!("{:?}",
+                           from_digits(&Integer::from_str(radix).unwrap(),
+                                       &parse_vec(digits).unwrap())),
+                   out)
+    };
+    test("2", "[]", "0");
+    test("3", "[]", "0");
+    test("8", "[]", "0");
+    test("10", "[]", "0");
+    test("12", "[]", "0");
+    test("57", "[]", "0");
+    test("2", "[1]", "1");
+    test("3", "[1]", "1");
+    test("8", "[1]", "1");
+    test("10", "[1]", "1");
+    test("12", "[1]", "1");
+    test("57", "[1]", "1");
+    test("2", "[0, 1, 0, 1]", "10");
+    test("3", "[1, 0, 1]", "10");
+    test("8", "[2, 1]", "10");
+    test("10", "[0, 1]", "10");
+    test("12", "[10]", "10");
+    test("57", "[10]", "10");
+    test("2", "[1, 1, 0, 1, 1, 1, 0, 1]", "187");
+    test("3", "[1, 2, 2, 0, 2]", "187");
+    test("8", "[3, 7, 2]", "187");
+    test("10", "[7, 8, 1]", "187");
+    test("12", "[7, 3, 1]", "187");
+    test("57", "[16, 3]", "187");
+}
+
+fn from_digits_fail_helper(radix: &str, digits: &str) {
+    from_digits(&Integer::from_str(radix).unwrap(),
+                &parse_vec(digits).unwrap());
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
+fn from_digits_fail_1() {
+    from_digits_fail_helper("1", "[1, 2, 3]");
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
+fn from_digits_fail_2() {
+    from_digits_fail_helper("0", "[1, 2, 3]");
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: -1")]
+fn from_digits_fail_3() {
+    from_digits_fail_helper("-1", "[1, 2, 3]");
+}
+
+#[test]
+#[should_panic(expected = "Each element of digits must be non-negative. Invalid digit: -1 in \
+[-1, 0, 1]")]
+fn from_digits_fail_4() {
+    from_digits_fail_helper("2", "[-1, 0, 1]");
+}
+
+#[test]
+#[should_panic(expected = "Each element of digits must be less than radix, which is 2. Invalid \
+digit: 2 in [1, 0, 2]")]
+fn from_digits_fail_5() {
+    from_digits_fail_helper("2", "[1, 0, 2]");
+}
+
+#[test]
+#[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
+fn from_digits_fail_6() {
+    from_digits_fail_helper("10", "[-1, 2, 3]");
+}
+
+#[test]
+#[should_panic(expected = "Result::unwrap()` on an `Err` value: ParseIntegerError { kind: \
+InvalidDigit }")]
+fn from_digits_fail_7() {
+    from_digits_fail_helper("10", "[1, 2, 10]");
+}
+
+#[test]
+#[should_panic(expected = "Each element of digits must be non-negative. Invalid digit: -1 in \
+[-1, 2, 3]")]
+fn from_digits_fail_8() {
+    from_digits_fail_helper("100", "[-1, 2, 3]");
+}
+
+#[test]
+#[should_panic(expected = "Each element of digits must be less than radix, which is 100. Invalid \
+digit: 100 in [1, 2, 100]")]
+fn from_digits_fail_9() {
+    from_digits_fail_helper("100", "[1, 2, 100]");
+}
+
+#[test]
+fn test_from_big_endian_digits() {
+    let test = |radix, digits, out| {
+        assert_eq!(format!("{:?}",
+                           from_big_endian_digits(&Integer::from_str(radix).unwrap(),
+                                                  &parse_vec(digits).unwrap())),
+                   out)
+    };
+    test("2", "[]", "0");
+    test("3", "[]", "0");
+    test("8", "[]", "0");
+    test("10", "[]", "0");
+    test("12", "[]", "0");
+    test("57", "[]", "0");
+    test("2", "[1]", "1");
+    test("3", "[1]", "1");
+    test("8", "[1]", "1");
+    test("10", "[1]", "1");
+    test("12", "[1]", "1");
+    test("57", "[1]", "1");
+    test("2", "[1, 0, 1, 0]", "10");
+    test("3", "[1, 0, 1]", "10");
+    test("8", "[1, 2]", "10");
+    test("10", "[1, 0]", "10");
+    test("12", "[10]", "10");
+    test("57", "[10]", "10");
+    test("2", "[1, 0, 1, 1, 1, 0, 1, 1]", "187");
+    test("3", "[2, 0, 2, 2, 1]", "187");
+    test("8", "[2, 7, 3]", "187");
+    test("10", "[1, 8, 7]", "187");
+    test("12", "[1, 3, 7]", "187");
+    test("57", "[3, 16]", "187");
+}
+
+fn from_big_endian_digits_fail_helper(radix: &str, digits: &str) {
+    from_big_endian_digits(&Integer::from_str(radix).unwrap(),
+                           &parse_vec(digits).unwrap());
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
+fn from_big_endian_digits_fail_1() {
+    from_big_endian_digits_fail_helper("1", "[1, 2, 3]");
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
+fn from_big_endian_digits_fail_2() {
+    from_big_endian_digits_fail_helper("0", "[1, 2, 3]");
+}
+
+#[test]
+#[should_panic(expected = "radix must be at least 2. Invalid radix: -1")]
+fn from_big_endian_digits_fail_3() {
+    from_big_endian_digits_fail_helper("-1", "[1, 2, 3]");
+}
+
+#[test]
+#[should_panic(expected = "Each element of digits must be non-negative. Invalid digit: -1 in \
+[-1, 0, 1]")]
+fn from_big_endian_digits_fail_4() {
+    from_big_endian_digits_fail_helper("2", "[-1, 0, 1]");
+}
+
+#[test]
+#[should_panic(expected = "Each element of digits must be less than radix, which is 2. Invalid \
+digit: 2 in [1, 0, 2]")]
+fn from_big_endian_digits_fail_5() {
+    from_big_endian_digits_fail_helper("2", "[1, 0, 2]");
+}
+
+#[test]
+#[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
+fn from_big_endian_digits_fail_6() {
+    from_big_endian_digits_fail_helper("10", "[-1, 2, 3]");
+}
+
+#[test]
+#[should_panic(expected = "Result::unwrap()` on an `Err` value: ParseIntegerError { kind: \
+InvalidDigit }")]
+fn from_big_endian_digits_fail_7() {
+    from_big_endian_digits_fail_helper("10", "[1, 2, 10]");
+}
+
+#[test]
+#[should_panic(expected = "Each element of digits must be non-negative. Invalid digit: -1 in \
+[-1, 2, 3]")]
+fn from_big_endian_digits_fail_8() {
+    from_big_endian_digits_fail_helper("100", "[-1, 2, 3]");
+}
+
+#[test]
+#[should_panic(expected = "Each element of digits must be less than radix, which is 100. Invalid \
+digit: 100 in [1, 2, 100]")]
+fn from_big_endian_digits_fail_9() {
+    from_big_endian_digits_fail_helper("100", "[1, 2, 100]");
 }

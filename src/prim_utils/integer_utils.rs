@@ -3,6 +3,7 @@ use gmp_to_flint_adaptor_lib::integer::Integer;
 #[cfg(feature = "native")]
 use num_to_flint_adaptor_lib::integer::Integer;
 use prim_utils::traits::*;
+use std::char;
 use std::cmp::Ordering;
 use std::iter;
 use std::mem;
@@ -248,6 +249,26 @@ pub fn from_big_endian_bits(bits: &[bool]) -> Integer {
     result
 }
 
+pub fn digit_to_char(i: u32) -> Option<char> {
+    if i < 10 {
+        char::from_u32(i + 48)
+    } else if i < 36 {
+        char::from_u32(i + 87)
+    } else {
+        None
+    }
+}
+
+pub fn char_to_digit(c: char) -> Option<u32> {
+    if c >= '0' && c <= '9' {
+        Some(c as u32 - 48)
+    } else if c >= 'a' && c <= 'z' {
+        Some(c as u32 - 87)
+    } else {
+        None
+    }
+}
+
 pub fn digits_u<T: PrimUnsignedInt>(radix: T, n: T) -> Vec<T> {
     if radix < T::from_u8(2) {
         panic!("radix must be at least 2. Invalid radix: {}", radix);
@@ -442,9 +463,7 @@ pub fn big_endian_digits_integer(radix: &Integer, n: &Integer) -> Vec<Integer> {
     } else if *radix <= 36 {
         n.to_string_radix(radix.to_i32().unwrap())
             .chars()
-            .map(|c| {
-                     Integer::from(c as u32 - (if c >= '0' && c <= '9' { '0' } else { 'W' } as u32))
-                 })
+            .map(|c| Integer::from(char_to_digit(c).unwrap()))
             .collect()
     } else {
         digits_integer(radix, n).into_iter().rev().collect()
@@ -457,4 +476,108 @@ pub fn big_endian_digits_padded_u<T: PrimUnsignedInt>(size: usize, radix: T, n: 
 
 pub fn big_endian_digits_padded_integer(size: usize, radix: &Integer, n: &Integer) -> Vec<Integer> {
     digits_padded_integer(size, radix, n).into_iter().rev().collect()
+}
+
+pub fn from_digits(radix: &Integer, digits: &[Integer]) -> Integer {
+    if *radix < 2 {
+        panic!("radix must be at least 2. Invalid radix: {}", radix);
+    } else if digits.is_empty() {
+        Integer::new()
+    } else if is_power_of_two(radix) {
+        let radix_log = ceiling_log_2_integer(radix);
+        let mut bits = Vec::new();
+        for ref d in digits {
+            if d.sign() == Ordering::Less {
+                panic!("Each element of digits must be non-negative. Invalid digit: {} in {:?}",
+                       d,
+                       digits);
+            } else if d >= &radix {
+                panic!("Each element of digits must be less than radix, which is {}. Invalid \
+                        digit: {} in {:?}",
+                       radix,
+                       d,
+                       digits);
+            } else {
+                bits.append(&mut bits_padded_integer(radix_log as usize, &d));
+            }
+        }
+        let mut result = Integer::new();
+        result.assign_bits_unsigned(&bits[..]);
+        result
+    } else if *radix <= 36 {
+        let mut reversed_digits = digits.to_vec();
+        reversed_digits.reverse();
+        from_big_endian_digits(radix, &reversed_digits[..])
+    } else {
+        let mut result = Integer::new();
+        for ref d in digits.iter().rev() {
+            if d.sign() == Ordering::Less {
+                panic!("Each element of digits must be non-negative. Invalid digit: {} in {:?}",
+                       d,
+                       digits);
+            } else if d >= &radix {
+                panic!("Each element of digits must be less than radix, which is {}. Invalid \
+                        digit: {} in {:?}",
+                       radix,
+                       d,
+                       digits);
+            } else {
+                result *= radix;
+                result += *d;
+            }
+        }
+        result
+    }
+}
+
+pub fn from_big_endian_digits(radix: &Integer, digits: &[Integer]) -> Integer {
+    if *radix < 2 {
+        panic!("radix must be at least 2. Invalid radix: {}", radix);
+    } else if digits.is_empty() {
+        Integer::new()
+    } else if is_power_of_two(radix) {
+        let radix_log = ceiling_log_2_integer(radix);
+        let mut bits = Vec::new();
+        for ref d in digits.iter().rev() {
+            if d.sign() == Ordering::Less {
+                panic!("Each element of digits must be non-negative. Invalid digit: {} in {:?}",
+                       d,
+                       digits);
+            } else if d >= &radix {
+                panic!("Each element of digits must be less than radix, which is {}. Invalid \
+                        digit: {} in {:?}",
+                       radix,
+                       d,
+                       digits);
+            } else {
+                bits.append(&mut bits_padded_integer(radix_log as usize, &d));
+            }
+        }
+        let mut result = Integer::new();
+        result.assign_bits_unsigned(&bits[..]);
+        result
+    } else if *radix <= 36 {
+        let s: String =
+            digits.iter().map(|i| digit_to_char(i.to_u32().unwrap()).unwrap()).collect();
+        Integer::from_str_radix(&s[..], radix.to_i32().unwrap()).unwrap()
+    } else {
+        let mut result = Integer::new();
+        for ref d in digits {
+            if d.sign() == Ordering::Less {
+                panic!("Each element of digits must be non-negative. Invalid digit: {} in {:?}",
+                       d,
+                       digits);
+            } else if d >= &radix {
+                panic!("Each element of digits must be less than radix, which is {}. Invalid \
+                        digit: {} in {:?}",
+                       radix,
+                       d,
+                       digits);
+            } else {
+                result *= radix;
+                result += *d;
+            }
+        }
+        result
+    }
 }
