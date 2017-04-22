@@ -784,6 +784,57 @@ fn test_range_i() {
 }
 
 #[test]
+fn test_exhaustive_generate_from_vector() {
+    let (eo, ep, rp) = prepare_test();
+    let e_test = |number, xs| {
+        let xs: Vec<u32> = parse_vec(xs).unwrap();
+        eo.match_vec(&format!("exhaustive_exhaustive_generate_from_vector_{}", number),
+                     &mut ep.exhaustive_generate_from_vector(xs))
+    };
+    e_test("i", "[]");
+    e_test("ii", "[5]");
+    e_test("iii", "[1, 2, 3]");
+    e_test("iv", "[3, 1, 4, 1]");
+    let r_test = |number, xs| {
+        let xs: Vec<u32> = parse_vec(xs).unwrap();
+        eo.match_vec(&format!("exhaustive_exhaustive_generate_from_vector_{}", number),
+                     &mut rp.exhaustive_generate_from_vector(xs))
+    };
+    r_test("i", "[]");
+    r_test("ii", "[5]");
+    r_test("iii", "[1, 2, 3]");
+    r_test("iv", "[3, 1, 4, 1]");
+}
+
+#[test]
+fn test_generate_from_vector() {
+    let (eo, ep, rp) = prepare_test();
+    let e_test = |number, xs| {
+        let xs: Vec<u32> = parse_vec(xs).unwrap();
+        eo.match_vec(&format!("exhaustive_generate_from_vector_{}", number),
+                     &mut ep.generate_from_vector(xs));
+    };
+    e_test("i", "[]");
+    e_test("ii", "[5]");
+    e_test("iii", "[1, 2, 3]");
+    e_test("iv", "[3, 1, 4, 1]");
+    let r_test = |number, xs| {
+        let xs: Vec<u32> = parse_vec(xs).unwrap();
+        eo.match_vec(&format!("random_generate_from_vector_{}", number),
+                     &mut rp.generate_from_vector(xs));
+    };
+    r_test("i", "[5]");
+    r_test("ii", "[1, 2, 3]");
+    r_test("iii", "[3, 1, 4, 1]");
+}
+
+#[test]
+#[should_panic(expected = "Cannot randomly generate values from an empty Vec.")]
+fn generate_from_vector_fail() {
+    &mut IteratorProvider::example_random().generate_from_vector(Vec::<u32>::new());
+}
+
+#[test]
 fn test_chars_increasing() {
     let (eo, p, _) = prepare_test();
     eo.match_vec_debug("exhaustive_chars_increasing", &mut p.chars_increasing());
@@ -1136,57 +1187,6 @@ fn range_integer_fail_3() {
 #[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
 fn range_integer_fail_4() {
     range_integer_fail_helper(&IteratorProvider::example_random(), "-9", "-10")
-}
-
-fn exhaustive_generate_from_vector_helper(eo: &TestOutput,
-                                          p: &IteratorProvider,
-                                          key: &str,
-                                          xs: &str) {
-    let xs: Vec<u32> = parse_vec(xs).unwrap();
-    eo.match_vec(key, &mut p.exhaustive_generate_from_vector(xs));
-}
-
-#[test]
-fn test_exhaustive_generate_from_vector() {
-    let (eo, p, _) = prepare_test();
-    let s = "exhaustive_exhaustive_generate_from_vector";
-    exhaustive_generate_from_vector_helper(&eo, &p, &format!("{}_i", s), "[]");
-    exhaustive_generate_from_vector_helper(&eo, &p, &format!("{}_ii", s), "[5]");
-    exhaustive_generate_from_vector_helper(&eo, &p, &format!("{}_iii", s), "[1, 2, 3]");
-    exhaustive_generate_from_vector_helper(&eo, &p, &format!("{}_iv", s), "[3, 1, 4, 1]");
-}
-
-fn generate_from_vector_exhaustive_helper(eo: &TestOutput,
-                                          p: &IteratorProvider,
-                                          key: &str,
-                                          xs: &str) {
-    let xs: Vec<u32> = parse_vec(xs).unwrap();
-    eo.match_vec(key, &mut p.generate_from_vector(xs));
-}
-
-fn generate_from_vector_random_helper(eo: &TestOutput, p: &IteratorProvider, key: &str, xs: &str) {
-    let xs: Vec<u32> = parse_vec(xs).unwrap();
-    eo.match_vec_f(key, &mut p.generate_from_vector(xs));
-}
-
-#[test]
-fn test_generate_from_vector() {
-    let (eo, ep, rp) = prepare_test();
-    let es = "exhaustive_generate_from_vector";
-    generate_from_vector_exhaustive_helper(&eo, &ep, &format!("{}_i", es), "[]");
-    generate_from_vector_exhaustive_helper(&eo, &ep, &format!("{}_ii", es), "[5]");
-    generate_from_vector_exhaustive_helper(&eo, &ep, &format!("{}_iii", es), "[1, 2, 3]");
-    generate_from_vector_exhaustive_helper(&eo, &ep, &format!("{}_iv", es), "[3, 1, 4, 1]");
-    let rs = "random_generate_from_vector";
-    generate_from_vector_random_helper(&eo, &rp, &format!("{}_i", rs), "[5]");
-    generate_from_vector_random_helper(&eo, &rp, &format!("{}_ii", rs), "[1, 2, 3]");
-    generate_from_vector_random_helper(&eo, &rp, &format!("{}_iii", rs), "[3, 1, 4, 1]");
-}
-
-#[test]
-#[should_panic(expected = "Cannot randomly generate values from an empty Vec.")]
-fn generate_from_vector_fail() {
-    &mut IteratorProvider::example_random().generate_from_vector(Vec::<u32>::new());
 }
 
 #[test]
