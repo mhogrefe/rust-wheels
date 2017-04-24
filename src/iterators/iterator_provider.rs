@@ -112,35 +112,35 @@ impl<T: Clone> Iterator for ExhaustiveFromVector<T> {
     }
 }
 
-pub enum Booleans {
+pub enum Bools {
     Exhaustive(ExhaustiveFromVector<bool>),
     Random(IsaacRng),
 }
 
-impl Booleans {
-    pub fn exhaustive() -> Booleans {
-        Booleans::Exhaustive(ExhaustiveFromVector::new(vec![false, true]))
+impl Bools {
+    pub fn exhaustive() -> Bools {
+        Bools::Exhaustive(ExhaustiveFromVector::new(vec![false, true]))
     }
 
-    pub fn random(seed: &[u32]) -> Booleans {
-        Booleans::Random(SeedableRng::from_seed(seed))
+    pub fn random(seed: &[u32]) -> Bools {
+        Bools::Random(SeedableRng::from_seed(seed))
     }
 }
 
-impl Iterator for Booleans {
+impl Iterator for Bools {
     type Item = bool;
 
     fn next(&mut self) -> Option<bool> {
         match self {
-            &mut Booleans::Exhaustive(ref mut xs) => xs.next(),
-            &mut Booleans::Random(ref mut rng) => Some(rng.gen()),
+            &mut Bools::Exhaustive(ref mut xs) => xs.next(),
+            &mut Bools::Random(ref mut rng) => Some(rng.gen()),
         }
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
         match self {
-            &Booleans::Exhaustive(_) => (2, Some(2)),
-            &Booleans::Random(_) => (0, None),
+            &Bools::Exhaustive(_) => (2, Some(2)),
+            &Bools::Random(_) => (0, None),
         }
     }
 }
@@ -1008,6 +1008,34 @@ impl Iterator for NegativeI32sGeometric {
     }
 }
 
+pub enum NonzeroI32sGeometric {
+    Exhaustive(NonzeroI<i32>),
+    Random(PositiveU32sGeometric, Bools),
+}
+
+impl NonzeroI32sGeometric {
+    pub fn exhaustive() -> NonzeroI32sGeometric {
+        NonzeroI32sGeometric::Exhaustive(NonzeroI::exhaustive())
+    }
+}
+
+impl Iterator for NonzeroI32sGeometric {
+    type Item = i32;
+
+    fn next(&mut self) -> Option<i32> {
+        match self {
+            &mut NonzeroI32sGeometric::Exhaustive(ref mut xs) => xs.next(),
+            &mut NonzeroI32sGeometric::Random(ref mut us, ref mut bs) => {
+                if bs.next().unwrap() {
+                    us.next().map(|i| i as i32)
+                } else {
+                    us.next().map(|i| -(i as i32))
+                }
+            }
+        }
+    }
+}
+
 impl IteratorProvider {
     pub fn example_random() -> IteratorProvider {
         let key = "example";
@@ -1025,10 +1053,10 @@ impl IteratorProvider {
         }
     }
 
-    pub fn bools(&self) -> Booleans {
+    pub fn bools(&self) -> Bools {
         match self {
-            &IteratorProvider::Exhaustive => Booleans::exhaustive(),
-            &IteratorProvider::Random(_, seed) => Booleans::random(&seed[..]),
+            &IteratorProvider::Exhaustive => Bools::exhaustive(),
+            &IteratorProvider::Random(_, seed) => Bools::random(&seed[..]),
         }
     }
 
@@ -1289,6 +1317,16 @@ impl IteratorProvider {
         match self {
             &IteratorProvider::Exhaustive => NegativeI32sGeometric::exhaustive(),
             &IteratorProvider::Random(_, seed) => NegativeI32sGeometric::random(scale, &seed[..]),
+        }
+    }
+
+    pub fn nonzero_i32s_geometric(&self, scale: u32) -> NonzeroI32sGeometric {
+        match self {
+            &IteratorProvider::Exhaustive => NonzeroI32sGeometric::exhaustive(),
+            p => {
+                NonzeroI32sGeometric::Random(p.altered("abs").positive_u32s_geometric(scale),
+                                             p.altered("sign").bools())
+            }
         }
     }
 }
