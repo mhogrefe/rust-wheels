@@ -102,7 +102,7 @@ pub fn ceiling_log_2_u<T: PrimUnsignedInt>(n: T) -> u32 {
     }
 }
 
-pub fn ceiling_log_2_integer(n: &Integer) -> u32 {
+pub fn ceiling_log_2_integer(n: &Integer) -> u64 {
     if n.sign() != Ordering::Greater {
         panic!("n must be positive. Invalid n: {}", n);
     }
@@ -158,7 +158,7 @@ pub fn bits_padded_integer(size: usize, n: &Integer) -> Vec<bool> {
         panic!("n cannot be negative. Invalid n: {}", n);
     }
     let mut bits = Vec::with_capacity(size);
-    for i in 0..(size as u32) {
+    for i in 0..(size as u64) {
         bits.push(n.get_bit(i));
     }
     bits
@@ -231,7 +231,7 @@ pub fn big_endian_bits_padded_integer(size: usize, n: &Integer) -> Vec<bool> {
     }
     let mut i = size - 1;
     loop {
-        bits.push(n.get_bit(i as u32));
+        bits.push(n.get_bit(i as u64));
         if i == 0 {
             break;
         } else {
@@ -313,7 +313,7 @@ pub fn digits_integer(radix: &Integer, n: &Integer) -> Vec<Integer> {
         for x in n.to_u32s() {
             loop {
                 if x & mask != 0 {
-                    digit.set_bit(j, true);
+                    digit.set_bit(j);
                 }
                 i += 1;
                 if i == length {
@@ -346,7 +346,7 @@ pub fn digits_integer(radix: &Integer, n: &Integer) -> Vec<Integer> {
         while remaining != 0 {
             let last_index = digits.len();
             digits.push(radix.clone());
-            remaining.div_rem(&mut digits[last_index]);
+            remaining.div_rem_in_place(&mut digits[last_index]);
         }
         digits
     }
@@ -399,7 +399,7 @@ pub fn digits_padded_integer(size: usize, radix: &Integer, n: &Integer) -> Vec<I
                     break;
                 }
                 if x & mask != 0 {
-                    digit.set_bit(j, true);
+                    digit.set_bit(j);
                 }
                 i += 1;
                 j += 1;
@@ -426,8 +426,8 @@ pub fn digits_padded_integer(size: usize, radix: &Integer, n: &Integer) -> Vec<I
                    .chars()
                    .rev()
                    .map(|c| {
-                            Integer::from(c as u32 -
-                                          (if c >= '0' && c <= '9' { '0' } else { 'W' } as u32))
+                            Integer::from(c as i32 -
+                                          (if c >= '0' && c <= '9' { '0' } else { 'W' } as i32))
                         })
                    .chain(iter::repeat(Integer::from(0)))
                    .take(size)
@@ -440,7 +440,7 @@ pub fn digits_padded_integer(size: usize, radix: &Integer, n: &Integer) -> Vec<I
                 digits.push(Integer::from(0));
             } else {
                 digits.push(radix.clone());
-                remaining.div_rem(&mut digits[i]);
+                remaining.div_rem_in_place(&mut digits[i]);
             }
         }
         digits
