@@ -988,6 +988,26 @@ impl Iterator for NaturalU32sGeometric {
     }
 }
 
+pub struct NegativeI32sGeometric(PositiveU32sGeometric);
+
+impl NegativeI32sGeometric {
+    pub fn exhaustive() -> NegativeI32sGeometric {
+        NegativeI32sGeometric(PositiveU32sGeometric::exhaustive())
+    }
+
+    pub fn random(scale: u32, seed: &[u32]) -> NegativeI32sGeometric {
+        NegativeI32sGeometric(PositiveU32sGeometric::random(scale, seed))
+    }
+}
+
+impl Iterator for NegativeI32sGeometric {
+    type Item = i32;
+
+    fn next(&mut self) -> Option<i32> {
+        self.0.next().map(|i| -(i as i32))
+    }
+}
+
 impl IteratorProvider {
     pub fn example_random() -> IteratorProvider {
         let key = "example";
@@ -1262,6 +1282,13 @@ impl IteratorProvider {
         match self {
             &IteratorProvider::Exhaustive => NaturalU32sGeometric::exhaustive(),
             &IteratorProvider::Random(_, seed) => NaturalU32sGeometric::random(scale, &seed[..]),
+        }
+    }
+
+    pub fn negative_i32s_geometric(&self, scale: u32) -> NegativeI32sGeometric {
+        match self {
+            &IteratorProvider::Exhaustive => NegativeI32sGeometric::exhaustive(),
+            &IteratorProvider::Random(_, seed) => NegativeI32sGeometric::random(scale, &seed[..]),
         }
     }
 }
