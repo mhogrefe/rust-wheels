@@ -1161,6 +1161,30 @@ impl IteratorProvider {
         RangeDecreasing::new('\0', char::from_u32(127).unwrap())
     }
 
+    pub fn range_up_increasing_char(&self, a: char) -> RangeIncreasing<char> {
+        RangeIncreasing::new(a, char::MAX)
+    }
+
+    pub fn range_up_decreasing_char(&self, a: char) -> RangeDecreasing<char> {
+        RangeDecreasing::new(a, char::MAX)
+    }
+
+    pub fn range_down_increasing_char(&self, a: char) -> RangeIncreasing<char> {
+        RangeIncreasing::new('\0', a)
+    }
+
+    pub fn range_down_decreasing_char(&self, a: char) -> RangeDecreasing<char> {
+        RangeDecreasing::new('\0', a)
+    }
+
+    pub fn range_increasing_char(&self, a: char, b: char) -> RangeIncreasing<char> {
+        RangeIncreasing::new(a, b)
+    }
+
+    pub fn range_decreasing_char(&self, a: char, b: char) -> RangeDecreasing<char> {
+        RangeDecreasing::new(a, b)
+    }
+
     pub fn chars(&self) -> Chars {
         match self {
             &IteratorProvider::Exhaustive => Chars::exhaustive(),
@@ -1191,30 +1215,6 @@ impl IteratorProvider {
             &IteratorProvider::Exhaustive => RangeChar::exhaustive(a, b),
             &IteratorProvider::Random(_, seed) => RangeChar::random(a, b, &seed[..]),
         }
-    }
-
-    pub fn range_up_increasing_char(&self, a: char) -> RangeIncreasing<char> {
-        RangeIncreasing::new(a, char::MAX)
-    }
-
-    pub fn range_up_decreasing_char(&self, a: char) -> RangeDecreasing<char> {
-        RangeDecreasing::new(a, char::MAX)
-    }
-
-    pub fn range_down_increasing_char(&self, a: char) -> RangeIncreasing<char> {
-        RangeIncreasing::new('\0', a)
-    }
-
-    pub fn range_down_decreasing_char(&self, a: char) -> RangeDecreasing<char> {
-        RangeDecreasing::new('\0', a)
-    }
-
-    pub fn range_increasing_char(&self, a: char, b: char) -> RangeIncreasing<char> {
-        RangeIncreasing::new(a, b)
-    }
-
-    pub fn range_decreasing_char(&self, a: char, b: char) -> RangeDecreasing<char> {
-        RangeDecreasing::new(a, b)
     }
 
     pub fn range_up_increasing_integer(&self, a: Integer) -> RangeIncreasingUnboundedInteger {
