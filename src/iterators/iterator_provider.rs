@@ -1036,6 +1036,34 @@ impl Iterator for NonzeroI32sGeometric {
     }
 }
 
+pub enum I32sGeometric {
+    Exhaustive(AllI<i32>),
+    Random(NaturalU32sGeometric, Bools),
+}
+
+impl I32sGeometric {
+    pub fn exhaustive() -> I32sGeometric {
+        I32sGeometric::Exhaustive(AllI::exhaustive())
+    }
+}
+
+impl Iterator for I32sGeometric {
+    type Item = i32;
+
+    fn next(&mut self) -> Option<i32> {
+        match self {
+            &mut I32sGeometric::Exhaustive(ref mut xs) => xs.next(),
+            &mut I32sGeometric::Random(ref mut us, ref mut bs) => {
+                if bs.next().unwrap() {
+                    us.next().map(|i| i as i32)
+                } else {
+                    us.next().map(|i| -(i as i32))
+                }
+            }
+        }
+    }
+}
+
 impl IteratorProvider {
     pub fn example_random() -> IteratorProvider {
         let key = "example";
@@ -1326,6 +1354,16 @@ impl IteratorProvider {
             p => {
                 NonzeroI32sGeometric::Random(p.altered("abs").positive_u32s_geometric(scale),
                                              p.altered("sign").bools())
+            }
+        }
+    }
+
+    pub fn i32s_geometric(&self, scale: u32) -> I32sGeometric {
+        match self {
+            &IteratorProvider::Exhaustive => I32sGeometric::exhaustive(),
+            p => {
+                I32sGeometric::Random(p.altered("abs").natural_u32s_geometric(scale),
+                                      p.altered("sign").bools())
             }
         }
     }

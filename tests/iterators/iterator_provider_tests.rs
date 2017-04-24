@@ -1262,3 +1262,18 @@ fn test_nonzero_i32s_geometric() {
     test("v", 10);
     test("vi", 100);
 }
+
+#[test]
+fn test_i32s_geometric() {
+    let (eo, _, p) = prepare_test();
+    let test = |number, scale| {
+        eo.match_vec_f(&format!("random_i32s_geometric_{}", number),
+                       &mut p.i32s_geometric(scale))
+    };
+    test("i", 0);
+    test("ii", 1);
+    test("iii", 2);
+    test("iv", 3);
+    test("v", 10);
+    test("vi", 100);
+}
