@@ -1,9 +1,12 @@
+#[cfg(feature = "gmp")]
+use malachite_gmp::integer::Integer;
+#[cfg(feature = "native")]
+use malachite_native::integer::Integer;
 use common;
 use common::TestOutput;
-use gmp_to_flint_adaptor_lib::integer::Integer;
-use rust_wheels_lib::io::readers::parse_vec;
-use rust_wheels_lib::iterators::iterator_provider::IteratorProvider;
-use rust_wheels_lib::prim_utils::traits::*;
+use rust_wheels::io::readers::parse_vec;
+use rust_wheels::iterators::iterator_provider::IteratorProvider;
+use rust_wheels::prim_utils::traits::*;
 use std::char;
 use std::str::FromStr;
 

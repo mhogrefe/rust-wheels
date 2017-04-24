@@ -1,5 +1,8 @@
-extern crate gmp_to_flint_adaptor_lib;
-extern crate rust_wheels_lib;
+#[cfg(feature = "gmp")]
+extern crate malachite_gmp;
+#[cfg(feature = "native")]
+extern crate malachite_native;
+extern crate rust_wheels;
 
 pub mod common;
 

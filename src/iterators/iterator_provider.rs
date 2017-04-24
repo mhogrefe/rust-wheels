@@ -1,7 +1,7 @@
 #[cfg(feature = "gmp")]
-use gmp_to_flint_adaptor_lib::integer::Integer;
+use malachite_gmp::integer::Integer;
 #[cfg(feature = "native")]
-use num_to_flint_adaptor_lib::integer::Integer;
+use malachite_native::integer::Integer;
 
 use iterators::adaptors::MultiChain;
 use itertools::Interleave;

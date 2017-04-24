@@ -1,7 +1,10 @@
-use gmp_to_flint_adaptor_lib::integer::Integer;
-use rust_wheels_lib::io::readers::parse_vec;
-use rust_wheels_lib::prim_utils::integer_utils::*;
-use rust_wheels_lib::prim_utils::traits::*;
+#[cfg(feature = "gmp")]
+use malachite_gmp::integer::Integer;
+#[cfg(feature = "native")]
+use malachite_native::integer::Integer;
+use rust_wheels::io::readers::parse_vec;
+use rust_wheels::prim_utils::integer_utils::*;
+use rust_wheels::prim_utils::traits::*;
 use std::str::FromStr;
 
 macro_rules! prim_fail {

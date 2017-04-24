@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["Mikhail Hogrefe <mikhailhogrefe@gmail.com>"]
 
 [lib]
-name = "rust_wheels_lib"
+name = "rust_wheels"
 path = "src/lib.rs"
 
 [[bin]]
@@ -13,13 +13,13 @@ path = "src/bin.rs"
 
 [dependencies]
 
-gmp-to-flint-adaptor = { git = "https://github.com/mhogrefe/gmp-to-flint-adaptor.git", branch = "develop", optional = true}
-num-to-flint-adaptor = { path = "../num-to-flint-adaptor", optional = true }
+malachite-gmp = { path = "../malachite-gmp", optional = true }
+malachite-native = { path = "../malachite-native", optional = true }
 itertools = "0.5.9"
 rand = "0.3.0"
 sha3 = "0.4.1"
 
 [features]
 default = []
-gmp = ["gmp-to-flint-adaptor"]
-native = ["num-to-flint-adaptor"]
+gmp = ["malachite-gmp"]
+native = ["malachite-native"]
