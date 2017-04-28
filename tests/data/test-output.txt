@@ -8479,30 +8479,30 @@ random_ascii_chars map 10
 
 random_bools list 21
 true
-true
-false
-false
-true
-true
-false
-true
-false
-false
-true
 false
 false
 true
 true
 false
 false
+false
+false
+false
 true
+false
+false
+true
+true
+false
+false
+false
 true
 false
 ...
 
 random_bools map 2
-false: 500172
-true: 499828
+false: 501061
+true: 498939
 
 random_chars list 21
 '\u{30105}'
