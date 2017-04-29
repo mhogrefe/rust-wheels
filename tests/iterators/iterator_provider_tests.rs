@@ -675,7 +675,9 @@ fn random_range_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
     test("viii", T::from_i8(-20), T::from_i8(-10));
     test("ix", T::from_i8(-100), T::from_u8(100));
     test("x", T::min_value(), T::max_value());
-    test("xi", T::min_value() + T::from_u8(1), T::max_value() - T::from_u8(1));
+    test("xi",
+         T::min_value() + T::from_u8(1),
+         T::max_value() - T::from_u8(1));
 }
 
 #[test]
