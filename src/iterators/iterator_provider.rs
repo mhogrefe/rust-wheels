@@ -396,66 +396,50 @@ impl<T: Clone> Iterator for FromVector<T> {
     }
 }
 
-pub enum NegativeI<T: PrimSignedInt> {
-    Exhaustive(RangeDecreasing<T>),
-    Random(Random<T>),
+pub fn exhaustive_negative_i<T: PrimSignedInt>() -> RangeDecreasing<T> {
+    range_decreasing(T::min_value(), T::from_i8(-1))
 }
 
-impl<T: PrimSignedInt> NegativeI<T> {
-    pub fn exhaustive() -> NegativeI<T> {
-        NegativeI::Exhaustive(range_decreasing(T::min_value(), T::from_i8(-1)))
-    }
+pub struct RandomNegativeI<T: PrimSignedInt>(Random<T>);
 
-    pub fn random(seed: &[u32]) -> NegativeI<T> {
-        NegativeI::Random(random_x(seed))
-    }
+pub fn random_negative_i<T: PrimSignedInt>(seed: &[u32]) -> RandomNegativeI<T> {
+    RandomNegativeI(random_x(seed))
 }
 
-impl<T: PrimSignedInt> Iterator for NegativeI<T> {
+impl<T: PrimSignedInt> Iterator for RandomNegativeI<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        match self {
-            &mut NegativeI::Exhaustive(ref mut xs) => xs.next(),
-            &mut NegativeI::Random(ref mut xs) => xs.next().map(|x| !(x & T::max_value())),
-        }
+        self.0.next().map(|x| !(x & T::max_value()))
     }
 }
 
-pub enum NaturalI<T: PrimSignedInt> {
-    Exhaustive(RangeIncreasing<T>),
-    Random(Random<T>),
+pub fn exhaustive_natural_i<T: PrimSignedInt>() -> RangeIncreasing<T> {
+    range_increasing(T::from_u8(0), T::max_value())
 }
 
-impl<T: PrimSignedInt> NaturalI<T> {
-    pub fn exhaustive() -> NaturalI<T> {
-        NaturalI::Exhaustive(range_increasing(T::from_u8(0), T::max_value()))
-    }
+pub struct RandomNaturalI<T: PrimSignedInt>(Random<T>);
 
-    pub fn random(seed: &[u32]) -> NaturalI<T> {
-        NaturalI::Random(random_x(seed))
-    }
+pub fn random_natural_i<T: PrimSignedInt>(seed: &[u32]) -> RandomNaturalI<T> {
+    RandomNaturalI(random_x(seed))
 }
 
-impl<T: PrimSignedInt> Iterator for NaturalI<T> {
+impl<T: PrimSignedInt> Iterator for RandomNaturalI<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        match self {
-            &mut NaturalI::Exhaustive(ref mut xs) => xs.next(),
-            &mut NaturalI::Random(ref mut xs) => xs.next().map(|x| x & T::max_value()),
-        }
+        self.0.next().map(|x| x & T::max_value())
     }
 }
 
 pub enum NonzeroI<T: PrimSignedInt> {
-    Exhaustive(Interleave<RangeIncreasing<T>, NegativeI<T>>),
+    Exhaustive(Interleave<RangeIncreasing<T>, RangeDecreasing<T>>),
     Random(Random<T>),
 }
 
 impl<T: PrimSignedInt> NonzeroI<T> {
     pub fn exhaustive() -> NonzeroI<T> {
-        NonzeroI::Exhaustive(exhaustive_positive_x().interleave(NegativeI::exhaustive()))
+        NonzeroI::Exhaustive(exhaustive_positive_x().interleave(exhaustive_negative_i()))
     }
 
     pub fn random(seed: &[u32]) -> NonzeroI<T> {
@@ -1018,20 +1002,6 @@ impl IteratorProvider {
                 IteratorProvider::Random(new_key, scrambled_seed)
             }
             &IteratorProvider::Exhaustive => IteratorProvider::Exhaustive,
-        }
-    }
-
-    pub fn negative_i<T: PrimSignedInt>(&self) -> NegativeI<T> {
-        match self {
-            &IteratorProvider::Exhaustive => NegativeI::exhaustive(),
-            &IteratorProvider::Random(_, seed) => NegativeI::random(&seed[..]),
-        }
-    }
-
-    pub fn natural_i<T: PrimSignedInt>(&self) -> NaturalI<T> {
-        match self {
-            &IteratorProvider::Exhaustive => NaturalI::exhaustive(),
-            &IteratorProvider::Random(_, seed) => NaturalI::random(&seed[..]),
         }
     }
 

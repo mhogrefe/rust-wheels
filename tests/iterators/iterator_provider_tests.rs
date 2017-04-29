@@ -493,40 +493,36 @@ fn test_positive_i() {
     positive_i_helper::<i64>(&eo);
 }
 
-fn negative_i_helper<T: PrimSignedInt>(eo: &TestOutput,
-                                       ep: &IteratorProvider,
-                                       rp: &IteratorProvider) {
+fn negative_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
     eo.match_vec(&format!("exhaustive_negative_{}s", T::name()),
-                 &mut ep.negative_i::<T>());
+                 &mut exhaustive_negative_i::<T>());
     eo.match_vec_f(&format!("random_negative_{}s", T::name()),
-                   &mut rp.negative_i::<T>());
+                   &mut random_negative_i::<T>(&EXAMPLE_SEED[..]));
 }
 
 #[test]
 fn test_negative_i() {
-    let (eo, ep, rp) = prepare_test();
-    negative_i_helper::<i8>(&eo, &ep, &rp);
-    negative_i_helper::<i16>(&eo, &ep, &rp);
-    negative_i_helper::<i32>(&eo, &ep, &rp);
-    negative_i_helper::<i64>(&eo, &ep, &rp);
+    let eo = get_expected_test_outputs();
+    negative_i_helper::<i8>(&eo);
+    negative_i_helper::<i16>(&eo);
+    negative_i_helper::<i32>(&eo);
+    negative_i_helper::<i64>(&eo);
 }
 
-fn natural_i_helper<T: PrimSignedInt>(eo: &TestOutput,
-                                      ep: &IteratorProvider,
-                                      rp: &IteratorProvider) {
+fn natural_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
     eo.match_vec(&format!("exhaustive_natural_{}s", T::name()),
-                 &mut ep.natural_i::<T>());
+                 &mut exhaustive_natural_i::<T>());
     eo.match_vec_f(&format!("random_natural_{}s", T::name()),
-                   &mut rp.natural_i::<T>());
+                   &mut random_natural_i::<T>(&EXAMPLE_SEED[..]));
 }
 
 #[test]
 fn test_natural_i() {
-    let (eo, ep, rp) = prepare_test();
-    natural_i_helper::<i8>(&eo, &ep, &rp);
-    natural_i_helper::<i16>(&eo, &ep, &rp);
-    natural_i_helper::<i32>(&eo, &ep, &rp);
-    natural_i_helper::<i64>(&eo, &ep, &rp);
+    let eo = get_expected_test_outputs();
+    natural_i_helper::<i8>(&eo);
+    natural_i_helper::<i16>(&eo);
+    natural_i_helper::<i32>(&eo);
+    natural_i_helper::<i64>(&eo);
 }
 
 fn nonzero_i_helper<T: PrimSignedInt>(eo: &TestOutput,
