@@ -719,36 +719,36 @@ fn random_from_vector_fail() {
 
 #[test]
 fn test_chars_increasing() {
-    let (eo, p, _) = prepare_test();
-    eo.match_vec_debug("exhaustive_chars_increasing", &mut p.chars_increasing());
+    let eo = get_expected_test_outputs();
+    eo.match_vec_debug("exhaustive_chars_increasing", &mut chars_increasing());
 }
 
 #[test]
 fn test_chars_decreasing() {
-    let (eo, p, _) = prepare_test();
-    eo.match_vec_debug("exhaustive_chars_decreasing", &mut p.chars_decreasing());
+    let eo = get_expected_test_outputs();
+    eo.match_vec_debug("exhaustive_chars_decreasing", &mut chars_decreasing());
 }
 
 #[test]
 fn test_ascii_chars_increasing() {
-    let (eo, p, _) = prepare_test();
+    let eo = get_expected_test_outputs();
     eo.match_vec_debug("exhaustive_ascii_chars_increasing",
-                       &mut p.ascii_chars_increasing());
+                       &mut ascii_chars_increasing());
 }
 
 #[test]
 fn test_ascii_chars_decreasing() {
-    let (eo, p, _) = prepare_test();
+    let eo = get_expected_test_outputs();
     eo.match_vec_debug("exhaustive_ascii_chars_decreasing",
-                       &mut p.ascii_chars_decreasing());
+                       &mut ascii_chars_decreasing());
 }
 
 #[test]
 fn test_range_up_increasing_char() {
-    let (eo, p, _) = prepare_test();
+    let eo = get_expected_test_outputs();
     let test = |number, a| {
         eo.match_vec_debug(&format!("exhaustive_range_up_increasing_char_{}", number),
-                           &mut p.range_up_increasing_char(a))
+                           &mut range_up_increasing_char(a))
     };
     test("i", '\0');
     test("ii", 'a');
@@ -759,10 +759,10 @@ fn test_range_up_increasing_char() {
 
 #[test]
 fn test_range_up_decreasing_char() {
-    let (eo, p, _) = prepare_test();
+    let eo = get_expected_test_outputs();
     let test = |number, a| {
         eo.match_vec_debug(&format!("exhaustive_range_up_decreasing_char_{}", number),
-                           &mut p.range_up_decreasing_char(a))
+                           &mut range_up_decreasing_char(a))
     };
     test("i", '\0');
     test("ii", 'a');
@@ -773,10 +773,10 @@ fn test_range_up_decreasing_char() {
 
 #[test]
 fn test_range_down_increasing_char() {
-    let (eo, p, _) = prepare_test();
+    let eo = get_expected_test_outputs();
     let test = |number, a| {
         eo.match_vec_debug(&format!("exhaustive_range_down_increasing_char_{}", number),
-                           &mut p.range_down_increasing_char(a))
+                           &mut range_down_increasing_char(a))
     };
     test("i", '\0');
     test("ii", 'a');
@@ -787,10 +787,10 @@ fn test_range_down_increasing_char() {
 
 #[test]
 fn test_range_down_decreasing_char() {
-    let (eo, p, _) = prepare_test();
+    let eo = get_expected_test_outputs();
     let test = |number, a| {
         eo.match_vec_debug(&format!("exhaustive_range_down_decreasing_char_{}", number),
-                           &mut p.range_down_decreasing_char(a))
+                           &mut range_down_decreasing_char(a))
     };
     test("i", '\0');
     test("ii", 'a');
@@ -801,10 +801,10 @@ fn test_range_down_decreasing_char() {
 
 #[test]
 fn test_range_increasing_char() {
-    let (eo, p, _) = prepare_test();
+    let eo = get_expected_test_outputs();
     let test = |number, a, b| {
         eo.match_vec_debug(&format!("exhaustive_range_increasing_char_{}", number),
-                           &mut p.range_increasing_char(a, b))
+                           &mut range_increasing_x(a, b))
     };
     test("i", 'a', 'z');
     test("ii", 'a', 'a');
@@ -815,15 +815,15 @@ fn test_range_increasing_char() {
 #[test]
 #[should_panic(expected = "a must be less than or equal to b. a: a, b: A")]
 fn range_increasing_char_fail() {
-    IteratorProvider::Exhaustive.range_increasing_char('a', 'A');
+    range_increasing_x('a', 'A');
 }
 
 #[test]
 fn test_range_decreasing_char() {
-    let (eo, p, _) = prepare_test();
+    let eo = get_expected_test_outputs();
     let test = |number, a, b| {
         eo.match_vec_debug(&format!("exhaustive_range_decreasing_char_{}", number),
-                           &mut p.range_decreasing_char(a, b))
+                           &mut range_decreasing_x(a, b))
     };
     test("i", 'a', 'z');
     test("ii", 'a', 'a');
@@ -834,7 +834,7 @@ fn test_range_decreasing_char() {
 #[test]
 #[should_panic(expected = "a must be less than or equal to b. a: a, b: A")]
 fn range_decreasing_char_fail() {
-    IteratorProvider::Exhaustive.range_decreasing_char('a', 'A');
+    range_decreasing_x('a', 'A');
 }
 
 #[test]

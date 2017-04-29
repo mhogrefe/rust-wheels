@@ -233,11 +233,11 @@ pub fn range_down_decreasing_x<T: PrimInt>(b: T) -> RangeDecreasing<T> {
     range_decreasing(T::min_value(), b)
 }
 
-pub fn range_increasing_x<T: PrimInt>(a: T, b: T) -> RangeIncreasing<T> {
+pub fn range_increasing_x<T: Walkable>(a: T, b: T) -> RangeIncreasing<T> {
     range_increasing(a, b)
 }
 
-pub fn range_decreasing_x<T: PrimInt>(a: T, b: T) -> RangeDecreasing<T> {
+pub fn range_decreasing_x<T: Walkable>(a: T, b: T) -> RangeDecreasing<T> {
     range_decreasing(a, b)
 }
 
@@ -940,6 +940,38 @@ pub fn random_orderings(seed: &[u32]) -> RandomFromVector<Ordering> {
                        seed)
 }
 
+pub fn chars_increasing() -> RangeIncreasing<char> {
+    range_increasing('\0', char::MAX)
+}
+
+pub fn chars_decreasing() -> RangeDecreasing<char> {
+    range_decreasing('\0', char::MAX)
+}
+
+pub fn ascii_chars_increasing() -> RangeIncreasing<char> {
+    range_increasing('\0', char::from_u32(127).unwrap())
+}
+
+pub fn ascii_chars_decreasing() -> RangeDecreasing<char> {
+    range_decreasing('\0', char::from_u32(127).unwrap())
+}
+
+pub fn range_up_increasing_char(a: char) -> RangeIncreasing<char> {
+    range_increasing(a, char::MAX)
+}
+
+pub fn range_up_decreasing_char(a: char) -> RangeDecreasing<char> {
+    range_decreasing(a, char::MAX)
+}
+
+pub fn range_down_increasing_char(a: char) -> RangeIncreasing<char> {
+    range_increasing('\0', a)
+}
+
+pub fn range_down_decreasing_char(a: char) -> RangeDecreasing<char> {
+    range_decreasing('\0', a)
+}
+
 impl IteratorProvider {
     pub fn example_random() -> IteratorProvider {
         let key = "example";
@@ -955,46 +987,6 @@ impl IteratorProvider {
             }
             &IteratorProvider::Exhaustive => IteratorProvider::Exhaustive,
         }
-    }
-
-    pub fn chars_increasing(&self) -> RangeIncreasing<char> {
-        range_increasing('\0', char::MAX)
-    }
-
-    pub fn chars_decreasing(&self) -> RangeDecreasing<char> {
-        range_decreasing('\0', char::MAX)
-    }
-
-    pub fn ascii_chars_increasing(&self) -> RangeIncreasing<char> {
-        range_increasing('\0', char::from_u32(127).unwrap())
-    }
-
-    pub fn ascii_chars_decreasing(&self) -> RangeDecreasing<char> {
-        range_decreasing('\0', char::from_u32(127).unwrap())
-    }
-
-    pub fn range_up_increasing_char(&self, a: char) -> RangeIncreasing<char> {
-        range_increasing(a, char::MAX)
-    }
-
-    pub fn range_up_decreasing_char(&self, a: char) -> RangeDecreasing<char> {
-        range_decreasing(a, char::MAX)
-    }
-
-    pub fn range_down_increasing_char(&self, a: char) -> RangeIncreasing<char> {
-        range_increasing('\0', a)
-    }
-
-    pub fn range_down_decreasing_char(&self, a: char) -> RangeDecreasing<char> {
-        range_decreasing('\0', a)
-    }
-
-    pub fn range_increasing_char(&self, a: char, b: char) -> RangeIncreasing<char> {
-        range_increasing(a, b)
-    }
-
-    pub fn range_decreasing_char(&self, a: char, b: char) -> RangeDecreasing<char> {
-        range_decreasing(a, b)
     }
 
     pub fn chars(&self) -> Chars {
