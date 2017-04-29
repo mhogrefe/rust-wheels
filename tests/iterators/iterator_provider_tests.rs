@@ -525,27 +525,25 @@ fn test_natural_i() {
     natural_i_helper::<i64>(&eo);
 }
 
-fn nonzero_i_helper<T: PrimSignedInt>(eo: &TestOutput,
-                                      ep: &IteratorProvider,
-                                      rp: &IteratorProvider) {
+fn nonzero_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
     eo.match_vec(&format!("exhaustive_nonzero_{}s", T::name()),
-                 &mut ep.nonzero_i::<T>());
+                 &mut exhaustive_nonzero_i::<T>());
     eo.match_vec_f(&format!("random_nonzero_{}s", T::name()),
-                   &mut rp.nonzero_i::<T>());
+                   &mut random_nonzero_i::<T>(&EXAMPLE_SEED[..]));
 }
 
 #[test]
 fn test_nonzero_i() {
-    let (eo, ep, rp) = prepare_test();
-    nonzero_i_helper::<i8>(&eo, &ep, &rp);
-    nonzero_i_helper::<i16>(&eo, &ep, &rp);
-    nonzero_i_helper::<i32>(&eo, &ep, &rp);
-    nonzero_i_helper::<i64>(&eo, &ep, &rp);
+    let eo = get_expected_test_outputs();
+    nonzero_i_helper::<i8>(&eo);
+    nonzero_i_helper::<i16>(&eo);
+    nonzero_i_helper::<i32>(&eo);
+    nonzero_i_helper::<i64>(&eo);
 }
 
 fn all_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
     eo.match_vec(&format!("exhaustive_{}s", T::name()),
-                 &mut exhaustive_x::<T>());
+                 &mut exhaustive_u::<T>());
     eo.match_vec_f(&format!("random_{}s", T::name()),
                    &mut random_x::<T>(&EXAMPLE_SEED[..]));
 }
@@ -559,18 +557,20 @@ fn test_all_u() {
     all_u_helper::<u64>(&eo);
 }
 
-fn all_i_helper<T: PrimSignedInt>(eo: &TestOutput, ep: &IteratorProvider, rp: &IteratorProvider) {
-    eo.match_vec(&format!("exhaustive_{}s", T::name()), &mut ep.all_i::<T>());
-    eo.match_vec_f(&format!("random_{}s", T::name()), &mut rp.all_i::<T>());
+fn all_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
+    eo.match_vec(&format!("exhaustive_{}s", T::name()),
+                 &mut exhaustive_i::<T>());
+    eo.match_vec_f(&format!("random_{}s", T::name()),
+                   &mut random_x::<T>(&EXAMPLE_SEED[..]));
 }
 
 #[test]
 fn test_all_i() {
-    let (eo, ep, rp) = prepare_test();
-    all_i_helper::<i8>(&eo, &ep, &rp);
-    all_i_helper::<i16>(&eo, &ep, &rp);
-    all_i_helper::<i32>(&eo, &ep, &rp);
-    all_i_helper::<i64>(&eo, &ep, &rp);
+    let eo = get_expected_test_outputs();
+    all_i_helper::<i8>(&eo);
+    all_i_helper::<i16>(&eo);
+    all_i_helper::<i32>(&eo);
+    all_i_helper::<i64>(&eo);
 }
 
 fn random_range_up_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {

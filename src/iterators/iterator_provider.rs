@@ -289,8 +289,8 @@ impl<T: PrimSignedInt> Iterator for RandomPositiveI<T> {
     }
 }
 
-pub fn exhaustive_x<T: PrimInt>() -> RangeIncreasing<T> {
-    range_increasing(T::min_value(), T::max_value())
+pub fn exhaustive_u<T: PrimUnsignedInt>() -> RangeIncreasing<T> {
+    range_increasing(T::from_u8(0), T::max_value())
 }
 
 pub enum RandomRange<T: Rand> {
@@ -432,64 +432,38 @@ impl<T: PrimSignedInt> Iterator for RandomNaturalI<T> {
     }
 }
 
-pub enum NonzeroI<T: PrimSignedInt> {
-    Exhaustive(Interleave<RangeIncreasing<T>, RangeDecreasing<T>>),
-    Random(Random<T>),
+pub fn exhaustive_nonzero_i<T: PrimSignedInt>
+    ()
+    -> Interleave<RangeIncreasing<T>, RangeDecreasing<T>>
+{
+    exhaustive_positive_x().interleave(exhaustive_negative_i())
 }
 
-impl<T: PrimSignedInt> NonzeroI<T> {
-    pub fn exhaustive() -> NonzeroI<T> {
-        NonzeroI::Exhaustive(exhaustive_positive_x().interleave(exhaustive_negative_i()))
-    }
+pub struct RandomNonzeroI<T: PrimSignedInt>(Random<T>);
 
-    pub fn random(seed: &[u32]) -> NonzeroI<T> {
-        NonzeroI::Random(random_x(seed))
-    }
+pub fn random_nonzero_i<T: PrimSignedInt>(seed: &[u32]) -> RandomNonzeroI<T> {
+    RandomNonzeroI(random_x(seed))
 }
 
-impl<T: PrimSignedInt> Iterator for NonzeroI<T> {
+impl<T: PrimSignedInt> Iterator for RandomNonzeroI<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        match self {
-            &mut NonzeroI::Exhaustive(ref mut xs) => xs.next(),
-            &mut NonzeroI::Random(ref mut xs) => {
-                let zero = T::from_u8(0);
-                loop {
-                    let x = xs.next();
-                    if x.is_none() || x.unwrap() != zero {
-                        return x;
-                    }
-                }
+        let zero = T::from_u8(0);
+        loop {
+            let x = self.0.next();
+            if x.is_none() || x.unwrap() != zero {
+                return x;
             }
         }
     }
 }
 
-pub enum AllI<T: PrimSignedInt> {
-    Exhaustive(Chain<Once<T>, NonzeroI<T>>),
-    Random(Random<T>),
-}
-
-impl<T: PrimSignedInt> AllI<T> {
-    pub fn exhaustive() -> AllI<T> {
-        AllI::Exhaustive(once(T::from_u8(0)).chain(NonzeroI::exhaustive()))
-    }
-
-    pub fn random(seed: &[u32]) -> AllI<T> {
-        AllI::Random(random_x(seed))
-    }
-}
-
-impl<T: PrimSignedInt> Iterator for AllI<T> {
-    type Item = T;
-
-    fn next(&mut self) -> Option<T> {
-        match self {
-            &mut AllI::Exhaustive(ref mut xs) => xs.next(),
-            &mut AllI::Random(ref mut xs) => xs.next(),
-        }
-    }
+pub fn exhaustive_i<T: PrimSignedInt>
+    ()
+    -> Chain<Once<T>, Interleave<RangeIncreasing<T>, RangeDecreasing<T>>>
+{
+    once(T::from_u8(0)).chain(exhaustive_nonzero_i())
 }
 
 pub enum ExhaustiveRangeI<T: PrimSignedInt> {
@@ -933,13 +907,13 @@ impl Iterator for NegativeI32sGeometric {
 }
 
 pub enum NonzeroI32sGeometric {
-    Exhaustive(NonzeroI<i32>),
+    Exhaustive(Interleave<RangeIncreasing<i32>, RangeDecreasing<i32>>),
     Random(PositiveU32sGeometric, RandomBools),
 }
 
 impl NonzeroI32sGeometric {
     pub fn exhaustive() -> NonzeroI32sGeometric {
-        NonzeroI32sGeometric::Exhaustive(NonzeroI::exhaustive())
+        NonzeroI32sGeometric::Exhaustive(exhaustive_nonzero_i())
     }
 }
 
@@ -961,13 +935,13 @@ impl Iterator for NonzeroI32sGeometric {
 }
 
 pub enum I32sGeometric {
-    Exhaustive(AllI<i32>),
+    Exhaustive(Chain<Once<i32>, Interleave<RangeIncreasing<i32>, RangeDecreasing<i32>>>),
     Random(NaturalU32sGeometric, RandomBools),
 }
 
 impl I32sGeometric {
     pub fn exhaustive() -> I32sGeometric {
-        I32sGeometric::Exhaustive(AllI::exhaustive())
+        I32sGeometric::Exhaustive(exhaustive_i())
     }
 }
 
@@ -1002,20 +976,6 @@ impl IteratorProvider {
                 IteratorProvider::Random(new_key, scrambled_seed)
             }
             &IteratorProvider::Exhaustive => IteratorProvider::Exhaustive,
-        }
-    }
-
-    pub fn nonzero_i<T: PrimSignedInt>(&self) -> NonzeroI<T> {
-        match self {
-            &IteratorProvider::Exhaustive => NonzeroI::exhaustive(),
-            &IteratorProvider::Random(_, seed) => NonzeroI::random(&seed[..]),
-        }
-    }
-
-    pub fn all_i<T: PrimSignedInt>(&self) -> AllI<T> {
-        match self {
-            &IteratorProvider::Exhaustive => AllI::exhaustive(),
-            &IteratorProvider::Random(_, seed) => AllI::random(&seed[..]),
         }
     }
 
