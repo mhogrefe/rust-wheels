@@ -690,26 +690,12 @@ fn test_random_range() {
 }
 
 #[test]
-fn test_exhaustive_generate_from_vector() {
+fn test_from_vector() {
     let eo = get_expected_test_outputs();
     let e_test = |number, xs| {
         let xs: Vec<u32> = parse_vec(xs).unwrap();
-        eo.match_vec(&format!("exhaustive_exhaustive_generate_from_vector_{}", number),
-                     &mut exhaustive_from_vector(xs))
-    };
-    e_test("i", "[]");
-    e_test("ii", "[5]");
-    e_test("iii", "[1, 2, 3]");
-    e_test("iv", "[3, 1, 4, 1]");
-}
-
-#[test]
-fn test_generate_from_vector() {
-    let (eo, ep, rp) = prepare_test();
-    let e_test = |number, xs| {
-        let xs: Vec<u32> = parse_vec(xs).unwrap();
-        eo.match_vec(&format!("exhaustive_generate_from_vector_{}", number),
-                     &mut ep.generate_from_vector(xs));
+        eo.match_vec(&format!("exhaustive_from_vector_{}", number),
+                     &mut exhaustive_from_vector(xs));
     };
     e_test("i", "[]");
     e_test("ii", "[5]");
@@ -717,8 +703,8 @@ fn test_generate_from_vector() {
     e_test("iv", "[3, 1, 4, 1]");
     let r_test = |number, xs| {
         let xs: Vec<u32> = parse_vec(xs).unwrap();
-        eo.match_vec(&format!("random_generate_from_vector_{}", number),
-                     &mut rp.generate_from_vector(xs));
+        eo.match_vec_f(&format!("random_from_vector_{}", number),
+                       &mut random_from_vector(xs, &EXAMPLE_SEED[..]));
     };
     r_test("i", "[5]");
     r_test("ii", "[1, 2, 3]");
@@ -727,8 +713,8 @@ fn test_generate_from_vector() {
 
 #[test]
 #[should_panic(expected = "Cannot randomly generate values from an empty Vec.")]
-fn generate_from_vector_fail() {
-    &mut IteratorProvider::example_random().generate_from_vector(Vec::<u32>::new());
+fn random_from_vector_fail() {
+    &mut random_from_vector(Vec::<u32>::new(), &EXAMPLE_SEED[..]);
 }
 
 #[test]
@@ -1088,16 +1074,16 @@ fn range_integer_fail_4() {
 
 #[test]
 fn test_orderings_increasing() {
-    let (eo, p, _) = prepare_test();
+    let eo = get_expected_test_outputs();
     eo.match_vec_debug("exhaustive_orderings_increasing",
-                       &mut p.orderings_increasing());
+                       &mut orderings_increasing());
 }
 
 #[test]
 fn test_orderings() {
-    let (eo, ep, rp) = prepare_test();
-    eo.match_vec_debug("exhaustive_orderings", &mut ep.orderings());
-    eo.match_vec_f_debug("random_orderings", &mut rp.orderings());
+    let eo = get_expected_test_outputs();
+    eo.match_vec_debug("exhaustive_orderings", &mut exhaustive_orderings());
+    eo.match_vec_f_debug("random_orderings", &mut random_orderings(&EXAMPLE_SEED[..]));
 }
 
 #[test]

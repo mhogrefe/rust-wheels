@@ -107,6 +107,30 @@ impl<T: Clone> Iterator for ExhaustiveFromVector<T> {
     }
 }
 
+pub struct RandomFromVector<T> {
+    xs: Vec<T>,
+    range: RandomRange<usize>,
+}
+
+pub fn random_from_vector<T>(xs: Vec<T>, seed: &[u32]) -> RandomFromVector<T> {
+    if xs.is_empty() {
+        panic!("Cannot randomly generate values from an empty Vec.");
+    }
+    let limit = &xs.len() - 1;
+    RandomFromVector {
+        xs: xs,
+        range: random_range(0, limit, seed),
+    }
+}
+
+impl<T: Clone> Iterator for RandomFromVector<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<T> {
+        self.range.next().map(|i| self.xs[i].clone())
+    }
+}
+
 pub struct RandomBools(IsaacRng);
 
 pub fn exhaustive_bools() -> ExhaustiveFromVector<bool> {
@@ -335,65 +359,6 @@ pub fn random_range_up<T: PrimInt>(a: T, seed: &[u32]) -> RandomRange<T> {
 
 pub fn random_range_down<T: PrimInt>(a: T, seed: &[u32]) -> RandomRange<T> {
     random_range(T::min_value(), a, seed)
-}
-
-pub struct RandomFromVector<T> {
-    xs: Vec<T>,
-    range: RandomRange<usize>,
-}
-
-impl<T> RandomFromVector<T> {
-    pub fn new(xs: Vec<T>, seed: &[u32]) -> RandomFromVector<T> {
-        let limit = &xs.len() - 1;
-        RandomFromVector {
-            xs: xs,
-            range: random_range(0, limit, seed),
-        }
-    }
-}
-
-impl<T: Clone> Iterator for RandomFromVector<T> {
-    type Item = T;
-
-    fn next(&mut self) -> Option<T> {
-        self.range.next().map(|i| self.xs[i].clone())
-    }
-}
-
-pub enum FromVector<T> {
-    Exhaustive(ExhaustiveFromVector<T>),
-    Random(RandomFromVector<T>),
-}
-
-impl<T> FromVector<T> {
-    pub fn exhaustive(xs: Vec<T>) -> FromVector<T> {
-        FromVector::Exhaustive(exhaustive_from_vector(xs))
-    }
-
-    pub fn random(xs: Vec<T>, seed: &[u32]) -> FromVector<T> {
-        FromVector::Random(RandomFromVector::new(xs, seed))
-    }
-}
-
-impl<T: Clone> Iterator for FromVector<T> {
-    type Item = T;
-
-    fn next(&mut self) -> Option<T> {
-        match self {
-            &mut FromVector::Exhaustive(ref mut xs) => xs.next(),
-            &mut FromVector::Random(ref mut xs) => xs.next(),
-        }
-    }
-
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        match self {
-            &FromVector::Exhaustive(ExhaustiveFromVector { ref xs, i: _ }) => {
-                let len = xs.len();
-                (len, Some(len))
-            }
-            &FromVector::Random(_) => (0, None),
-        }
-    }
 }
 
 pub fn exhaustive_negative_i<T: PrimSignedInt>() -> RangeDecreasing<T> {
@@ -962,6 +927,19 @@ impl Iterator for I32sGeometric {
     }
 }
 
+pub fn orderings_increasing() -> ExhaustiveFromVector<Ordering> {
+    exhaustive_from_vector(vec![Ordering::Less, Ordering::Equal, Ordering::Greater])
+}
+
+pub fn exhaustive_orderings() -> ExhaustiveFromVector<Ordering> {
+    exhaustive_from_vector(vec![Ordering::Equal, Ordering::Less, Ordering::Greater])
+}
+
+pub fn random_orderings(seed: &[u32]) -> RandomFromVector<Ordering> {
+    random_from_vector(vec![Ordering::Equal, Ordering::Less, Ordering::Greater],
+                       seed)
+}
+
 impl IteratorProvider {
     pub fn example_random() -> IteratorProvider {
         let key = "example";
@@ -976,18 +954,6 @@ impl IteratorProvider {
                 IteratorProvider::Random(new_key, scrambled_seed)
             }
             &IteratorProvider::Exhaustive => IteratorProvider::Exhaustive,
-        }
-    }
-
-    pub fn generate_from_vector<T>(&self, xs: Vec<T>) -> FromVector<T> {
-        if xs.is_empty() {
-            if let IteratorProvider::Random(_, _) = *self {
-                panic!("Cannot randomly generate values from an empty Vec.");
-            }
-        }
-        match self {
-            &IteratorProvider::Exhaustive => FromVector::exhaustive(xs),
-            &IteratorProvider::Random(_, seed) => FromVector::random(xs, &seed[..]),
         }
     }
 
@@ -1087,14 +1053,6 @@ impl IteratorProvider {
             &IteratorProvider::Exhaustive => RangeInteger::exhaustive(a, b),
             &IteratorProvider::Random(_, seed) => RangeInteger::random(a, b, &seed[..]),
         }
-    }
-
-    pub fn orderings_increasing(&self) -> ExhaustiveFromVector<Ordering> {
-        exhaustive_from_vector(vec![Ordering::Less, Ordering::Equal, Ordering::Greater])
-    }
-
-    pub fn orderings(&self) -> FromVector<Ordering> {
-        self.generate_from_vector(vec![Ordering::Equal, Ordering::Less, Ordering::Greater])
     }
 
     pub fn positive_u32s_geometric(&self, scale: u32) -> PositiveU32sGeometric {

@@ -140,33 +140,17 @@ exhaustive_chars_increasing list 21
 '\u{13}'
 ...
 
-exhaustive_exhaustive_generate_from_vector_i list 0
+exhaustive_from_vector_i list 0
 
-exhaustive_exhaustive_generate_from_vector_ii list 1
+exhaustive_from_vector_ii list 1
 5
 
-exhaustive_exhaustive_generate_from_vector_iii list 3
+exhaustive_from_vector_iii list 3
 1
 2
 3
 
-exhaustive_exhaustive_generate_from_vector_iv list 4
-3
-1
-4
-1
-
-exhaustive_generate_from_vector_i list 0
-
-exhaustive_generate_from_vector_ii list 1
-5
-
-exhaustive_generate_from_vector_iii list 3
-1
-2
-3
-
-exhaustive_generate_from_vector_iv list 4
+exhaustive_from_vector_iv list 4
 3
 1
 4
@@ -6483,7 +6467,7 @@ random_chars map 10
 '\u{10aa98}': 7
 '\u{12c30}': 7
 
-random_generate_from_vector_i list 21
+random_from_vector_i list 21
 5
 5
 5
@@ -6506,64 +6490,64 @@ random_generate_from_vector_i list 21
 5
 ...
 
-random_generate_from_vector_i map 1
+random_from_vector_i map 1
 5: 1000000
 
-random_generate_from_vector_ii list 21
+random_from_vector_ii list 21
+2
 3
-2
-2
-1
-3
-2
-2
 2
 2
 3
 2
-3
-3
+1
+1
 1
 1
 2
-3
-3
-1
-1
-...
-
-random_generate_from_vector_ii map 3
-1: 334009
-2: 333434
-3: 332557
-
-random_generate_from_vector_iii list 21
-1
-3
-1
-1
-4
-3
-1
-3
-1
-4
-1
-1
-1
-1
-4
-4
-3
-1
+2
+2
+2
+2
+2
+2
+2
 3
 3
 ...
 
-random_generate_from_vector_iii map 3
-1: 499707
-3: 250406
-4: 249887
+random_from_vector_ii map 3
+1: 334013
+2: 333156
+3: 332831
+
+random_from_vector_iii list 21
+3
+1
+4
+4
+3
+3
+1
+3
+4
+4
+1
+3
+3
+4
+3
+4
+4
+4
+1
+3
+...
+
+random_from_vector_iii map 3
+1: 499207
+3: 250845
+4: 249948
 
 random_i16s list 21
 -6797
@@ -7966,32 +7950,32 @@ random_nonzero_i8s map 10
 80: 4038
 
 random_orderings list 21
+Less
 Greater
 Less
+Less
+Greater
 Less
 Equal
-Greater
-Less
-Less
-Less
-Less
-Greater
-Less
-Greater
-Greater
+Equal
 Equal
 Equal
 Less
+Less
+Less
+Less
+Less
+Less
+Less
+Less
 Greater
 Greater
-Equal
-Equal
 ...
 
 random_orderings map 3
-Equal: 334009
-Less: 333434
-Greater: 332557
+Equal: 334013
+Less: 333156
+Greater: 332831
 
 random_positive_i16s list 21
 25971
