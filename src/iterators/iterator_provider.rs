@@ -193,17 +193,47 @@ impl<T: Walkable> Iterator for RangeDecreasing<T> {
     }
 }
 
+pub fn range_up_increasing_x<T: PrimInt>(a: T) -> RangeIncreasing<T> {
+    range_increasing(a, T::max_value())
+}
+
+pub fn range_up_decreasing_x<T: PrimInt>(a: T) -> RangeDecreasing<T> {
+    range_decreasing(a, T::max_value())
+}
+
+pub fn range_down_increasing_x<T: PrimInt>(b: T) -> RangeIncreasing<T> {
+    range_increasing(T::min_value(), b)
+}
+
+pub fn range_down_decreasing_x<T: PrimInt>(b: T) -> RangeDecreasing<T> {
+    range_decreasing(T::min_value(), b)
+}
+
+pub fn range_increasing_x<T: PrimInt>(a: T, b: T) -> RangeIncreasing<T> {
+    range_increasing(a, b)
+}
+
+pub fn range_decreasing_x<T: PrimInt>(a: T, b: T) -> RangeDecreasing<T> {
+    range_decreasing(a, b)
+}
+
+pub fn x_increasing<T: PrimInt>() -> RangeIncreasing<T> {
+    range_increasing(T::min_value(), T::max_value())
+}
+
+pub fn x_decreasing<T: PrimInt>() -> RangeDecreasing<T> {
+    range_decreasing(T::min_value(), T::max_value())
+}
+
 pub struct Random<T: Rand> {
     rng: IsaacRng,
     boo: PhantomData<T>,
 }
 
-impl<T: Rand> Random<T> {
-    fn new(seed: &[u32]) -> Random<T> {
-        Random {
-            rng: SeedableRng::from_seed(seed),
-            boo: PhantomData,
-        }
+pub fn random_x<T: Rand>(seed: &[u32]) -> Random<T> {
+    Random {
+        rng: SeedableRng::from_seed(seed),
+        boo: PhantomData,
     }
 }
 
@@ -215,64 +245,52 @@ impl<T: Rand> Iterator for Random<T> {
     }
 }
 
-pub enum PositiveU<T: Rand + Walkable> {
-    Exhaustive(RangeIncreasing<T>),
-    Random(Random<T>),
+pub struct RandomPositiveU<T: Rand>(Random<T>);
+
+pub fn exhaustive_positive_x<T: PrimInt>() -> RangeIncreasing<T> {
+    range_increasing(T::from_u8(1), T::max_value())
 }
 
-impl<T: PrimUnsignedInt> PositiveU<T> {
-    pub fn exhaustive() -> PositiveU<T> {
-        PositiveU::Exhaustive(range_increasing(T::from_u8(1), T::max_value()))
-    }
-
-    pub fn random(seed: &[u32]) -> PositiveU<T> {
-        PositiveU::Random(Random::new(&seed))
-    }
+pub fn random_positive_u<T: Rand>(seed: &[u32]) -> RandomPositiveU<T> {
+    RandomPositiveU(random_x(seed))
 }
 
-impl<T: PrimUnsignedInt> Iterator for PositiveU<T> {
+impl<T: PrimUnsignedInt> Iterator for RandomPositiveU<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        match self {
-            &mut PositiveU::Exhaustive(ref mut xs) => xs.next(),
-            &mut PositiveU::Random(ref mut xs) => {
-                let zero = T::from_u8(0);
-                loop {
-                    let x = xs.next();
-                    if x.is_none() || x.unwrap() != zero {
-                        return x;
-                    }
-                }
+        let zero = T::from_u8(0);
+        loop {
+            let x = self.0.next();
+            if x.is_none() || x.unwrap() != zero {
+                return x;
             }
         }
     }
 }
 
-pub enum AllU<T: PrimUnsignedInt> {
-    Exhaustive(RangeIncreasing<T>),
-    Random(Random<T>),
+pub struct RandomPositiveI<T: PrimSignedInt>(Random<T>);
+
+pub fn random_positive_i<T: PrimSignedInt>(seed: &[u32]) -> RandomPositiveI<T> {
+    RandomPositiveI(random_x(seed))
 }
 
-impl<T: PrimUnsignedInt> AllU<T> {
-    pub fn exhaustive() -> AllU<T> {
-        AllU::Exhaustive(range_increasing(T::from_u8(0), T::max_value()))
-    }
-
-    pub fn random(seed: &[u32]) -> AllU<T> {
-        AllU::Random(Random::new(&seed))
-    }
-}
-
-impl<T: PrimUnsignedInt> Iterator for AllU<T> {
+impl<T: PrimSignedInt> Iterator for RandomPositiveI<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        match self {
-            &mut AllU::Exhaustive(ref mut xs) => xs.next(),
-            &mut AllU::Random(ref mut xs) => xs.next(),
+        let zero = T::from_u8(0);
+        loop {
+            let x = self.0.next().map(|x| x & T::max_value());
+            if x.is_none() || x.unwrap() != zero {
+                return x;
+            }
         }
     }
+}
+
+pub fn exhaustive_x<T: PrimInt>() -> RangeIncreasing<T> {
+    range_increasing(T::min_value(), T::max_value())
 }
 
 pub enum RandomRange<T: Rand> {
@@ -280,19 +298,17 @@ pub enum RandomRange<T: Rand> {
     All(Random<T>),
 }
 
-impl<T: PrimInt> RandomRange<T> {
-    pub fn new(a: T, b: T, seed: &[u32]) -> RandomRange<T> {
-        if a == T::min_value() && b == T::max_value() {
-            RandomRange::All(Random::new(&seed))
-        } else if b == T::max_value() {
-            RandomRange::Some(true,
-                              SeedableRng::from_seed(&seed[..]),
-                              Range::new(a - T::from_u8(1), b))
-        } else {
-            RandomRange::Some(false,
-                              SeedableRng::from_seed(&seed[..]),
-                              Range::new(a, b + T::from_u8(1)))
-        }
+pub fn random_range<T: PrimInt>(a: T, b: T, seed: &[u32]) -> RandomRange<T> {
+    if a == T::min_value() && b == T::max_value() {
+        RandomRange::All(random_x(seed))
+    } else if b == T::max_value() {
+        RandomRange::Some(true,
+                          SeedableRng::from_seed(seed),
+                          Range::new(a - T::from_u8(1), b))
+    } else {
+        RandomRange::Some(false,
+                          SeedableRng::from_seed(seed),
+                          Range::new(a, b + T::from_u8(1)))
     }
 }
 
@@ -313,35 +329,17 @@ impl<T: PrimInt> Iterator for RandomRange<T> {
     }
 }
 
-pub enum RangeU<T: Rand + Walkable> {
-    Exhaustive(RangeIncreasing<T>),
-    Random(RandomRange<T>),
+pub fn random_range_up<T: PrimInt>(a: T, seed: &[u32]) -> RandomRange<T> {
+    random_range(a, T::max_value(), seed)
 }
 
-impl<T: PrimUnsignedInt> RangeU<T> {
-    pub fn exhaustive(a: T, b: T) -> RangeU<T> {
-        RangeU::Exhaustive(range_increasing(a, b))
-    }
-
-    pub fn random(a: T, b: T, seed: &[u32]) -> RangeU<T> {
-        RangeU::Random(RandomRange::new(a, b, seed))
-    }
-}
-
-impl<T: PrimUnsignedInt> Iterator for RangeU<T> {
-    type Item = T;
-
-    fn next(&mut self) -> Option<T> {
-        match self {
-            &mut RangeU::Exhaustive(ref mut xs) => xs.next(),
-            &mut RangeU::Random(ref mut xs) => xs.next(),
-        }
-    }
+pub fn random_range_down<T: PrimInt>(a: T, seed: &[u32]) -> RandomRange<T> {
+    random_range(T::min_value(), a, seed)
 }
 
 pub struct RandomFromVector<T> {
     xs: Vec<T>,
-    range: RangeU<usize>,
+    range: RandomRange<usize>,
 }
 
 impl<T> RandomFromVector<T> {
@@ -349,7 +347,7 @@ impl<T> RandomFromVector<T> {
         let limit = &xs.len() - 1;
         RandomFromVector {
             xs: xs,
-            range: RangeU::random(0, limit, seed),
+            range: random_range(0, limit, seed),
         }
     }
 }
@@ -398,40 +396,6 @@ impl<T: Clone> Iterator for FromVector<T> {
     }
 }
 
-pub enum PositiveI<T: PrimSignedInt> {
-    Exhaustive(RangeIncreasing<T>),
-    Random(Random<T>),
-}
-
-impl<T: PrimSignedInt> PositiveI<T> {
-    pub fn exhaustive() -> PositiveI<T> {
-        PositiveI::Exhaustive(range_increasing(T::from_u8(1), T::max_value()))
-    }
-
-    pub fn random(seed: &[u32]) -> PositiveI<T> {
-        PositiveI::Random(Random::new(&seed))
-    }
-}
-
-impl<T: PrimSignedInt> Iterator for PositiveI<T> {
-    type Item = T;
-
-    fn next(&mut self) -> Option<T> {
-        match self {
-            &mut PositiveI::Exhaustive(ref mut xs) => xs.next(),
-            &mut PositiveI::Random(ref mut xs) => {
-                let zero = T::from_u8(0);
-                loop {
-                    let x = xs.next().map(|x| x & T::max_value());
-                    if x.is_none() || x.unwrap() != zero {
-                        return x;
-                    }
-                }
-            }
-        }
-    }
-}
-
 pub enum NegativeI<T: PrimSignedInt> {
     Exhaustive(RangeDecreasing<T>),
     Random(Random<T>),
@@ -443,7 +407,7 @@ impl<T: PrimSignedInt> NegativeI<T> {
     }
 
     pub fn random(seed: &[u32]) -> NegativeI<T> {
-        NegativeI::Random(Random::new(&seed))
+        NegativeI::Random(random_x(seed))
     }
 }
 
@@ -469,7 +433,7 @@ impl<T: PrimSignedInt> NaturalI<T> {
     }
 
     pub fn random(seed: &[u32]) -> NaturalI<T> {
-        NaturalI::Random(Random::new(&seed))
+        NaturalI::Random(random_x(seed))
     }
 }
 
@@ -485,17 +449,17 @@ impl<T: PrimSignedInt> Iterator for NaturalI<T> {
 }
 
 pub enum NonzeroI<T: PrimSignedInt> {
-    Exhaustive(Interleave<PositiveI<T>, NegativeI<T>>),
+    Exhaustive(Interleave<RangeIncreasing<T>, NegativeI<T>>),
     Random(Random<T>),
 }
 
 impl<T: PrimSignedInt> NonzeroI<T> {
     pub fn exhaustive() -> NonzeroI<T> {
-        NonzeroI::Exhaustive(PositiveI::exhaustive().interleave(NegativeI::exhaustive()))
+        NonzeroI::Exhaustive(exhaustive_positive_x().interleave(NegativeI::exhaustive()))
     }
 
     pub fn random(seed: &[u32]) -> NonzeroI<T> {
-        NonzeroI::Random(Random::new(&seed))
+        NonzeroI::Random(random_x(seed))
     }
 }
 
@@ -529,7 +493,7 @@ impl<T: PrimSignedInt> AllI<T> {
     }
 
     pub fn random(seed: &[u32]) -> AllI<T> {
-        AllI::Random(Random::new(&seed))
+        AllI::Random(random_x(seed))
     }
 }
 
@@ -592,7 +556,7 @@ impl<T: PrimSignedInt> RangeI<T> {
     }
 
     pub fn random(a: T, b: T, seed: &[u32]) -> RangeI<T> {
-        RangeI::Random(RandomRange::new(a, b, seed))
+        RangeI::Random(random_range(a, b, seed))
     }
 }
 
@@ -905,7 +869,7 @@ impl PositiveU32sGeometric {
     }
 
     pub fn random(scale: u32, seed: &[u32]) -> PositiveU32sGeometric {
-        PositiveU32sGeometric::Random(RandomRange::new(0, scale + 1, seed))
+        PositiveU32sGeometric::Random(random_range(0, scale + 1, seed))
     }
 }
 
@@ -940,7 +904,7 @@ impl NaturalU32sGeometric {
     }
 
     pub fn random(scale: u32, seed: &[u32]) -> NaturalU32sGeometric {
-        NaturalU32sGeometric::Random(RandomRange::new(0, scale + 1, seed))
+        NaturalU32sGeometric::Random(random_range(0, scale + 1, seed))
     }
 }
 
@@ -1057,52 +1021,6 @@ impl IteratorProvider {
         }
     }
 
-    pub fn range_up_increasing_x<T: PrimInt>(&self, a: T) -> RangeIncreasing<T> {
-        range_increasing(a, T::max_value())
-    }
-
-    pub fn range_up_decreasing_x<T: PrimInt>(&self, a: T) -> RangeDecreasing<T> {
-        range_decreasing(a, T::max_value())
-    }
-
-    pub fn range_down_increasing_x<T: PrimInt>(&self, b: T) -> RangeIncreasing<T> {
-        range_increasing(T::min_value(), b)
-    }
-
-    pub fn range_down_decreasing_x<T: PrimInt>(&self, b: T) -> RangeDecreasing<T> {
-        range_decreasing(T::min_value(), b)
-    }
-
-    pub fn range_increasing_x<T: PrimInt>(&self, a: T, b: T) -> RangeIncreasing<T> {
-        range_increasing(a, b)
-    }
-
-    pub fn range_decreasing_x<T: PrimInt>(&self, a: T, b: T) -> RangeDecreasing<T> {
-        range_decreasing(a, b)
-    }
-
-    pub fn x_increasing<T: PrimInt>(&self) -> RangeIncreasing<T> {
-        range_increasing(T::min_value(), T::max_value())
-    }
-
-    pub fn x_decreasing<T: PrimInt>(&self) -> RangeDecreasing<T> {
-        range_decreasing(T::min_value(), T::max_value())
-    }
-
-    pub fn positive_u<T: PrimUnsignedInt>(&self) -> PositiveU<T> {
-        match self {
-            &IteratorProvider::Exhaustive => PositiveU::exhaustive(),
-            &IteratorProvider::Random(_, seed) => PositiveU::random(&seed[..]),
-        }
-    }
-
-    pub fn positive_i<T: PrimSignedInt>(&self) -> PositiveI<T> {
-        match self {
-            &IteratorProvider::Exhaustive => PositiveI::exhaustive(),
-            &IteratorProvider::Random(_, seed) => PositiveI::random(&seed[..]),
-        }
-    }
-
     pub fn negative_i<T: PrimSignedInt>(&self) -> NegativeI<T> {
         match self {
             &IteratorProvider::Exhaustive => NegativeI::exhaustive(),
@@ -1124,53 +1042,10 @@ impl IteratorProvider {
         }
     }
 
-    pub fn all_u<T: PrimUnsignedInt>(&self) -> AllU<T> {
-        match self {
-            &IteratorProvider::Exhaustive => AllU::exhaustive(),
-            &IteratorProvider::Random(_, seed) => AllU::random(&seed[..]),
-        }
-    }
-
     pub fn all_i<T: PrimSignedInt>(&self) -> AllI<T> {
         match self {
             &IteratorProvider::Exhaustive => AllI::exhaustive(),
             &IteratorProvider::Random(_, seed) => AllI::random(&seed[..]),
-        }
-    }
-
-    pub fn range_up_u<T: PrimUnsignedInt>(&self, a: T) -> RangeU<T> {
-        self.range_u(a, T::max_value())
-    }
-
-    pub fn range_up_i<T: PrimSignedInt>(&self, a: T) -> RangeI<T> {
-        self.range_i(a, T::max_value())
-    }
-
-    pub fn range_down_u<T: PrimUnsignedInt>(&self, a: T) -> RangeU<T> {
-        self.range_u(T::from_u8(0), a)
-    }
-
-    pub fn range_down_i<T: PrimSignedInt>(&self, a: T) -> RangeI<T> {
-        self.range_i(T::min_value(), a)
-    }
-
-    pub fn range_u<T: PrimUnsignedInt>(&self, a: T, b: T) -> RangeU<T> {
-        if a > b {
-            panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
-        }
-        match self {
-            &IteratorProvider::Exhaustive => RangeU::exhaustive(a, b),
-            &IteratorProvider::Random(_, seed) => RangeU::random(a, b, &seed[..]),
-        }
-    }
-
-    pub fn range_i<T: PrimSignedInt>(&self, a: T, b: T) -> RangeI<T> {
-        if a > b {
-            panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
-        }
-        match self {
-            &IteratorProvider::Exhaustive => RangeI::exhaustive(a, b),
-            &IteratorProvider::Random(_, seed) => RangeI::random(a, b, &seed[..]),
         }
     }
 

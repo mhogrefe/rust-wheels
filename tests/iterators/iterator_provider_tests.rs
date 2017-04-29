@@ -4,9 +4,7 @@ use malachite_gmp::integer::Integer;
 use malachite_native::integer::Integer;
 use common::{get_expected_test_outputs, TestOutput};
 use rust_wheels::io::readers::parse_vec;
-use rust_wheels::iterators::iterator_provider::{EXAMPLE_SEED, exhaustive_bools,
-                                                exhaustive_from_vector, IteratorProvider,
-                                                random_bools};
+use rust_wheels::iterators::iterator_provider::*;
 use rust_wheels::prim_utils::traits::*;
 use std::char;
 use std::str::FromStr;
@@ -20,13 +18,13 @@ macro_rules! prim_fail {
         #[test]
         #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
         fn $range_increasing_fail() {
-            IteratorProvider::Exhaustive.range_increasing_x::<$t>(10, 9);
+            range_increasing_x::<$t>(10, 9);
         }
 
         #[test]
         #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
         fn $range_decreasing_fail() {
-            IteratorProvider::Exhaustive.range_decreasing_x::<$t>(10, 9);
+            range_decreasing_x::<$t>(10, 9);
         }
     }
 }
@@ -53,17 +51,17 @@ prim_fail!(isize,
            range_decreasing_isize_fail_1);
 
 macro_rules! prim_fail_u {
-    ($t: ty, $range_fail_1: ident, $range_fail_2: ident) => {
+    ($t: ty, $random_range_fail_1: ident, $random_range_fail_2: ident) => {
         #[test]
-        #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
-        fn $range_fail_1() {
-            IteratorProvider::Exhaustive.range_u::<$t>(10, 9);
+        #[should_panic(expected = "Range::new called with `low >= high")]
+        fn $random_range_fail_1() {
+            random_range::<$t>(10, 9, &EXAMPLE_SEED[..]);
         }
 
         #[test]
-        #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
-        fn $range_fail_2() {
-            IteratorProvider::example_random().range_u::<$t>(10, 9);
+        #[should_panic(expected = "Range::new called with `low >= high")]
+        fn $random_range_fail_2() {
+            random_range::<$t>(10, 9, &EXAMPLE_SEED[..]);
         }
     }
 }
@@ -79,45 +77,45 @@ macro_rules! prim_fail_i {
         $t: ty,
         $range_increasing_fail: ident,
         $range_decreasing_fail: ident,
-        $range_fail_1: ident,
-        $range_fail_2: ident,
-        $range_fail_3: ident,
-        $range_fail_4: ident
+        $random_range_fail_1: ident,
+        $random_range_fail_2: ident,
+        $random_range_fail_3: ident,
+        $random_range_fail_4: ident
     ) => {
         #[test]
         #[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
         fn $range_increasing_fail() {
-            IteratorProvider::Exhaustive.range_increasing_x::<i8>(-9, -10);
+            range_increasing_x::<i8>(-9, -10);
         }
 
         #[test]
         #[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
         fn $range_decreasing_fail() {
-            IteratorProvider::Exhaustive.range_decreasing_x::<i8>(-9, -10);
+            range_decreasing_x::<i8>(-9, -10);
         }
 
         #[test]
-        #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
-        fn $range_fail_1() {
-            IteratorProvider::Exhaustive.range_i::<$t>(10, 9);
+        #[should_panic(expected = "Range::new called with `low >= high")]
+        fn $random_range_fail_1() {
+            random_range::<$t>(10, 9, &EXAMPLE_SEED[..]);
         }
 
         #[test]
-        #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
-        fn $range_fail_2() {
-            IteratorProvider::example_random().range_i::<$t>(10, 9);
+        #[should_panic(expected = "Range::new called with `low >= high")]
+        fn $random_range_fail_2() {
+            random_range::<$t>(10, 9, &EXAMPLE_SEED[..]);
         }
 
         #[test]
-        #[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
-        fn $range_fail_3() {
-            IteratorProvider::Exhaustive.range_i::<$t>(-9, -10);
+        #[should_panic(expected = "Range::new called with `low >= high")]
+        fn $random_range_fail_3() {
+            random_range::<$t>(-9, -10, &EXAMPLE_SEED[..]);
         }
 
         #[test]
-        #[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
-        fn $range_fail_4() {
-            IteratorProvider::example_random().range_i::<$t>(-9, -10);
+        #[should_panic(expected = "Range::new called with `low >= high")]
+        fn $random_range_fail_4() {
+            random_range::<$t>(-9, -10, &EXAMPLE_SEED[..]);
         }
     }
 }
@@ -125,38 +123,38 @@ macro_rules! prim_fail_i {
 prim_fail_i!(i8,
              range_increasing_i8_fail_2,
              range_decreasing_i8_fail_2,
-             range_fail_i8_1,
-             range_fail_i8_2,
-             range_fail_i8_3,
-             range_fail_i8_4);
+             random_range_fail_i8_1,
+             random_range_fail_i8_2,
+             random_range_fail_i8_3,
+             random_range_fail_i8_4);
 prim_fail_i!(i16,
              range_increasing_i16_fail_2,
              range_decreasing_i16_fail_2,
-             range_fail_i16_1,
-             range_fail_i16_2,
-             range_fail_i16_3,
-             range_fail_i16_4);
+             random_range_fail_i16_1,
+             random_range_fail_i16_2,
+             random_range_fail_i16_3,
+             random_range_fail_i16_4);
 prim_fail_i!(i32,
              range_increasing_i32_fail_2,
              range_decreasing_i32_fail_2,
-             range_fail_i32_1,
-             range_fail_i32_2,
-             range_fail_i32_3,
-             range_fail_i32_4);
+             random_range_fail_i32_1,
+             random_range_fail_i32_2,
+             random_range_fail_i32_3,
+             random_range_fail_i32_4);
 prim_fail_i!(i64,
              range_increasing_i64_fail_2,
              range_decreasing_i64_fail_2,
-             range_fail_i64_1,
-             range_fail_i64_2,
-             range_fail_i64_3,
-             range_fail_i64_4);
+             random_range_fail_i64_1,
+             random_range_fail_i64_2,
+             random_range_fail_i64_3,
+             random_range_fail_i64_4);
 prim_fail_i!(isize,
              range_increasing_isize_fail_2,
              range_decreasing_isize_fail_2,
-             range_fail_isize_1,
-             range_fail_isize_2,
-             range_fail_isize_3,
-             range_fail_isize_4);
+             random_range_fail_isize_1,
+             random_range_fail_isize_2,
+             random_range_fail_isize_3,
+             random_range_fail_isize_4);
 
 #[test]
 fn test_bools() {
@@ -165,10 +163,10 @@ fn test_bools() {
     eo.match_vec_f("random_bools", &mut random_bools(&EXAMPLE_SEED[..]));
 }
 
-fn range_up_increasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput, p: &IteratorProvider) {
+fn range_up_increasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec(&format!("exhaustive_range_up_increasing_{}_{}", T::name(), number),
-                     &mut p.range_up_increasing_x(a))
+                     &mut range_up_increasing_x(a))
     };
     test("i", T::from_u8(0));
     test("ii", T::from_u8(5));
@@ -177,17 +175,17 @@ fn range_up_increasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput, p: &Iterato
 
 #[test]
 fn test_range_up_increasing_u() {
-    let (eo, p, _) = prepare_test();
-    range_up_increasing_u_helper::<u8>(&eo, &p);
-    range_up_increasing_u_helper::<u16>(&eo, &p);
-    range_up_increasing_u_helper::<u32>(&eo, &p);
-    range_up_increasing_u_helper::<u64>(&eo, &p);
+    let eo = get_expected_test_outputs();
+    range_up_increasing_u_helper::<u8>(&eo);
+    range_up_increasing_u_helper::<u16>(&eo);
+    range_up_increasing_u_helper::<u32>(&eo);
+    range_up_increasing_u_helper::<u64>(&eo);
 }
 
-fn range_up_increasing_i_helper<T: PrimSignedInt>(eo: &TestOutput, p: &IteratorProvider) {
+fn range_up_increasing_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec(&format!("exhaustive_range_up_increasing_{}_{}", T::name(), number),
-                     &mut p.range_up_increasing_x(a))
+                     &mut range_up_increasing_x(a))
     };
     test("i", T::from_u8(0));
     test("ii", T::from_u8(5));
@@ -198,17 +196,17 @@ fn range_up_increasing_i_helper<T: PrimSignedInt>(eo: &TestOutput, p: &IteratorP
 
 #[test]
 fn test_range_up_increasing_i() {
-    let (eo, p, _) = prepare_test();
-    range_up_increasing_i_helper::<i8>(&eo, &p);
-    range_up_increasing_i_helper::<i16>(&eo, &p);
-    range_up_increasing_i_helper::<i32>(&eo, &p);
-    range_up_increasing_i_helper::<i64>(&eo, &p);
+    let eo = get_expected_test_outputs();
+    range_up_increasing_i_helper::<i8>(&eo);
+    range_up_increasing_i_helper::<i16>(&eo);
+    range_up_increasing_i_helper::<i32>(&eo);
+    range_up_increasing_i_helper::<i64>(&eo);
 }
 
-fn range_up_decreasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput, p: &IteratorProvider) {
+fn range_up_decreasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec(&format!("exhaustive_range_up_decreasing_{}_{}", T::name(), number),
-                     &mut p.range_up_decreasing_x(a))
+                     &mut range_up_decreasing_x(a))
     };
     test("i", T::from_u8(0));
     test("ii", T::from_u8(5));
@@ -217,17 +215,17 @@ fn range_up_decreasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput, p: &Iterato
 
 #[test]
 fn test_range_up_decreasing_u() {
-    let (eo, p, _) = prepare_test();
-    range_up_decreasing_u_helper::<u8>(&eo, &p);
-    range_up_decreasing_u_helper::<u16>(&eo, &p);
-    range_up_decreasing_u_helper::<u32>(&eo, &p);
-    range_up_decreasing_u_helper::<u64>(&eo, &p);
+    let eo = get_expected_test_outputs();
+    range_up_decreasing_u_helper::<u8>(&eo);
+    range_up_decreasing_u_helper::<u16>(&eo);
+    range_up_decreasing_u_helper::<u32>(&eo);
+    range_up_decreasing_u_helper::<u64>(&eo);
 }
 
-fn range_up_decreasing_i_helper<T: PrimSignedInt>(eo: &TestOutput, p: &IteratorProvider) {
+fn range_up_decreasing_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec(&format!("exhaustive_range_up_decreasing_{}_{}", T::name(), number),
-                     &mut p.range_up_decreasing_x(a))
+                     &mut range_up_decreasing_x(a))
     };
     test("i", T::from_u8(0));
     test("ii", T::from_u8(5));
@@ -238,17 +236,17 @@ fn range_up_decreasing_i_helper<T: PrimSignedInt>(eo: &TestOutput, p: &IteratorP
 
 #[test]
 fn test_range_up_decreasing_i() {
-    let (eo, p, _) = prepare_test();
-    range_up_decreasing_i_helper::<i8>(&eo, &p);
-    range_up_decreasing_i_helper::<i16>(&eo, &p);
-    range_up_decreasing_i_helper::<i32>(&eo, &p);
-    range_up_decreasing_i_helper::<i64>(&eo, &p);
+    let eo = get_expected_test_outputs();
+    range_up_decreasing_i_helper::<i8>(&eo);
+    range_up_decreasing_i_helper::<i16>(&eo);
+    range_up_decreasing_i_helper::<i32>(&eo);
+    range_up_decreasing_i_helper::<i64>(&eo);
 }
 
-fn range_down_increasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput, p: &IteratorProvider) {
+fn range_down_increasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec(&format!("exhaustive_range_down_increasing_{}_{}", T::name(), number),
-                     &mut p.range_down_increasing_x(a))
+                     &mut range_down_increasing_x(a))
     };
     test("i", T::from_u8(0));
     test("ii", T::from_u8(5));
@@ -257,17 +255,17 @@ fn range_down_increasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput, p: &Itera
 
 #[test]
 fn test_range_down_increasing_u() {
-    let (eo, p, _) = prepare_test();
-    range_down_increasing_u_helper::<u8>(&eo, &p);
-    range_down_increasing_u_helper::<u16>(&eo, &p);
-    range_down_increasing_u_helper::<u32>(&eo, &p);
-    range_down_increasing_u_helper::<u64>(&eo, &p);
+    let eo = get_expected_test_outputs();
+    range_down_increasing_u_helper::<u8>(&eo);
+    range_down_increasing_u_helper::<u16>(&eo);
+    range_down_increasing_u_helper::<u32>(&eo);
+    range_down_increasing_u_helper::<u64>(&eo);
 }
 
-fn range_down_increasing_i_helper<T: PrimSignedInt>(eo: &TestOutput, p: &IteratorProvider) {
+fn range_down_increasing_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec(&format!("exhaustive_range_down_increasing_{}_{}", T::name(), number),
-                     &mut p.range_down_increasing_x(a))
+                     &mut range_down_increasing_x(a))
     };
     test("i", T::from_u8(0));
     test("ii", T::from_u8(5));
@@ -278,17 +276,17 @@ fn range_down_increasing_i_helper<T: PrimSignedInt>(eo: &TestOutput, p: &Iterato
 
 #[test]
 fn test_range_down_increasing_i() {
-    let (eo, p, _) = prepare_test();
-    range_down_increasing_i_helper::<i8>(&eo, &p);
-    range_down_increasing_i_helper::<i16>(&eo, &p);
-    range_down_increasing_i_helper::<i32>(&eo, &p);
-    range_down_increasing_i_helper::<i64>(&eo, &p);
+    let eo = get_expected_test_outputs();
+    range_down_increasing_i_helper::<i8>(&eo);
+    range_down_increasing_i_helper::<i16>(&eo);
+    range_down_increasing_i_helper::<i32>(&eo);
+    range_down_increasing_i_helper::<i64>(&eo);
 }
 
-fn range_down_decreasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput, p: &IteratorProvider) {
+fn range_down_decreasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec(&format!("exhaustive_range_down_decreasing_{}_{}", T::name(), number),
-                     &mut p.range_down_decreasing_x(a))
+                     &mut range_down_decreasing_x(a))
     };
     test("i", T::from_u8(0));
     test("ii", T::from_u8(5));
@@ -297,17 +295,17 @@ fn range_down_decreasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput, p: &Itera
 
 #[test]
 fn test_range_down_decreasing_u() {
-    let (eo, p, _) = prepare_test();
-    range_down_decreasing_u_helper::<u8>(&eo, &p);
-    range_down_decreasing_u_helper::<u16>(&eo, &p);
-    range_down_decreasing_u_helper::<u32>(&eo, &p);
-    range_down_decreasing_u_helper::<u64>(&eo, &p);
+    let eo = get_expected_test_outputs();
+    range_down_decreasing_u_helper::<u8>(&eo);
+    range_down_decreasing_u_helper::<u16>(&eo);
+    range_down_decreasing_u_helper::<u32>(&eo);
+    range_down_decreasing_u_helper::<u64>(&eo);
 }
 
-fn range_down_decreasing_i_helper<T: PrimSignedInt>(eo: &TestOutput, p: &IteratorProvider) {
+fn range_down_decreasing_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec(&format!("exhaustive_range_down_decreasing_{}_{}", T::name(), number),
-                     &mut p.range_down_decreasing_x(a))
+                     &mut range_down_decreasing_x(a))
     };
     test("i", T::from_u8(0));
     test("ii", T::from_u8(5));
@@ -318,17 +316,17 @@ fn range_down_decreasing_i_helper<T: PrimSignedInt>(eo: &TestOutput, p: &Iterato
 
 #[test]
 fn test_range_down_decreasing_i() {
-    let (eo, p, _) = prepare_test();
-    range_down_decreasing_i_helper::<i8>(&eo, &p);
-    range_down_decreasing_i_helper::<i16>(&eo, &p);
-    range_down_decreasing_i_helper::<i32>(&eo, &p);
-    range_down_decreasing_i_helper::<i64>(&eo, &p);
+    let eo = get_expected_test_outputs();
+    range_down_decreasing_i_helper::<i8>(&eo);
+    range_down_decreasing_i_helper::<i16>(&eo);
+    range_down_decreasing_i_helper::<i32>(&eo);
+    range_down_decreasing_i_helper::<i64>(&eo);
 }
 
-fn range_increasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput, p: &IteratorProvider) {
+fn range_increasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
     let test = |number, a, b| {
         eo.match_vec(&format!("exhaustive_range_increasing_{}_{}", T::name(), number),
-                     &mut p.range_increasing_x(a, b))
+                     &mut range_increasing_x(a, b))
     };
     test("i", T::from_u8(0), T::from_u8(0));
     test("ii", T::from_u8(0), T::from_u8(10));
@@ -340,17 +338,17 @@ fn range_increasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput, p: &IteratorPr
 
 #[test]
 fn test_range_increasing_u() {
-    let (eo, p, _) = prepare_test();
-    range_increasing_u_helper::<u8>(&eo, &p);
-    range_increasing_u_helper::<u16>(&eo, &p);
-    range_increasing_u_helper::<u32>(&eo, &p);
-    range_increasing_u_helper::<u64>(&eo, &p);
+    let eo = get_expected_test_outputs();
+    range_increasing_u_helper::<u8>(&eo);
+    range_increasing_u_helper::<u16>(&eo);
+    range_increasing_u_helper::<u32>(&eo);
+    range_increasing_u_helper::<u64>(&eo);
 }
 
-fn range_increasing_i_helper<T: PrimSignedInt>(eo: &TestOutput, p: &IteratorProvider) {
+fn range_increasing_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
     let test = |number, a, b| {
         eo.match_vec(&format!("exhaustive_range_increasing_{}_{}", T::name(), number),
-                     &mut p.range_increasing_x(a, b))
+                     &mut range_increasing_x(a, b))
     };
     test("i", T::from_u8(0), T::from_u8(0));
     test("ii", T::from_u8(0), T::from_u8(10));
@@ -369,17 +367,17 @@ fn range_increasing_i_helper<T: PrimSignedInt>(eo: &TestOutput, p: &IteratorProv
 
 #[test]
 fn test_range_increasing_i() {
-    let (eo, p, _) = prepare_test();
-    range_increasing_i_helper::<i8>(&eo, &p);
-    range_increasing_i_helper::<i16>(&eo, &p);
-    range_increasing_i_helper::<i32>(&eo, &p);
-    range_increasing_i_helper::<i64>(&eo, &p);
+    let eo = get_expected_test_outputs();
+    range_increasing_i_helper::<i8>(&eo);
+    range_increasing_i_helper::<i16>(&eo);
+    range_increasing_i_helper::<i32>(&eo);
+    range_increasing_i_helper::<i64>(&eo);
 }
 
-fn range_decreasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput, p: &IteratorProvider) {
+fn range_decreasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
     let test = |number, a, b| {
         eo.match_vec(&format!("exhaustive_range_decreasing_{}_{}", T::name(), number),
-                     &mut p.range_decreasing_x(a, b))
+                     &mut range_decreasing_x(a, b))
     };
     test("i", T::from_u8(0), T::from_u8(0));
     test("ii", T::from_u8(0), T::from_u8(10));
@@ -391,17 +389,17 @@ fn range_decreasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput, p: &IteratorPr
 
 #[test]
 fn test_range_decreasing_u() {
-    let (eo, p, _) = prepare_test();
-    range_decreasing_u_helper::<u8>(&eo, &p);
-    range_decreasing_u_helper::<u16>(&eo, &p);
-    range_decreasing_u_helper::<u32>(&eo, &p);
-    range_decreasing_u_helper::<u64>(&eo, &p);
+    let eo = get_expected_test_outputs();
+    range_decreasing_u_helper::<u8>(&eo);
+    range_decreasing_u_helper::<u16>(&eo);
+    range_decreasing_u_helper::<u32>(&eo);
+    range_decreasing_u_helper::<u64>(&eo);
 }
 
-fn range_decreasing_i_helper<T: PrimSignedInt>(eo: &TestOutput, p: &IteratorProvider) {
+fn range_decreasing_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
     let test = |number, a, b| {
         eo.match_vec(&format!("exhaustive_range_decreasing_{}_{}", T::name(), number),
-                     &mut p.range_decreasing_x(a, b))
+                     &mut range_decreasing_x(a, b))
     };
     test("i", T::from_u8(0), T::from_u8(0));
     test("ii", T::from_u8(0), T::from_u8(10));
@@ -420,83 +418,79 @@ fn range_decreasing_i_helper<T: PrimSignedInt>(eo: &TestOutput, p: &IteratorProv
 
 #[test]
 fn test_range_decreasing_i() {
-    let (eo, p, _) = prepare_test();
-    range_decreasing_i_helper::<i8>(&eo, &p);
-    range_decreasing_i_helper::<i16>(&eo, &p);
-    range_decreasing_i_helper::<i32>(&eo, &p);
-    range_decreasing_i_helper::<i64>(&eo, &p);
+    let eo = get_expected_test_outputs();
+    range_decreasing_i_helper::<i8>(&eo);
+    range_decreasing_i_helper::<i16>(&eo);
+    range_decreasing_i_helper::<i32>(&eo);
+    range_decreasing_i_helper::<i64>(&eo);
 }
 
-fn x_increasing_helper<T: PrimInt>(eo: &TestOutput, p: &IteratorProvider) {
+fn x_increasing_helper<T: PrimInt>(eo: &TestOutput) {
     eo.match_vec(&format!("exhaustive_{}s_increasing", T::name()),
-                 &mut p.x_increasing::<T>());
+                 &mut x_increasing::<T>());
 }
 
 #[test]
 fn test_x_increasing() {
-    let (eo, p, _) = prepare_test();
-    x_increasing_helper::<u8>(&eo, &p);
-    x_increasing_helper::<u16>(&eo, &p);
-    x_increasing_helper::<u32>(&eo, &p);
-    x_increasing_helper::<u64>(&eo, &p);
-    x_increasing_helper::<i8>(&eo, &p);
-    x_increasing_helper::<i16>(&eo, &p);
-    x_increasing_helper::<i32>(&eo, &p);
-    x_increasing_helper::<i64>(&eo, &p);
+    let eo = get_expected_test_outputs();
+    x_increasing_helper::<u8>(&eo);
+    x_increasing_helper::<u16>(&eo);
+    x_increasing_helper::<u32>(&eo);
+    x_increasing_helper::<u64>(&eo);
+    x_increasing_helper::<i8>(&eo);
+    x_increasing_helper::<i16>(&eo);
+    x_increasing_helper::<i32>(&eo);
+    x_increasing_helper::<i64>(&eo);
 }
 
-fn x_decreasing_helper<T: PrimInt>(eo: &TestOutput, p: &IteratorProvider) {
+fn x_decreasing_helper<T: PrimInt>(eo: &TestOutput) {
     eo.match_vec(&format!("exhaustive_{}s_decreasing", T::name()),
-                 &mut p.x_decreasing::<T>());
+                 &mut x_decreasing::<T>());
 }
 
 #[test]
 fn test_x_decreasing() {
-    let (eo, p, _) = prepare_test();
-    x_decreasing_helper::<u8>(&eo, &p);
-    x_decreasing_helper::<u16>(&eo, &p);
-    x_decreasing_helper::<u32>(&eo, &p);
-    x_decreasing_helper::<u64>(&eo, &p);
-    x_decreasing_helper::<i8>(&eo, &p);
-    x_decreasing_helper::<i16>(&eo, &p);
-    x_decreasing_helper::<i32>(&eo, &p);
-    x_decreasing_helper::<i64>(&eo, &p);
+    let eo = get_expected_test_outputs();
+    x_decreasing_helper::<u8>(&eo);
+    x_decreasing_helper::<u16>(&eo);
+    x_decreasing_helper::<u32>(&eo);
+    x_decreasing_helper::<u64>(&eo);
+    x_decreasing_helper::<i8>(&eo);
+    x_decreasing_helper::<i16>(&eo);
+    x_decreasing_helper::<i32>(&eo);
+    x_decreasing_helper::<i64>(&eo);
 }
 
-fn positive_u_helper<T: PrimUnsignedInt>(eo: &TestOutput,
-                                         ep: &IteratorProvider,
-                                         rp: &IteratorProvider) {
+fn positive_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
     eo.match_vec(&format!("exhaustive_positive_{}s", T::name()),
-                 &mut ep.positive_u::<T>());
+                 &mut exhaustive_positive_x::<T>());
     eo.match_vec_f(&format!("random_positive_{}s", T::name()),
-                   &mut rp.positive_u::<T>());
+                   &mut random_positive_u::<T>(&EXAMPLE_SEED[..]));
 }
 
 #[test]
 fn test_positive_u() {
-    let (eo, ep, rp) = prepare_test();
-    positive_u_helper::<u8>(&eo, &ep, &rp);
-    positive_u_helper::<u16>(&eo, &ep, &rp);
-    positive_u_helper::<u32>(&eo, &ep, &rp);
-    positive_u_helper::<u64>(&eo, &ep, &rp);
+    let eo = get_expected_test_outputs();
+    positive_u_helper::<u8>(&eo);
+    positive_u_helper::<u16>(&eo);
+    positive_u_helper::<u32>(&eo);
+    positive_u_helper::<u64>(&eo);
 }
 
-fn positive_i_helper<T: PrimSignedInt>(eo: &TestOutput,
-                                       ep: &IteratorProvider,
-                                       rp: &IteratorProvider) {
+fn positive_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
     eo.match_vec(&format!("exhaustive_positive_{}s", T::name()),
-                 &mut ep.positive_i::<T>());
+                 &mut exhaustive_positive_x::<T>());
     eo.match_vec_f(&format!("random_positive_{}s", T::name()),
-                   &mut rp.positive_i::<T>());
+                   &mut random_positive_i::<T>(&EXAMPLE_SEED[..]));
 }
 
 #[test]
 fn test_positive_i() {
-    let (eo, ep, rp) = prepare_test();
-    positive_i_helper::<i8>(&eo, &ep, &rp);
-    positive_i_helper::<i16>(&eo, &ep, &rp);
-    positive_i_helper::<i32>(&eo, &ep, &rp);
-    positive_i_helper::<i64>(&eo, &ep, &rp);
+    let eo = get_expected_test_outputs();
+    positive_i_helper::<i8>(&eo);
+    positive_i_helper::<i16>(&eo);
+    positive_i_helper::<i32>(&eo);
+    positive_i_helper::<i64>(&eo);
 }
 
 fn negative_i_helper<T: PrimSignedInt>(eo: &TestOutput,
@@ -553,20 +547,20 @@ fn test_nonzero_i() {
     nonzero_i_helper::<i64>(&eo, &ep, &rp);
 }
 
-fn all_u_helper<T: PrimUnsignedInt>(eo: &TestOutput,
-                                    ep: &IteratorProvider,
-                                    rp: &IteratorProvider) {
-    eo.match_vec(&format!("exhaustive_{}s", T::name()), &mut ep.all_u::<T>());
-    eo.match_vec_f(&format!("random_{}s", T::name()), &mut rp.all_u::<T>());
+fn all_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
+    eo.match_vec(&format!("exhaustive_{}s", T::name()),
+                 &mut exhaustive_x::<T>());
+    eo.match_vec_f(&format!("random_{}s", T::name()),
+                   &mut random_x::<T>(&EXAMPLE_SEED[..]));
 }
 
 #[test]
 fn test_all_u() {
-    let (eo, ep, rp) = prepare_test();
-    all_u_helper::<u8>(&eo, &ep, &rp);
-    all_u_helper::<u16>(&eo, &ep, &rp);
-    all_u_helper::<u32>(&eo, &ep, &rp);
-    all_u_helper::<u64>(&eo, &ep, &rp);
+    let eo = get_expected_test_outputs();
+    all_u_helper::<u8>(&eo);
+    all_u_helper::<u16>(&eo);
+    all_u_helper::<u32>(&eo);
+    all_u_helper::<u64>(&eo);
 }
 
 fn all_i_helper<T: PrimSignedInt>(eo: &TestOutput, ep: &IteratorProvider, rp: &IteratorProvider) {
@@ -583,206 +577,118 @@ fn test_all_i() {
     all_i_helper::<i64>(&eo, &ep, &rp);
 }
 
-fn range_up_u_helper<T: PrimUnsignedInt>(eo: &TestOutput,
-                                         ep: &IteratorProvider,
-                                         rp: &IteratorProvider) {
-    let e_test = |number, a| {
-        eo.match_vec(&format!("exhaustive_range_up_{}_{}", T::name(), number),
-                     &mut ep.range_up_u::<T>(a))
-    };
-    e_test("i", T::from_u8(0));
-    e_test("ii", T::from_u8(5));
-    e_test("iii", T::max_value());
-    let r_test = |number, a| {
+fn random_range_up_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
+    let test = |number, a| {
         eo.match_vec_f(&format!("random_range_up_{}_{}", T::name(), number),
-                       &mut rp.range_up_u::<T>(a))
+                       &mut random_range_up::<T>(a, &EXAMPLE_SEED[..]))
     };
-    r_test("i", T::from_u8(0));
-    r_test("ii", T::from_u8(5));
-    r_test("iii", T::max_value());
+    test("i", T::from_u8(0));
+    test("ii", T::from_u8(5));
+    test("iii", T::max_value());
 }
 
-#[test]
-fn test_range_up_u() {
-    let (eo, ep, rp) = prepare_test();
-    range_up_u_helper::<u8>(&eo, &ep, &rp);
-    range_up_u_helper::<u16>(&eo, &ep, &rp);
-    range_up_u_helper::<u32>(&eo, &ep, &rp);
-    range_up_u_helper::<u64>(&eo, &ep, &rp);
-}
-
-fn range_up_i_helper<T: PrimSignedInt>(eo: &TestOutput,
-                                       ep: &IteratorProvider,
-                                       rp: &IteratorProvider) {
-    let e_test = |number, a| {
-        eo.match_vec(&format!("exhaustive_range_up_{}_{}", T::name(), number),
-                     &mut ep.range_up_i::<T>(a))
-    };
-    e_test("i", T::from_u8(0));
-    e_test("ii", T::from_u8(5));
-    e_test("iii", T::max_value());
-    e_test("iv", T::from_i8(-5));
-    e_test("v", T::min_value());
-    let r_test = |number, a| {
+fn random_range_up_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
+    let test = |number, a| {
         eo.match_vec_f(&format!("random_range_up_{}_{}", T::name(), number),
-                       &mut rp.range_up_i::<T>(a))
+                       &mut random_range_up::<T>(a, &EXAMPLE_SEED[..]))
     };
-    r_test("i", T::from_u8(0));
-    r_test("ii", T::from_u8(5));
-    r_test("iii", T::max_value());
-    r_test("iv", T::from_i8(-5));
-    r_test("v", T::min_value());
+    test("i", T::from_u8(0));
+    test("ii", T::from_u8(5));
+    test("iii", T::max_value());
+    test("iv", T::from_i8(-5));
+    test("v", T::min_value());
 }
 
 #[test]
-fn test_range_up_i() {
-    let (eo, ep, rp) = prepare_test();
-    range_up_i_helper::<i8>(&eo, &ep, &rp);
-    range_up_i_helper::<i16>(&eo, &ep, &rp);
-    range_up_i_helper::<i32>(&eo, &ep, &rp);
-    range_up_i_helper::<i64>(&eo, &ep, &rp);
+fn test_random_range_up() {
+    let eo = get_expected_test_outputs();
+    random_range_up_u_helper::<u8>(&eo);
+    random_range_up_u_helper::<u16>(&eo);
+    random_range_up_u_helper::<u32>(&eo);
+    random_range_up_u_helper::<u64>(&eo);
+    random_range_up_i_helper::<i8>(&eo);
+    random_range_up_i_helper::<i16>(&eo);
+    random_range_up_i_helper::<i32>(&eo);
+    random_range_up_i_helper::<i64>(&eo);
 }
 
-fn range_down_u_helper<T: PrimUnsignedInt>(eo: &TestOutput,
-                                           ep: &IteratorProvider,
-                                           rp: &IteratorProvider) {
-    let e_test = |number, a| {
-        eo.match_vec(&format!("exhaustive_range_down_{}_{}", T::name(), number),
-                     &mut ep.range_down_u::<T>(a))
-    };
-    e_test("i", T::from_u8(0));
-    e_test("ii", T::from_u8(5));
-    e_test("iii", T::max_value());
-    let r_test = |number, a| {
+fn random_range_down_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
+    let test = |number, a| {
         eo.match_vec_f(&format!("random_range_down_{}_{}", T::name(), number),
-                       &mut rp.range_down_u::<T>(a))
+                       &mut random_range_down::<T>(a, &EXAMPLE_SEED[..]))
     };
-    r_test("i", T::from_u8(0));
-    r_test("ii", T::from_u8(5));
-    r_test("iii", T::max_value());
+    test("i", T::from_u8(0));
+    test("ii", T::from_u8(5));
+    test("iii", T::max_value());
 }
 
-#[test]
-fn test_range_down_u() {
-    let (eo, ep, rp) = prepare_test();
-    range_down_u_helper::<u8>(&eo, &ep, &rp);
-    range_down_u_helper::<u16>(&eo, &ep, &rp);
-    range_down_u_helper::<u32>(&eo, &ep, &rp);
-    range_down_u_helper::<u64>(&eo, &ep, &rp);
-}
-
-fn range_down_i_helper<T: PrimSignedInt>(eo: &TestOutput,
-                                         ep: &IteratorProvider,
-                                         rp: &IteratorProvider) {
-    let e_test = |number, a| {
-        eo.match_vec(&format!("exhaustive_range_down_{}_{}", T::name(), number),
-                     &mut ep.range_down_i::<T>(a))
-    };
-    e_test("i", T::from_u8(0));
-    e_test("ii", T::from_u8(5));
-    e_test("iii", T::max_value());
-    e_test("iv", T::from_i8(-5));
-    e_test("v", T::min_value());
-    let r_test = |number, a| {
+fn random_range_down_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
+    let test = |number, a| {
         eo.match_vec_f(&format!("random_range_down_{}_{}", T::name(), number),
-                       &mut rp.range_down_i::<T>(a))
+                       &mut random_range_down::<T>(a, &EXAMPLE_SEED[..]))
     };
-    r_test("i", T::from_u8(0));
-    r_test("ii", T::from_u8(5));
-    r_test("iii", T::max_value());
-    r_test("iv", T::from_i8(-5));
-    r_test("v", T::min_value());
+    test("i", T::from_u8(0));
+    test("ii", T::from_u8(5));
+    test("iii", T::max_value());
+    test("iv", T::from_i8(-5));
+    test("v", T::min_value());
 }
 
 #[test]
-fn test_range_down_i() {
-    let (eo, ep, rp) = prepare_test();
-    range_down_i_helper::<i8>(&eo, &ep, &rp);
-    range_down_i_helper::<i16>(&eo, &ep, &rp);
-    range_down_i_helper::<i32>(&eo, &ep, &rp);
-    range_down_i_helper::<i64>(&eo, &ep, &rp);
+fn test_random_range_down() {
+    let eo = get_expected_test_outputs();
+    random_range_down_u_helper::<u8>(&eo);
+    random_range_down_u_helper::<u16>(&eo);
+    random_range_down_u_helper::<u32>(&eo);
+    random_range_down_u_helper::<u64>(&eo);
+    random_range_down_i_helper::<i8>(&eo);
+    random_range_down_i_helper::<i16>(&eo);
+    random_range_down_i_helper::<i32>(&eo);
+    random_range_down_i_helper::<i64>(&eo);
 }
 
-fn range_u_helper<T: PrimUnsignedInt>(eo: &TestOutput,
-                                      ep: &IteratorProvider,
-                                      rp: &IteratorProvider) {
-    let e_test = |number, a, b| {
-        eo.match_vec(&format!("exhaustive_range_{}_{}", T::name(), number),
-                     &mut ep.range_u::<T>(a, b))
-    };
-    e_test("i", T::from_u8(0), T::from_u8(0));
-    e_test("ii", T::from_u8(0), T::from_u8(10));
-    e_test("iii", T::from_u8(10), T::from_u8(20));
-    e_test("iv", T::from_u8(10), T::from_u8(10));
-    e_test("v", T::from_u8(0), T::max_value());
-    e_test("vi", T::from_u8(0), T::max_value() - T::from_u8(1));
-    let r_test = |number, a, b| {
+fn random_range_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
+    let test = |number, a, b| {
         eo.match_vec_f(&format!("random_range_{}_{}", T::name(), number),
-                       &mut rp.range_u::<T>(a, b))
+                       &mut random_range::<T>(a, b, &EXAMPLE_SEED[..]))
     };
-    r_test("i", T::from_u8(0), T::from_u8(0));
-    r_test("ii", T::from_u8(0), T::from_u8(10));
-    r_test("iii", T::from_u8(10), T::from_u8(20));
-    r_test("iv", T::from_u8(10), T::from_u8(10));
-    r_test("v", T::from_u8(0), T::max_value());
-    r_test("vi", T::from_u8(0), T::max_value() - T::from_u8(1));
+    test("i", T::from_u8(0), T::from_u8(0));
+    test("ii", T::from_u8(0), T::from_u8(10));
+    test("iii", T::from_u8(10), T::from_u8(20));
+    test("iv", T::from_u8(10), T::from_u8(10));
+    test("v", T::from_u8(0), T::max_value());
+    test("vi", T::from_u8(0), T::max_value() - T::from_u8(1));
 }
 
-#[test]
-fn test_range_u() {
-    let (eo, ep, rp) = prepare_test();
-    range_u_helper::<u8>(&eo, &ep, &rp);
-    range_u_helper::<u16>(&eo, &ep, &rp);
-    range_u_helper::<u32>(&eo, &ep, &rp);
-    range_u_helper::<u64>(&eo, &ep, &rp);
-}
-
-fn range_i_helper<T: PrimSignedInt>(eo: &TestOutput,
-                                    ep: &IteratorProvider,
-                                    rp: &IteratorProvider) {
-    let e_test = |number, a, b| {
-        eo.match_vec(&format!("exhaustive_range_{}_{}", T::name(), number),
-                     &mut ep.range_i::<T>(a, b))
-    };
-    e_test("i", T::from_u8(0), T::from_u8(0));
-    e_test("ii", T::from_u8(0), T::from_u8(10));
-    e_test("iii", T::from_u8(10), T::from_u8(20));
-    e_test("iv", T::from_u8(10), T::from_u8(10));
-    e_test("v", T::from_u8(0), T::max_value());
-    e_test("vi", T::from_u8(0), T::max_value() - T::from_u8(1));
-    e_test("vii", T::from_i8(-10), T::from_i8(-10));
-    e_test("viii", T::from_i8(-20), T::from_i8(-10));
-    e_test("ix", T::from_i8(-100), T::from_u8(100));
-    e_test("x", T::min_value(), T::max_value());
-    e_test("xi",
-           T::min_value() + T::from_u8(1),
-           T::max_value() - T::from_u8(1));
-    let r_test = |number, a, b| {
+fn random_range_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
+    let test = |number, a, b| {
         eo.match_vec_f(&format!("random_range_{}_{}", T::name(), number),
-                       &mut rp.range_i::<T>(a, b))
+                       &mut random_range::<T>(a, b, &EXAMPLE_SEED[..]))
     };
-    r_test("i", T::from_u8(0), T::from_u8(0));
-    r_test("ii", T::from_u8(0), T::from_u8(10));
-    r_test("iii", T::from_u8(10), T::from_u8(20));
-    r_test("iv", T::from_u8(10), T::from_u8(10));
-    r_test("v", T::from_u8(0), T::max_value());
-    r_test("vi", T::from_u8(0), T::max_value() - T::from_u8(1));
-    r_test("vii", T::from_i8(-10), T::from_i8(-10));
-    r_test("viii", T::from_i8(-20), T::from_i8(-10));
-    r_test("ix", T::from_i8(-100), T::from_u8(100));
-    r_test("x", T::min_value(), T::max_value());
-    r_test("xi",
-           T::min_value() + T::from_u8(1),
-           T::max_value() - T::from_u8(1));
+    test("i", T::from_u8(0), T::from_u8(0));
+    test("ii", T::from_u8(0), T::from_u8(10));
+    test("iii", T::from_u8(10), T::from_u8(20));
+    test("iv", T::from_u8(10), T::from_u8(10));
+    test("v", T::from_u8(0), T::max_value());
+    test("vi", T::from_u8(0), T::max_value() - T::from_u8(1));
+    test("vii", T::from_i8(-10), T::from_i8(-10));
+    test("viii", T::from_i8(-20), T::from_i8(-10));
+    test("ix", T::from_i8(-100), T::from_u8(100));
+    test("x", T::min_value(), T::max_value());
+    test("xi", T::min_value() + T::from_u8(1), T::max_value() - T::from_u8(1));
 }
 
 #[test]
-fn test_range_i() {
-    let (eo, ep, rp) = prepare_test();
-    range_i_helper::<i8>(&eo, &ep, &rp);
-    range_i_helper::<i16>(&eo, &ep, &rp);
-    range_i_helper::<i32>(&eo, &ep, &rp);
-    range_i_helper::<i64>(&eo, &ep, &rp);
+fn test_random_range() {
+    let eo = get_expected_test_outputs();
+    random_range_u_helper::<u8>(&eo);
+    random_range_u_helper::<u16>(&eo);
+    random_range_u_helper::<u32>(&eo);
+    random_range_u_helper::<u64>(&eo);
+    random_range_i_helper::<i8>(&eo);
+    random_range_i_helper::<i16>(&eo);
+    random_range_i_helper::<i32>(&eo);
+    random_range_i_helper::<i64>(&eo);
 }
 
 #[test]
