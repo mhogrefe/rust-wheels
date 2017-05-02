@@ -155,7 +155,7 @@ pub struct RangeIncreasing<T: Walkable> {
     done: bool,
 }
 
-pub fn range_increasing<T: Walkable>(a: T, b: T) -> RangeIncreasing<T> {
+pub fn range_increasing_x<T: Walkable>(a: T, b: T) -> RangeIncreasing<T> {
     if a > b {
         panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
     }
@@ -189,7 +189,7 @@ pub struct RangeDecreasing<T: Walkable> {
     done: bool,
 }
 
-pub fn range_decreasing<T: Walkable>(a: T, b: T) -> RangeDecreasing<T> {
+pub fn range_decreasing_x<T: Walkable>(a: T, b: T) -> RangeDecreasing<T> {
     if a > b {
         panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
     }
@@ -218,35 +218,27 @@ impl<T: Walkable> Iterator for RangeDecreasing<T> {
 }
 
 pub fn range_up_increasing_x<T: PrimInt>(a: T) -> RangeIncreasing<T> {
-    range_increasing(a, T::max_value())
+    range_increasing_x(a, T::max_value())
 }
 
 pub fn range_up_decreasing_x<T: PrimInt>(a: T) -> RangeDecreasing<T> {
-    range_decreasing(a, T::max_value())
+    range_decreasing_x(a, T::max_value())
 }
 
 pub fn range_down_increasing_x<T: PrimInt>(b: T) -> RangeIncreasing<T> {
-    range_increasing(T::min_value(), b)
+    range_increasing_x(T::min_value(), b)
 }
 
 pub fn range_down_decreasing_x<T: PrimInt>(b: T) -> RangeDecreasing<T> {
-    range_decreasing(T::min_value(), b)
-}
-
-pub fn range_increasing_x<T: Walkable>(a: T, b: T) -> RangeIncreasing<T> {
-    range_increasing(a, b)
-}
-
-pub fn range_decreasing_x<T: Walkable>(a: T, b: T) -> RangeDecreasing<T> {
-    range_decreasing(a, b)
+    range_decreasing_x(T::min_value(), b)
 }
 
 pub fn x_increasing<T: PrimInt>() -> RangeIncreasing<T> {
-    range_increasing(T::min_value(), T::max_value())
+    range_increasing_x(T::min_value(), T::max_value())
 }
 
 pub fn x_decreasing<T: PrimInt>() -> RangeDecreasing<T> {
-    range_decreasing(T::min_value(), T::max_value())
+    range_decreasing_x(T::min_value(), T::max_value())
 }
 
 pub struct Random<T: Rand> {
@@ -272,7 +264,7 @@ impl<T: Rand> Iterator for Random<T> {
 pub struct RandomPositiveU<T: Rand>(Random<T>);
 
 pub fn exhaustive_positive_x<T: PrimInt>() -> RangeIncreasing<T> {
-    range_increasing(T::from_u8(1), T::max_value())
+    range_increasing_x(T::from_u8(1), T::max_value())
 }
 
 pub fn random_positive_u<T: Rand>(seed: &[u32]) -> RandomPositiveU<T> {
@@ -314,7 +306,7 @@ impl<T: PrimSignedInt> Iterator for RandomPositiveI<T> {
 }
 
 pub fn exhaustive_u<T: PrimUnsignedInt>() -> RangeIncreasing<T> {
-    range_increasing(T::from_u8(0), T::max_value())
+    range_increasing_x(T::from_u8(0), T::max_value())
 }
 
 pub enum RandomRange<T: Rand> {
@@ -362,7 +354,7 @@ pub fn random_range_down<T: PrimInt>(a: T, seed: &[u32]) -> RandomRange<T> {
 }
 
 pub fn exhaustive_negative_i<T: PrimSignedInt>() -> RangeDecreasing<T> {
-    range_decreasing(T::min_value(), T::from_i8(-1))
+    range_decreasing_x(T::min_value(), T::from_i8(-1))
 }
 
 pub struct RandomNegativeI<T: PrimSignedInt>(Random<T>);
@@ -380,7 +372,7 @@ impl<T: PrimSignedInt> Iterator for RandomNegativeI<T> {
 }
 
 pub fn exhaustive_natural_i<T: PrimSignedInt>() -> RangeIncreasing<T> {
-    range_increasing(T::from_u8(0), T::max_value())
+    range_increasing_x(T::from_u8(0), T::max_value())
 }
 
 pub struct RandomNaturalI<T: PrimSignedInt>(Random<T>);
@@ -441,14 +433,14 @@ impl<T: PrimSignedInt> ExhaustiveRangeI<T> {
     pub fn new(a: T, b: T) -> ExhaustiveRangeI<T> {
         let zero = T::from_u8(0);
         if a >= zero {
-            ExhaustiveRangeI::AllNonNegative(range_increasing(a, b))
+            ExhaustiveRangeI::AllNonNegative(range_increasing_x(a, b))
         } else if b <= zero {
-            ExhaustiveRangeI::AllNonPositive(range_decreasing(a, b))
+            ExhaustiveRangeI::AllNonPositive(range_decreasing_x(a, b))
         } else {
             ExhaustiveRangeI::SomeOfEachSign(
                     once(zero).chain(
-                            range_increasing(T::from_u8(1), b).interleave(
-                                    range_decreasing(a, T::from_i8(-1))
+                            range_increasing_x(T::from_u8(1), b).interleave(
+                                    range_decreasing_x(a, T::from_i8(-1))
                             )
                     )
             )
@@ -495,29 +487,29 @@ impl<T: PrimSignedInt> Iterator for RangeI<T> {
 }
 
 pub fn exhaustive_chars() -> MultiChain<RangeIncreasing<char>> {
-    MultiChain::new(vec![range_increasing('a', 'z'),
-                         range_increasing('A', 'Z'),
-                         range_increasing('0', '9'),
-                         range_increasing('!', '/'),
-                         range_increasing(':', '@'),
-                         range_increasing('[', '`'),
-                         range_increasing('{', '~'),
-                         range_increasing(' ', ' '),
-                         range_increasing('\0', '\u{1F}'),
-                         range_increasing('\u{7F}', char::MAX)])
+    MultiChain::new(vec![range_increasing_x('a', 'z'),
+                         range_increasing_x('A', 'Z'),
+                         range_increasing_x('0', '9'),
+                         range_increasing_x('!', '/'),
+                         range_increasing_x(':', '@'),
+                         range_increasing_x('[', '`'),
+                         range_increasing_x('{', '~'),
+                         range_increasing_x(' ', ' '),
+                         range_increasing_x('\0', '\u{1F}'),
+                         range_increasing_x('\u{7F}', char::MAX)])
 }
 
 pub fn exhaustive_ascii_chars() -> MultiChain<RangeIncreasing<char>> {
-    MultiChain::new(vec![range_increasing('a', 'z'),
-                         range_increasing('A', 'Z'),
-                         range_increasing('0', '9'),
-                         range_increasing('!', '/'),
-                         range_increasing(':', '@'),
-                         range_increasing('[', '`'),
-                         range_increasing('{', '~'),
-                         range_increasing(' ', ' '),
-                         range_increasing('\0', '\u{1F}'),
-                         range_increasing('\u{7F}', '\u{7F}')])
+    MultiChain::new(vec![range_increasing_x('a', 'z'),
+                         range_increasing_x('A', 'Z'),
+                         range_increasing_x('0', '9'),
+                         range_increasing_x('!', '/'),
+                         range_increasing_x(':', '@'),
+                         range_increasing_x('[', '`'),
+                         range_increasing_x('{', '~'),
+                         range_increasing_x(' ', ' '),
+                         range_increasing_x('\0', '\u{1F}'),
+                         range_increasing_x('\u{7F}', '\u{7F}')])
 }
 
 pub struct RandomAsciiChars(IsaacRng);
@@ -534,33 +526,40 @@ impl Iterator for RandomAsciiChars {
     }
 }
 
-pub enum RangeChar {
-    Exhaustive(RangeIncreasing<char>),
-    Random(IsaacRng, Range<u32>),
+pub struct RandomRangeChar {
+    rng: IsaacRng,
+    range: Range<u32>,
 }
 
-impl RangeChar {
-    pub fn exhaustive(a: char, b: char) -> RangeChar {
-        RangeChar::Exhaustive(range_increasing(a, b))
-    }
-
-    pub fn random(a: char, b: char, seed: &[u32]) -> RangeChar {
-        RangeChar::Random(SeedableRng::from_seed(seed),
-                          Range::new(char_to_contiguous_range(a), char_to_contiguous_range(b) + 1))
+pub fn random_range_char(a: char, b: char, seed: &[u32]) -> RandomRangeChar {
+    RandomRangeChar {
+        rng: SeedableRng::from_seed(seed),
+        range: Range::new(char_to_contiguous_range(a), char_to_contiguous_range(b) + 1),
     }
 }
 
-impl Iterator for RangeChar {
+impl Iterator for RandomRangeChar {
     type Item = char;
 
     fn next(&mut self) -> Option<char> {
-        match self {
-            &mut RangeChar::Exhaustive(ref mut it) => it.next(),
-            &mut RangeChar::Random(ref mut rng, ref range) => {
-                contiguous_range_to_char(range.ind_sample(rng))
-            }
-        }
+        contiguous_range_to_char(self.range.ind_sample(&mut self.rng))
     }
+}
+
+pub fn exhaustive_range_up_char(a: char) -> RangeIncreasing<char> {
+    range_increasing_x(a, char::MAX)
+}
+
+pub fn exhaustive_range_down_char(a: char) -> RangeIncreasing<char> {
+    range_increasing_x('\0', a)
+}
+
+pub fn random_range_up_char(a: char, seed: &[u32]) -> RandomRangeChar {
+    random_range_char(a, char::MAX, seed)
+}
+
+pub fn random_range_down_char(a: char, seed: &[u32]) -> RandomRangeChar {
+    random_range_char('\0', a, seed)
 }
 
 pub struct RangeIncreasingInteger {
@@ -756,7 +755,7 @@ pub enum PositiveU32sGeometric {
 
 impl PositiveU32sGeometric {
     pub fn exhaustive() -> PositiveU32sGeometric {
-        PositiveU32sGeometric::Exhaustive(range_increasing(1, u32::max_value()))
+        PositiveU32sGeometric::Exhaustive(range_increasing_x(1, u32::max_value()))
     }
 
     pub fn random(scale: u32, seed: &[u32]) -> PositiveU32sGeometric {
@@ -791,7 +790,7 @@ pub enum NaturalU32sGeometric {
 
 impl NaturalU32sGeometric {
     pub fn exhaustive() -> NaturalU32sGeometric {
-        NaturalU32sGeometric::Exhaustive(range_increasing(0, u32::max_value()))
+        NaturalU32sGeometric::Exhaustive(range_increasing_x(0, u32::max_value()))
     }
 
     pub fn random(scale: u32, seed: &[u32]) -> NaturalU32sGeometric {
@@ -909,35 +908,35 @@ pub fn random_orderings(seed: &[u32]) -> RandomFromVector<Ordering> {
 }
 
 pub fn chars_increasing() -> RangeIncreasing<char> {
-    range_increasing('\0', char::MAX)
+    range_increasing_x('\0', char::MAX)
 }
 
 pub fn chars_decreasing() -> RangeDecreasing<char> {
-    range_decreasing('\0', char::MAX)
+    range_decreasing_x('\0', char::MAX)
 }
 
 pub fn ascii_chars_increasing() -> RangeIncreasing<char> {
-    range_increasing('\0', char::from_u32(127).unwrap())
+    range_increasing_x('\0', char::from_u32(127).unwrap())
 }
 
 pub fn ascii_chars_decreasing() -> RangeDecreasing<char> {
-    range_decreasing('\0', char::from_u32(127).unwrap())
+    range_decreasing_x('\0', char::from_u32(127).unwrap())
 }
 
 pub fn range_up_increasing_char(a: char) -> RangeIncreasing<char> {
-    range_increasing(a, char::MAX)
+    range_increasing_x(a, char::MAX)
 }
 
 pub fn range_up_decreasing_char(a: char) -> RangeDecreasing<char> {
-    range_decreasing(a, char::MAX)
+    range_decreasing_x(a, char::MAX)
 }
 
 pub fn range_down_increasing_char(a: char) -> RangeIncreasing<char> {
-    range_increasing('\0', a)
+    range_increasing_x('\0', a)
 }
 
 pub fn range_down_decreasing_char(a: char) -> RangeDecreasing<char> {
-    range_decreasing('\0', a)
+    range_decreasing_x('\0', a)
 }
 
 impl IteratorProvider {
@@ -954,24 +953,6 @@ impl IteratorProvider {
                 IteratorProvider::Random(new_key, scrambled_seed)
             }
             &IteratorProvider::Exhaustive => IteratorProvider::Exhaustive,
-        }
-    }
-
-    pub fn range_up_char(&self, a: char) -> RangeChar {
-        self.range_char(a, char::MAX)
-    }
-
-    pub fn range_down_char(&self, a: char) -> RangeChar {
-        self.range_char('\0', a)
-    }
-
-    pub fn range_char(&self, a: char, b: char) -> RangeChar {
-        if a > b {
-            panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
-        }
-        match self {
-            &IteratorProvider::Exhaustive => RangeChar::exhaustive(a, b),
-            &IteratorProvider::Random(_, seed) => RangeChar::random(a, b, &seed[..]),
         }
     }
 

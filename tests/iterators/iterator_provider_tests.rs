@@ -854,10 +854,10 @@ fn test_ascii_chars() {
 
 #[test]
 fn test_range_up_char() {
-    let (eo, ep, rp) = prepare_test();
+    let eo = get_expected_test_outputs();
     let e_test = |number, a| {
         eo.match_vec_debug(&format!("exhaustive_range_up_char_{}", number),
-                           &mut ep.range_up_char(a))
+                           &mut exhaustive_range_up_char(a))
     };
     e_test("i", '\0');
     e_test("ii", 'a');
@@ -866,7 +866,7 @@ fn test_range_up_char() {
     e_test("v", char::MAX);
     let r_test = |number, a| {
         eo.match_vec_f_debug(&format!("random_range_up_char_{}", number),
-                             &mut rp.range_up_char(a))
+                             &mut random_range_up_char(a, &EXAMPLE_SEED[..]))
     };
     r_test("i", '\0');
     r_test("ii", 'a');
@@ -877,10 +877,10 @@ fn test_range_up_char() {
 
 #[test]
 fn test_range_down_char() {
-    let (eo, ep, rp) = prepare_test();
+    let eo = get_expected_test_outputs();
     let e_test = |number, a| {
         eo.match_vec_debug(&format!("exhaustive_range_down_char_{}", number),
-                           &mut ep.range_down_char(a))
+                           &mut exhaustive_range_down_char(a))
     };
     e_test("i", '\0');
     e_test("ii", 'a');
@@ -889,7 +889,7 @@ fn test_range_down_char() {
     e_test("v", char::MAX);
     let r_test = |number, a| {
         eo.match_vec_f_debug(&format!("random_range_down_char_{}", number),
-                             &mut rp.range_down_char(a))
+                             &mut random_range_down_char(a, &EXAMPLE_SEED[..]))
     };
     r_test("i", '\0');
     r_test("ii", 'a');
@@ -900,10 +900,10 @@ fn test_range_down_char() {
 
 #[test]
 fn test_range_char() {
-    let (eo, ep, rp) = prepare_test();
+    let eo = get_expected_test_outputs();
     let e_test = |number, a, b| {
         eo.match_vec_debug(&format!("exhaustive_range_char_{}", number),
-                           &mut ep.range_char(a, b))
+                           &mut range_increasing_x(a, b))
     };
     e_test("i", 'a', 'z');
     e_test("ii", 'a', 'a');
@@ -911,7 +911,7 @@ fn test_range_char() {
     e_test("iv", '\u{D7FF}', '\u{E000}');
     let r_test = |number, a, b| {
         eo.match_vec_f_debug(&format!("random_range_char_{}", number),
-                             &mut rp.range_char(a, b))
+                             &mut random_range_char(a, b, &EXAMPLE_SEED[..]))
     };
     r_test("i", 'a', 'z');
     r_test("ii", 'a', 'a');
@@ -921,8 +921,14 @@ fn test_range_char() {
 
 #[test]
 #[should_panic(expected = "a must be less than or equal to b. a: a, b: A")]
-fn range_char_fail() {
-    IteratorProvider::Exhaustive.range_char('a', 'A');
+fn range_char_fail_1() {
+    range_increasing_x('a', 'A');
+}
+
+#[test]
+#[should_panic(expected = "Range::new called with `low >= high`")]
+fn range_char_fail_2() {
+    random_range_char('a', 'A', &EXAMPLE_SEED[..]);
 }
 
 #[test]
