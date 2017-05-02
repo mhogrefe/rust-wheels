@@ -494,75 +494,43 @@ impl<T: PrimSignedInt> Iterator for RangeI<T> {
     }
 }
 
-pub enum Chars {
-    Exhaustive(MultiChain<RangeIncreasing<char>>),
-    Random(IsaacRng),
+pub fn exhaustive_chars() -> MultiChain<RangeIncreasing<char>> {
+    MultiChain::new(vec![range_increasing('a', 'z'),
+                         range_increasing('A', 'Z'),
+                         range_increasing('0', '9'),
+                         range_increasing('!', '/'),
+                         range_increasing(':', '@'),
+                         range_increasing('[', '`'),
+                         range_increasing('{', '~'),
+                         range_increasing(' ', ' '),
+                         range_increasing('\0', '\u{1F}'),
+                         range_increasing('\u{7F}', char::MAX)])
 }
 
-impl Chars {
-    pub fn exhaustive() -> Chars {
-        Chars::Exhaustive(MultiChain::new(vec![range_increasing('a', 'z'),
-                                               range_increasing('A', 'Z'),
-                                               range_increasing('0', '9'),
-                                               range_increasing('!', '/'),
-                                               range_increasing(':', '@'),
-                                               range_increasing('[', '`'),
-                                               range_increasing('{', '~'),
-                                               range_increasing(' ', ' '),
-                                               range_increasing('\0', '\u{1F}'),
-                                               range_increasing('\u{7F}', char::MAX)]))
-    }
-
-    pub fn random(seed: &[u32]) -> Chars {
-        Chars::Random(SeedableRng::from_seed(seed))
-    }
+pub fn exhaustive_ascii_chars() -> MultiChain<RangeIncreasing<char>> {
+    MultiChain::new(vec![range_increasing('a', 'z'),
+                         range_increasing('A', 'Z'),
+                         range_increasing('0', '9'),
+                         range_increasing('!', '/'),
+                         range_increasing(':', '@'),
+                         range_increasing('[', '`'),
+                         range_increasing('{', '~'),
+                         range_increasing(' ', ' '),
+                         range_increasing('\0', '\u{1F}'),
+                         range_increasing('\u{7F}', '\u{7F}')])
 }
 
-impl Iterator for Chars {
+pub struct RandomAsciiChars(IsaacRng);
+
+pub fn random_ascii_chars(seed: &[u32]) -> RandomAsciiChars {
+    RandomAsciiChars(SeedableRng::from_seed(seed))
+}
+
+impl Iterator for RandomAsciiChars {
     type Item = char;
 
     fn next(&mut self) -> Option<char> {
-        match self {
-            &mut Chars::Exhaustive(ref mut xs) => xs.next(),
-            &mut Chars::Random(ref mut rng) => Some(rng.gen()),
-        }
-    }
-}
-
-pub enum AsciiChars {
-    Exhaustive(MultiChain<RangeIncreasing<char>>),
-    Random(IsaacRng),
-}
-
-impl AsciiChars {
-    pub fn exhaustive() -> AsciiChars {
-        AsciiChars::Exhaustive(MultiChain::new(vec![range_increasing('a', 'z'),
-                                                    range_increasing('A', 'Z'),
-                                                    range_increasing('0', '9'),
-                                                    range_increasing('!', '/'),
-                                                    range_increasing(':', '@'),
-                                                    range_increasing('[', '`'),
-                                                    range_increasing('{', '~'),
-                                                    range_increasing(' ', ' '),
-                                                    range_increasing('\0', '\u{1F}'),
-                                                    range_increasing('\u{7F}', '\u{7F}')]))
-    }
-
-    pub fn random(seed: &[u32]) -> AsciiChars {
-        AsciiChars::Random(SeedableRng::from_seed(seed))
-    }
-}
-
-impl Iterator for AsciiChars {
-    type Item = char;
-
-    fn next(&mut self) -> Option<char> {
-        match self {
-            &mut AsciiChars::Exhaustive(ref mut xs) => xs.next(),
-            &mut AsciiChars::Random(ref mut rng) => {
-                Some(char::from_u32((rng.gen::<u8>() & 0x7f) as u32).unwrap())
-            }
-        }
+        Some(char::from_u32((self.0.gen::<u8>() & 0x7f) as u32).unwrap())
     }
 }
 
@@ -986,20 +954,6 @@ impl IteratorProvider {
                 IteratorProvider::Random(new_key, scrambled_seed)
             }
             &IteratorProvider::Exhaustive => IteratorProvider::Exhaustive,
-        }
-    }
-
-    pub fn chars(&self) -> Chars {
-        match self {
-            &IteratorProvider::Exhaustive => Chars::exhaustive(),
-            &IteratorProvider::Random(_, seed) => Chars::random(&seed[..]),
-        }
-    }
-
-    pub fn ascii_chars(&self) -> AsciiChars {
-        match self {
-            &IteratorProvider::Exhaustive => AsciiChars::exhaustive(),
-            &IteratorProvider::Random(_, seed) => AsciiChars::random(&seed[..]),
         }
     }
 

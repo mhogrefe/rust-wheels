@@ -839,16 +839,17 @@ fn range_decreasing_char_fail() {
 
 #[test]
 fn test_chars() {
-    let (eo, ep, rp) = prepare_test();
-    eo.match_vec_debug("exhaustive_chars", &mut ep.chars());
-    eo.match_vec_f_debug("random_chars", &mut rp.chars());
+    let eo = get_expected_test_outputs();
+    eo.match_vec_debug("exhaustive_chars", &mut exhaustive_chars());
+    eo.match_vec_f_debug("random_chars", &mut random_x::<char>(&EXAMPLE_SEED[..]));
 }
 
 #[test]
 fn test_ascii_chars() {
-    let (eo, ep, rp) = prepare_test();
-    eo.match_vec_debug("exhaustive_ascii_chars", &mut ep.ascii_chars());
-    eo.match_vec_f_debug("random_ascii_chars", &mut rp.ascii_chars());
+    let eo = get_expected_test_outputs();
+    eo.match_vec_debug("exhaustive_ascii_chars", &mut exhaustive_ascii_chars());
+    eo.match_vec_f_debug("random_ascii_chars",
+                         &mut random_ascii_chars(&EXAMPLE_SEED[..]));
 }
 
 #[test]
