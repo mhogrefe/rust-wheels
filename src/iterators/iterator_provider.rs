@@ -532,6 +532,9 @@ pub struct RandomRangeChar {
 }
 
 pub fn random_range_char(a: char, b: char, seed: &[u32]) -> RandomRangeChar {
+    if a > b {
+        panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
+    }
     RandomRangeChar {
         rng: SeedableRng::from_seed(seed),
         range: Range::new(char_to_contiguous_range(a), char_to_contiguous_range(b) + 1),
@@ -568,19 +571,6 @@ pub struct RangeIncreasingInteger {
     done: bool,
 }
 
-impl RangeIncreasingInteger {
-    fn new(a: Integer, b: Integer) -> RangeIncreasingInteger {
-        if a > b {
-            panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
-        }
-        RangeIncreasingInteger {
-            i: a,
-            b: b,
-            done: false,
-        }
-    }
-}
-
 impl Iterator for RangeIncreasingInteger {
     type Item = Integer;
 
@@ -604,19 +594,6 @@ pub struct RangeDecreasingInteger {
     done: bool,
 }
 
-impl RangeDecreasingInteger {
-    fn new(a: Integer, b: Integer) -> RangeDecreasingInteger {
-        if a > b {
-            panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
-        }
-        RangeDecreasingInteger {
-            a: a,
-            i: b,
-            done: false,
-        }
-    }
-}
-
 impl Iterator for RangeDecreasingInteger {
     type Item = Integer;
 
@@ -638,12 +615,6 @@ pub struct RangeIncreasingUnboundedInteger {
     i: Integer,
 }
 
-impl RangeIncreasingUnboundedInteger {
-    fn new(a: Integer) -> RangeIncreasingUnboundedInteger {
-        RangeIncreasingUnboundedInteger { i: a }
-    }
-}
-
 impl Iterator for RangeIncreasingUnboundedInteger {
     type Item = Integer;
 
@@ -656,12 +627,6 @@ impl Iterator for RangeIncreasingUnboundedInteger {
 
 pub struct RangeDecreasingUnboundedInteger {
     i: Integer,
-}
-
-impl RangeDecreasingUnboundedInteger {
-    fn new(a: Integer) -> RangeDecreasingUnboundedInteger {
-        RangeDecreasingUnboundedInteger { i: a }
-    }
 }
 
 impl Iterator for RangeDecreasingUnboundedInteger {
@@ -681,28 +646,6 @@ pub enum ExhaustiveRangeInteger {
                          Interleave<RangeIncreasingInteger, RangeDecreasingInteger>>),
 }
 
-impl ExhaustiveRangeInteger {
-    pub fn new(a: Integer, b: Integer) -> ExhaustiveRangeInteger {
-        if a >= 0 {
-            ExhaustiveRangeInteger::AllNonNegative(RangeIncreasingInteger::new(a, b))
-        } else if b <= 0 {
-            ExhaustiveRangeInteger::AllNonPositive(RangeDecreasingInteger::new(a, b))
-        } else {
-            ExhaustiveRangeInteger::SomeOfEachSign(
-                once(Integer::from(0)).chain(
-                    RangeIncreasingInteger::new(Integer::from(1), b)
-                        .interleave(
-                            RangeDecreasingInteger::new(
-                                a,
-                                Integer::from(-1)
-                            )
-                        )
-                )
-            )
-        }
-    }
-}
-
 impl Iterator for ExhaustiveRangeInteger {
     type Item = Integer;
 
@@ -715,36 +658,86 @@ impl Iterator for ExhaustiveRangeInteger {
     }
 }
 
-pub enum RangeInteger {
-    Exhaustive(ExhaustiveRangeInteger),
-    Random(IsaacRng, Integer, Integer),
+pub struct RandomRangeInteger {
+    rng: IsaacRng,
+    diameter: Integer,
+    a: Integer,
 }
 
-impl RangeInteger {
-    pub fn exhaustive(a: Integer, b: Integer) -> RangeInteger {
-        RangeInteger::Exhaustive(ExhaustiveRangeInteger::new(a, b))
-    }
-
-    pub fn random(a: Integer, b: Integer, seed: &[u32]) -> RangeInteger {
-        let mut diameter = b - &a;
-        diameter += 1;
-        RangeInteger::Random(SeedableRng::from_seed(seed), diameter, a)
-    }
-}
-
-impl Iterator for RangeInteger {
+impl Iterator for RandomRangeInteger {
     type Item = Integer;
 
     fn next(&mut self) -> Option<Integer> {
-        match self {
-            &mut RangeInteger::Exhaustive(ref mut xs) => xs.next(),
-            &mut RangeInteger::Random(ref mut rng, ref diameter, ref a) => {
-                let mut random = diameter.clone();
-                random.random_below(rng);
-                random += a;
-                Some(random)
-            }
-        }
+        let mut random = self.diameter.clone();
+        random.random_below(&mut self.rng);
+        random += &self.a;
+        Some(random)
+    }
+}
+
+pub fn range_up_increasing_integer(a: Integer) -> RangeIncreasingUnboundedInteger {
+    RangeIncreasingUnboundedInteger { i: a }
+}
+
+pub fn range_down_decreasing_integer(a: Integer) -> RangeDecreasingUnboundedInteger {
+    RangeDecreasingUnboundedInteger { i: a }
+}
+
+pub fn range_increasing_integer(a: Integer, b: Integer) -> RangeIncreasingInteger {
+    if a > b {
+        panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
+    }
+    RangeIncreasingInteger {
+        i: a,
+        b: b,
+        done: false,
+    }
+}
+
+pub fn range_decreasing_integer(a: Integer, b: Integer) -> RangeDecreasingInteger {
+    if a > b {
+        panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
+    }
+    RangeDecreasingInteger {
+        a: a,
+        i: b,
+        done: false,
+    }
+}
+
+pub fn exhaustive_range_integer(a: Integer, b: Integer) -> ExhaustiveRangeInteger {
+    if a > b {
+        panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
+    }
+    if a >= 0 {
+        ExhaustiveRangeInteger::AllNonNegative(range_increasing_integer(a, b))
+    } else if b <= 0 {
+        ExhaustiveRangeInteger::AllNonPositive(range_decreasing_integer(a, b))
+    } else {
+        ExhaustiveRangeInteger::SomeOfEachSign(
+                once(Integer::from(0)).chain(
+                    range_increasing_integer(Integer::from(1), b)
+                        .interleave(
+                            range_decreasing_integer(
+                                a,
+                                Integer::from(-1)
+                            )
+                        )
+                )
+            )
+    }
+}
+
+pub fn random_range_integer(seed: &[u32], a: Integer, b: Integer) -> RandomRangeInteger {
+    if a > b {
+        panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
+    }
+    let mut diameter = b - &a;
+    diameter += 1;
+    RandomRangeInteger {
+        rng: SeedableRng::from_seed(seed),
+        diameter,
+        a,
     }
 }
 
@@ -953,32 +946,6 @@ impl IteratorProvider {
                 IteratorProvider::Random(new_key, scrambled_seed)
             }
             &IteratorProvider::Exhaustive => IteratorProvider::Exhaustive,
-        }
-    }
-
-    pub fn range_up_increasing_integer(&self, a: Integer) -> RangeIncreasingUnboundedInteger {
-        RangeIncreasingUnboundedInteger::new(a)
-    }
-
-    pub fn range_down_decreasing_integer(&self, b: Integer) -> RangeDecreasingUnboundedInteger {
-        RangeDecreasingUnboundedInteger::new(b)
-    }
-
-    pub fn range_increasing_integer(&self, a: Integer, b: Integer) -> RangeIncreasingInteger {
-        RangeIncreasingInteger::new(a, b)
-    }
-
-    pub fn range_decreasing_integer(&self, a: Integer, b: Integer) -> RangeDecreasingInteger {
-        RangeDecreasingInteger::new(a, b)
-    }
-
-    pub fn range_integer(&self, a: Integer, b: Integer) -> RangeInteger {
-        if a > b {
-            panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
-        }
-        match self {
-            &IteratorProvider::Exhaustive => RangeInteger::exhaustive(a, b),
-            &IteratorProvider::Random(_, seed) => RangeInteger::random(a, b, &seed[..]),
         }
     }
 

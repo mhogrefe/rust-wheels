@@ -1,9 +1,7 @@
 use std::str::FromStr;
 
 #[allow(unused_assignments)]
-pub fn parse_vec<T>(s: &str) -> Option<Vec<T>>
-    where T: FromStr
-{
+pub fn parse_vec<T: FromStr>(s: &str) -> Option<Vec<T>> {
     if s.is_empty() {
         return None;
     }
