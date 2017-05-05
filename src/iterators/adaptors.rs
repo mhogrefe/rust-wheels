@@ -23,9 +23,8 @@ fn to_limited_string_vec_helper<I>(limit: usize,
         }
     }
     if !found_end {
-        match xs.next() {
-            Some(_) => vec.push("...".to_string()),
-            _ => {}
+        if let Some(_) = xs.next() {
+            vec.push("...".to_string())
         }
     }
     vec
@@ -99,7 +98,7 @@ fn get_most_common_values_helper<T>(limit: usize,
     }
     let mut most_common_values = BinaryHeap::new();
     let mut i = 0;
-    for (&frequency, xs) in inverse_frequency_map.iter() {
+    for (&frequency, xs) in &inverse_frequency_map {
         for x in xs {
             most_common_values.push(FrequencyRecord {
                                         item: f(x),

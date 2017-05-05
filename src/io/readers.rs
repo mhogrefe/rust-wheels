@@ -12,12 +12,12 @@ pub fn parse_vec<T: FromStr>(s: &str) -> Option<Vec<T>> {
     if tokens[0].is_empty() || tokens[last_token_index].is_empty() {
         return None;
     }
-    cleaned_first_token = String::from(tokens[0].clone());
+    cleaned_first_token = String::from(tokens[0]);
     if cleaned_first_token.remove(0) != '[' {
         return None;
     }
     tokens[0] = &cleaned_first_token;
-    cleaned_last_token = String::from(tokens[last_token_index].clone());
+    cleaned_last_token = String::from(tokens[last_token_index]);
     if cleaned_last_token.pop().unwrap() != ']' {
         return None;
     }

@@ -70,11 +70,11 @@ pub fn scramble(seed: &[u32; SEED_SIZE], s: &str) -> [u32; SEED_SIZE] {
     let mut scrambled_seed = [0; SEED_SIZE];
     for i in 0..SEED_SIZE {
         let j = (i & 0x7) << 2;
-        let a = hash[j] as u32;
-        let b = hash[j + 1] as u32;
-        let c = hash[j + 2] as u32;
-        let d = hash[j + 3] as u32;
-        scrambled_seed[i] = seed[i] ^ (a << 24 | b << 16 | c << 8 | d)
+        let byte_1 = hash[j] as u32;
+        let byte_2 = hash[j + 1] as u32;
+        let byte_3 = hash[j + 2] as u32;
+        let byte_4 = hash[j + 3] as u32;
+        scrambled_seed[i] = seed[i] ^ (byte_1 << 24 | byte_2 << 16 | byte_3 << 8 | byte_4)
     }
     scrambled_seed
 }
@@ -332,15 +332,15 @@ impl<T: PrimInt> Iterator for RandomRange<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        match self {
-            &mut RandomRange::Some(shift, ref mut rng, ref range) => {
+        match *self {
+            RandomRange::Some(shift, ref mut rng, ref range) => {
                 Some(if shift {
                          range.ind_sample(rng) + T::from_u8(1)
                      } else {
                          range.ind_sample(rng)
                      })
             }
-            &mut RandomRange::All(ref mut xs) => xs.next(),
+            RandomRange::All(ref mut xs) => xs.next(),
         }
     }
 }

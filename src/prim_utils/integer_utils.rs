@@ -422,16 +422,15 @@ pub fn digits_padded_integer(size: usize, radix: &Integer, n: &Integer) -> Vec<I
         }
         digits
     } else if *radix <= 36 {
-        return n.to_string_radix(radix.to_i32().unwrap())
-                   .chars()
-                   .rev()
-                   .map(|c| {
-                            Integer::from(c as i32 -
-                                          (if c >= '0' && c <= '9' { '0' } else { 'W' } as i32))
-                        })
-                   .chain(iter::repeat(Integer::from(0)))
-                   .take(size)
-                   .collect();
+        n.to_string_radix(radix.to_i32().unwrap())
+            .chars()
+            .rev()
+            .map(|c| {
+                     Integer::from(c as i32 - (if c >= '0' && c <= '9' { '0' } else { 'W' } as i32))
+                 })
+            .chain(iter::repeat(Integer::from(0)))
+            .take(size)
+            .collect()
     } else {
         let mut digits = Vec::new();
         let mut remaining = n.clone();
