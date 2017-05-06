@@ -131,22 +131,8 @@ impl<T: Clone> Iterator for RandomFromVector<T> {
     }
 }
 
-pub struct RandomBools(IsaacRng);
-
 pub fn exhaustive_bools() -> ExhaustiveFromVector<bool> {
     exhaustive_from_vector(vec![false, true])
-}
-
-pub fn random_bools(seed: &[u32]) -> RandomBools {
-    RandomBools(SeedableRng::from_seed(seed))
-}
-
-impl Iterator for RandomBools {
-    type Item = bool;
-
-    fn next(&mut self) -> Option<bool> {
-        Some(self.0.gen())
-    }
 }
 
 pub struct RangeIncreasing<T: Walkable> {
@@ -797,7 +783,7 @@ pub fn negative_i32s_geometric(seed: &[u32], scale: u32) -> NegativeI32sGeometri
 
 pub enum NonzeroI32sGeometric {
     Exhaustive(Interleave<RangeIncreasing<i32>, RangeDecreasing<i32>>),
-    Random(PositiveU32sGeometric, RandomBools),
+    Random(PositiveU32sGeometric, Random<bool>),
 }
 
 impl NonzeroI32sGeometric {
@@ -825,7 +811,7 @@ impl Iterator for NonzeroI32sGeometric {
 
 pub enum I32sGeometric {
     Exhaustive(Chain<Once<i32>, Interleave<RangeIncreasing<i32>, RangeDecreasing<i32>>>),
-    Random(NaturalU32sGeometric, RandomBools),
+    Random(NaturalU32sGeometric, Random<bool>),
 }
 
 impl I32sGeometric {

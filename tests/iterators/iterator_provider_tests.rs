@@ -156,7 +156,7 @@ prim_fail_i!(isize,
 fn test_bools() {
     let eo = get_expected_test_outputs();
     eo.match_vec("exhaustive_bools", &mut exhaustive_bools());
-    eo.match_vec_f("random_bools", &mut random_bools(&EXAMPLE_SEED[..]));
+    eo.match_vec_f("random_bools", &mut random_x::<bool>(&EXAMPLE_SEED[..]));
 }
 
 fn range_up_increasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
