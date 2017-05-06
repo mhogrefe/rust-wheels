@@ -107,14 +107,14 @@ pub struct RandomFromVector<T> {
     range: RandomRange<usize>,
 }
 
-pub fn random_from_vector<T>(xs: Vec<T>, seed: &[u32]) -> RandomFromVector<T> {
+pub fn random_from_vector<T>(seed: &[u32], xs: Vec<T>) -> RandomFromVector<T> {
     if xs.is_empty() {
         panic!("Cannot randomly generate values from an empty Vec.");
     }
     let limit = &xs.len() - 1;
     RandomFromVector {
         xs: xs,
-        range: random_range(0, limit, seed),
+        range: random_range(seed, 0, limit),
     }
 }
 
@@ -295,7 +295,7 @@ pub enum RandomRange<T: Rand> {
     All(Random<T>),
 }
 
-pub fn random_range<T: PrimInt>(a: T, b: T, seed: &[u32]) -> RandomRange<T> {
+pub fn random_range<T: PrimInt>(seed: &[u32], a: T, b: T) -> RandomRange<T> {
     if a == T::min_value() && b == T::max_value() {
         RandomRange::All(random_x(seed))
     } else if b == T::max_value() {
@@ -326,12 +326,12 @@ impl<T: PrimInt> Iterator for RandomRange<T> {
     }
 }
 
-pub fn random_range_up<T: PrimInt>(a: T, seed: &[u32]) -> RandomRange<T> {
-    random_range(a, T::max_value(), seed)
+pub fn random_range_up<T: PrimInt>(seed: &[u32], a: T) -> RandomRange<T> {
+    random_range(seed, a, T::max_value())
 }
 
-pub fn random_range_down<T: PrimInt>(a: T, seed: &[u32]) -> RandomRange<T> {
-    random_range(T::min_value(), a, seed)
+pub fn random_range_down<T: PrimInt>(seed: &[u32], a: T) -> RandomRange<T> {
+    random_range(seed, T::min_value(), a)
 }
 
 pub fn exhaustive_negative_i<T: PrimSignedInt>() -> RangeDecreasing<T> {
@@ -451,8 +451,8 @@ impl<T: PrimSignedInt> RangeI<T> {
         RangeI::Exhaustive(ExhaustiveRangeI::new(a, b))
     }
 
-    pub fn random(a: T, b: T, seed: &[u32]) -> RangeI<T> {
-        RangeI::Random(random_range(a, b, seed))
+    pub fn random(seed: &[u32], a: T, b: T) -> RangeI<T> {
+        RangeI::Random(random_range(seed, a, b))
     }
 }
 
@@ -512,7 +512,7 @@ pub struct RandomRangeChar {
     range: Range<u32>,
 }
 
-pub fn random_range_char(a: char, b: char, seed: &[u32]) -> RandomRangeChar {
+pub fn random_range_char(seed: &[u32], a: char, b: char) -> RandomRangeChar {
     if a > b {
         panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
     }
@@ -538,12 +538,12 @@ pub fn exhaustive_range_down_char(a: char) -> RangeIncreasing<char> {
     range_increasing_x('\0', a)
 }
 
-pub fn random_range_up_char(a: char, seed: &[u32]) -> RandomRangeChar {
-    random_range_char(a, char::MAX, seed)
+pub fn random_range_up_char(seed: &[u32], a: char) -> RandomRangeChar {
+    random_range_char(seed, a, char::MAX)
 }
 
-pub fn random_range_down_char(a: char, seed: &[u32]) -> RandomRangeChar {
-    random_range_char('\0', a, seed)
+pub fn random_range_down_char(seed: &[u32], a: char) -> RandomRangeChar {
+    random_range_char(seed, '\0', a)
 }
 
 pub struct RangeIncreasingInteger {
@@ -739,7 +739,7 @@ impl Iterator for PositiveU32sGeometric {
 }
 
 pub fn positive_u32s_geometric(seed: &[u32], scale: u32) -> PositiveU32sGeometric {
-    PositiveU32sGeometric(random_range(0, scale + 1, seed))
+    PositiveU32sGeometric(random_range(seed, 0, scale + 1))
 }
 
 pub struct NaturalU32sGeometric(RandomRange<u32>);
@@ -759,7 +759,7 @@ impl Iterator for NaturalU32sGeometric {
 }
 
 pub fn natural_u32s_geometric(seed: &[u32], scale: u32) -> NaturalU32sGeometric {
-    NaturalU32sGeometric(random_range(0, scale + 1, seed))
+    NaturalU32sGeometric(random_range(seed, 0, scale + 1))
 }
 
 pub struct NegativeI32sGeometric(PositiveU32sGeometric);
@@ -833,8 +833,7 @@ pub fn exhaustive_orderings() -> ExhaustiveFromVector<Ordering> {
 }
 
 pub fn random_orderings(seed: &[u32]) -> RandomFromVector<Ordering> {
-    random_from_vector(vec![Ordering::Equal, Ordering::Less, Ordering::Greater],
-                       seed)
+    random_from_vector(seed, vec![Ordering::Equal, Ordering::Less, Ordering::Greater])
 }
 
 pub fn chars_increasing() -> RangeIncreasing<char> {

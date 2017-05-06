@@ -51,13 +51,13 @@ macro_rules! prim_fail_u {
         #[test]
         #[should_panic(expected = "Range::new called with `low >= high")]
         fn $random_range_fail_1() {
-            random_range::<$t>(10, 9, &EXAMPLE_SEED[..]);
+            random_range::<$t>(&EXAMPLE_SEED[..], 10, 9);
         }
 
         #[test]
         #[should_panic(expected = "Range::new called with `low >= high")]
         fn $random_range_fail_2() {
-            random_range::<$t>(10, 9, &EXAMPLE_SEED[..]);
+            random_range::<$t>(&EXAMPLE_SEED[..], 10, 9);
         }
     }
 }
@@ -93,25 +93,25 @@ macro_rules! prim_fail_i {
         #[test]
         #[should_panic(expected = "Range::new called with `low >= high")]
         fn $random_range_fail_1() {
-            random_range::<$t>(10, 9, &EXAMPLE_SEED[..]);
+            random_range::<$t>(&EXAMPLE_SEED[..], 10, 9);
         }
 
         #[test]
         #[should_panic(expected = "Range::new called with `low >= high")]
         fn $random_range_fail_2() {
-            random_range::<$t>(10, 9, &EXAMPLE_SEED[..]);
+            random_range::<$t>(&EXAMPLE_SEED[..], 10, 9,);
         }
 
         #[test]
         #[should_panic(expected = "Range::new called with `low >= high")]
         fn $random_range_fail_3() {
-            random_range::<$t>(-9, -10, &EXAMPLE_SEED[..]);
+            random_range::<$t>(&EXAMPLE_SEED[..], -9, -10);
         }
 
         #[test]
         #[should_panic(expected = "Range::new called with `low >= high")]
         fn $random_range_fail_4() {
-            random_range::<$t>(-9, -10, &EXAMPLE_SEED[..]);
+            random_range::<$t>(&EXAMPLE_SEED[..], -9, -10);
         }
     }
 }
@@ -572,7 +572,7 @@ fn test_all_i() {
 fn random_range_up_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec_f(&format!("random_range_up_{}_{}", T::name(), number),
-                       &mut random_range_up::<T>(a, &EXAMPLE_SEED[..]))
+                       &mut random_range_up::<T>(&EXAMPLE_SEED[..], a))
     };
     test("i", T::from_u8(0));
     test("ii", T::from_u8(5));
@@ -582,7 +582,7 @@ fn random_range_up_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
 fn random_range_up_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec_f(&format!("random_range_up_{}_{}", T::name(), number),
-                       &mut random_range_up::<T>(a, &EXAMPLE_SEED[..]))
+                       &mut random_range_up::<T>(&EXAMPLE_SEED[..], a))
     };
     test("i", T::from_u8(0));
     test("ii", T::from_u8(5));
@@ -607,7 +607,7 @@ fn test_random_range_up() {
 fn random_range_down_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec_f(&format!("random_range_down_{}_{}", T::name(), number),
-                       &mut random_range_down::<T>(a, &EXAMPLE_SEED[..]))
+                       &mut random_range_down::<T>(&EXAMPLE_SEED[..], a))
     };
     test("i", T::from_u8(0));
     test("ii", T::from_u8(5));
@@ -617,7 +617,7 @@ fn random_range_down_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
 fn random_range_down_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec_f(&format!("random_range_down_{}_{}", T::name(), number),
-                       &mut random_range_down::<T>(a, &EXAMPLE_SEED[..]))
+                       &mut random_range_down::<T>(&EXAMPLE_SEED[..], a))
     };
     test("i", T::from_u8(0));
     test("ii", T::from_u8(5));
@@ -642,7 +642,7 @@ fn test_random_range_down() {
 fn random_range_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
     let test = |number, a, b| {
         eo.match_vec_f(&format!("random_range_{}_{}", T::name(), number),
-                       &mut random_range::<T>(a, b, &EXAMPLE_SEED[..]))
+                       &mut random_range::<T>(&EXAMPLE_SEED[..], a, b))
     };
     test("i", T::from_u8(0), T::from_u8(0));
     test("ii", T::from_u8(0), T::from_u8(10));
@@ -655,7 +655,7 @@ fn random_range_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
 fn random_range_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
     let test = |number, a, b| {
         eo.match_vec_f(&format!("random_range_{}_{}", T::name(), number),
-                       &mut random_range::<T>(a, b, &EXAMPLE_SEED[..]))
+                       &mut random_range::<T>(&EXAMPLE_SEED[..], a, b))
     };
     test("i", T::from_u8(0), T::from_u8(0));
     test("ii", T::from_u8(0), T::from_u8(10));
@@ -700,7 +700,7 @@ fn test_from_vector() {
     let r_test = |number, xs| {
         let xs: Vec<u32> = parse_vec(xs).unwrap();
         eo.match_vec_f(&format!("random_from_vector_{}", number),
-                       &mut random_from_vector(xs, &EXAMPLE_SEED[..]));
+                       &mut random_from_vector(&EXAMPLE_SEED[..], xs));
     };
     r_test("i", "[5]");
     r_test("ii", "[1, 2, 3]");
@@ -710,7 +710,7 @@ fn test_from_vector() {
 #[test]
 #[should_panic(expected = "Cannot randomly generate values from an empty Vec.")]
 fn random_from_vector_fail() {
-    &mut random_from_vector(Vec::<u32>::new(), &EXAMPLE_SEED[..]);
+    &mut random_from_vector(&EXAMPLE_SEED[..], Vec::<u32>::new());
 }
 
 #[test]
@@ -862,7 +862,7 @@ fn test_range_up_char() {
     e_test("v", char::MAX);
     let r_test = |number, a| {
         eo.match_vec_f_debug(&format!("random_range_up_char_{}", number),
-                             &mut random_range_up_char(a, &EXAMPLE_SEED[..]))
+                             &mut random_range_up_char(&EXAMPLE_SEED[..], a))
     };
     r_test("i", '\0');
     r_test("ii", 'a');
@@ -885,7 +885,7 @@ fn test_range_down_char() {
     e_test("v", char::MAX);
     let r_test = |number, a| {
         eo.match_vec_f_debug(&format!("random_range_down_char_{}", number),
-                             &mut random_range_down_char(a, &EXAMPLE_SEED[..]))
+                             &mut random_range_down_char(&EXAMPLE_SEED[..], a))
     };
     r_test("i", '\0');
     r_test("ii", 'a');
@@ -907,7 +907,7 @@ fn test_range_char() {
     e_test("iv", '\u{D7FF}', '\u{E000}');
     let r_test = |number, a, b| {
         eo.match_vec_f_debug(&format!("random_range_char_{}", number),
-                             &mut random_range_char(a, b, &EXAMPLE_SEED[..]))
+                             &mut random_range_char(&EXAMPLE_SEED[..], a, b))
     };
     r_test("i", 'a', 'z');
     r_test("ii", 'a', 'a');
@@ -924,7 +924,7 @@ fn range_char_fail_1() {
 #[test]
 #[should_panic(expected = "a must be less than or equal to b. a: a, b: A")]
 fn range_char_fail_2() {
-    random_range_char('a', 'A', &EXAMPLE_SEED[..]);
+    random_range_char(&EXAMPLE_SEED[..], 'a', 'A');
 }
 
 #[test]
