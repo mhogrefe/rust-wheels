@@ -410,22 +410,20 @@ pub enum ExhaustiveRangeI<T: PrimSignedInt> {
     SomeOfEachSign(Chain<Once<T>, Interleave<RangeIncreasing<T>, RangeDecreasing<T>>>),
 }
 
-impl<T: PrimSignedInt> ExhaustiveRangeI<T> {
-    pub fn new(a: T, b: T) -> ExhaustiveRangeI<T> {
-        let zero = T::from_u8(0);
-        if a >= zero {
-            ExhaustiveRangeI::AllNonNegative(range_increasing_x(a, b))
-        } else if b <= zero {
-            ExhaustiveRangeI::AllNonPositive(range_decreasing_x(a, b))
-        } else {
-            ExhaustiveRangeI::SomeOfEachSign(
-                    once(zero).chain(
-                            range_increasing_x(T::from_u8(1), b).interleave(
-                                    range_decreasing_x(a, T::from_i8(-1))
-                            )
-                    )
-            )
-        }
+pub fn exhaustive_range_i<T: PrimSignedInt>(a: T, b: T) -> ExhaustiveRangeI<T> {
+    let zero = T::from_u8(0);
+    if a >= zero {
+        ExhaustiveRangeI::AllNonNegative(range_increasing_x(a, b))
+    } else if b <= zero {
+        ExhaustiveRangeI::AllNonPositive(range_decreasing_x(a, b))
+    } else {
+        ExhaustiveRangeI::SomeOfEachSign(
+                once(zero).chain(
+                        range_increasing_x(T::from_u8(1), b).interleave(
+                                range_decreasing_x(a, T::from_i8(-1))
+                        )
+                )
+        )
     }
 }
 
@@ -437,32 +435,6 @@ impl<T: PrimSignedInt> Iterator for ExhaustiveRangeI<T> {
             &mut ExhaustiveRangeI::AllNonNegative(ref mut xs) => xs.next(),
             &mut ExhaustiveRangeI::AllNonPositive(ref mut xs) => xs.next(),
             &mut ExhaustiveRangeI::SomeOfEachSign(ref mut xs) => xs.next(),
-        }
-    }
-}
-
-pub enum RangeI<T: PrimSignedInt> {
-    Exhaustive(ExhaustiveRangeI<T>),
-    Random(RandomRange<T>),
-}
-
-impl<T: PrimSignedInt> RangeI<T> {
-    pub fn exhaustive(a: T, b: T) -> RangeI<T> {
-        RangeI::Exhaustive(ExhaustiveRangeI::new(a, b))
-    }
-
-    pub fn random(seed: &[u32], a: T, b: T) -> RangeI<T> {
-        RangeI::Random(random_range(seed, a, b))
-    }
-}
-
-impl<T: PrimSignedInt> Iterator for RangeI<T> {
-    type Item = T;
-
-    fn next(&mut self) -> Option<T> {
-        match self {
-            &mut RangeI::Exhaustive(ref mut xs) => xs.next(),
-            &mut RangeI::Random(ref mut xs) => xs.next(),
         }
     }
 }
@@ -833,7 +805,8 @@ pub fn exhaustive_orderings() -> ExhaustiveFromVector<Ordering> {
 }
 
 pub fn random_orderings(seed: &[u32]) -> RandomFromVector<Ordering> {
-    random_from_vector(seed, vec![Ordering::Equal, Ordering::Less, Ordering::Greater])
+    random_from_vector(seed,
+                       vec![Ordering::Equal, Ordering::Less, Ordering::Greater])
 }
 
 pub fn chars_increasing() -> RangeIncreasing<char> {

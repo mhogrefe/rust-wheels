@@ -652,8 +652,10 @@ fn random_range_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
     test("vi", T::from_u8(0), T::max_value() - T::from_u8(1));
 }
 
-fn random_range_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
+fn range_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
     let test = |number, a, b| {
+        eo.match_vec(&format!("exhaustive_range_{}_{}", T::name(), number),
+                     &mut exhaustive_range_i::<T>(a, b));
         eo.match_vec_f(&format!("random_range_{}_{}", T::name(), number),
                        &mut random_range::<T>(&EXAMPLE_SEED[..], a, b))
     };
@@ -673,16 +675,16 @@ fn random_range_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
 }
 
 #[test]
-fn test_random_range() {
+fn test_range() {
     let eo = get_expected_test_outputs();
     random_range_u_helper::<u8>(&eo);
     random_range_u_helper::<u16>(&eo);
     random_range_u_helper::<u32>(&eo);
     random_range_u_helper::<u64>(&eo);
-    random_range_i_helper::<i8>(&eo);
-    random_range_i_helper::<i16>(&eo);
-    random_range_i_helper::<i32>(&eo);
-    random_range_i_helper::<i64>(&eo);
+    range_i_helper::<i8>(&eo);
+    range_i_helper::<i16>(&eo);
+    range_i_helper::<i32>(&eo);
+    range_i_helper::<i64>(&eo);
 }
 
 #[test]
