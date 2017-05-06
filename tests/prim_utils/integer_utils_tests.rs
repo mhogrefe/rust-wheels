@@ -440,7 +440,7 @@ fn big_endian_bits_integer_fail() {
     big_endian_bits_integer(&Integer::from(-5));
 }
 
-fn big_endian_bits_padded_integer_helper(size: usize, n: &str, out: Vec<bool>) {
+fn big_endian_bits_padded_integer_helper(size: usize, n: &str, out: &[bool]) {
     assert_eq!(big_endian_bits_padded_integer(size, &Integer::from_str(n).unwrap()),
                out);
 }
@@ -449,41 +449,39 @@ fn big_endian_bits_padded_integer_helper(size: usize, n: &str, out: Vec<bool>) {
 fn test_big_endian_bits_padded_integer() {
     big_endian_bits_padded_integer_helper(8,
                                           "0",
-                                          vec![false, false, false, false, false, false, false,
-                                               false]);
+                                          &[false, false, false, false, false, false, false,
+                                            false]);
     big_endian_bits_padded_integer_helper(8,
                                           "1",
-                                          vec![false, false, false, false, false, false, false,
-                                               true]);
+                                          &[false, false, false, false, false, false, false, true]);
     big_endian_bits_padded_integer_helper(8,
                                           "6",
-                                          vec![false, false, false, false, false, true, true,
-                                               false]);
+                                          &[false, false, false, false, false, true, true, false]);
     big_endian_bits_padded_integer_helper(8,
                                           "105",
-                                          vec![false, true, true, false, true, false, false, true]);
-    big_endian_bits_padded_integer_helper(2, "104", vec![false, false]);
-    big_endian_bits_padded_integer_helper(2, "105", vec![false, true]);
-    big_endian_bits_padded_integer_helper(1, "104", vec![false]);
-    big_endian_bits_padded_integer_helper(1, "105", vec![true]);
-    big_endian_bits_padded_integer_helper(0, "104", vec![]);
+                                          &[false, true, true, false, true, false, false, true]);
+    big_endian_bits_padded_integer_helper(2, "104", &[false, false]);
+    big_endian_bits_padded_integer_helper(2, "105", &[false, true]);
+    big_endian_bits_padded_integer_helper(1, "104", &[false]);
+    big_endian_bits_padded_integer_helper(1, "105", &[true]);
+    big_endian_bits_padded_integer_helper(0, "104", &[]);
     big_endian_bits_padded_integer_helper(100,
                                           "105",
-                                          vec![false, false, false, false, false, false, false,
-                                               false, false, false, false, false, false, false,
-                                               false, false, false, false, false, false, false,
-                                               false, false, false, false, false, false, false,
-                                               false, false, false, false, false, false, false,
-                                               false, false, false, false, false, false, false,
-                                               false, false, false, false, false, false, false,
-                                               false, false, false, false, false, false, false,
-                                               false, false, false, false, false, false, false,
-                                               false, false, false, false, false, false, false,
-                                               false, false, false, false, false, false, false,
-                                               false, false, false, false, false, false, false,
-                                               false, false, false, false, false, false, false,
-                                               false, false, true, true, false, true, false,
-                                               false, true]);
+                                          &[false, false, false, false, false, false, false,
+                                            false, false, false, false, false, false, false,
+                                            false, false, false, false, false, false, false,
+                                            false, false, false, false, false, false, false,
+                                            false, false, false, false, false, false, false,
+                                            false, false, false, false, false, false, false,
+                                            false, false, false, false, false, false, false,
+                                            false, false, false, false, false, false, false,
+                                            false, false, false, false, false, false, false,
+                                            false, false, false, false, false, false, false,
+                                            false, false, false, false, false, false, false,
+                                            false, false, false, false, false, false, false,
+                                            false, false, false, false, false, false, false,
+                                            false, false, true, true, false, true, false, false,
+                                            true]);
 }
 
 #[test]
@@ -492,18 +490,17 @@ fn big_endian_bits_padded_integer_fail() {
     big_endian_bits_padded_integer(8, &Integer::from(-1));
 }
 
-fn from_big_endian_bits_helper(bits: Vec<bool>, out: &str) {
+fn from_big_endian_bits_helper(bits: &[bool], out: &str) {
     assert_eq!(format!("{}", from_big_endian_bits(&bits[..])), out);
 }
 
 #[test]
 fn test_from_big_endian_bits() {
-    from_big_endian_bits_helper(vec![], "0");
-    from_big_endian_bits_helper(vec![false, false], "0");
-    from_big_endian_bits_helper(vec![false, true], "1");
-    from_big_endian_bits_helper(vec![false, false, false, false, false, true, true, false],
-                                "6");
-    from_big_endian_bits_helper(vec![true, true, false, true, false, false, true], "105");
+    from_big_endian_bits_helper(&[], "0");
+    from_big_endian_bits_helper(&[false, false], "0");
+    from_big_endian_bits_helper(&[false, true], "1");
+    from_big_endian_bits_helper(&[false, false, false, false, false, true, true, false], "6");
+    from_big_endian_bits_helper(&[true, true, false, true, false, false, true], "105");
 }
 
 #[test]

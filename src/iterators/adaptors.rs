@@ -22,10 +22,8 @@ fn to_limited_string_vec_helper<I>(limit: usize,
             }
         }
     }
-    if !found_end {
-        if let Some(_) = xs.next() {
-            vec.push("...".to_string())
-        }
+    if !found_end && xs.next().is_some() {
+        vec.push("...".to_string())
     }
     vec
 }
@@ -88,13 +86,7 @@ fn get_most_common_values_helper<T>(limit: usize,
 {
     let mut inverse_frequency_map: HashMap<usize, Vec<T>> = HashMap::new();
     for (x, frequency) in map {
-        if inverse_frequency_map.contains_key(&frequency) {
-            inverse_frequency_map.get_mut(&frequency).unwrap().push(x);
-        } else {
-            let mut xs = Vec::new();
-            xs.push(x);
-            inverse_frequency_map.insert(frequency, xs);
-        }
+        inverse_frequency_map.entry(frequency).or_insert_with(Vec::new).push(x);
     }
     let mut most_common_values = BinaryHeap::new();
     let mut i = 0;

@@ -291,7 +291,7 @@ pub fn exhaustive_u<T: PrimUnsignedInt>() -> RangeIncreasing<T> {
 }
 
 pub enum RandomRange<T: Rand> {
-    Some(bool, IsaacRng, Range<T>),
+    Some(bool, Box<IsaacRng>, Range<T>),
     All(Random<T>),
 }
 
@@ -300,11 +300,11 @@ pub fn random_range<T: PrimInt>(seed: &[u32], a: T, b: T) -> RandomRange<T> {
         RandomRange::All(random_x(seed))
     } else if b == T::max_value() {
         RandomRange::Some(true,
-                          SeedableRng::from_seed(seed),
+                          Box::new(SeedableRng::from_seed(seed)),
                           Range::new(a - T::from_u8(1), b))
     } else {
         RandomRange::Some(false,
-                          SeedableRng::from_seed(seed),
+                          Box::new(SeedableRng::from_seed(seed)),
                           Range::new(a, b + T::from_u8(1)))
     }
 }
@@ -431,10 +431,10 @@ impl<T: PrimSignedInt> Iterator for ExhaustiveRangeI<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        match self {
-            &mut ExhaustiveRangeI::AllNonNegative(ref mut xs) => xs.next(),
-            &mut ExhaustiveRangeI::AllNonPositive(ref mut xs) => xs.next(),
-            &mut ExhaustiveRangeI::SomeOfEachSign(ref mut xs) => xs.next(),
+        match *self {
+            ExhaustiveRangeI::AllNonNegative(ref mut xs) => xs.next(),
+            ExhaustiveRangeI::AllNonPositive(ref mut xs) => xs.next(),
+            ExhaustiveRangeI::SomeOfEachSign(ref mut xs) => xs.next(),
         }
     }
 }
@@ -603,10 +603,10 @@ impl Iterator for ExhaustiveRangeInteger {
     type Item = Integer;
 
     fn next(&mut self) -> Option<Integer> {
-        match self {
-            &mut ExhaustiveRangeInteger::AllNonNegative(ref mut xs) => xs.next(),
-            &mut ExhaustiveRangeInteger::AllNonPositive(ref mut xs) => xs.next(),
-            &mut ExhaustiveRangeInteger::SomeOfEachSign(ref mut xs) => xs.next(),
+        match *self {
+            ExhaustiveRangeInteger::AllNonNegative(ref mut xs) => xs.next(),
+            ExhaustiveRangeInteger::AllNonPositive(ref mut xs) => xs.next(),
+            ExhaustiveRangeInteger::SomeOfEachSign(ref mut xs) => xs.next(),
         }
     }
 }

@@ -712,7 +712,7 @@ fn test_from_vector() {
 #[test]
 #[should_panic(expected = "Cannot randomly generate values from an empty Vec.")]
 fn random_from_vector_fail() {
-    &mut random_from_vector(&EXAMPLE_SEED[..], Vec::<u32>::new());
+    random_from_vector(&EXAMPLE_SEED[..], Vec::<u32>::new());
 }
 
 #[test]
