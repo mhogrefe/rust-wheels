@@ -741,87 +741,47 @@ pub fn random_range_integer(seed: &[u32], a: Integer, b: Integer) -> RandomRange
     }
 }
 
-pub enum PositiveU32sGeometric {
-    Exhaustive(RangeIncreasing<u32>),
-    Random(RandomRange<u32>),
-}
-
-impl PositiveU32sGeometric {
-    pub fn exhaustive() -> PositiveU32sGeometric {
-        PositiveU32sGeometric::Exhaustive(range_increasing_x(1, u32::max_value()))
-    }
-
-    pub fn random(scale: u32, seed: &[u32]) -> PositiveU32sGeometric {
-        PositiveU32sGeometric::Random(random_range(0, scale + 1, seed))
-    }
-}
+pub struct PositiveU32sGeometric(RandomRange<u32>);
 
 impl Iterator for PositiveU32sGeometric {
     type Item = u32;
 
     fn next(&mut self) -> Option<u32> {
-        match self {
-            &mut PositiveU32sGeometric::Exhaustive(ref mut it) => it.next(),
-            &mut PositiveU32sGeometric::Random(ref mut it) => {
-                let mut j = 0;
-                loop {
-                    j += 1;
-                    if it.next().unwrap() == 0 {
-                        break;
-                    }
-                }
-                Some(j)
+        let mut j = 0;
+        loop {
+            j += 1;
+            if self.0.next().unwrap() == 0 {
+                return Some(j);
             }
         }
     }
 }
 
-pub enum NaturalU32sGeometric {
-    Exhaustive(RangeIncreasing<u32>),
-    Random(RandomRange<u32>),
+pub fn positive_u32s_geometric(seed: &[u32], scale: u32) -> PositiveU32sGeometric {
+    PositiveU32sGeometric(random_range(0, scale + 1, seed))
 }
 
-impl NaturalU32sGeometric {
-    pub fn exhaustive() -> NaturalU32sGeometric {
-        NaturalU32sGeometric::Exhaustive(range_increasing_x(0, u32::max_value()))
-    }
-
-    pub fn random(scale: u32, seed: &[u32]) -> NaturalU32sGeometric {
-        NaturalU32sGeometric::Random(random_range(0, scale + 1, seed))
-    }
-}
+pub struct NaturalU32sGeometric(RandomRange<u32>);
 
 impl Iterator for NaturalU32sGeometric {
     type Item = u32;
 
     fn next(&mut self) -> Option<u32> {
-        match self {
-            &mut NaturalU32sGeometric::Exhaustive(ref mut it) => it.next(),
-            &mut NaturalU32sGeometric::Random(ref mut it) => {
-                let mut j = 0;
-                loop {
-                    if it.next().unwrap() == 0 {
-                        break;
-                    }
-                    j += 1;
-                }
-                Some(j)
+        let mut j = 0;
+        loop {
+            if self.0.next().unwrap() == 0 {
+                return Some(j);
             }
+            j += 1;
         }
     }
 }
 
-pub struct NegativeI32sGeometric(PositiveU32sGeometric);
-
-impl NegativeI32sGeometric {
-    pub fn exhaustive() -> NegativeI32sGeometric {
-        NegativeI32sGeometric(PositiveU32sGeometric::exhaustive())
-    }
-
-    pub fn random(scale: u32, seed: &[u32]) -> NegativeI32sGeometric {
-        NegativeI32sGeometric(PositiveU32sGeometric::random(scale, seed))
-    }
+pub fn natural_u32s_geometric(seed: &[u32], scale: u32) -> NaturalU32sGeometric {
+    NaturalU32sGeometric(random_range(0, scale + 1, seed))
 }
+
+pub struct NegativeI32sGeometric(PositiveU32sGeometric);
 
 impl Iterator for NegativeI32sGeometric {
     type Item = i32;
@@ -829,6 +789,10 @@ impl Iterator for NegativeI32sGeometric {
     fn next(&mut self) -> Option<i32> {
         self.0.next().map(|i| -(i as i32))
     }
+}
+
+pub fn negative_i32s_geometric(seed: &[u32], scale: u32) -> NegativeI32sGeometric {
+    NegativeI32sGeometric(positive_u32s_geometric(seed, scale))
 }
 
 pub enum NonzeroI32sGeometric {
@@ -948,28 +912,7 @@ impl IteratorProvider {
             &IteratorProvider::Exhaustive => IteratorProvider::Exhaustive,
         }
     }
-
-    pub fn positive_u32s_geometric(&self, scale: u32) -> PositiveU32sGeometric {
-        match self {
-            &IteratorProvider::Exhaustive => PositiveU32sGeometric::exhaustive(),
-            &IteratorProvider::Random(_, seed) => PositiveU32sGeometric::random(scale, &seed[..]),
-        }
-    }
-
-    pub fn natural_u32s_geometric(&self, scale: u32) -> NaturalU32sGeometric {
-        match self {
-            &IteratorProvider::Exhaustive => NaturalU32sGeometric::exhaustive(),
-            &IteratorProvider::Random(_, seed) => NaturalU32sGeometric::random(scale, &seed[..]),
-        }
-    }
-
-    pub fn negative_i32s_geometric(&self, scale: u32) -> NegativeI32sGeometric {
-        match self {
-            &IteratorProvider::Exhaustive => NegativeI32sGeometric::exhaustive(),
-            &IteratorProvider::Random(_, seed) => NegativeI32sGeometric::random(scale, &seed[..]),
-        }
-    }
-
+    /*
     pub fn nonzero_i32s_geometric(&self, scale: u32) -> NonzeroI32sGeometric {
         match self {
             &IteratorProvider::Exhaustive => NonzeroI32sGeometric::exhaustive(),
@@ -992,5 +935,5 @@ impl IteratorProvider {
                                       random_bools(&scramble(seed, "sign")[..]))
             }
         }
-    }
+    }*/
 }

@@ -9,10 +9,6 @@ use rust_wheels::prim_utils::traits::*;
 use std::char;
 use std::str::FromStr;
 
-fn prepare_test() -> (TestOutput, IteratorProvider, IteratorProvider) {
-    (get_expected_test_outputs(), IteratorProvider::Exhaustive, IteratorProvider::example_random())
-}
-
 macro_rules! prim_fail {
     ($t: ty, $range_increasing_fail: ident, $range_decreasing_fail: ident) => {
         #[test]
@@ -1101,10 +1097,10 @@ fn test_orderings() {
 
 #[test]
 fn test_positive_u32s_geometric() {
-    let (eo, _, p) = prepare_test();
+    let eo = get_expected_test_outputs();
     let test = |number, scale| {
         eo.match_vec_f(&format!("random_positive_u32s_geometric_{}", number),
-                       &mut p.positive_u32s_geometric(scale))
+                       &mut positive_u32s_geometric(&EXAMPLE_SEED[..], scale))
     };
     test("i", 0);
     test("ii", 1);
@@ -1116,10 +1112,10 @@ fn test_positive_u32s_geometric() {
 
 #[test]
 fn test_natural_u32s_geometric() {
-    let (eo, _, p) = prepare_test();
+    let eo = get_expected_test_outputs();
     let test = |number, scale| {
         eo.match_vec_f(&format!("random_natural_u32s_geometric_{}", number),
-                       &mut p.natural_u32s_geometric(scale))
+                       &mut natural_u32s_geometric(&EXAMPLE_SEED[..], scale))
     };
     test("i", 0);
     test("ii", 1);
@@ -1131,10 +1127,10 @@ fn test_natural_u32s_geometric() {
 
 #[test]
 fn test_negative_i32s_geometric() {
-    let (eo, _, p) = prepare_test();
+    let eo = get_expected_test_outputs();
     let test = |number, scale| {
         eo.match_vec_f(&format!("random_negative_i32s_geometric_{}", number),
-                       &mut p.negative_i32s_geometric(scale))
+                       &mut negative_i32s_geometric(&EXAMPLE_SEED[..], scale))
     };
     test("i", 0);
     test("ii", 1);
