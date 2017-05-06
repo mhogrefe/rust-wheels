@@ -1139,13 +1139,13 @@ fn test_negative_i32s_geometric() {
     test("v", 10);
     test("vi", 100);
 }
-/*
+
 #[test]
 fn test_nonzero_i32s_geometric() {
-    let (eo, _, p) = prepare_test();
+    let eo = get_expected_test_outputs();
     let test = |number, scale| {
         eo.match_vec_f(&format!("random_nonzero_i32s_geometric_{}", number),
-                       &mut p.nonzero_i32s_geometric(scale))
+                       &mut nonzero_i32s_geometric(&EXAMPLE_SEED[..], scale))
     };
     test("i", 0);
     test("ii", 1);
@@ -1157,10 +1157,10 @@ fn test_nonzero_i32s_geometric() {
 
 #[test]
 fn test_i32s_geometric() {
-    let (eo, _, p) = prepare_test();
+    let eo = get_expected_test_outputs();
     let test = |number, scale| {
         eo.match_vec_f(&format!("random_i32s_geometric_{}", number),
-                       &mut p.i32s_geometric(scale))
+                       &mut i32s_geometric(&EXAMPLE_SEED[..], scale))
     };
     test("i", 0);
     test("ii", 1);
@@ -1169,4 +1169,3 @@ fn test_i32s_geometric() {
     test("v", 10);
     test("vi", 100);
 }
-*/

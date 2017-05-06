@@ -58,12 +58,7 @@ pub const EXAMPLE_SEED: [u32; SEED_SIZE] =
      0x951db99f, 0xcb52a1e1, 0x542600f0, 0xeb82b9a3, 0x5e4fd956, 0xe7f71bab, 0x8f79aeff,
      0xab5b81ae, 0x7aa714f0, 0x8a8260b7, 0x123fc3c9];
 
-pub enum IteratorProvider {
-    Exhaustive,
-    Random(String, [u32; SEED_SIZE]),
-}
-
-pub fn scramble(seed: &[u32; SEED_SIZE], s: &str) -> [u32; SEED_SIZE] {
+pub fn scramble(seed: &[u32], s: &str) -> [u32; SEED_SIZE] {
     let mut hasher = Sha3_256::new();
     hasher.input(s.as_bytes());
     let hash = hasher.result();
@@ -781,59 +776,51 @@ pub fn negative_i32s_geometric(seed: &[u32], scale: u32) -> NegativeI32sGeometri
     NegativeI32sGeometric(positive_u32s_geometric(seed, scale))
 }
 
-pub enum NonzeroI32sGeometric {
-    Exhaustive(Interleave<RangeIncreasing<i32>, RangeDecreasing<i32>>),
-    Random(PositiveU32sGeometric, Random<bool>),
-}
-
-impl NonzeroI32sGeometric {
-    pub fn exhaustive() -> NonzeroI32sGeometric {
-        NonzeroI32sGeometric::Exhaustive(exhaustive_nonzero_i())
-    }
+pub struct NonzeroI32sGeometric {
+    sign_gen: Random<bool>,
+    abs_gen: PositiveU32sGeometric,
 }
 
 impl Iterator for NonzeroI32sGeometric {
     type Item = i32;
 
     fn next(&mut self) -> Option<i32> {
-        match self {
-            &mut NonzeroI32sGeometric::Exhaustive(ref mut xs) => xs.next(),
-            &mut NonzeroI32sGeometric::Random(ref mut us, ref mut bs) => {
-                if bs.next().unwrap() {
-                    us.next().map(|i| i as i32)
-                } else {
-                    us.next().map(|i| -(i as i32))
-                }
-            }
+        if self.sign_gen.next().unwrap() {
+            self.abs_gen.next().map(|i| i as i32)
+        } else {
+            self.abs_gen.next().map(|i| -(i as i32))
         }
     }
 }
 
-pub enum I32sGeometric {
-    Exhaustive(Chain<Once<i32>, Interleave<RangeIncreasing<i32>, RangeDecreasing<i32>>>),
-    Random(NaturalU32sGeometric, Random<bool>),
+pub fn nonzero_i32s_geometric(seed: &[u32], scale: u32) -> NonzeroI32sGeometric {
+    NonzeroI32sGeometric {
+        sign_gen: random_x(&scramble(seed, "sign")),
+        abs_gen: positive_u32s_geometric(&scramble(seed, "abs"), scale),
+    }
 }
 
-impl I32sGeometric {
-    pub fn exhaustive() -> I32sGeometric {
-        I32sGeometric::Exhaustive(exhaustive_i())
-    }
+pub struct I32sGeometric {
+    sign_gen: Random<bool>,
+    abs_gen: NaturalU32sGeometric,
 }
 
 impl Iterator for I32sGeometric {
     type Item = i32;
 
     fn next(&mut self) -> Option<i32> {
-        match self {
-            &mut I32sGeometric::Exhaustive(ref mut xs) => xs.next(),
-            &mut I32sGeometric::Random(ref mut us, ref mut bs) => {
-                if bs.next().unwrap() {
-                    us.next().map(|i| i as i32)
-                } else {
-                    us.next().map(|i| -(i as i32))
-                }
-            }
+        if self.sign_gen.next().unwrap() {
+            self.abs_gen.next().map(|i| i as i32)
+        } else {
+            self.abs_gen.next().map(|i| -(i as i32))
         }
+    }
+}
+
+pub fn i32s_geometric(seed: &[u32], scale: u32) -> I32sGeometric {
+    I32sGeometric {
+        sign_gen: random_x(&scramble(seed, "sign")),
+        abs_gen: natural_u32s_geometric(&scramble(seed, "abs"), scale),
     }
 }
 
@@ -880,46 +867,4 @@ pub fn range_down_increasing_char(a: char) -> RangeIncreasing<char> {
 
 pub fn range_down_decreasing_char(a: char) -> RangeDecreasing<char> {
     range_decreasing_x('\0', a)
-}
-
-impl IteratorProvider {
-    pub fn example_random() -> IteratorProvider {
-        let key = "example";
-        IteratorProvider::Random(key.to_string(), scramble(&EXAMPLE_SEED, key))
-    }
-
-    pub fn altered(&self, key_addition: &str) -> IteratorProvider {
-        match self {
-            &IteratorProvider::Random(ref key, ref seed) => {
-                let new_key = format!("{}-{}", key, key_addition);
-                let scrambled_seed = scramble(&seed, &new_key);
-                IteratorProvider::Random(new_key, scrambled_seed)
-            }
-            &IteratorProvider::Exhaustive => IteratorProvider::Exhaustive,
-        }
-    }
-    /*
-    pub fn nonzero_i32s_geometric(&self, scale: u32) -> NonzeroI32sGeometric {
-        match self {
-            &IteratorProvider::Exhaustive => NonzeroI32sGeometric::exhaustive(),
-            &IteratorProvider::Random(ref key, ref seed) => {
-                NonzeroI32sGeometric::Random(IteratorProvider::Random(key.clone(), *seed)
-                                                 .altered("abs")
-                                                 .positive_u32s_geometric(scale),
-                                             random_bools(&scramble(seed, "sign")[..]))
-            }
-        }
-    }
-
-    pub fn i32s_geometric(&self, scale: u32) -> I32sGeometric {
-        match self {
-            &IteratorProvider::Exhaustive => I32sGeometric::exhaustive(),
-            &IteratorProvider::Random(ref key, ref seed) => {
-                I32sGeometric::Random(IteratorProvider::Random(key.clone(), *seed)
-                                          .altered("abs")
-                                          .natural_u32s_geometric(scale),
-                                      random_bools(&scramble(seed, "sign")[..]))
-            }
-        }
-    }*/
 }
