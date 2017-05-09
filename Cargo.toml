@@ -12,14 +12,12 @@ name = "rust_wheels_main"
 path = "src/bin.rs"
 
 [dependencies]
-
-malachite-gmp = { path = "../malachite/malachite-gmp", optional = true }
-malachite-native = { path = "../malachite/malachite-native", optional = true }
+malachite = { path = "../malachite/malachite" }
 itertools = "0.5.9"
 rand = "0.3.0"
 sha3 = "0.4.1"
 
 [features]
 default = []
-gmp = ["malachite-gmp"]
-native = ["malachite-native"]
+gmp = ["malachite/gmp"]
+native = ["malachite/native"]

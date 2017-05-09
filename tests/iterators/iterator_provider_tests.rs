@@ -1,8 +1,5 @@
-#[cfg(feature = "gmp")]
-use malachite_gmp::integer::Integer;
-#[cfg(feature = "native")]
-use malachite_native::integer::Integer;
 use common::{get_expected_test_outputs, TestOutput};
+use malachite::integer::Integer;
 use rust_wheels::io::readers::parse_vec;
 use rust_wheels::iterators::iterator_provider::*;
 use rust_wheels::prim_utils::traits::*;

@@ -1,7 +1,4 @@
-#[cfg(feature = "gmp")]
-extern crate malachite_gmp;
-#[cfg(feature = "native")]
-extern crate malachite_native;
+extern crate malachite;
 extern crate itertools;
 extern crate rand;
 extern crate sha3;

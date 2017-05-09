@@ -1,7 +1,4 @@
-#[cfg(feature = "gmp")]
-use malachite_gmp::integer::Integer;
-#[cfg(feature = "native")]
-use malachite_native::integer::Integer;
+use malachite::integer::Integer;
 use prim_utils::traits::*;
 use std::char;
 use std::cmp::Ordering;

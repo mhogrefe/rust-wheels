@@ -1,11 +1,7 @@
-#[cfg(feature = "gmp")]
-use malachite_gmp::integer::Integer;
-#[cfg(feature = "native")]
-use malachite_native::integer::Integer;
-
 use iterators::adaptors::MultiChain;
 use itertools::Interleave;
 use itertools::Itertools;
+use malachite::integer::Integer;
 use prim_utils::char_utils::*;
 use prim_utils::traits::*;
 use rand::{IsaacRng, Rand, Rng, SeedableRng};

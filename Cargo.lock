@@ -3,8 +3,7 @@ name = "rust-wheels"
 version = "0.1.0"
 dependencies = [
  "itertools 0.5.10 (registry+https://github.com/rust-lang/crates.io-index)",
- "malachite-gmp 0.1.0",
- "malachite-native 0.1.0",
+ "malachite 0.1.0",
  "rand 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
  "sha3 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -53,6 +52,15 @@ dependencies = [
 name = "libc"
 version = "0.2.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "malachite"
+version = "0.1.0"
+dependencies = [
+ "malachite-gmp 0.1.0",
+ "malachite-native 0.1.0",
+ "rand 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
 [[package]]
 name = "malachite-gmp"
