@@ -78,13 +78,6 @@ prim_impls_i!(i32);
 prim_impls_i!(i64);
 prim_impls_i!(isize);
 
-pub fn is_power_of_two(n: &Integer) -> bool {
-    if n.sign() != Ordering::Greater {
-        panic!("n must be positive. Invalid n: {}", n);
-    }
-    n.find_one(0).unwrap() == n.significant_bits() - 1
-}
-
 pub fn ceiling_log_2_u<T: PrimUnsignedInt>(n: T) -> u32 {
     let zero = T::from_u8(0);
     let one = T::from_u8(1);
@@ -299,7 +292,7 @@ pub fn digits_integer(radix: &Integer, n: &Integer) -> Vec<Integer> {
         panic!("n cannot be negative. Invalid n: {}", n);
     } else if sign == Ordering::Equal {
         Vec::new()
-    } else if is_power_of_two(radix) {
+    } else if radix.clone().unsigned_abs().is_power_of_two() {
         let log = ceiling_log_2_integer(radix);
         let mut digits = Vec::new();
         let length = n.significant_bits();
@@ -383,7 +376,7 @@ pub fn digits_padded_integer(size: usize, radix: &Integer, n: &Integer) -> Vec<I
         Vec::new()
     } else if sign == Ordering::Equal {
         iter::repeat(Integer::from(0)).take(size).collect()
-    } else if is_power_of_two(radix) {
+    } else if radix.clone().unsigned_abs().is_power_of_two() {
         let log = ceiling_log_2_integer(radix);
         let mut digits = Vec::new();
         let mut digit = Integer::from(0);
@@ -480,7 +473,7 @@ pub fn from_digits(radix: &Integer, digits: &[Integer]) -> Integer {
         panic!("radix must be at least 2. Invalid radix: {}", radix);
     } else if digits.is_empty() {
         Integer::new()
-    } else if is_power_of_two(radix) {
+    } else if radix.clone().unsigned_abs().is_power_of_two() {
         let radix_log = ceiling_log_2_integer(radix);
         let mut bits = Vec::new();
         for d in digits {
@@ -532,7 +525,7 @@ pub fn from_big_endian_digits(radix: &Integer, digits: &[Integer]) -> Integer {
         panic!("radix must be at least 2. Invalid radix: {}", radix);
     } else if digits.is_empty() {
         Integer::new()
-    } else if is_power_of_two(radix) {
+    } else if radix.clone().unsigned_abs().is_power_of_two() {
         let radix_log = ceiling_log_2_integer(radix);
         let mut bits = Vec::new();
         for d in digits.iter().rev() {

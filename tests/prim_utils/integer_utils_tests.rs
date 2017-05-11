@@ -124,34 +124,6 @@ prim_fail!(usize,
            big_endian_digits_padded_usize_fail_1,
            big_endian_digits_padded_usize_fail_2);
 
-#[test]
-fn test_is_power_of_two() {
-    let test = |n, out| assert_eq!(is_power_of_two(&Integer::from_str(n).unwrap()), out);
-    test("1", true);
-    test("2", true);
-    test("4", true);
-    test("8", true);
-    test("16", true);
-    test("3", false);
-    test("13", false);
-}
-
-fn is_power_of_two_fail_helper(n: &str) {
-    is_power_of_two(&Integer::from_str(n).unwrap());
-}
-
-#[test]
-#[should_panic(expected = "n must be positive. Invalid n: 0")]
-fn is_power_of_two_fail_1() {
-    is_power_of_two_fail_helper("0");
-}
-
-#[test]
-#[should_panic(expected = "n must be positive. Invalid n: -5")]
-fn is_power_of_two_fail_2() {
-    is_power_of_two_fail_helper("-5");
-}
-
 fn ceiling_log_2_u_helper<T: PrimUnsignedInt>() {
     let test = |n, out| assert_eq!(ceiling_log_2_u(n), out);
     test(T::from_u8(1), 0);
