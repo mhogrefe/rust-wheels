@@ -1,4 +1,4 @@
-use iterators::iterator_provider::{exhaustive_positive_x, exhaustive_u};
+use iterators::primitive_ints::{exhaustive_positive_x, exhaustive_u};
 use prim_utils::integer_utils::*;
 use prim_utils::traits::PrimUnsignedInt;
 

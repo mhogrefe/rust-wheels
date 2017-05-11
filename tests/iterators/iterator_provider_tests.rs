@@ -1,7 +1,14 @@
 use common::{get_expected_test_outputs, TestOutput};
 use malachite::integer::Integer;
 use rust_wheels::io::readers::parse_vec;
-use rust_wheels::iterators::iterator_provider::*;
+use rust_wheels::iterators::bools::*;
+use rust_wheels::iterators::chars::*;
+use rust_wheels::iterators::common::*;
+use rust_wheels::iterators::general::*;
+use rust_wheels::iterators::integers::*;
+use rust_wheels::iterators::integers_geometric::*;
+use rust_wheels::iterators::orderings::*;
+use rust_wheels::iterators::primitive_ints::*;
 use rust_wheels::prim_utils::traits::*;
 use std::char;
 use std::str::FromStr;

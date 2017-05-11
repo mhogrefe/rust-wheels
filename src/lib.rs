@@ -15,7 +15,14 @@ pub mod io {
 
 pub mod iterators {
     pub mod adaptors;
-    pub mod iterator_provider;
+    pub mod bools;
+    pub mod chars;
+    pub mod common;
+    pub mod general;
+    pub mod integers;
+    pub mod integers_geometric;
+    pub mod orderings;
+    pub mod primitive_ints;
 }
 
 pub mod prim_utils {
