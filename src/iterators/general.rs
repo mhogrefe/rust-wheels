@@ -3,34 +3,6 @@ use prim_utils::traits::Walkable;
 use rand::{IsaacRng, Rand, Rng, SeedableRng};
 use std::marker::PhantomData;
 
-pub struct ExhaustiveFromVector<T> {
-    xs: Vec<T>,
-    i: usize,
-}
-
-impl<T: Clone> Iterator for ExhaustiveFromVector<T> {
-    type Item = T;
-
-    fn next(&mut self) -> Option<T> {
-        if self.i == self.xs.len() {
-            None
-        } else {
-            let next = self.xs[self.i].clone();
-            self.i += 1;
-            Some(next)
-        }
-    }
-
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        let len = self.xs.len();
-        (len, Some(len))
-    }
-}
-
-pub fn exhaustive_from_vector<T>(xs: Vec<T>) -> ExhaustiveFromVector<T> {
-    ExhaustiveFromVector { xs: xs, i: 0 }
-}
-
 pub struct RangeIncreasing<T: Walkable> {
     i: T,
     b: T,

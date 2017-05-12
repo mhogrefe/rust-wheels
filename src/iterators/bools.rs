@@ -1,5 +1,5 @@
-use iterators::general::{exhaustive_from_vector, ExhaustiveFromVector};
+use std;
 
-pub fn exhaustive_bools() -> ExhaustiveFromVector<bool> {
-    exhaustive_from_vector(vec![false, true])
+pub fn exhaustive_bools() -> std::vec::IntoIter<bool> {
+    vec![false, true].into_iter()
 }

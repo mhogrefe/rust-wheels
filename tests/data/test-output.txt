@@ -140,22 +140,6 @@ exhaustive_chars_increasing list 21
 '\u{13}'
 ...
 
-exhaustive_from_vector_i list 0
-
-exhaustive_from_vector_ii list 1
-5
-
-exhaustive_from_vector_iii list 3
-1
-2
-3
-
-exhaustive_from_vector_iv list 4
-3
-1
-4
-1
-
 exhaustive_i16s list 21
 0
 1

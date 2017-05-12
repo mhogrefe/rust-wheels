@@ -694,15 +694,6 @@ fn test_range() {
 #[test]
 fn test_from_vector() {
     let eo = get_expected_test_outputs();
-    let e_test = |number, xs| {
-        let xs: Vec<u32> = parse_vec(xs).unwrap();
-        eo.match_vec(&format!("exhaustive_from_vector_{}", number),
-                     &mut exhaustive_from_vector(xs));
-    };
-    e_test("i", "[]");
-    e_test("ii", "[5]");
-    e_test("iii", "[1, 2, 3]");
-    e_test("iv", "[3, 1, 4, 1]");
     let r_test = |number, xs| {
         let xs: Vec<u32> = parse_vec(xs).unwrap();
         eo.match_vec_f(&format!("random_from_vector_{}", number),
