@@ -86,7 +86,7 @@ impl<T: Rand> Iterator for Random<T> {
 
 pub fn random_x<T: Rand>(seed: &[u32]) -> Random<T> {
     Random {
-        rng: SeedableRng::from_seed(seed),
+        rng: IsaacRng::from_seed(seed),
         boo: PhantomData,
     }
 }

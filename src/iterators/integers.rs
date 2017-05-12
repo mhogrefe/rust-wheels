@@ -173,7 +173,7 @@ pub fn random_range_integer(seed: &[u32], a: Integer, b: Integer) -> RandomRange
     let mut diameter = b - &a;
     diameter += 1;
     RandomRangeInteger {
-        rng: SeedableRng::from_seed(seed),
+        rng: IsaacRng::from_seed(seed),
         diameter,
         a,
     }

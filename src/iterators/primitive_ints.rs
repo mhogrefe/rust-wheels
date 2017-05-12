@@ -210,11 +210,11 @@ pub fn random_range<T: PrimInt>(seed: &[u32], a: T, b: T) -> RandomRange<T> {
         RandomRange::All(random_x(seed))
     } else if b == T::max_value() {
         RandomRange::Some(true,
-                          Box::new(SeedableRng::from_seed(seed)),
+                          Box::new(IsaacRng::from_seed(seed)),
                           Range::new(a - T::from_u8(1), b))
     } else {
         RandomRange::Some(false,
-                          Box::new(SeedableRng::from_seed(seed)),
+                          Box::new(IsaacRng::from_seed(seed)),
                           Range::new(a, b + T::from_u8(1)))
     }
 }
