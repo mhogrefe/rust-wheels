@@ -1,7 +1,8 @@
+use rust_wheels::prim_utils::integer_utils::*;
+
 use malachite::integer::Integer;
 use rust_wheels::io::readers::parse_vec;
-use rust_wheels::prim_utils::integer_utils::*;
-use rust_wheels::prim_utils::traits::*;
+use rust_wheels::prim_utils::traits::PrimUnsignedInt;
 use std::str::FromStr;
 
 macro_rules! prim_fail {
