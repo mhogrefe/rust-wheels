@@ -1,5 +1,8 @@
+use iterators::naturals::{RandomNaturals, random_naturals, RandomPositiveNaturals,
+                          random_positive_naturals};
 use itertools::{Interleave, Itertools};
 use malachite::integer::Integer;
+use malachite::natural::Natural;
 use rand::{IsaacRng, SeedableRng};
 use std::iter::{Chain, Once, once};
 
@@ -149,14 +152,61 @@ pub fn exhaustive_range_integer(a: Integer, b: Integer) -> ExhaustiveRangeIntege
     }
 }
 
-//TODO test
 pub fn exhaustive_positive_integers() -> RangeIncreasingUnboundedInteger {
     range_up_increasing_integer(Integer::from(1))
 }
 
-//TODO test
 pub fn exhaustive_natural_integers() -> RangeIncreasingUnboundedInteger {
     range_up_increasing_integer(Integer::from(0))
+}
+
+//TODO test
+pub fn exhaustive_negative_integers() -> RangeDecreasingUnboundedInteger {
+    range_down_decreasing_integer(Integer::from(-1))
+}
+
+//TODO test
+pub fn exhaustive_nonzero_integers
+    ()
+    -> Interleave<RangeIncreasingUnboundedInteger, RangeDecreasingUnboundedInteger>
+{
+    exhaustive_positive_integers().interleave(exhaustive_negative_integers())
+}
+
+//TODO test
+pub fn exhaustive_integers()
+    -> Chain<Once<Integer>,
+             Interleave<RangeIncreasingUnboundedInteger, RangeDecreasingUnboundedInteger>>
+{
+    once(Integer::from(0)).chain(exhaustive_nonzero_integers())
+}
+
+pub struct RandomPositiveIntegers(RandomPositiveNaturals);
+
+impl Iterator for RandomPositiveIntegers {
+    type Item = Integer;
+
+    fn next(&mut self) -> Option<Integer> {
+        self.0.next().map(Natural::into_integer)
+    }
+}
+
+pub fn random_positive_integers(seed: &[u32], scale: u32) -> RandomPositiveIntegers {
+    RandomPositiveIntegers(random_positive_naturals(seed, scale))
+}
+
+pub struct RandomNaturalIntegers(RandomNaturals);
+
+impl Iterator for RandomNaturalIntegers {
+    type Item = Integer;
+
+    fn next(&mut self) -> Option<Integer> {
+        self.0.next().map(Natural::into_integer)
+    }
+}
+
+pub fn random_natural_integers(seed: &[u32], scale: u32) -> RandomNaturalIntegers {
+    RandomNaturalIntegers(random_naturals(seed, scale))
 }
 
 pub struct RandomRangeInteger {

@@ -1,4 +1,9 @@
+use iterators::common::scramble;
+use iterators::integers_geometric::{NaturalU32sGeometric, natural_u32s_geometric,
+                                    PositiveU32sGeometric, positive_u32s_geometric};
 use malachite::natural::Natural;
+use malachite::natural::random::assign_random_bits::assign_random_bits;
+use rand::{IsaacRng, SeedableRng};
 
 pub struct RangeIncreasingNatural {
     i: Natural,
@@ -94,12 +99,64 @@ pub fn range_down_decreasing_natural(a: Natural) -> RangeDecreasingNatural {
     range_decreasing_natural(Natural::from(0), a)
 }
 
-//TODO test
 pub fn exhaustive_positive_naturals() -> RangeIncreasingUnboundedNatural {
     range_up_increasing_natural(Natural::from(1))
 }
 
-//TODO test
 pub fn exhaustive_naturals() -> RangeIncreasingUnboundedNatural {
     range_up_increasing_natural(Natural::from(0))
+}
+
+pub struct RandomPositiveNaturals {
+    rng: IsaacRng,
+    bitsizes: PositiveU32sGeometric,
+}
+
+impl Iterator for RandomPositiveNaturals {
+    type Item = Natural;
+
+    fn next(&mut self) -> Option<Natural> {
+        let mut n = Natural::new();
+        assign_random_bits(&mut self.rng,
+                           &mut n,
+                           self.bitsizes
+                               .next()
+                               .unwrap()
+                               .into());
+        Some(n)
+    }
+}
+
+pub fn random_positive_naturals(seed: &[u32], scale: u32) -> RandomPositiveNaturals {
+    RandomPositiveNaturals {
+        rng: IsaacRng::from_seed(&scramble(seed, "bits")),
+        bitsizes: positive_u32s_geometric(&scramble(seed, "bitsizes"), scale),
+    }
+}
+
+pub struct RandomNaturals {
+    rng: IsaacRng,
+    bitsizes: NaturalU32sGeometric,
+}
+
+impl Iterator for RandomNaturals {
+    type Item = Natural;
+
+    fn next(&mut self) -> Option<Natural> {
+        let mut n = Natural::new();
+        assign_random_bits(&mut self.rng,
+                           &mut n,
+                           self.bitsizes
+                               .next()
+                               .unwrap()
+                               .into());
+        Some(n)
+    }
+}
+
+pub fn random_naturals(seed: &[u32], scale: u32) -> RandomNaturals {
+    RandomNaturals {
+        rng: IsaacRng::from_seed(&scramble(seed, "bits")),
+        bitsizes: natural_u32s_geometric(&scramble(seed, "bitsizes"), scale),
+    }
 }

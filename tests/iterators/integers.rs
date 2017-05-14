@@ -96,6 +96,42 @@ fn range_decreasing_integer_fail_2() {
 }
 
 #[test]
+fn test_positive_integers() {
+    let eo = get_expected_test_outputs();
+    eo.match_vec("exhaustive_positive_integers",
+                 &mut exhaustive_positive_integers());
+
+    let test = |number, scale| {
+        eo.match_vec_f(&format!("random_positive_integers_{}", number),
+                       &mut random_positive_integers(&EXAMPLE_SEED[..], scale))
+    };
+    test("i", 0);
+    test("ii", 1);
+    test("iii", 2);
+    test("iv", 3);
+    test("v", 10);
+    test("vi", 100);
+}
+
+#[test]
+fn test_natural_integers() {
+    let eo = get_expected_test_outputs();
+    eo.match_vec("exhaustive_natural_integers",
+                 &mut exhaustive_natural_integers());
+
+    let test = |number, scale| {
+        eo.match_vec_f(&format!("random_natural_integers_{}", number),
+                       &mut random_natural_integers(&EXAMPLE_SEED[..], scale))
+    };
+    test("i", 0);
+    test("ii", 1);
+    test("iii", 2);
+    test("iv", 3);
+    test("v", 10);
+    test("vi", 100);
+}
+
+#[test]
 fn test_range_integer() {
     let eo = get_expected_test_outputs();
     let e_test = |number, a, b| {
