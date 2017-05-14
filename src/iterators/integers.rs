@@ -149,6 +149,16 @@ pub fn exhaustive_range_integer(a: Integer, b: Integer) -> ExhaustiveRangeIntege
     }
 }
 
+//TODO test
+pub fn exhaustive_positive_integers() -> RangeIncreasingUnboundedInteger {
+    range_up_increasing_integer(Integer::from(1))
+}
+
+//TODO test
+pub fn exhaustive_natural_integers() -> RangeIncreasingUnboundedInteger {
+    range_up_increasing_integer(Integer::from(0))
+}
+
 pub struct RandomRangeInteger {
     rng: IsaacRng,
     diameter: Integer,

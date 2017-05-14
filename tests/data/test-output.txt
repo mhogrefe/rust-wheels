@@ -1715,6 +1715,38 @@ exhaustive_range_decreasing_integer_vii list 21
 81
 ...
 
+exhaustive_range_decreasing_natural_i list 1
+0
+
+exhaustive_range_decreasing_natural_ii list 11
+10
+9
+8
+7
+6
+5
+4
+3
+2
+1
+0
+
+exhaustive_range_decreasing_natural_iii list 11
+20
+19
+18
+17
+16
+15
+14
+13
+12
+11
+10
+
+exhaustive_range_decreasing_natural_iv list 1
+10
+
 exhaustive_range_decreasing_u16_i list 1
 0
 
@@ -2666,6 +2698,17 @@ exhaustive_range_down_decreasing_integer_iii list 21
 -24
 ...
 
+exhaustive_range_down_decreasing_natural_i list 1
+0
+
+exhaustive_range_down_decreasing_natural_ii list 6
+5
+4
+3
+2
+1
+0
+
 exhaustive_range_down_decreasing_u16_i list 1
 0
 
@@ -3276,6 +3319,17 @@ exhaustive_range_down_increasing_i8_iv list 21
 
 exhaustive_range_down_increasing_i8_v list 1
 -128
+
+exhaustive_range_down_increasing_natural_i list 1
+0
+
+exhaustive_range_down_increasing_natural_ii list 6
+0
+1
+2
+3
+4
+5
 
 exhaustive_range_down_increasing_u16_i list 1
 0
@@ -4840,6 +4894,38 @@ exhaustive_range_increasing_integer_vii list 21
 -82
 -81
 ...
+
+exhaustive_range_increasing_natural_i list 1
+0
+
+exhaustive_range_increasing_natural_ii list 11
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+
+exhaustive_range_increasing_natural_iii list 11
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+
+exhaustive_range_increasing_natural_iv list 1
+10
 
 exhaustive_range_increasing_u16_i list 1
 0
@@ -6532,6 +6618,52 @@ exhaustive_range_up_increasing_integer_iii list 21
 12
 13
 14
+...
+
+exhaustive_range_up_increasing_natural_i list 21
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+...
+
+exhaustive_range_up_increasing_natural_ii list 21
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
 ...
 
 exhaustive_range_up_increasing_u16_i list 21
