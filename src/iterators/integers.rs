@@ -1,3 +1,5 @@
+use iterators::common::scramble;
+use iterators::general::{Random, random_x};
 use iterators::naturals::{RandomNaturals, random_naturals, RandomPositiveNaturals,
                           random_positive_naturals};
 use itertools::{Interleave, Itertools};
@@ -52,40 +54,36 @@ impl Iterator for RangeDecreasingInteger {
     }
 }
 
-pub struct RangeIncreasingUnboundedInteger {
-    i: Integer,
-}
+pub struct RangeIncreasingUnboundedInteger(Integer);
 
 impl Iterator for RangeIncreasingUnboundedInteger {
     type Item = Integer;
 
     fn next(&mut self) -> Option<Integer> {
-        let ret = self.i.clone();
-        self.i += 1;
+        let ret = self.0.clone();
+        self.0 += 1;
         Some(ret)
     }
 }
 
-pub struct RangeDecreasingUnboundedInteger {
-    i: Integer,
-}
+pub struct RangeDecreasingUnboundedInteger(Integer);
 
 impl Iterator for RangeDecreasingUnboundedInteger {
     type Item = Integer;
 
     fn next(&mut self) -> Option<Integer> {
-        let ret = self.i.clone();
-        self.i -= 1;
+        let ret = self.0.clone();
+        self.0 -= 1;
         Some(ret)
     }
 }
 
 pub fn range_up_increasing_integer(a: Integer) -> RangeIncreasingUnboundedInteger {
-    RangeIncreasingUnboundedInteger { i: a }
+    RangeIncreasingUnboundedInteger(a)
 }
 
 pub fn range_down_decreasing_integer(a: Integer) -> RangeDecreasingUnboundedInteger {
-    RangeDecreasingUnboundedInteger { i: a }
+    RangeDecreasingUnboundedInteger(a)
 }
 
 pub fn range_increasing_integer(a: Integer, b: Integer) -> RangeIncreasingInteger {
@@ -160,12 +158,10 @@ pub fn exhaustive_natural_integers() -> RangeIncreasingUnboundedInteger {
     range_up_increasing_integer(Integer::from(0))
 }
 
-//TODO test
 pub fn exhaustive_negative_integers() -> RangeDecreasingUnboundedInteger {
     range_down_decreasing_integer(Integer::from(-1))
 }
 
-//TODO test
 pub fn exhaustive_nonzero_integers
     ()
     -> Interleave<RangeIncreasingUnboundedInteger, RangeDecreasingUnboundedInteger>
@@ -173,7 +169,6 @@ pub fn exhaustive_nonzero_integers
     exhaustive_positive_integers().interleave(exhaustive_negative_integers())
 }
 
-//TODO test
 pub fn exhaustive_integers()
     -> Chain<Once<Integer>,
              Interleave<RangeIncreasingUnboundedInteger, RangeDecreasingUnboundedInteger>>
@@ -207,6 +202,68 @@ impl Iterator for RandomNaturalIntegers {
 
 pub fn random_natural_integers(seed: &[u32], scale: u32) -> RandomNaturalIntegers {
     RandomNaturalIntegers(random_naturals(seed, scale))
+}
+
+pub struct RandomNegativeIntegers(RandomPositiveIntegers);
+
+impl Iterator for RandomNegativeIntegers {
+    type Item = Integer;
+
+    fn next(&mut self) -> Option<Integer> {
+        self.0.next().map(|i| -i)
+    }
+}
+
+pub fn random_negative_integers(seed: &[u32], scale: u32) -> RandomNegativeIntegers {
+    RandomNegativeIntegers(random_positive_integers(seed, scale))
+}
+
+pub struct RandomNonzeroIntegers {
+    signs: Random<bool>,
+    abs: RandomPositiveIntegers,
+}
+
+impl Iterator for RandomNonzeroIntegers {
+    type Item = Integer;
+
+    fn next(&mut self) -> Option<Integer> {
+        if self.signs.next().unwrap() {
+            self.abs.next()
+        } else {
+            self.abs.next().map(|i| -i)
+        }
+    }
+}
+
+pub fn random_nonzero_integers(seed: &[u32], scale: u32) -> RandomNonzeroIntegers {
+    RandomNonzeroIntegers {
+        signs: random_x(&scramble(seed, "signs")),
+        abs: random_positive_integers(&scramble(seed, "abs"), scale),
+    }
+}
+
+pub struct RandomIntegers {
+    signs: Random<bool>,
+    abs: RandomNaturalIntegers,
+}
+
+impl Iterator for RandomIntegers {
+    type Item = Integer;
+
+    fn next(&mut self) -> Option<Integer> {
+        if self.signs.next().unwrap() {
+            self.abs.next()
+        } else {
+            self.abs.next().map(|i| -i)
+        }
+    }
+}
+
+pub fn random_integers(seed: &[u32], scale: u32) -> RandomIntegers {
+    RandomIntegers {
+        signs: random_x(&scramble(seed, "signs")),
+        abs: random_natural_integers(&scramble(seed, "abs"), scale),
+    }
 }
 
 pub struct RandomRangeInteger {

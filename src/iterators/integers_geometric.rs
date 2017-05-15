@@ -93,26 +93,26 @@ pub fn nonzero_i32s_geometric(seed: &[u32], scale: u32) -> NonzeroI32sGeometric 
 }
 
 pub struct I32sGeometric {
-    sign_gen: Random<bool>,
-    abs_gen: NaturalU32sGeometric,
+    signs: Random<bool>,
+    abs: NaturalU32sGeometric,
 }
 
 impl Iterator for I32sGeometric {
     type Item = i32;
 
     fn next(&mut self) -> Option<i32> {
-        if self.sign_gen.next().unwrap() {
-            self.abs_gen.next().map(|i| i as i32)
+        if self.signs.next().unwrap() {
+            self.abs.next().map(|i| i as i32)
         } else {
-            self.abs_gen.next().map(|i| -(i as i32))
+            self.abs.next().map(|i| -(i as i32))
         }
     }
 }
 
 pub fn i32s_geometric(seed: &[u32], scale: u32) -> I32sGeometric {
     I32sGeometric {
-        sign_gen: random_x(&scramble(seed, "sign")),
-        abs_gen: natural_u32s_geometric(&scramble(seed, "abs"), scale),
+        signs: random_x(&scramble(seed, "signs")),
+        abs: natural_u32s_geometric(&scramble(seed, "abs"), scale),
     }
 }
 

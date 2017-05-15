@@ -51,16 +51,14 @@ impl Iterator for RangeDecreasingNatural {
     }
 }
 
-pub struct RangeIncreasingUnboundedNatural {
-    i: Natural,
-}
+pub struct RangeIncreasingUnboundedNatural(Natural);
 
 impl Iterator for RangeIncreasingUnboundedNatural {
     type Item = Natural;
 
     fn next(&mut self) -> Option<Natural> {
-        let ret = self.i.clone();
-        self.i += 1;
+        let ret = self.0.clone();
+        self.0 += 1;
         Some(ret)
     }
 }
@@ -88,7 +86,7 @@ pub fn range_decreasing_natural(a: Natural, b: Natural) -> RangeDecreasingNatura
 }
 
 pub fn range_up_increasing_natural(a: Natural) -> RangeIncreasingUnboundedNatural {
-    RangeIncreasingUnboundedNatural { i: a }
+    RangeIncreasingUnboundedNatural(a)
 }
 
 pub fn range_down_increasing_natural(a: Natural) -> RangeIncreasingNatural {

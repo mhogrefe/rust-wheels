@@ -132,6 +132,59 @@ fn test_natural_integers() {
 }
 
 #[test]
+fn test_negative_integers() {
+    let eo = get_expected_test_outputs();
+    eo.match_vec("exhaustive_negative_integers",
+                 &mut exhaustive_negative_integers());
+
+    let test = |number, scale| {
+        eo.match_vec_f(&format!("random_negative_integers_{}", number),
+                       &mut random_negative_integers(&EXAMPLE_SEED[..], scale))
+    };
+    test("i", 0);
+    test("ii", 1);
+    test("iii", 2);
+    test("iv", 3);
+    test("v", 10);
+    test("vi", 100);
+}
+
+#[test]
+fn test_nonzero_integers() {
+    let eo = get_expected_test_outputs();
+    eo.match_vec("exhaustive_nonzero_integers",
+                 &mut exhaustive_nonzero_integers());
+
+    let test = |number, scale| {
+        eo.match_vec_f(&format!("random_nonzero_integers_{}", number),
+                       &mut random_nonzero_integers(&EXAMPLE_SEED[..], scale))
+    };
+    test("i", 0);
+    test("ii", 1);
+    test("iii", 2);
+    test("iv", 3);
+    test("v", 10);
+    test("vi", 100);
+}
+
+#[test]
+fn test_integers() {
+    let eo = get_expected_test_outputs();
+    eo.match_vec("exhaustive_integers", &mut exhaustive_integers());
+
+    let test = |number, scale| {
+        eo.match_vec_f(&format!("random_integers_{}", number),
+                       &mut random_integers(&EXAMPLE_SEED[..], scale))
+    };
+    test("i", 0);
+    test("ii", 1);
+    test("iii", 2);
+    test("iv", 3);
+    test("v", 10);
+    test("vi", 100);
+}
+
+#[test]
 fn test_range_integer() {
     let eo = get_expected_test_outputs();
     let e_test = |number, a, b| {
