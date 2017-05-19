@@ -50,7 +50,7 @@ dependencies = [
 
 [[package]]
 name = "libc"
-version = "0.2.22"
+version = "0.2.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -95,7 +95,7 @@ name = "rand"
 version = "0.3.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "libc 0.2.22 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libc 0.2.23 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -120,7 +120,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum generic-array 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)" = "7229d82657e79be00d5f2a110a973ab5340681b945cf1bc022be7cfebf2dc00c"
 "checksum gmp-mpfr-sys 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)" = "98868b8f0e3833ec9225124b858188789107ce3f18fddd05ed0336a72bf62ed9"
 "checksum itertools 0.5.10 (registry+https://github.com/rust-lang/crates.io-index)" = "4833d6978da405305126af4ac88569b5d71ff758581ce5a987dbfa3755f694fc"
-"checksum libc 0.2.22 (registry+https://github.com/rust-lang/crates.io-index)" = "babb8281da88cba992fa1f4ddec7d63ed96280a1a53ec9b919fd37b53d71e502"
+"checksum libc 0.2.23 (registry+https://github.com/rust-lang/crates.io-index)" = "e7eb6b826bfc1fdea7935d46556250d1799b7fe2d9f7951071f4291710665e3e"
 "checksum nodrop 0.1.9 (registry+https://github.com/rust-lang/crates.io-index)" = "52cd74cd09beba596430cc6e3091b74007169a56246e1262f0ba451ea95117b2"
 "checksum odds 0.2.25 (registry+https://github.com/rust-lang/crates.io-index)" = "c3df9b730298cea3a1c3faa90b7e2f9df3a9c400d0936d6015e6165734eefcba"
 "checksum rand 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)" = "022e0636ec2519ddae48154b028864bdce4eaf7d35226ab8e65c611be97b189d"

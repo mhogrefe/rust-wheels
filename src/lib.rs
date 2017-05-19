@@ -8,11 +8,9 @@ pub mod demos {
         pub mod integer_utils_demos;
     }
 }
-
 pub mod io {
     pub mod readers;
 }
-
 pub mod iterators {
     pub mod adaptors;
     pub mod bools;
@@ -22,10 +20,10 @@ pub mod iterators {
     pub mod integers;
     pub mod integers_geometric;
     pub mod naturals;
+    pub mod options;
     pub mod orderings;
     pub mod primitive_ints;
 }
-
 pub mod prim_utils {
     pub mod char_utils;
     pub mod integer_utils;
