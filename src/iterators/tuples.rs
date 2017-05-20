@@ -115,12 +115,6 @@ impl<I: Iterator> Iterator for LogPairsFromSingle<I>
 
     fn next(&mut self) -> Option<(I::Item, I::Item)> {
         loop {
-            if !self.stop_checking_size {
-                if let Some(size) = self.xs.currently_known_size() {
-                    self.max_indices = LogPairIndices::from_indices(size, size);
-                    self.stop_checking_size = true;
-                }
-            }
             if self.max_indices.as_ref() == Some(&self.i) {
                 return None;
             }
@@ -134,6 +128,12 @@ impl<I: Iterator> Iterator for LogPairsFromSingle<I>
             if oy.is_none() {
                 self.i.increment();
                 continue;
+            }
+            if !self.stop_checking_size {
+                if let Some(size) = self.xs.currently_known_size() {
+                    self.max_indices = LogPairIndices::from_indices(size, size);
+                    self.stop_checking_size = true;
+                }
             }
             self.i.increment();
             return Some((ox.unwrap(), oy.unwrap()));
