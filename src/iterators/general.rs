@@ -114,3 +114,47 @@ pub fn random_from_vector<T>(seed: &[u32], xs: Vec<T>) -> RandomFromVector<T> {
         range: random_range(seed, 0, limit),
     }
 }
+
+pub struct CachedIterator<I: Iterator>
+    where I::Item: Clone
+{
+    i: I,
+    cache: Vec<I::Item>,
+}
+
+impl<I: Iterator> Iterator for CachedIterator<I>
+    where I::Item: Clone
+{
+    type Item = I::Item;
+
+    fn next(&mut self) -> Option<I::Item> {
+        let ox = self.i.next();
+        if let Some(ref x) = ox {
+            self.cache.push(x.clone());
+        }
+        ox
+    }
+}
+
+impl<I: Iterator> CachedIterator<I>
+    where I::Item: Clone
+{
+    pub fn get(&mut self, index: usize) -> Option<I::Item> {
+        let old_len = self.cache.len();
+        if index < old_len {
+            Some(self.cache[index].clone())
+        } else {
+            for _ in old_len..(index + 1) {
+                if let Some(x) = self.i.next() {
+                    self.cache.push(x);
+                } else {
+                    return None;
+                }
+            }
+            Some(self.cache
+                     .last()
+                     .unwrap()
+                     .clone())
+        }
+    }
+}
