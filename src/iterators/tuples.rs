@@ -1,8 +1,25 @@
+use iterators::general::CachedIterator;
+
+#[derive(Debug, Eq, PartialEq)]
 pub struct LogPairIndices(u64);
 
 impl LogPairIndices {
     pub fn new() -> LogPairIndices {
         LogPairIndices(1)
+    }
+
+    pub fn from_indices(i: usize, j: usize) -> Option<LogPairIndices> {
+        let i = i as u64;
+        let j = j as u64;
+        if i.leading_zeros() == 0 {
+            return None;
+        }
+        let i = (i << 1) | 1;
+        if (i.leading_zeros() as u64) < j {
+            None
+        } else {
+            Some(LogPairIndices(i << j))
+        }
     }
 
     pub fn increment(&mut self) {
@@ -79,5 +96,59 @@ impl ZOrderTupleIndices {
                 }
             }
         }
+    }
+}
+
+pub struct LogPairsFromSingle<I: Iterator>
+    where I::Item: Clone
+{
+    xs: CachedIterator<I>,
+    i: LogPairIndices,
+    stop_checking_size: bool,
+    max_indices: Option<LogPairIndices>,
+}
+
+impl<I: Iterator> Iterator for LogPairsFromSingle<I>
+    where I::Item: Clone
+{
+    type Item = (I::Item, I::Item);
+
+    fn next(&mut self) -> Option<(I::Item, I::Item)> {
+        loop {
+            if !self.stop_checking_size {
+                if let Some(size) = self.xs.currently_known_size() {
+                    self.max_indices = LogPairIndices::from_indices(size, size);
+                    self.stop_checking_size = true;
+                }
+            }
+            if self.max_indices.as_ref() == Some(&self.i) {
+                return None;
+            }
+            let (i, j) = self.i.indices();
+            let ox = self.xs.get(i);
+            if ox.is_none() {
+                self.i.increment();
+                continue;
+            }
+            let oy = self.xs.get(j);
+            if oy.is_none() {
+                self.i.increment();
+                continue;
+            }
+            self.i.increment();
+            return Some((ox.unwrap(), oy.unwrap()));
+        }
+    }
+}
+
+//TODO test
+pub fn log_pairs_from_single<I: Iterator>(xs: I) -> LogPairsFromSingle<I>
+    where I::Item: Clone
+{
+    LogPairsFromSingle {
+        xs: CachedIterator::new(xs),
+        i: LogPairIndices::new(),
+        stop_checking_size: false,
+        max_indices: None,
     }
 }

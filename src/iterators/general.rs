@@ -1,6 +1,7 @@
 use iterators::primitive_ints::{RandomRange, random_range};
 use prim_utils::traits::Walkable;
 use rand::{IsaacRng, Rand, Rng, SeedableRng};
+use std::iter::Peekable;
 use std::marker::PhantomData;
 
 pub struct RangeIncreasing<T: Walkable> {
@@ -118,8 +119,9 @@ pub fn random_from_vector<T>(seed: &[u32], xs: Vec<T>) -> RandomFromVector<T> {
 pub struct CachedIterator<I: Iterator>
     where I::Item: Clone
 {
-    i: I,
+    xs: Peekable<I>,
     cache: Vec<I::Item>,
+    done: bool,
 }
 
 impl<I: Iterator> Iterator for CachedIterator<I>
@@ -128,11 +130,20 @@ impl<I: Iterator> Iterator for CachedIterator<I>
     type Item = I::Item;
 
     fn next(&mut self) -> Option<I::Item> {
-        let ox = self.i.next();
-        if let Some(ref x) = ox {
-            self.cache.push(x.clone());
+        if self.done {
+            None
+        } else {
+            let ox = self.xs.next();
+            if let Some(ref x) = ox {
+                self.cache.push(x.clone());
+                if self.xs.peek().is_none() {
+                    self.done = true;
+                }
+            } else {
+                self.done = true;
+            }
+            ox
         }
-        ox
     }
 }
 
@@ -144,10 +155,11 @@ impl<I: Iterator> CachedIterator<I>
         if index < old_len {
             Some(self.cache[index].clone())
         } else {
+            if self.done {
+                return None;
+            }
             for _ in old_len..(index + 1) {
-                if let Some(x) = self.i.next() {
-                    self.cache.push(x);
-                } else {
+                if self.next().is_none() {
                     return None;
                 }
             }
@@ -155,6 +167,26 @@ impl<I: Iterator> CachedIterator<I>
                      .last()
                      .unwrap()
                      .clone())
+        }
+    }
+
+    pub fn currently_known_size(&self) -> Option<usize> {
+        if self.done {
+            Some(self.cache.len())
+        } else {
+            None
+        }
+    }
+}
+
+impl<I: Iterator> CachedIterator<I>
+    where I::Item: Clone
+{
+    pub fn new(xs: I) -> CachedIterator<I> {
+        CachedIterator {
+            xs: xs.peekable(),
+            cache: Vec::new(),
+            done: false,
         }
     }
 }
