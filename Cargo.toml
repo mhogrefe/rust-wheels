@@ -12,10 +12,13 @@ name = "rust_wheels_main"
 path = "src/bin.rs"
 
 [dependencies]
+gnuplot = "0.0.22"
 malachite = { path = "../malachite/malachite" }
 itertools = "0.5.9"
 rand = "0.3.0"
 sha3 = "0.4.1"
+streaming-stats = "0.1"
+time = "0.1"
 
 [features]
 default = []

@@ -1,8 +1,12 @@
-extern crate malachite;
+extern crate gnuplot;
 extern crate itertools;
+extern crate malachite;
 extern crate rand;
 extern crate sha3;
+extern crate stats;
+extern crate time;
 
+pub mod benchmarks;
 pub mod demos {
     pub mod prim_utils {
         pub mod integer_utils_demos;
