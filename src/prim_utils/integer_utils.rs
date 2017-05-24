@@ -513,7 +513,7 @@ pub fn from_digits(radix: &Integer, digits: &[Integer]) -> Integer {
                        digits);
             } else {
                 result *= radix;
-                result += d;
+                result += d.clone();
             }
         }
         result
@@ -565,7 +565,7 @@ pub fn from_big_endian_digits(radix: &Integer, digits: &[Integer]) -> Integer {
                        digits);
             } else {
                 result *= radix;
-                result += d;
+                result += d.clone();
             }
         }
         result

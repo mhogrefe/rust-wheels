@@ -278,7 +278,7 @@ impl Iterator for RandomRangeInteger {
     fn next(&mut self) -> Option<Integer> {
         let mut random = self.diameter.clone();
         random.random_below(&mut self.rng);
-        random += &self.a;
+        random += self.a.clone();
         Some(random)
     }
 }
