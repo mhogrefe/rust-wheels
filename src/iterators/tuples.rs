@@ -339,124 +339,263 @@ pub fn sqrt_pairs<I: Iterator, J: Iterator>(xs: I, ys: J) -> SqrtPairs<I, J>
     }
 }
 
-pub struct ExhaustivePairsFromSingle<I: Iterator>
-    where I::Item: Clone
-{
-    xs: CachedIterator<I>,
-    i: ZOrderTupleIndices,
-    stop_checking_size: bool,
-    max_indices: Option<ZOrderTupleIndices>,
-}
-
-impl<I: Iterator> Iterator for ExhaustivePairsFromSingle<I>
-    where I::Item: Clone
-{
-    type Item = (I::Item, I::Item);
-
-    fn next(&mut self) -> Option<(I::Item, I::Item)> {
-        loop {
-            if self.max_indices.as_ref() == Some(&self.i) {
-                return None;
-            }
-            let i = self.i.0[0] as usize;
-            let j = self.i.0[1] as usize;
-            let ox = self.xs.get(i);
-            if ox.is_none() {
-                self.i.increment();
-                continue;
-            }
-            let oy = self.xs.get(j);
-            if oy.is_none() {
-                self.i.increment();
-                continue;
-            }
-            if !self.stop_checking_size {
-                if let Some(size) = self.xs.currently_known_size() {
-                    let size = size as u64;
-                    self.max_indices = Some(ZOrderTupleIndices(vec![size - 1, size - 1]));
-                    self.stop_checking_size = true;
-                }
-            }
-            self.i.increment();
-            return Some((ox.unwrap(), oy.unwrap()));
+macro_rules! exhaustive_tuple_from_single {
+    (
+        $size: expr, $repeated_tuple: ty, $struct_name: ident, $fn_name: ident,
+        $(
+            [ $index: expr, $opt_elem: ident ]
+        ),*
+    ) => {
+        pub struct $struct_name<I: Iterator>
+            where I::Item: Clone
+        {
+            xs: CachedIterator<I>,
+            i: ZOrderTupleIndices,
+            stop_checking_size: bool,
+            max_indices: Option<ZOrderTupleIndices>,
         }
-    }
-}
 
-//TODO test
-pub fn exhaustive_pairs_from_single<I: Iterator>(xs: I) -> ExhaustivePairsFromSingle<I>
-    where I::Item: Clone
-{
-    ExhaustivePairsFromSingle {
-        xs: CachedIterator::new(xs),
-        i: ZOrderTupleIndices::new(2),
-        stop_checking_size: false,
-        max_indices: None,
-    }
-}
+        impl<I: Iterator> Iterator for $struct_name<I>
+            where I::Item: Clone
+        {
+            type Item = $repeated_tuple;
 
-pub struct ExhaustivePairs<I: Iterator, J: Iterator>
-    where I::Item: Clone,
-          J::Item: Clone
-{
-    xs: CachedIterator<I>,
-    ys: CachedIterator<J>,
-    i: ZOrderTupleIndices,
-    stop_checking_size: bool,
-    max_indices: Option<ZOrderTupleIndices>,
-}
-
-impl<I: Iterator, J: Iterator> Iterator for ExhaustivePairs<I, J>
-    where I::Item: Clone,
-          J::Item: Clone
-{
-    type Item = (I::Item, J::Item);
-
-    fn next(&mut self) -> Option<(I::Item, J::Item)> {
-        loop {
-            if self.max_indices.as_ref() == Some(&self.i) {
-                return None;
-            }
-            let i = self.i.0[0] as usize;
-            let j = self.i.0[1] as usize;
-            let ox = self.xs.get(i);
-            if ox.is_none() {
-                self.i.increment();
-                continue;
-            }
-            let oy = self.ys.get(j);
-            if oy.is_none() {
-                self.i.increment();
-                continue;
-            }
-            if !self.stop_checking_size {
-                if let Some(xs_size) = self.xs.currently_known_size() {
-                    if let Some(ys_size) = self.ys.currently_known_size() {
-                        self.max_indices = Some(ZOrderTupleIndices(vec![xs_size as u64 - 1,
-                                                                        ys_size as u64 - 1]));
-                        self.stop_checking_size = true;
+            fn next(&mut self) -> Option<$repeated_tuple> {
+                loop {
+                    if self.max_indices.as_ref() == Some(&self.i) {
+                        return None;
                     }
+                    $(
+                        let $opt_elem = self.xs.get(self.i.0[$index] as usize);
+                        if $opt_elem.is_none() {
+                            self.i.increment();
+                            continue;
+                        }
+                    )*
+                    if !self.stop_checking_size {
+                        if let Some(size) = self.xs.currently_known_size() {
+                            let size = size as u64;
+                            let mut max_vec = Vec::new();
+                            max_vec.resize($size, size - 1);
+                            self.max_indices = Some(ZOrderTupleIndices(max_vec));
+                            self.stop_checking_size = true;
+                        }
+                    }
+                    self.i.increment();
+                    return Some(($($opt_elem.unwrap()),*));
                 }
             }
-            self.i.increment();
-            return Some((ox.unwrap(), oy.unwrap()));
+        }
+
+        //TODO test
+        pub fn $fn_name<I: Iterator>(xs: I) -> $struct_name<I>
+            where I::Item: Clone
+        {
+            $struct_name {
+                xs: CachedIterator::new(xs),
+                i: ZOrderTupleIndices::new($size),
+                stop_checking_size: false,
+                max_indices: None,
+            }
         }
     }
 }
 
-//TODO test
-pub fn exhaustive_pairs<I: Iterator, J: Iterator>(xs: I, ys: J) -> ExhaustivePairs<I, J>
-    where I::Item: Clone,
-          J::Item: Clone
-{
-    ExhaustivePairs {
-        xs: CachedIterator::new(xs),
-        ys: CachedIterator::new(ys),
-        i: ZOrderTupleIndices::new(2),
-        stop_checking_size: false,
-        max_indices: None,
+exhaustive_tuple_from_single!(2,
+                              (I::Item, I::Item),
+                              ExhaustivePairsFromSingle,
+                              exhaustive_pairs_from_single,
+                              [0, ox],
+                              [1, oy]);
+exhaustive_tuple_from_single!(3,
+                              (I::Item, I::Item, I::Item),
+                              ExhaustiveTriplesFromSingle,
+                              exhaustive_triples_from_single,
+                              [0, ox],
+                              [1, oy],
+                              [2, oz]);
+exhaustive_tuple_from_single!(4,
+                              (I::Item, I::Item, I::Item, I::Item),
+                              ExhaustiveQuadruplesFromSingle,
+                              exhaustive_quadruples_from_single,
+                              [0, ox],
+                              [1, oy],
+                              [2, oz],
+                              [3, ow]);
+exhaustive_tuple_from_single!(5,
+                              (I::Item, I::Item, I::Item, I::Item, I::Item),
+                              ExhaustiveQuintuplesFromSingle,
+                              exhaustive_quintuples_from_single,
+                              [0, ox],
+                              [1, oy],
+                              [2, oz],
+                              [3, ow],
+                              [4, ov]);
+exhaustive_tuple_from_single!(6,
+                              (I::Item, I::Item, I::Item, I::Item, I::Item, I::Item),
+                              ExhaustiveSextuplesFromSingle,
+                              exhaustive_sextuples_from_single,
+                              [0, ox],
+                              [1, oy],
+                              [2, oz],
+                              [3, ow],
+                              [4, ov],
+                              [5, ou]);
+exhaustive_tuple_from_single!(7,
+                              (I::Item, I::Item, I::Item, I::Item, I::Item, I::Item, I::Item),
+                              ExhaustiveSeptuplesFromSingle,
+                              exhaustive_septuples_from_single,
+                              [0, ox],
+                              [1, oy],
+                              [2, oz],
+                              [3, ow],
+                              [4, ov],
+                              [5, ou],
+                              [6, ot]);
+exhaustive_tuple_from_single!(8,
+                              (I::Item,
+                               I::Item,
+                               I::Item,
+                               I::Item,
+                               I::Item,
+                               I::Item,
+                               I::Item,
+                               I::Item),
+                              ExhaustiveOctuplesFromSingle,
+                              exhaustive_octuples_from_single,
+                              [0, ox],
+                              [1, oy],
+                              [2, oz],
+                              [3, ow],
+                              [4, ov],
+                              [5, ou],
+                              [6, ot],
+                              [7, os]);
+
+macro_rules! exhaustive_tuple {
+    (
+        $size: expr, $struct_name: ident, $fn_name: ident,
+        $(
+            [ $index: expr, $it_type: ident, $it: ident, $cached_it: ident, $opt_elem: ident ]
+        ),*
+    ) => {
+        pub struct $struct_name<$($it_type: Iterator),*> where $($it_type::Item: Clone),*
+        {
+            $($cached_it: CachedIterator<$it_type>),*,
+            i: ZOrderTupleIndices,
+            stop_checking_size: bool,
+            max_indices: Option<ZOrderTupleIndices>,
+        }
+
+        impl<$($it_type: Iterator),*> Iterator for $struct_name<$($it_type),*>
+            where $($it_type::Item: Clone),*
+        {
+            type Item = ($($it_type::Item),*);
+
+            fn next(&mut self) -> Option<($($it_type::Item),*)> {
+                loop {
+                    if self.max_indices.as_ref() == Some(&self.i) {
+                        return None;
+                    }
+                    $(
+                        let $opt_elem = self.$cached_it.get(self.i.0[$index] as usize);
+                        if $opt_elem.is_none() {
+                            self.i.increment();
+                            continue;
+                        }
+                    )*
+                    if !self.stop_checking_size {
+                        let mut all_sizes_available = true;
+                        $(
+                            if all_sizes_available &&
+                                self.$cached_it.currently_known_size().is_none() {
+                                all_sizes_available = false;
+                            }
+                        )*
+
+                        if all_sizes_available {
+                            self.max_indices = Some(ZOrderTupleIndices(vec![
+                                $(self.$cached_it.currently_known_size().unwrap() as u64 - 1),*
+                            ]));
+                            self.stop_checking_size = true;
+                        }
+                    }
+                    self.i.increment();
+                    return Some(($($opt_elem.unwrap()),*));
+                }
+            }
+        }
+
+        //TODO test
+        pub fn $fn_name<$($it_type: Iterator),*>($($it: $it_type),*) ->
+            $struct_name<$($it_type),*> where $($it_type::Item: Clone),*
+        {
+            $struct_name {
+                $($cached_it: CachedIterator::new($it)),*,
+                i: ZOrderTupleIndices::new($size),
+                stop_checking_size: false,
+                max_indices: None,
+            }
+        }
     }
 }
+
+exhaustive_tuple!(2,
+                  ExhaustivePairs,
+                  exhaustive_pairs,
+                  [0, I, xs, xs, ox],
+                  [1, J, ys, ys, oy]);
+exhaustive_tuple!(3,
+                  ExhaustiveTriples,
+                  exhaustive_triples,
+                  [0, I, xs, xs, ox],
+                  [1, J, ys, ys, oy],
+                  [2, K, zs, zs, oz]);
+exhaustive_tuple!(4,
+                  ExhaustiveQuadruples,
+                  exhaustive_quadruples,
+                  [0, I, xs, xs, ox],
+                  [1, J, ys, ys, oy],
+                  [2, K, zs, zs, oz],
+                  [3, L, ws, ws, ow]);
+exhaustive_tuple!(5,
+                  ExhaustiveQuintuples,
+                  exhaustive_quintuples,
+                  [0, I, xs, xs, ox],
+                  [1, J, ys, ys, oy],
+                  [2, K, zs, zs, oz],
+                  [3, L, ws, ws, ow],
+                  [4, M, vs, vs, ov]);
+exhaustive_tuple!(6,
+                  ExhaustiveSextuples,
+                  exhaustive_sextuples,
+                  [0, I, xs, xs, ox],
+                  [1, J, ys, ys, oy],
+                  [2, K, zs, zs, oz],
+                  [3, L, ws, ws, ow],
+                  [4, M, vs, vs, ov],
+                  [5, N, us, us, ou]);
+exhaustive_tuple!(7,
+                  ExhaustiveSeptuples,
+                  exhaustive_septuples,
+                  [0, I, xs, xs, ox],
+                  [1, J, ys, ys, oy],
+                  [2, K, zs, zs, oz],
+                  [3, L, ws, ws, ow],
+                  [4, M, vs, vs, ov],
+                  [5, N, us, us, ou],
+                  [6, O, ts, ts, ot]);
+exhaustive_tuple!(8,
+                  ExhaustiveOctuples,
+                  exhaustive_octuples,
+                  [0, I, xs, xs, ox],
+                  [1, J, ys, ys, oy],
+                  [2, K, zs, zs, oz],
+                  [3, L, ws, ws, ow],
+                  [4, M, vs, vs, ov],
+                  [5, N, us, us, ou],
+                  [6, O, ts, ts, ot],
+                  [7, P, ss, ss, os]);
 
 pub struct RandomPairsFromSingle<I: Iterator>(I);
 
