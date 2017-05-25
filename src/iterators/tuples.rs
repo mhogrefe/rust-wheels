@@ -597,45 +597,173 @@ exhaustive_tuple!(8,
                   [6, O, ts, ts, ot],
                   [7, P, ss, ss, os]);
 
-pub struct RandomPairsFromSingle<I: Iterator>(I);
+macro_rules! random_tuple_from_single {
+    (
+        $repeated_tuple: ty, $struct_name: ident, $fn_name: ident,
+        $(
+            [ $elem: ident ]
+        ),*
+    ) => {
+        pub struct $struct_name<I: Iterator>(I);
 
-impl<I: Iterator> Iterator for RandomPairsFromSingle<I> {
-    type Item = (I::Item, I::Item);
+        impl<I: Iterator> Iterator for $struct_name<I> {
+            type Item = $repeated_tuple;
 
-    fn next(&mut self) -> Option<(I::Item, I::Item)> {
-        let x = self.0.next().unwrap();
-        let y = self.0.next().unwrap();
-        Some((x, y))
+            fn next(&mut self) -> Option<$repeated_tuple> {
+                $(
+                    let $elem = self.0.next().unwrap();
+                )*
+                Some(($($elem),*))
+            }
+        }
+
+        //TODO test
+        pub fn $fn_name<I: Iterator>(xs: I) -> $struct_name<I> {
+            $struct_name(xs)
+        }
     }
 }
 
-//TODO test
-pub fn random_pairs_from_single<I: Iterator>(xs: I) -> RandomPairsFromSingle<I> {
-    RandomPairsFromSingle(xs)
-}
+random_tuple_from_single!((I::Item, I::Item),
+                          RandomPairsFromSingle,
+                          random_pairs_from_single,
+                          [x],
+                          [y]);
+random_tuple_from_single!((I::Item, I::Item, I::Item),
+                          RandomTriplesFromSingle,
+                          random_triples_from_single,
+                          [x],
+                          [y],
+                          [z]);
+random_tuple_from_single!((I::Item, I::Item, I::Item, I::Item),
+                          RandomQuadruplesFromSingle,
+                          random_quadruples_from_single,
+                          [x],
+                          [y],
+                          [z],
+                          [w]);
+random_tuple_from_single!((I::Item, I::Item, I::Item, I::Item, I::Item),
+                          RandomQuintuplesFromSingle,
+                          random_quintuples_from_single,
+                          [x],
+                          [y],
+                          [z],
+                          [w],
+                          [v]);
+random_tuple_from_single!((I::Item, I::Item, I::Item, I::Item, I::Item, I::Item),
+                          RandomSextuplesFromSingle,
+                          random_sextuples_from_single,
+                          [x],
+                          [y],
+                          [z],
+                          [w],
+                          [v],
+                          [u]);
+random_tuple_from_single!((I::Item, I::Item, I::Item, I::Item, I::Item, I::Item, I::Item),
+                          RandomSeptuplesFromSingle,
+                          random_septuples_from_single,
+                          [x],
+                          [y],
+                          [z],
+                          [w],
+                          [v],
+                          [u],
+                          [t]);
+random_tuple_from_single!((I::Item, I::Item, I::Item, I::Item, I::Item, I::Item, I::Item, I::Item),
+                          RandomOctuplesFromSingle,
+                          random_octuples_from_single,
+                          [x],
+                          [y],
+                          [z],
+                          [w],
+                          [v],
+                          [u],
+                          [t],
+                          [s]);
 
-pub struct RandomPairs<I: Iterator, J: Iterator> {
-    xs: I,
-    ys: J,
-}
+macro_rules! random_tuple {
+    (
+        $struct_name: ident, $fn_name: ident,
+        $(
+            [ $it_type: ident, $it_gen: ident, $cached_it: ident, $elem: ident, $it_name: expr ]
+        ),*
+    ) => {
+        pub struct $struct_name<$($it_type: Iterator),*> {
+            $(
+                $cached_it: $it_type
+            ),*
+        }
 
-impl<I: Iterator, J: Iterator> Iterator for RandomPairs<I, J> {
-    type Item = (I::Item, J::Item);
+        impl<$($it_type: Iterator),*> Iterator for $struct_name<$($it_type),*> {
+            type Item = ($($it_type::Item),*);
 
-    fn next(&mut self) -> Option<(I::Item, J::Item)> {
-        let x = self.xs.next().unwrap();
-        let y = self.ys.next().unwrap();
-        Some((x, y))
+            fn next(&mut self) -> Option<($($it_type::Item),*)> {
+                $(
+                    let $elem = self.$cached_it.next().unwrap();
+                )*
+                Some(($($elem),*))
+            }
+        }
+
+        //TODO tst
+        pub fn $fn_name<$($it_type: Iterator),*>(seed: &[u32],
+                                                      $($it_gen: &Fn(&[u32]) -> $it_type),*)
+                                                      -> $struct_name<$($it_type),*> {
+            $struct_name {
+                $(
+                    $cached_it: $it_gen(&scramble(seed, $it_name))
+                ),*
+            }
+        }
     }
 }
 
-//TODO tst
-pub fn random_pairs<I: Iterator, J: Iterator>(seed: &[u32],
-                                              xs_gen: &Fn(&[u32]) -> I,
-                                              ys_gen: &Fn(&[u32]) -> J)
-                                              -> RandomPairs<I, J> {
-    RandomPairs {
-        xs: xs_gen(&scramble(seed, "xs")),
-        ys: ys_gen(&scramble(seed, "ys")),
-    }
-}
+random_tuple!(RandomPairs,
+              random_pairs,
+              [I, xs_gen, xs, x, "xs"],
+              [J, ys_gen, ys, y, "ys"]);
+random_tuple!(RandomTriples,
+              random_triples,
+              [I, xs_gen, xs, x, "xs"],
+              [J, ys_gen, ys, y, "ys"],
+              [K, zs_gen, zs, z, "zs"]);
+random_tuple!(RandomQuadruples,
+              random_quadruples,
+              [I, xs_gen, xs, x, "xs"],
+              [J, ys_gen, ys, y, "ys"],
+              [K, zs_gen, zs, z, "zs"],
+              [L, ws_gen, ws, w, "ws"]);
+random_tuple!(RandomQuintuples,
+              random_quintuples,
+              [I, xs_gen, xs, x, "xs"],
+              [J, ys_gen, ys, y, "ys"],
+              [K, zs_gen, zs, z, "zs"],
+              [L, ws_gen, ws, w, "ws"],
+              [M, vs_gen, vs, v, "vs"]);
+random_tuple!(RandomSextuples,
+              random_sextuples,
+              [I, xs_gen, xs, x, "xs"],
+              [J, ys_gen, ys, y, "ys"],
+              [K, zs_gen, zs, z, "zs"],
+              [L, ws_gen, ws, w, "ws"],
+              [M, vs_gen, vs, v, "vs"],
+              [N, us_gen, us, u, "us"]);
+random_tuple!(RandomSeptuples,
+              random_septuples,
+              [I, xs_gen, xs, x, "xs"],
+              [J, ys_gen, ys, y, "ys"],
+              [K, zs_gen, zs, z, "zs"],
+              [L, ws_gen, ws, w, "ws"],
+              [M, vs_gen, vs, v, "vs"],
+              [N, us_gen, us, u, "us"],
+              [O, ts_gen, ts, t, "ts"]);
+random_tuple!(RandomOctuples,
+              random_octuples,
+              [I, xs_gen, xs, x, "xs"],
+              [J, ys_gen, ys, y, "ys"],
+              [K, zs_gen, zs, z, "zs"],
+              [L, ws_gen, ws, w, "ws"],
+              [M, vs_gen, vs, v, "vs"],
+              [N, us_gen, us, u, "us"],
+              [O, ts_gen, ts, t, "ts"],
+              [P, ss_gen, ss, s, "ss"]);
