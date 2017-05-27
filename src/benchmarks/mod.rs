@@ -92,7 +92,7 @@ pub fn benchmark_3<I: Iterator, IR, JITEM, JR, KITEM, KR>(xs: I,
                                                           file_name: &str)
     where I::Item: Clone
 {
-    let reps = 100;
+    let reps = 10;
     let min_bucket_size = 10;
 
     let mut xs_durations_map: HashMap<usize, Vec<f64>> = HashMap::new();
