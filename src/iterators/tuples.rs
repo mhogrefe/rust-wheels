@@ -99,6 +99,10 @@ impl ZOrderTupleIndices {
             }
         }
     }
+
+    pub fn size(&self) -> usize {
+        self.0.len()
+    }
 }
 
 pub struct LogPairsFromSingle<I: Iterator>
