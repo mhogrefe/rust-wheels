@@ -237,9 +237,7 @@ impl<I> MultiChain<I> {
     }
 }
 
-impl<I> Iterator for MultiChain<I>
-    where I: Iterator
-{
+impl<I: Iterator> Iterator for MultiChain<I> {
     type Item = I::Item;
 
     fn next(&mut self) -> Option<I::Item> {
@@ -255,6 +253,50 @@ impl<I> Iterator for MultiChain<I>
                         return None;
                     }
                 }
+            }
+        }
+    }
+}
+
+pub struct Concat<I: Iterator> {
+    xss: I,
+    xs: Option<I::Item>,
+}
+
+impl<I: Iterator> Concat<I> {
+    pub fn new(xss: I) -> Concat<I> {
+        Concat {
+            xss: xss,
+            xs: None,
+        }
+    }
+}
+
+impl<I: Iterator> Iterator for Concat<I>
+    where I::Item: Iterator,
+          <<I as Iterator>::Item as Iterator>::Item: Clone
+{
+    type Item = <<I as Iterator>::Item as Iterator>::Item;
+
+    fn next(&mut self) -> Option<<<I as Iterator>::Item as Iterator>::Item> {
+        if self.xs.is_none() {
+            match self.xss.next() {
+                None => return None,
+                Some(xs) => self.xs = Some(xs),
+            }
+        }
+        loop {
+            match self.xs
+                      .as_mut()
+                      .unwrap()
+                      .next() {
+                None => {
+                    match self.xss.next() {
+                        None => return None,
+                        Some(xs) => self.xs = Some(xs),
+                    }
+                }
+                Some(ref x) => return Some(x.clone()),
             }
         }
     }
