@@ -273,8 +273,7 @@ impl<I: Iterator> Concat<I> {
 }
 
 impl<I: Iterator> Iterator for Concat<I>
-    where I::Item: Iterator,
-          <<I as Iterator>::Item as Iterator>::Item: Clone
+    where I::Item: Iterator
 {
     type Item = <<I as Iterator>::Item as Iterator>::Item;
 
@@ -296,7 +295,7 @@ impl<I: Iterator> Iterator for Concat<I>
                         Some(xs) => self.xs = Some(xs),
                     }
                 }
-                Some(ref x) => return Some(x.clone()),
+                Some(x) => return Some(x),
             }
         }
     }
