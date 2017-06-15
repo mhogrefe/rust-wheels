@@ -20,6 +20,7 @@ pub mod iterators {
     pub mod bools;
     pub mod chars;
     pub mod common;
+    pub mod dependent_pairs;
     pub mod general;
     pub mod integers;
     pub mod integers_geometric;
