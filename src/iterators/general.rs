@@ -4,6 +4,7 @@ use rand::{IsaacRng, Rand, Rng, SeedableRng};
 use std::iter::Peekable;
 use std::marker::PhantomData;
 
+#[derive(Clone)]
 pub struct RangeIncreasing<T: Walkable> {
     i: T,
     b: T,
@@ -38,6 +39,7 @@ pub fn range_increasing_x<T: Walkable>(a: T, b: T) -> RangeIncreasing<T> {
     }
 }
 
+#[derive(Clone)]
 pub struct RangeDecreasing<T: Walkable> {
     a: T,
     i: T,

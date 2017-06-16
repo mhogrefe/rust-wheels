@@ -24,7 +24,7 @@ pub mod iterators {
     pub mod general;
     pub mod integers;
     pub mod integers_geometric;
-    pub mod lists;
+    pub mod vecs;
     pub mod naturals;
     pub mod options;
     pub mod orderings;

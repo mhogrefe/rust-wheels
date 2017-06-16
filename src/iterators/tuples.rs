@@ -364,7 +364,7 @@ macro_rules! exhaustive_tuple_from_single {
         {
             type Item = $repeated_tuple;
 
-            fn next(&mut self) -> Option<$repeated_tuple> {
+            fn next(&mut self) -> Option<Self::Item> {
                 loop {
                     if self.max_indices.as_ref() == Some(&self.i) {
                         return None;
@@ -613,7 +613,7 @@ macro_rules! random_tuple_from_single {
         impl<I: Iterator> Iterator for $struct_name<I> {
             type Item = $repeated_tuple;
 
-            fn next(&mut self) -> Option<$repeated_tuple> {
+            fn next(&mut self) -> Option<Self::Item> {
                 $(
                     let $elem = self.0.next().unwrap();
                 )*

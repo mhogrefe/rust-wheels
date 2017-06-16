@@ -1,5 +1,8 @@
+use iterators::dependent_pairs::exhaustive_dependent_pairs_infinite_log;
 use iterators::general::CachedIterator;
+use iterators::primitive_ints::exhaustive_positive_x;
 use iterators::tuples::ZOrderTupleIndices;
+use std::iter::repeat;
 
 pub enum ExhaustiveFixedSizeVecsFromSingle<I: Iterator>
     where I::Item: Clone
@@ -77,4 +80,19 @@ pub fn exhaustive_fixed_size_vecs_from_single<I: Iterator>
                                                            None)
         }
     }
+}
+
+pub fn exhaustive_vecs<'a, I: Clone + Iterator + 'a>(xs: I)
+                                                     -> Box<Iterator<Item = Vec<I::Item>> + 'a>
+    where I::Item: Clone
+{
+    let f = move |size: &usize| {
+        exhaustive_fixed_size_vecs_from_single(*size, xs.clone())
+            .map(Option::Some)
+            .chain(repeat(Option::None))
+    };
+    Box::new(exhaustive_dependent_pairs_infinite_log(exhaustive_positive_x::<usize>(), f)
+                 .map(|(_, v)| v)
+                 .filter(|v| v.is_some())
+                 .map(|v| v.unwrap()))
 }

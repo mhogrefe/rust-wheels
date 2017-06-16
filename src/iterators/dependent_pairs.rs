@@ -4,9 +4,9 @@ use iterators::tuples::{LogPairIndices, SqrtPairIndices, ZOrderTupleIndices};
 use std::collections::HashMap;
 use std::hash::Hash;
 
-pub fn dependent_pairs<'a, I: Iterator + 'a, J: Iterator, F>
+pub fn dependent_pairs<'a, I: Iterator + 'a, J: Iterator, F: 'a>
     (xs: I,
-     f: &'a F)
+     f: F)
      -> Box<Iterator<Item = (I::Item, J::Item)> + 'a>
     where F: Fn(&I::Item) -> J,
           I::Item: Clone
@@ -22,16 +22,16 @@ macro_rules! exhaustive_dependent_pairs {
         $index_ctor: expr,
         $x_index_fn: expr
     ) => {
-        pub struct $struct_name<'a, I: Iterator, J: Iterator, F: 'a>
+        pub struct $struct_name<I: Iterator, J: Iterator, F>
             where I::Item: Clone
         {
-            f: &'a F,
+            f: F,
             xs: CachedIterator<I>,
             x_to_ys: HashMap<I::Item, J>,
             i: $index_type,
         }
 
-        impl<'a, I: Iterator, J: Iterator, F> Iterator for $struct_name<'a, I, J, F>
+        impl<I: Iterator, J: Iterator, F> Iterator for $struct_name<I, J, F>
             where F: Fn(&I::Item) -> J,
                   I::Item: Clone + Eq + Hash
         {
@@ -51,10 +51,10 @@ macro_rules! exhaustive_dependent_pairs {
             }
         }
 
-        pub fn $fn_name<'a, I: Iterator + 'a, J: Iterator, F>
+        pub fn $fn_name<I: Iterator, J: Iterator, F>
             (xs: I,
-             f: &'a F)
-             -> $struct_name<'a, I, J, F>
+             f: F)
+             -> $struct_name<I, J, F>
             where F: Fn(&I::Item) -> J,
                   I::Item: Clone + Eq + Hash
         {
@@ -72,14 +72,14 @@ exhaustive_dependent_pairs!(ExhaustiveDependentPairsInfiniteLog,
                             exhaustive_dependent_pairs_infinite_log,
                             LogPairIndices,
                             LogPairIndices::new(),
-                            |i: &LogPairIndices| i.indices().0);
+                            |i: &LogPairIndices| i.indices().1);
 exhaustive_dependent_pairs!(ExhaustiveDependentPairsInfiniteSqrt,
                             exhaustive_dependent_pairs_infinite_sqrt,
                             SqrtPairIndices,
                             SqrtPairIndices::new(),
-                            |i: &SqrtPairIndices| i.x as usize);
+                            |i: &SqrtPairIndices| i.y as usize);
 exhaustive_dependent_pairs!(ExhaustiveDependentPairsInfinite,
                             exhaustive_dependent_pairs_infinite,
                             ZOrderTupleIndices,
                             ZOrderTupleIndices::new(2),
-                            |i: &ZOrderTupleIndices| i.0[0] as usize);
+                            |i: &ZOrderTupleIndices| i.0[1] as usize);
