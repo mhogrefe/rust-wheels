@@ -1,6 +1,6 @@
 use iterators::adaptors::Concat;
 use iterators::general::CachedIterator;
-use iterators::tuples::LogPairIndices;
+use iterators::tuples::{LogPairIndices, SqrtPairIndices, ZOrderTupleIndices};
 use std::collections::HashMap;
 use std::hash::Hash;
 
@@ -14,46 +14,72 @@ pub fn dependent_pairs<'a, I: Iterator + 'a, J: Iterator, F>
     Box::new(Concat::new(xs.map(move |x| f(&x).map(move |y| (x.clone(), y)))))
 }
 
-pub struct DependentPairsInfinite<'a, I: Iterator, J: Iterator, F: 'a>
-    where I::Item: Clone
-{
-    f: &'a F,
-    xs: CachedIterator<I>,
-    x_to_ys: HashMap<I::Item, J>,
-    i: LogPairIndices,
-}
-
-impl<'a, I: Iterator, J: Iterator, F> Iterator for DependentPairsInfinite<'a, I, J, F>
-    where F: Fn(&I::Item) -> J,
-          I::Item: Clone + Eq + Hash
-{
-    type Item = (I::Item, J::Item);
-
-    fn next(&mut self) -> Option<(I::Item, J::Item)> {
-        let (xi, _) = self.i.indices();
-        let x = self.xs.get(xi).unwrap();
-        self.i.increment();
-        if let Some(ys) = self.x_to_ys.get_mut(&x) {
-            return Some((x, ys.next().unwrap()));
+macro_rules! exhaustive_dependent_pairs {
+    (
+        $struct_name: ident,
+        $fn_name: ident,
+        $index_type: ident,
+        $index_ctor: expr,
+        $x_index_fn: expr
+    ) => {
+        pub struct $struct_name<'a, I: Iterator, J: Iterator, F: 'a>
+            where I::Item: Clone
+        {
+            f: &'a F,
+            xs: CachedIterator<I>,
+            x_to_ys: HashMap<I::Item, J>,
+            i: $index_type,
         }
-        let mut ys = (self.f)(&x);
-        let y = ys.next().unwrap();
-        self.x_to_ys.insert(x.clone(), ys);
-        Some((x, y))
+
+        impl<'a, I: Iterator, J: Iterator, F> Iterator for $struct_name<'a, I, J, F>
+            where F: Fn(&I::Item) -> J,
+                  I::Item: Clone + Eq + Hash
+        {
+            type Item = (I::Item, J::Item);
+
+            fn next(&mut self) -> Option<(I::Item, J::Item)> {
+                let xi = $x_index_fn(&self.i);
+                let x = self.xs.get(xi).unwrap();
+                self.i.increment();
+                if let Some(ys) = self.x_to_ys.get_mut(&x) {
+                    return Some((x, ys.next().unwrap()));
+                }
+                let mut ys = (self.f)(&x);
+                let y = ys.next().unwrap();
+                self.x_to_ys.insert(x.clone(), ys);
+                Some((x, y))
+            }
+        }
+
+        pub fn $fn_name<'a, I: Iterator + 'a, J: Iterator, F>
+            (xs: I,
+             f: &'a F)
+             -> $struct_name<'a, I, J, F>
+            where F: Fn(&I::Item) -> J,
+                  I::Item: Clone + Eq + Hash
+        {
+            $struct_name {
+                f: f,
+                xs: CachedIterator::new(xs),
+                x_to_ys: HashMap::new(),
+                i: $index_ctor,
+            }
+        }
     }
 }
 
-pub fn dependent_pairs_infinite<'a, I: Iterator + 'a, J: Iterator, F>
-    (xs: I,
-     f: &'a F)
-     -> DependentPairsInfinite<'a, I, J, F>
-    where F: Fn(&I::Item) -> J,
-          I::Item: Clone + Eq + Hash
-{
-    DependentPairsInfinite {
-        f: f,
-        xs: CachedIterator::new(xs),
-        x_to_ys: HashMap::new(),
-        i: LogPairIndices::new(),
-    }
-}
+exhaustive_dependent_pairs!(ExhaustiveDependentPairsInfiniteLog,
+                            exhaustive_dependent_pairs_infinite_log,
+                            LogPairIndices,
+                            LogPairIndices::new(),
+                            |i: &LogPairIndices| i.indices().0);
+exhaustive_dependent_pairs!(ExhaustiveDependentPairsInfiniteSqrt,
+                            exhaustive_dependent_pairs_infinite_sqrt,
+                            SqrtPairIndices,
+                            SqrtPairIndices::new(),
+                            |i: &SqrtPairIndices| i.x as usize);
+exhaustive_dependent_pairs!(ExhaustiveDependentPairsInfinite,
+                            exhaustive_dependent_pairs_infinite,
+                            ZOrderTupleIndices,
+                            ZOrderTupleIndices::new(2),
+                            |i: &ZOrderTupleIndices| i.0[0] as usize);
