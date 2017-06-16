@@ -1,19 +1,19 @@
 extern crate rust_wheels;
 
 use rust_wheels::demos::prim_utils::integer_utils_demos::*;
-use rust_wheels::iterators::dependent_pairs::exhaustive_dependent_pairs;
-use rust_wheels::iterators::general::range_increasing_x;
+use rust_wheels::iterators::dependent_pairs::dependent_pairs_infinite;
+use rust_wheels::iterators::primitive_ints::range_up_increasing_x;
 use rust_wheels::iterators::general::RangeIncreasing;
 use rust_wheels::iterators::primitive_ints::exhaustive_u;
 use std::env;
 
-fn f(i: &u8) -> RangeIncreasing<u8> {
-    range_increasing_x::<u8>(0, *i)
+fn f(i: &u64) -> RangeIncreasing<u64> {
+    range_up_increasing_x::<u64>(*i)
 }
 
 fn main() {
     let fr = &f;
-    for p in exhaustive_dependent_pairs(exhaustive_u::<u8>(), fr).take(10000) {
+    for p in dependent_pairs_infinite(exhaustive_u::<u64>(), fr).take(10000) {
         println!("{:?}", p);
     }
     if 1 == 1 {
