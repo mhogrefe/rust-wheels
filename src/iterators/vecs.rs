@@ -9,7 +9,7 @@ pub enum ExhaustiveFixedSizeVecsFromSingle<I: Iterator>
 {
     Zero(bool),
     One(I),
-    MoreThanOne(CachedIterator<I>, ZOrderTupleIndices, bool, Option<ZOrderTupleIndices>),
+    MoreThanOne(bool, CachedIterator<I>, ZOrderTupleIndices, bool, Option<ZOrderTupleIndices>),
 }
 
 impl<I: Iterator> Iterator for ExhaustiveFixedSizeVecsFromSingle<I>
@@ -28,19 +28,23 @@ impl<I: Iterator> Iterator for ExhaustiveFixedSizeVecsFromSingle<I>
                 }
             }
             ExhaustiveFixedSizeVecsFromSingle::One(ref mut xs) => xs.next().map(|x| vec![x]),
-            ExhaustiveFixedSizeVecsFromSingle::MoreThanOne(ref mut xs,
+            ExhaustiveFixedSizeVecsFromSingle::MoreThanOne(ref mut done,
+                                                           ref mut xs,
                                                            ref mut i,
                                                            ref mut stop_checking_size,
                                                            ref mut max_indices) => {
                 let mut result = Vec::with_capacity(i.size());
                 'outer: loop {
-                    if max_indices.as_ref() == Some(i) {
+                    if *done {
                         return None;
                     }
                     for j in 0..i.size() {
                         match xs.get(i.0[j] as usize) {
                             Some(x) => result.push(x),
                             None => {
+                                if max_indices.as_ref() == Some(i) {
+                                    return None;
+                                }
                                 i.increment();
                                 result.clear();
                                 continue 'outer;
@@ -56,7 +60,11 @@ impl<I: Iterator> Iterator for ExhaustiveFixedSizeVecsFromSingle<I>
                             *stop_checking_size = true;
                         }
                     }
-                    i.increment();
+                    if max_indices.as_ref() == Some(i) {
+                        *done = true;
+                    } else {
+                        i.increment();
+                    }
                     return Some(result);
                 }
             }
@@ -74,7 +82,8 @@ pub fn exhaustive_fixed_size_vecs_from_single<I: Iterator>
         0 => ExhaustiveFixedSizeVecsFromSingle::Zero(true),
         1 => ExhaustiveFixedSizeVecsFromSingle::One(xs),
         _ => {
-            ExhaustiveFixedSizeVecsFromSingle::MoreThanOne(CachedIterator::new(xs),
+            ExhaustiveFixedSizeVecsFromSingle::MoreThanOne(false,
+                                                           CachedIterator::new(xs),
                                                            ZOrderTupleIndices::new(size),
                                                            false,
                                                            None)
@@ -82,8 +91,9 @@ pub fn exhaustive_fixed_size_vecs_from_single<I: Iterator>
     }
 }
 
-pub fn exhaustive_vecs<'a, I: Clone + Iterator + 'a>(xs: I)
-                                                     -> Box<Iterator<Item = Vec<I::Item>> + 'a>
+fn exhaustive_vecs_more_than_one<'a, I: Clone + Iterator + 'a>
+    (xs: I)
+     -> Box<Iterator<Item = Vec<I::Item>> + 'a>
     where I::Item: Clone
 {
     let f = move |size: &usize| {
@@ -95,4 +105,59 @@ pub fn exhaustive_vecs<'a, I: Clone + Iterator + 'a>(xs: I)
                  .map(|(_, v)| v)
                  .filter(|v| v.is_some())
                  .map(|v| v.unwrap()))
+}
+
+pub enum ExhaustiveVecs<'a, I: Iterator>
+    where I::Item: Clone
+{
+    Zero(bool),
+    One(I::Item, Vec<I::Item>),
+    MoreThanOne(bool, Box<Iterator<Item = Vec<I::Item>> + 'a>),
+}
+
+impl<'a, I: Iterator> Iterator for ExhaustiveVecs<'a, I>
+    where I::Item: Clone
+{
+    type Item = Vec<I::Item>;
+
+    fn next(&mut self) -> Option<Vec<I::Item>> {
+        match *self {
+            ExhaustiveVecs::Zero(ref mut first) => {
+                if *first {
+                    *first = false;
+                    Some(Vec::new())
+                } else {
+                    None
+                }
+            }
+            ExhaustiveVecs::One(ref x, ref mut xs) => {
+                let copy = xs.clone();
+                xs.push(x.clone());
+                Some(copy)
+            }
+            ExhaustiveVecs::MoreThanOne(ref mut first, ref mut xs) => {
+                if *first {
+                    *first = false;
+                    Some(Vec::new())
+                } else {
+                    xs.next()
+                }
+            }
+        }
+    }
+}
+
+pub fn exhaustive_vecs<'a, I: Clone + Iterator + 'a>(xs: I) -> ExhaustiveVecs<'a, I>
+    where I::Item: Clone
+{
+    let mut xs_cloned = xs.clone();
+    let first = match xs_cloned.next() {
+        None => return ExhaustiveVecs::Zero(true),
+        Some(x) => x,
+    };
+    if xs_cloned.next().is_none() {
+        ExhaustiveVecs::One(first, Vec::new())
+    } else {
+        ExhaustiveVecs::MoreThanOne(true, exhaustive_vecs_more_than_one(xs))
+    }
 }
