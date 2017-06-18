@@ -1,5 +1,7 @@
+use iterators::common::scramble;
 use iterators::dependent_pairs::exhaustive_dependent_pairs_infinite_log;
 use iterators::general::CachedIterator;
+use iterators::integers_geometric::{NaturalU32sGeometric, natural_u32s_geometric};
 use iterators::primitive_ints::exhaustive_positive_x;
 use iterators::tuples::ZOrderTupleIndices;
 use std::iter::repeat;
@@ -72,6 +74,7 @@ impl<I: Iterator> Iterator for ExhaustiveFixedSizeVecsFromSingle<I>
     }
 }
 
+//TODO test
 pub fn exhaustive_fixed_size_vecs_from_single<I: Iterator>
     (size: usize,
      xs: I)
@@ -147,6 +150,7 @@ impl<'a, I: Iterator> Iterator for ExhaustiveVecs<'a, I>
     }
 }
 
+//TODO test
 pub fn exhaustive_vecs<'a, I: Clone + Iterator + 'a>(xs: I) -> ExhaustiveVecs<'a, I>
     where I::Item: Clone
 {
@@ -159,5 +163,32 @@ pub fn exhaustive_vecs<'a, I: Clone + Iterator + 'a>(xs: I) -> ExhaustiveVecs<'a
         ExhaustiveVecs::One(first, Vec::new())
     } else {
         ExhaustiveVecs::MoreThanOne(true, exhaustive_vecs_more_than_one(xs))
+    }
+}
+
+pub struct RandomVecs<I>
+    where I: Iterator
+{
+    lengths: NaturalU32sGeometric,
+    xs: I,
+}
+
+impl<I> Iterator for RandomVecs<I>
+    where I: Iterator
+{
+    type Item = Vec<I::Item>;
+
+    fn next(&mut self) -> Option<Vec<I::Item>> {
+        Some((&mut self.xs).take(self.lengths.next().unwrap() as usize).collect())
+    }
+}
+
+//TODO test
+pub fn random_vecs<I>(seed: &[u32], scale: u32, xs_gen: &Fn(&[u32]) -> I) -> RandomVecs<I>
+    where I: Iterator
+{
+    RandomVecs {
+        lengths: natural_u32s_geometric(&scramble(seed, "lengths"), scale),
+        xs: xs_gen(&scramble(seed, "xs")),
     }
 }

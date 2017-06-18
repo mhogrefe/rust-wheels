@@ -10,8 +10,7 @@ pub fn exhaustive_with_element<I>(x: I::Item, xs: I) -> Chain<Once<I::Item>, I>
 }
 
 pub struct RandomWithElement<I>
-    where I: Iterator,
-          I::Item: Copy
+    where I: Iterator
 {
     rng: IsaacRng,
     weight: u32,
@@ -21,13 +20,13 @@ pub struct RandomWithElement<I>
 
 impl<I> Iterator for RandomWithElement<I>
     where I: Iterator,
-          I::Item: Copy
+          I::Item: Clone
 {
     type Item = I::Item;
 
     fn next(&mut self) -> Option<I::Item> {
         if self.rng.gen_weighted_bool(self.weight) {
-            Some(self.x)
+            Some(self.x.clone())
         } else {
             self.xs.next()
         }
@@ -40,8 +39,7 @@ pub fn random_with_element<I>(seed: &[u32],
                               x: I::Item,
                               xs_gen: &Fn(&[u32]) -> I)
                               -> RandomWithElement<I>
-    where I: Iterator,
-          I::Item: Copy
+    where I: Iterator
 {
     RandomWithElement {
         rng: IsaacRng::from_seed(&scramble(seed, "x")),
