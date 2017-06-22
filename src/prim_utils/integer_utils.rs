@@ -232,10 +232,12 @@ pub fn big_endian_bits_padded_integer(size: usize, n: &Integer) -> Vec<bool> {
 }
 
 pub fn from_big_endian_bits(bits: &[bool]) -> Integer {
-    let mut bits = bits.to_vec();
-    bits.reverse();
     let mut result = Integer::new();
-    result.assign_bits_unsigned(&bits[..]);
+    result.assign_bits_unsigned(&bits.iter()
+                                     .cloned()
+                                     .rev()
+                                     .collect::<Vec<bool>>()
+                                     [..]);
     result
 }
 
@@ -495,9 +497,12 @@ pub fn from_digits(radix: &Integer, digits: &[Integer]) -> Integer {
         result.assign_bits_unsigned(&bits[..]);
         result
     } else if *radix <= 36 {
-        let mut reversed_digits = digits.to_vec();
-        reversed_digits.reverse();
-        from_big_endian_digits(radix, &reversed_digits[..])
+        from_big_endian_digits(radix,
+                               &digits.iter()
+                                    .rev()
+                                    .cloned()
+                                    .collect::<Vec<Integer>>()
+                                    [..])
     } else {
         let mut result = Integer::new();
         for d in digits.iter().rev() {

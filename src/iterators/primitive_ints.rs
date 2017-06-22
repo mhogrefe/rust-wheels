@@ -60,6 +60,7 @@ pub fn x_decreasing<T: PrimInt>() -> RangeDecreasing<T> {
     range_decreasing_x(T::min_value(), T::max_value())
 }
 
+#[derive(Clone)]
 pub enum ExhaustiveRangeI<T: PrimSignedInt> {
     AllNonNegative(RangeIncreasing<T>),
     AllNonPositive(RangeDecreasing<T>),

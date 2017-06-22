@@ -8,6 +8,7 @@ use malachite::natural::Natural;
 use rand::{IsaacRng, SeedableRng};
 use std::iter::{Chain, Once, once};
 
+#[derive(Clone)]
 pub struct RangeIncreasingInteger {
     i: Integer,
     b: Integer,
@@ -31,6 +32,7 @@ impl Iterator for RangeIncreasingInteger {
     }
 }
 
+#[derive(Clone)]
 pub struct RangeDecreasingInteger {
     a: Integer,
     i: Integer,
@@ -54,6 +56,7 @@ impl Iterator for RangeDecreasingInteger {
     }
 }
 
+#[derive(Clone)]
 pub struct RangeIncreasingUnboundedInteger(Integer);
 
 impl Iterator for RangeIncreasingUnboundedInteger {
@@ -66,6 +69,7 @@ impl Iterator for RangeIncreasingUnboundedInteger {
     }
 }
 
+#[derive(Clone)]
 pub struct RangeDecreasingUnboundedInteger(Integer);
 
 impl Iterator for RangeDecreasingUnboundedInteger {
@@ -108,6 +112,7 @@ pub fn range_decreasing_integer(a: Integer, b: Integer) -> RangeDecreasingIntege
     }
 }
 
+#[derive(Clone)]
 pub enum ExhaustiveRangeInteger {
     AllNonNegative(RangeIncreasingInteger),
     AllNonPositive(RangeDecreasingInteger),

@@ -2,9 +2,10 @@ use iterators::common::scramble;
 use iterators::integers_geometric::{NaturalU32sGeometric, natural_u32s_geometric,
                                     PositiveU32sGeometric, positive_u32s_geometric};
 use malachite::natural::Natural;
-use malachite::natural::random::assign_random_bits::assign_random_bits;
+use malachite::natural::random::random_natural_from_bits::random_natural_from_bits;
 use rand::{IsaacRng, SeedableRng};
 
+#[derive(Clone)]
 pub struct RangeIncreasingNatural {
     i: Natural,
     b: Natural,
@@ -28,6 +29,7 @@ impl Iterator for RangeIncreasingNatural {
     }
 }
 
+#[derive(Clone)]
 pub struct RangeDecreasingNatural {
     a: Natural,
     i: Natural,
@@ -51,6 +53,7 @@ impl Iterator for RangeDecreasingNatural {
     }
 }
 
+#[derive(Clone)]
 pub struct RangeIncreasingUnboundedNatural(Natural);
 
 impl Iterator for RangeIncreasingUnboundedNatural {
@@ -114,14 +117,11 @@ impl Iterator for RandomPositiveNaturals {
     type Item = Natural;
 
     fn next(&mut self) -> Option<Natural> {
-        let mut n = Natural::new();
-        assign_random_bits(&mut self.rng,
-                           &mut n,
-                           self.bitsizes
-                               .next()
-                               .unwrap()
-                               .into());
-        Some(n)
+        Some(random_natural_from_bits(&mut self.rng,
+                                      self.bitsizes
+                                          .next()
+                                          .unwrap()
+                                          .into()))
     }
 }
 
@@ -141,14 +141,11 @@ impl Iterator for RandomNaturals {
     type Item = Natural;
 
     fn next(&mut self) -> Option<Natural> {
-        let mut n = Natural::new();
-        assign_random_bits(&mut self.rng,
-                           &mut n,
-                           self.bitsizes
-                               .next()
-                               .unwrap()
-                               .into());
-        Some(n)
+        Some(random_natural_from_bits(&mut self.rng,
+                                      self.bitsizes
+                                          .next()
+                                          .unwrap()
+                                          .into()))
     }
 }
 
