@@ -496,7 +496,7 @@ macro_rules! exhaustive_tuple {
         {
             type Item = ($($it_type::Item),*);
 
-            fn next(&mut self) -> Option<($($it_type::Item),*)> {
+            fn next(&mut self) -> Option<Self::Item> {
                 loop {
                     if self.max_indices.as_ref() == Some(&self.i) {
                         return None;
@@ -601,6 +601,138 @@ exhaustive_tuple!(8,
                   [6, O, ts, ts, ot],
                   [7, P, ss, ss, os]);
 
+macro_rules! lex_tuple {
+    (
+        $struct_name: ident,
+        $fn_name: ident,
+        $last_it_type: ident,
+        $last_it: ident,
+        $last_it_elem: ident,
+        $last_it_init: ident,
+        $(
+            [
+                $it_type: ident,
+                $it: ident,
+                $it_elem: ident,
+                $it_init: ident,
+                $rev_it: ident,
+                $rev_it_elem: ident,
+                $rev_it_init: ident
+            ]
+        ),*
+    ) => {
+        pub struct $struct_name<I: Iterator, $($it_type: Iterator,)* $last_it_type> {
+            x: Option<I::Item>,
+            $($it_elem: Option<$it_type::Item>,)*
+            xs: I,
+            $($it: $it_type,)*
+            $last_it: $last_it_type,
+            $($it_init: $it_type,)*
+            $last_it_init: $last_it_type,
+        }
+
+        impl<I: Iterator, $($it_type: Iterator,)* $last_it_type: Iterator>
+            $struct_name<I, $($it_type,)* $last_it_type>
+                where I::Item: Clone $(,$it_type::Item: Clone)* {
+            fn current(&self, last: Option<$last_it_type::Item>)
+                -> Option<(I::Item, $($it_type::Item,)* $last_it_type::Item)> {
+                Some((self.x.clone().unwrap(), $(self.$it_elem.clone().unwrap(),)* last.unwrap()))
+            }
+        }
+
+        impl<I: Iterator, $($it_type: Clone + Iterator,)* $last_it_type: Clone + Iterator> Iterator
+            for $struct_name<I, $($it_type,)* $last_it_type>
+                where I::Item: Clone $(,$it_type::Item: Clone)* {
+            type Item = (I::Item, $($it_type::Item,)* $last_it_type::Item);
+
+            fn next(&mut self) -> Option<Self::Item> {
+                if self.x.is_none() {
+                    return None;
+                }
+                let mut $last_it_elem = self.$last_it.next();
+                if $last_it_elem.is_some() {
+                    return self.current($last_it_elem);
+                }
+                self.$last_it = self.$last_it_init.clone();
+                $last_it_elem = self.$last_it.next();
+                if $last_it_elem.is_none() {
+                    self.x = None;
+                    return None;
+                }
+
+                $(
+                    self.$rev_it_elem = self.$rev_it.next();
+                    if self.$rev_it_elem.is_some() {
+                        return self.current($last_it_elem);
+                    }
+                    self.$rev_it = self.$rev_it_init.clone();
+                    self.$rev_it_elem = self.$rev_it.next();
+                    if self.$rev_it_elem.is_none() {
+                        self.x = None;
+                        return None;
+                    }
+                )*
+
+                self.x = self.xs.next();
+                if self.x.is_some() {
+                    return self.current($last_it_elem);
+                }
+                None
+            }
+        }
+
+        pub fn
+            $fn_name<I: Iterator, $($it_type: Clone + Iterator,)* $last_it_type: Clone + Iterator>
+            (mut xs: I, $(mut $it: $it_type,)* $last_it: $last_it_type) ->
+            $struct_name<I, $($it_type,)* $last_it_type>
+                where $($it_type::Item: Clone,)* $last_it_type::Item: Clone {
+            let x = xs.next();
+            $(
+                let $it_init = $it.clone();
+                let $it_elem = $it.next();
+            )*
+            $struct_name {
+                x: x,
+                $($it_elem: $it_elem,)*
+                xs: xs,
+                $($it: $it,)*
+                $last_it: $last_it.clone(),
+                $($it_init: $it_init,)*
+                $last_it_init: $last_it
+            }
+        }
+    }
+}
+
+lex_tuple!(LexPairs, lex_pairs, J, ys, y, ys_init,);
+
+lex_tuple!(LexTriples,
+           lex_triples,
+           K,
+           zs,
+           z,
+           zs_init,
+           [J, ys, y, ys_init, ys, y, ys_init]);
+
+lex_tuple!(LexQuadruples,
+           lex_quadruples,
+           L,
+           ws,
+           w,
+           ws_init,
+           [J, ys, y, ys_init, zs, z, zs_init],
+           [K, zs, z, zs_init, ys, y, ys_init]);
+
+lex_tuple!(LexQuintuples,
+           lex_quintuples,
+           M,
+           vs,
+           v,
+           vs_init,
+           [J, ys, y, ys_init, ws, w, ws_init],
+           [K, zs, z, zs_init, zs, z, zs_init],
+           [L, ws, w, ws_init, ys, y, ys_init]);
+
 macro_rules! random_tuple_from_single {
     (
         $repeated_tuple: ty, $struct_name: ident, $fn_name: ident,
@@ -701,7 +833,7 @@ macro_rules! random_tuple {
         impl<$($it_type: Iterator),*> Iterator for $struct_name<$($it_type),*> {
             type Item = ($($it_type::Item),*);
 
-            fn next(&mut self) -> Option<($($it_type::Item),*)> {
+            fn next(&mut self) -> Option<Self::Item> {
                 $(
                     let $elem = self.$cached_it.next().unwrap();
                 )*
