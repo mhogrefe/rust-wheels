@@ -623,6 +623,8 @@ macro_rules! lex_tuple {
             ]
         ),*
     ) => {
+        //TODO move this to a place where it does something
+        #[allow(many_single_char_names, unknown_lints)]
         pub struct $struct_name<I: Iterator, $($it_type: Iterator,)* $last_it_type> {
             x: Option<I::Item>,
             $($it_elem: Option<$it_type::Item>,)*
@@ -684,6 +686,7 @@ macro_rules! lex_tuple {
         }
 
         //TODO test
+        #[allow(too_many_arguments, unknown_lints)]
         pub fn
             $fn_name<I: Iterator, $($it_type: Clone + Iterator,)* $last_it_type: Clone + Iterator>
             (mut xs: I, $(mut $it: $it_type,)* $last_it: $last_it_type) ->
