@@ -359,6 +359,7 @@ macro_rules! exhaustive_tuple_from_single {
             max_indices: Option<ZOrderTupleIndices>,
         }
 
+        #[allow(type_complexity, unknown_lints)]
         impl<I: Iterator> Iterator for $struct_name<I>
             where I::Item: Clone
         {
@@ -531,6 +532,7 @@ macro_rules! exhaustive_tuple {
         }
 
         //TODO test
+        #[allow(too_many_arguments, unknown_lints)]
         pub fn $fn_name<$($it_type: Iterator),*>($($it: $it_type),*) ->
             $struct_name<$($it_type),*> where $($it_type::Item: Clone),*
         {
@@ -681,6 +683,7 @@ macro_rules! lex_tuple {
             }
         }
 
+        //TODO test
         pub fn
             $fn_name<I: Iterator, $($it_type: Clone + Iterator,)* $last_it_type: Clone + Iterator>
             (mut xs: I, $(mut $it: $it_type,)* $last_it: $last_it_type) ->
@@ -705,7 +708,6 @@ macro_rules! lex_tuple {
 }
 
 lex_tuple!(LexPairs, lex_pairs, J, ys, y, ys_init,);
-
 lex_tuple!(LexTriples,
            lex_triples,
            K,
@@ -713,7 +715,6 @@ lex_tuple!(LexTriples,
            z,
            zs_init,
            [J, ys, y, ys_init, ys, y, ys_init]);
-
 lex_tuple!(LexQuadruples,
            lex_quadruples,
            L,
@@ -722,7 +723,6 @@ lex_tuple!(LexQuadruples,
            ws_init,
            [J, ys, y, ys_init, zs, z, zs_init],
            [K, zs, z, zs_init, ys, y, ys_init]);
-
 lex_tuple!(LexQuintuples,
            lex_quintuples,
            M,
@@ -732,6 +732,39 @@ lex_tuple!(LexQuintuples,
            [J, ys, y, ys_init, ws, w, ws_init],
            [K, zs, z, zs_init, zs, z, zs_init],
            [L, ws, w, ws_init, ys, y, ys_init]);
+lex_tuple!(LexSextuples,
+           lex_sextuples,
+           N,
+           us,
+           u,
+           us_init,
+           [J, ys, y, ys_init, vs, v, vs_init],
+           [K, zs, z, zs_init, ws, w, ws_init],
+           [L, ws, w, ws_init, zs, z, zs_init],
+           [M, vs, v, vs_init, ys, y, ys_init]);
+lex_tuple!(LexSeptuples,
+           lex_septuples,
+           O,
+           ts,
+           t,
+           ts_init,
+           [J, ys, y, ys_init, us, u, us_init],
+           [K, zs, z, zs_init, vs, v, vs_init],
+           [L, ws, w, ws_init, ws, w, ws_init],
+           [M, vs, v, vs_init, zs, z, zs_init],
+           [N, us, u, us_init, ys, y, ys_init]);
+lex_tuple!(LexOctuples,
+           lex_octuples,
+           P,
+           ss,
+           s,
+           ss_init,
+           [J, ys, y, ys_init, ts, t, ts_init],
+           [K, zs, z, zs_init, us, u, us_init],
+           [L, ws, w, ws_init, vs, v, vs_init],
+           [M, vs, v, vs_init, ws, w, ws_init],
+           [N, us, u, us_init, zs, z, zs_init],
+           [O, ts, t, ts_init, ys, y, ys_init]);
 
 macro_rules! random_tuple_from_single {
     (
@@ -742,6 +775,7 @@ macro_rules! random_tuple_from_single {
     ) => {
         pub struct $struct_name<I: Iterator>(I);
 
+        #[allow(type_complexity, unknown_lints)]
         impl<I: Iterator> Iterator for $struct_name<I> {
             type Item = $repeated_tuple;
 
@@ -841,7 +875,8 @@ macro_rules! random_tuple {
             }
         }
 
-        //TODO tst
+        //TODO test
+        #[allow(too_many_arguments, unknown_lints)]
         pub fn $fn_name<$($it_type: Iterator),*>(seed: &[u32],
                                                       $($it_gen: &Fn(&[u32]) -> $it_type),*)
                                                       -> $struct_name<$($it_type),*> {
