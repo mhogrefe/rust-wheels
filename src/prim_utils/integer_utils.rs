@@ -294,7 +294,7 @@ pub fn digits_integer(radix: &Integer, n: &Integer) -> Vec<Integer> {
         panic!("n cannot be negative. Invalid n: {}", n);
     } else if sign == Ordering::Equal {
         Vec::new()
-    } else if radix.clone().unsigned_abs().is_power_of_two() {
+    } else if radix.natural_abs_ref().is_power_of_two() {
         let log = ceiling_log_2_integer(radix);
         let mut digits = Vec::new();
         let length = n.significant_bits();
@@ -378,7 +378,7 @@ pub fn digits_padded_integer(size: usize, radix: &Integer, n: &Integer) -> Vec<I
         Vec::new()
     } else if sign == Ordering::Equal {
         iter::repeat(Integer::from(0)).take(size).collect()
-    } else if radix.clone().unsigned_abs().is_power_of_two() {
+    } else if radix.natural_abs_ref().is_power_of_two() {
         let log = ceiling_log_2_integer(radix);
         let mut digits = Vec::new();
         let mut digit = Integer::from(0);
@@ -475,7 +475,7 @@ pub fn from_digits(radix: &Integer, digits: &[Integer]) -> Integer {
         panic!("radix must be at least 2. Invalid radix: {}", radix);
     } else if digits.is_empty() {
         Integer::new()
-    } else if radix.clone().unsigned_abs().is_power_of_two() {
+    } else if radix.natural_abs_ref().is_power_of_two() {
         let radix_log = ceiling_log_2_integer(radix);
         let mut bits = Vec::new();
         for d in digits {
@@ -530,7 +530,7 @@ pub fn from_big_endian_digits(radix: &Integer, digits: &[Integer]) -> Integer {
         panic!("radix must be at least 2. Invalid radix: {}", radix);
     } else if digits.is_empty() {
         Integer::new()
-    } else if radix.clone().unsigned_abs().is_power_of_two() {
+    } else if radix.natural_abs_ref().is_power_of_two() {
         let radix_log = ceiling_log_2_integer(radix);
         let mut bits = Vec::new();
         for d in digits.iter().rev() {
