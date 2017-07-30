@@ -35,42 +35,39 @@ impl<I: Iterator> Iterator for ExhaustiveFixedSizeVecsFromSingle<I>
                                                            ref mut i,
                                                            ref mut stop_checking_size,
                                                            ref mut max_indices) => {
-                if *done {
-                    return None;
-                }
                 let mut result = Vec::with_capacity(i.size());
                 'outer: loop {
+                    if *done {
+                        return None;
+                    }
                     for j in 0..i.size() {
                         match xs.get(i.0[j] as usize) {
-                            Some(x) => {
-                                result.push(x);
-                                break 'outer;
-                            }
+                            Some(x) => result.push(x),
                             None => {
                                 if max_indices.as_ref() == Some(i) {
                                     return None;
                                 }
                                 i.increment();
                                 result.clear();
+                                continue 'outer;
                             }
                         }
                     }
-                }
-                if !*stop_checking_size {
-                    if let Some(size) = xs.currently_known_size() {
-                        let size = size as u64;
-                        let mut max_vec = Vec::new();
-                        max_vec.resize(i.size(), size - 1);
-                        *max_indices = Some(ZOrderTupleIndices(max_vec));
-                        *stop_checking_size = true;
+                    if !*stop_checking_size {
+                        if let Some(size) = xs.currently_known_size() {
+                            let size = size as u64;
+                            let mut max_vec = Vec::new();
+                            max_vec.resize(i.size(), size - 1);
+                            *max_indices = Some(ZOrderTupleIndices(max_vec));
+                            *stop_checking_size = true;
+                        }
                     }
-                }
-                if max_indices.as_ref() == Some(i) {
-                    *done = true;
-                    None
-                } else {
-                    i.increment();
-                    Some(result)
+                    if max_indices.as_ref() == Some(i) {
+                        *done = true;
+                    } else {
+                        i.increment();
+                    }
+                    return Some(result);
                 }
             }
         }
