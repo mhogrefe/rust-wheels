@@ -19,7 +19,7 @@ macro_rules! benchmark {
                 $duration: ident,
                 $elem: ident,
                 $sizes: ident,
-                $color: expr
+                $color: expr,
             ]
         ),*
     ) => {
@@ -143,7 +143,7 @@ benchmark!(
         y_duration,
         y,
         y_sizes,
-        "blue"
+        "blue",
     ]
 );
 benchmark!(
@@ -161,7 +161,7 @@ benchmark!(
         y_duration,
         y,
         y_sizes,
-        "blue"
+        "blue",
     ],
     [
         KITEM,
@@ -175,7 +175,7 @@ benchmark!(
         z_duration,
         z,
         z_sizes,
-        "red"
+        "red",
     ]
 );
 benchmark!(
@@ -193,7 +193,7 @@ benchmark!(
         y_duration,
         y,
         y_sizes,
-        "blue"
+        "blue",
     ],
     [
         KITEM,
@@ -207,7 +207,7 @@ benchmark!(
         z_duration,
         z,
         z_sizes,
-        "red"
+        "red",
     ],
     [
         LITEM,
@@ -221,7 +221,7 @@ benchmark!(
         w_duration,
         w,
         w_sizes,
-        "black"
+        "black",
     ]
 );
 benchmark!(
@@ -239,7 +239,7 @@ benchmark!(
         y_duration,
         y,
         y_sizes,
-        "blue"
+        "blue",
     ],
     [
         KITEM,
@@ -253,7 +253,7 @@ benchmark!(
         z_duration,
         z,
         z_sizes,
-        "red"
+        "red",
     ],
     [
         LITEM,
@@ -267,7 +267,7 @@ benchmark!(
         w_duration,
         w,
         w_sizes,
-        "black"
+        "black",
     ],
     [
         MITEM,
@@ -281,7 +281,7 @@ benchmark!(
         v_duration,
         v,
         v_sizes,
-        "purple"
+        "purple",
     ]
 );
 benchmark!(
@@ -299,7 +299,7 @@ benchmark!(
         y_duration,
         x_1,
         y_sizes,
-        "blue"
+        "blue",
     ],
     [
         KITEM,
@@ -313,7 +313,7 @@ benchmark!(
         z_duration,
         x_2,
         z_sizes,
-        "red"
+        "red",
     ],
     [
         LITEM,
@@ -327,7 +327,7 @@ benchmark!(
         w_duration,
         x_3,
         w_sizes,
-        "black"
+        "black",
     ],
     [
         MITEM,
@@ -341,7 +341,7 @@ benchmark!(
         v_duration,
         x_4,
         v_sizes,
-        "purple"
+        "purple",
     ],
     [
         NITEM,
@@ -355,6 +355,6 @@ benchmark!(
         u_duration,
         x_5,
         u_sizes,
-        "orange"
+        "orange",
     ]
 );
