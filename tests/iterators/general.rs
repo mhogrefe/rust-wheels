@@ -9,8 +9,10 @@ fn test_random_from_vector() {
     let eo = get_expected_test_outputs();
     let test = |number, xs| {
         let xs: Vec<u32> = parse_vec(xs).unwrap();
-        eo.match_vec_f(&format!("random_from_vector_{}", number),
-                       &mut random_from_vector(&EXAMPLE_SEED[..], xs));
+        eo.match_vec_f(
+            &format!("random_from_vector_{}", number),
+            &mut random_from_vector(&EXAMPLE_SEED[..], xs),
+        );
     };
     test("i", "[5]");
     test("ii", "[1, 2, 3]");

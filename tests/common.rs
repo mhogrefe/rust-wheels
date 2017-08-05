@@ -36,15 +36,17 @@ impl TestOutput {
     }
 
     pub fn match_vec<I>(&self, key: &str, xs: &mut I)
-        where I: Iterator,
-              <I as Iterator>::Item: Display
+    where
+        I: Iterator,
+        <I as Iterator>::Item: Display,
     {
         self.match_vec_helper(key, to_limited_string_vec(TINY_LIMIT, xs));
     }
 
     pub fn match_vec_debug<I>(&self, key: &str, xs: &mut I)
-        where I: Iterator,
-              <I as Iterator>::Item: Debug
+    where
+        I: Iterator,
+        <I as Iterator>::Item: Debug,
     {
         self.match_vec_helper(key, to_limited_string_vec_debug(TINY_LIMIT, xs));
     }
@@ -70,8 +72,9 @@ impl TestOutput {
     }
 
     pub fn match_vec_f<I>(&self, key: &str, xs: &mut I)
-        where I: Iterator,
-              <I as Iterator>::Item: Clone + Display + Eq + Hash
+    where
+        I: Iterator,
+        <I as Iterator>::Item: Clone + Display + Eq + Hash,
     {
         let (vec, map) =
             get_limited_string_vec_and_most_common_values(10, TINY_LIMIT, HUGE_LIMIT, xs);
@@ -79,8 +82,9 @@ impl TestOutput {
     }
 
     pub fn match_vec_f_debug<I>(&self, key: &str, xs: &mut I)
-        where I: Iterator,
-              <I as Iterator>::Item: Clone + Debug + Eq + Hash
+    where
+        I: Iterator,
+        <I as Iterator>::Item: Clone + Debug + Eq + Hash,
     {
         let (vec, map) =
             get_limited_string_vec_and_most_common_values_debug(10, TINY_LIMIT, HUGE_LIMIT, xs);
@@ -91,7 +95,9 @@ impl TestOutput {
 pub fn get_expected_test_outputs() -> TestOutput {
     let mut f = File::open("tests/data/test-output.txt").expect("file not found");
     let mut contents = String::new();
-    f.read_to_string(&mut contents).expect("something went wrong reading the file");
+    f.read_to_string(&mut contents).expect(
+        "something went wrong reading the file",
+    );
     let mut vecs = HashMap::new();
     let mut maps = HashMap::new();
     let mut current_key = "";
@@ -146,8 +152,10 @@ pub fn get_expected_test_outputs() -> TestOutput {
                     if line_tokens.len() != 2 {
                         panic!("Bad map line: {}", line);
                     }
-                    current_map.push((line_tokens[0].to_string(),
-                                      line_tokens[1].to_string().parse().unwrap()));
+                    current_map.push((
+                        line_tokens[0].to_string(),
+                        line_tokens[1].to_string().parse().unwrap(),
+                    ));
                     current_counter -= 1;
                 }
             }

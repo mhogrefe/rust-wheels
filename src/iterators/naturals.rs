@@ -117,11 +117,10 @@ impl Iterator for RandomPositiveNaturals {
     type Item = Natural;
 
     fn next(&mut self) -> Option<Natural> {
-        Some(random_natural_from_bits(&mut self.rng,
-                                      self.bitsizes
-                                          .next()
-                                          .unwrap()
-                                          .into()))
+        Some(random_natural_from_bits(
+            &mut self.rng,
+            self.bitsizes.next().unwrap().into(),
+        ))
     }
 }
 
@@ -141,11 +140,10 @@ impl Iterator for RandomNaturals {
     type Item = Natural;
 
     fn next(&mut self) -> Option<Natural> {
-        Some(random_natural_from_bits(&mut self.rng,
-                                      self.bitsizes
-                                          .next()
-                                          .unwrap()
-                                          .into()))
+        Some(random_natural_from_bits(
+            &mut self.rng,
+            self.bitsizes.next().unwrap().into(),
+        ))
     }
 }
 

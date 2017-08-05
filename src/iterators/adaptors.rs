@@ -5,11 +5,13 @@ use std::fmt::Debug;
 use std::fmt::Display;
 use std::hash::Hash;
 
-fn to_limited_string_vec_helper<I>(limit: usize,
-                                   xs: &mut I,
-                                   f: &Fn(&I::Item) -> String)
-                                   -> Vec<String>
-    where I: Iterator
+fn to_limited_string_vec_helper<I>(
+    limit: usize,
+    xs: &mut I,
+    f: &Fn(&I::Item) -> String,
+) -> Vec<String>
+where
+    I: Iterator,
 {
     let mut vec = Vec::new();
     let mut found_end = false;
@@ -29,22 +31,25 @@ fn to_limited_string_vec_helper<I>(limit: usize,
 }
 
 pub fn to_limited_string_vec<I>(limit: usize, xs: &mut I) -> Vec<String>
-    where I: Iterator,
-          <I as Iterator>::Item: Display
+where
+    I: Iterator,
+    <I as Iterator>::Item: Display,
 {
     to_limited_string_vec_helper(limit, xs, &|x| x.to_string())
 }
 
 pub fn to_limited_string_vec_debug<I>(limit: usize, xs: &mut I) -> Vec<String>
-    where I: Iterator,
-          <I as Iterator>::Item: Debug
+where
+    I: Iterator,
+    <I as Iterator>::Item: Debug,
 {
     to_limited_string_vec_helper(limit, xs, &|x| format!("{:?}", x))
 }
 
 pub fn to_frequency_map<I>(xs: &mut I) -> HashMap<I::Item, usize>
-    where I: Iterator,
-          <I as Iterator>::Item: Eq + Hash
+where
+    I: Iterator,
+    <I as Iterator>::Item: Eq + Hash,
 {
     let mut map: HashMap<I::Item, usize> = HashMap::new();
     for x in xs {
@@ -78,24 +83,29 @@ impl PartialOrd for FrequencyRecord {
     }
 }
 
-fn get_most_common_values_helper<T>(limit: usize,
-                                    map: HashMap<T, usize>,
-                                    f: &Fn(&T) -> String)
-                                    -> Vec<(String, usize)>
-    where T: Eq + Hash
+fn get_most_common_values_helper<T>(
+    limit: usize,
+    map: HashMap<T, usize>,
+    f: &Fn(&T) -> String,
+) -> Vec<(String, usize)>
+where
+    T: Eq + Hash,
 {
     let mut inverse_frequency_map: HashMap<usize, Vec<T>> = HashMap::new();
     for (x, frequency) in map {
-        inverse_frequency_map.entry(frequency).or_insert_with(Vec::new).push(x);
+        inverse_frequency_map
+            .entry(frequency)
+            .or_insert_with(Vec::new)
+            .push(x);
     }
     let mut most_common_values = BinaryHeap::new();
     let mut i = 0;
     for (&frequency, xs) in &inverse_frequency_map {
         for x in xs {
             most_common_values.push(FrequencyRecord {
-                                        item: f(x),
-                                        frequency: frequency,
-                                    });
+                item: f(x),
+                frequency: frequency,
+            });
             if i < limit {
                 i += 1;
             } else {
@@ -112,24 +122,28 @@ fn get_most_common_values_helper<T>(limit: usize,
 }
 
 pub fn get_most_common_values<T>(limit: usize, map: HashMap<T, usize>) -> Vec<(String, usize)>
-    where T: Eq + Hash + Display
+where
+    T: Eq + Hash + Display,
 {
     get_most_common_values_helper(limit, map, &|x| x.to_string())
 }
 
 pub fn get_most_common_values_debug<T>(limit: usize, map: HashMap<T, usize>) -> Vec<(String, usize)>
-    where T: Eq + Hash + Debug
+where
+    T: Eq + Hash + Debug,
 {
     get_most_common_values_helper(limit, map, &|x| format!("{:?}", x))
 }
 
-fn get_limited_string_vec_and_frequency_map_helper<I>(small_limit: usize,
-                                                      large_limit: usize,
-                                                      xs: &mut I,
-                                                      f: &Fn(&I::Item) -> String)
-                                                      -> (Vec<String>, HashMap<I::Item, usize>)
-    where I: Iterator,
-          <I as Iterator>::Item: Eq + Hash
+fn get_limited_string_vec_and_frequency_map_helper<I>(
+    small_limit: usize,
+    large_limit: usize,
+    xs: &mut I,
+    f: &Fn(&I::Item) -> String,
+) -> (Vec<String>, HashMap<I::Item, usize>)
+where
+    I: Iterator,
+    <I as Iterator>::Item: Eq + Hash,
 {
     let mut vec = Vec::new();
     let mut map: HashMap<I::Item, usize> = HashMap::new();
@@ -151,76 +165,92 @@ fn get_limited_string_vec_and_frequency_map_helper<I>(small_limit: usize,
     (vec, map)
 }
 
-pub fn get_limited_string_vec_and_frequency_map<I>(small_limit: usize,
-                                                   large_limit: usize,
-                                                   xs: &mut I)
-                                                   -> (Vec<String>, HashMap<I::Item, usize>)
-    where I: Iterator,
-          <I as Iterator>::Item: Eq + Hash + Display
+pub fn get_limited_string_vec_and_frequency_map<I>(
+    small_limit: usize,
+    large_limit: usize,
+    xs: &mut I,
+) -> (Vec<String>, HashMap<I::Item, usize>)
+where
+    I: Iterator,
+    <I as Iterator>::Item: Eq + Hash + Display,
 {
-    get_limited_string_vec_and_frequency_map_helper(small_limit,
-                                                    large_limit,
-                                                    xs,
-                                                    &|x| x.to_string())
+    get_limited_string_vec_and_frequency_map_helper(
+        small_limit,
+        large_limit,
+        xs,
+        &|x| x.to_string(),
+    )
 }
 
-pub fn get_limited_string_vec_and_frequency_map_debug<I>
-    (small_limit: usize,
-     large_limit: usize,
-     xs: &mut I)
-     -> (Vec<String>, HashMap<I::Item, usize>)
-    where I: Iterator,
-          <I as Iterator>::Item: Eq + Hash + Debug
+pub fn get_limited_string_vec_and_frequency_map_debug<I>(
+    small_limit: usize,
+    large_limit: usize,
+    xs: &mut I,
+) -> (Vec<String>, HashMap<I::Item, usize>)
+where
+    I: Iterator,
+    <I as Iterator>::Item: Eq + Hash + Debug,
 {
-    get_limited_string_vec_and_frequency_map_helper(small_limit,
-                                                    large_limit,
-                                                    xs,
-                                                    &|x| format!("{:?}", x))
+    get_limited_string_vec_and_frequency_map_helper(
+        small_limit,
+        large_limit,
+        xs,
+        &|x| format!("{:?}", x),
+    )
 }
 
-fn get_limited_string_vec_and_most_common_values_helper<I>(tiny_limit: usize,
-                                                           small_limit: usize,
-                                                           large_limit: usize,
-                                                           xs: &mut I,
-                                                           f: &Fn(&I::Item) -> String)
-                                                           -> (Vec<String>, Vec<(String, usize)>)
-    where I: Iterator,
-          <I as Iterator>::Item: Clone + Eq + Hash
+fn get_limited_string_vec_and_most_common_values_helper<I>(
+    tiny_limit: usize,
+    small_limit: usize,
+    large_limit: usize,
+    xs: &mut I,
+    f: &Fn(&I::Item) -> String,
+) -> (Vec<String>, Vec<(String, usize)>)
+where
+    I: Iterator,
+    <I as Iterator>::Item: Clone + Eq + Hash,
 {
     let (vec, map) =
         get_limited_string_vec_and_frequency_map_helper(small_limit, large_limit, xs, f);
     (vec, get_most_common_values_helper(tiny_limit, map, f))
 }
 
-pub fn get_limited_string_vec_and_most_common_values<I>(tiny_limit: usize,
-                                                        small_limit: usize,
-                                                        large_limit: usize,
-                                                        xs: &mut I)
-                                                        -> (Vec<String>, Vec<(String, usize)>)
-    where I: Iterator,
-          <I as Iterator>::Item: Clone + Eq + Hash + Display
+pub fn get_limited_string_vec_and_most_common_values<I>(
+    tiny_limit: usize,
+    small_limit: usize,
+    large_limit: usize,
+    xs: &mut I,
+) -> (Vec<String>, Vec<(String, usize)>)
+where
+    I: Iterator,
+    <I as Iterator>::Item: Clone + Eq + Hash + Display,
 {
-    get_limited_string_vec_and_most_common_values_helper(tiny_limit,
-                                                         small_limit,
-                                                         large_limit,
-                                                         xs,
-                                                         &|x| x.to_string())
+    get_limited_string_vec_and_most_common_values_helper(
+        tiny_limit,
+        small_limit,
+        large_limit,
+        xs,
+        &|x| x.to_string(),
+    )
 }
 
-pub fn get_limited_string_vec_and_most_common_values_debug<I>
-    (tiny_limit: usize,
-     small_limit: usize,
-     large_limit: usize,
-     xs: &mut I)
-     -> (Vec<String>, Vec<(String, usize)>)
-    where I: Iterator,
-          <I as Iterator>::Item: Clone + Eq + Hash + Debug
+pub fn get_limited_string_vec_and_most_common_values_debug<I>(
+    tiny_limit: usize,
+    small_limit: usize,
+    large_limit: usize,
+    xs: &mut I,
+) -> (Vec<String>, Vec<(String, usize)>)
+where
+    I: Iterator,
+    <I as Iterator>::Item: Clone + Eq + Hash + Debug,
 {
-    get_limited_string_vec_and_most_common_values_helper(tiny_limit,
-                                                         small_limit,
-                                                         large_limit,
-                                                         xs,
-                                                         &|x| format!("{:?}", x))
+    get_limited_string_vec_and_most_common_values_helper(
+        tiny_limit,
+        small_limit,
+        large_limit,
+        xs,
+        &|x| format!("{:?}", x),
+    )
 }
 
 pub struct MultiChain<I> {
@@ -265,15 +295,13 @@ pub struct Concat<I: Iterator> {
 
 impl<I: Iterator> Concat<I> {
     pub fn new(xss: I) -> Concat<I> {
-        Concat {
-            xss: xss,
-            xs: None,
-        }
+        Concat { xss: xss, xs: None }
     }
 }
 
 impl<I: Iterator> Iterator for Concat<I>
-    where I::Item: Iterator
+where
+    I::Item: Iterator,
 {
     type Item = <<I as Iterator>::Item as Iterator>::Item;
 
@@ -285,10 +313,7 @@ impl<I: Iterator> Iterator for Concat<I>
             }
         }
         loop {
-            match self.xs
-                      .as_mut()
-                      .unwrap()
-                      .next() {
+            match self.xs.as_mut().unwrap().next() {
                 None => {
                     match self.xss.next() {
                         None => return None,

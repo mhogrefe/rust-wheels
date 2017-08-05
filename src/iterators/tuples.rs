@@ -106,7 +106,8 @@ impl ZOrderTupleIndices {
 }
 
 pub struct LogPairsFromSingle<I: Iterator>
-    where I::Item: Clone
+where
+    I::Item: Clone,
 {
     xs: CachedIterator<I>,
     i: LogPairIndices,
@@ -115,7 +116,8 @@ pub struct LogPairsFromSingle<I: Iterator>
 }
 
 impl<I: Iterator> Iterator for LogPairsFromSingle<I>
-    where I::Item: Clone
+where
+    I::Item: Clone,
 {
     type Item = (I::Item, I::Item);
 
@@ -149,7 +151,8 @@ impl<I: Iterator> Iterator for LogPairsFromSingle<I>
 
 //TODO test
 pub fn log_pairs_from_single<I: Iterator>(xs: I) -> LogPairsFromSingle<I>
-    where I::Item: Clone
+where
+    I::Item: Clone,
 {
     LogPairsFromSingle {
         xs: CachedIterator::new(xs),
@@ -160,8 +163,9 @@ pub fn log_pairs_from_single<I: Iterator>(xs: I) -> LogPairsFromSingle<I>
 }
 
 pub struct LogPairs<I: Iterator, J: Iterator>
-    where I::Item: Clone,
-          J::Item: Clone
+where
+    I::Item: Clone,
+    J::Item: Clone,
 {
     xs: CachedIterator<I>,
     ys: CachedIterator<J>,
@@ -171,8 +175,9 @@ pub struct LogPairs<I: Iterator, J: Iterator>
 }
 
 impl<I: Iterator, J: Iterator> Iterator for LogPairs<I, J>
-    where I::Item: Clone,
-          J::Item: Clone
+where
+    I::Item: Clone,
+    J::Item: Clone,
 {
     type Item = (I::Item, J::Item);
 
@@ -208,8 +213,9 @@ impl<I: Iterator, J: Iterator> Iterator for LogPairs<I, J>
 
 //TODO test
 pub fn log_pairs<I: Iterator, J: Iterator>(xs: I, ys: J) -> LogPairs<I, J>
-    where I::Item: Clone,
-          J::Item: Clone
+where
+    I::Item: Clone,
+    J::Item: Clone,
 {
     LogPairs {
         xs: CachedIterator::new(xs),
@@ -221,7 +227,8 @@ pub fn log_pairs<I: Iterator, J: Iterator>(xs: I, ys: J) -> LogPairs<I, J>
 }
 
 pub struct SqrtPairsFromSingle<I: Iterator>
-    where I::Item: Clone
+where
+    I::Item: Clone,
 {
     xs: CachedIterator<I>,
     i: SqrtPairIndices,
@@ -230,7 +237,8 @@ pub struct SqrtPairsFromSingle<I: Iterator>
 }
 
 impl<I: Iterator> Iterator for SqrtPairsFromSingle<I>
-    where I::Item: Clone
+where
+    I::Item: Clone,
 {
     type Item = (I::Item, I::Item);
 
@@ -254,9 +262,9 @@ impl<I: Iterator> Iterator for SqrtPairsFromSingle<I>
             if !self.stop_checking_size {
                 if let Some(size) = self.xs.currently_known_size() {
                     self.max_indices = Some(SqrtPairIndices {
-                                                x: size as u64 - 1,
-                                                y: size as u64 - 1,
-                                            });
+                        x: size as u64 - 1,
+                        y: size as u64 - 1,
+                    });
                     self.stop_checking_size = true;
                 }
             }
@@ -268,7 +276,8 @@ impl<I: Iterator> Iterator for SqrtPairsFromSingle<I>
 
 //TODO test
 pub fn sqrt_pairs_from_single<I: Iterator>(xs: I) -> SqrtPairsFromSingle<I>
-    where I::Item: Clone
+where
+    I::Item: Clone,
 {
     SqrtPairsFromSingle {
         xs: CachedIterator::new(xs),
@@ -279,8 +288,9 @@ pub fn sqrt_pairs_from_single<I: Iterator>(xs: I) -> SqrtPairsFromSingle<I>
 }
 
 pub struct SqrtPairs<I: Iterator, J: Iterator>
-    where I::Item: Clone,
-          J::Item: Clone
+where
+    I::Item: Clone,
+    J::Item: Clone,
 {
     xs: CachedIterator<I>,
     ys: CachedIterator<J>,
@@ -290,8 +300,9 @@ pub struct SqrtPairs<I: Iterator, J: Iterator>
 }
 
 impl<I: Iterator, J: Iterator> Iterator for SqrtPairs<I, J>
-    where I::Item: Clone,
-          J::Item: Clone
+where
+    I::Item: Clone,
+    J::Item: Clone,
 {
     type Item = (I::Item, J::Item);
 
@@ -316,9 +327,9 @@ impl<I: Iterator, J: Iterator> Iterator for SqrtPairs<I, J>
                 if let Some(xs_size) = self.xs.currently_known_size() {
                     if let Some(ys_size) = self.ys.currently_known_size() {
                         self.max_indices = Some(SqrtPairIndices {
-                                                    x: xs_size as u64 - 1,
-                                                    y: ys_size as u64 - 1,
-                                                });
+                            x: xs_size as u64 - 1,
+                            y: ys_size as u64 - 1,
+                        });
                         self.stop_checking_size = true;
                     }
                 }
@@ -331,8 +342,9 @@ impl<I: Iterator, J: Iterator> Iterator for SqrtPairs<I, J>
 
 //TODO test
 pub fn sqrt_pairs<I: Iterator, J: Iterator>(xs: I, ys: J) -> SqrtPairs<I, J>
-    where I::Item: Clone,
-          J::Item: Clone
+where
+    I::Item: Clone,
+    J::Item: Clone,
 {
     SqrtPairs {
         xs: CachedIterator::new(xs),
@@ -406,76 +418,100 @@ macro_rules! exhaustive_tuple_from_single {
     }
 }
 
-exhaustive_tuple_from_single!(2,
-                              (I::Item, I::Item),
-                              ExhaustivePairsFromSingle,
-                              exhaustive_pairs_from_single,
-                              [0, ox],
-                              [1, oy]);
-exhaustive_tuple_from_single!(3,
-                              (I::Item, I::Item, I::Item),
-                              ExhaustiveTriplesFromSingle,
-                              exhaustive_triples_from_single,
-                              [0, ox],
-                              [1, oy],
-                              [2, oz]);
-exhaustive_tuple_from_single!(4,
-                              (I::Item, I::Item, I::Item, I::Item),
-                              ExhaustiveQuadruplesFromSingle,
-                              exhaustive_quadruples_from_single,
-                              [0, ox],
-                              [1, oy],
-                              [2, oz],
-                              [3, ow]);
-exhaustive_tuple_from_single!(5,
-                              (I::Item, I::Item, I::Item, I::Item, I::Item),
-                              ExhaustiveQuintuplesFromSingle,
-                              exhaustive_quintuples_from_single,
-                              [0, ox],
-                              [1, oy],
-                              [2, oz],
-                              [3, ow],
-                              [4, ov]);
-exhaustive_tuple_from_single!(6,
-                              (I::Item, I::Item, I::Item, I::Item, I::Item, I::Item),
-                              ExhaustiveSextuplesFromSingle,
-                              exhaustive_sextuples_from_single,
-                              [0, ox],
-                              [1, oy],
-                              [2, oz],
-                              [3, ow],
-                              [4, ov],
-                              [5, ou]);
-exhaustive_tuple_from_single!(7,
-                              (I::Item, I::Item, I::Item, I::Item, I::Item, I::Item, I::Item),
-                              ExhaustiveSeptuplesFromSingle,
-                              exhaustive_septuples_from_single,
-                              [0, ox],
-                              [1, oy],
-                              [2, oz],
-                              [3, ow],
-                              [4, ov],
-                              [5, ou],
-                              [6, ot]);
-exhaustive_tuple_from_single!(8,
-                              (I::Item,
-                               I::Item,
-                               I::Item,
-                               I::Item,
-                               I::Item,
-                               I::Item,
-                               I::Item,
-                               I::Item),
-                              ExhaustiveOctuplesFromSingle,
-                              exhaustive_octuples_from_single,
-                              [0, ox],
-                              [1, oy],
-                              [2, oz],
-                              [3, ow],
-                              [4, ov],
-                              [5, ou],
-                              [6, ot],
-                              [7, os]);
+exhaustive_tuple_from_single!(
+    2,
+    (I::Item, I::Item),
+    ExhaustivePairsFromSingle,
+    exhaustive_pairs_from_single,
+    [0, ox],
+    [1, oy]
+);
+exhaustive_tuple_from_single!(
+    3,
+    (I::Item, I::Item, I::Item),
+    ExhaustiveTriplesFromSingle,
+    exhaustive_triples_from_single,
+    [0, ox],
+    [1, oy],
+    [2, oz]
+);
+exhaustive_tuple_from_single!(
+    4,
+    (I::Item, I::Item, I::Item, I::Item),
+    ExhaustiveQuadruplesFromSingle,
+    exhaustive_quadruples_from_single,
+    [0, ox],
+    [1, oy],
+    [2, oz],
+    [3, ow]
+);
+exhaustive_tuple_from_single!(
+    5,
+    (I::Item, I::Item, I::Item, I::Item, I::Item),
+    ExhaustiveQuintuplesFromSingle,
+    exhaustive_quintuples_from_single,
+    [0, ox],
+    [1, oy],
+    [2, oz],
+    [3, ow],
+    [4, ov]
+);
+exhaustive_tuple_from_single!(
+    6,
+    (I::Item, I::Item, I::Item, I::Item, I::Item, I::Item),
+    ExhaustiveSextuplesFromSingle,
+    exhaustive_sextuples_from_single,
+    [0, ox],
+    [1, oy],
+    [2, oz],
+    [3, ow],
+    [4, ov],
+    [5, ou]
+);
+exhaustive_tuple_from_single!(
+    7,
+    (
+        I::Item,
+        I::Item,
+        I::Item,
+        I::Item,
+        I::Item,
+        I::Item,
+        I::Item,
+    ),
+    ExhaustiveSeptuplesFromSingle,
+    exhaustive_septuples_from_single,
+    [0, ox],
+    [1, oy],
+    [2, oz],
+    [3, ow],
+    [4, ov],
+    [5, ou],
+    [6, ot]
+);
+exhaustive_tuple_from_single!(
+    8,
+    (
+        I::Item,
+        I::Item,
+        I::Item,
+        I::Item,
+        I::Item,
+        I::Item,
+        I::Item,
+        I::Item,
+    ),
+    ExhaustiveOctuplesFromSingle,
+    exhaustive_octuples_from_single,
+    [0, ox],
+    [1, oy],
+    [2, oz],
+    [3, ow],
+    [4, ov],
+    [5, ou],
+    [6, ot],
+    [7, os]
+);
 
 macro_rules! exhaustive_tuple {
     (
@@ -546,62 +582,76 @@ macro_rules! exhaustive_tuple {
     }
 }
 
-exhaustive_tuple!(2,
-                  ExhaustivePairs,
-                  exhaustive_pairs,
-                  [0, I, xs, xs, ox],
-                  [1, J, ys, ys, oy]);
-exhaustive_tuple!(3,
-                  ExhaustiveTriples,
-                  exhaustive_triples,
-                  [0, I, xs, xs, ox],
-                  [1, J, ys, ys, oy],
-                  [2, K, zs, zs, oz]);
-exhaustive_tuple!(4,
-                  ExhaustiveQuadruples,
-                  exhaustive_quadruples,
-                  [0, I, xs, xs, ox],
-                  [1, J, ys, ys, oy],
-                  [2, K, zs, zs, oz],
-                  [3, L, ws, ws, ow]);
-exhaustive_tuple!(5,
-                  ExhaustiveQuintuples,
-                  exhaustive_quintuples,
-                  [0, I, xs, xs, ox],
-                  [1, J, ys, ys, oy],
-                  [2, K, zs, zs, oz],
-                  [3, L, ws, ws, ow],
-                  [4, M, vs, vs, ov]);
-exhaustive_tuple!(6,
-                  ExhaustiveSextuples,
-                  exhaustive_sextuples,
-                  [0, I, xs, xs, ox],
-                  [1, J, ys, ys, oy],
-                  [2, K, zs, zs, oz],
-                  [3, L, ws, ws, ow],
-                  [4, M, vs, vs, ov],
-                  [5, N, us, us, ou]);
-exhaustive_tuple!(7,
-                  ExhaustiveSeptuples,
-                  exhaustive_septuples,
-                  [0, I, xs, xs, ox],
-                  [1, J, ys, ys, oy],
-                  [2, K, zs, zs, oz],
-                  [3, L, ws, ws, ow],
-                  [4, M, vs, vs, ov],
-                  [5, N, us, us, ou],
-                  [6, O, ts, ts, ot]);
-exhaustive_tuple!(8,
-                  ExhaustiveOctuples,
-                  exhaustive_octuples,
-                  [0, I, xs, xs, ox],
-                  [1, J, ys, ys, oy],
-                  [2, K, zs, zs, oz],
-                  [3, L, ws, ws, ow],
-                  [4, M, vs, vs, ov],
-                  [5, N, us, us, ou],
-                  [6, O, ts, ts, ot],
-                  [7, P, ss, ss, os]);
+exhaustive_tuple!(
+    2,
+    ExhaustivePairs,
+    exhaustive_pairs,
+    [0, I, xs, xs, ox],
+    [1, J, ys, ys, oy]
+);
+exhaustive_tuple!(
+    3,
+    ExhaustiveTriples,
+    exhaustive_triples,
+    [0, I, xs, xs, ox],
+    [1, J, ys, ys, oy],
+    [2, K, zs, zs, oz]
+);
+exhaustive_tuple!(
+    4,
+    ExhaustiveQuadruples,
+    exhaustive_quadruples,
+    [0, I, xs, xs, ox],
+    [1, J, ys, ys, oy],
+    [2, K, zs, zs, oz],
+    [3, L, ws, ws, ow]
+);
+exhaustive_tuple!(
+    5,
+    ExhaustiveQuintuples,
+    exhaustive_quintuples,
+    [0, I, xs, xs, ox],
+    [1, J, ys, ys, oy],
+    [2, K, zs, zs, oz],
+    [3, L, ws, ws, ow],
+    [4, M, vs, vs, ov]
+);
+exhaustive_tuple!(
+    6,
+    ExhaustiveSextuples,
+    exhaustive_sextuples,
+    [0, I, xs, xs, ox],
+    [1, J, ys, ys, oy],
+    [2, K, zs, zs, oz],
+    [3, L, ws, ws, ow],
+    [4, M, vs, vs, ov],
+    [5, N, us, us, ou]
+);
+exhaustive_tuple!(
+    7,
+    ExhaustiveSeptuples,
+    exhaustive_septuples,
+    [0, I, xs, xs, ox],
+    [1, J, ys, ys, oy],
+    [2, K, zs, zs, oz],
+    [3, L, ws, ws, ow],
+    [4, M, vs, vs, ov],
+    [5, N, us, us, ou],
+    [6, O, ts, ts, ot]
+);
+exhaustive_tuple!(
+    8,
+    ExhaustiveOctuples,
+    exhaustive_octuples,
+    [0, I, xs, xs, ox],
+    [1, J, ys, ys, oy],
+    [2, K, zs, zs, oz],
+    [3, L, ws, ws, ow],
+    [4, M, vs, vs, ov],
+    [5, N, us, us, ou],
+    [6, O, ts, ts, ot],
+    [7, P, ss, ss, os]
+);
 
 macro_rules! lex_tuple {
     (
@@ -709,63 +759,75 @@ macro_rules! lex_tuple {
 }
 
 lex_tuple!(LexPairs, lex_pairs, J, ys, y, ys_init,);
-lex_tuple!(LexTriples,
-           lex_triples,
-           K,
-           zs,
-           z,
-           zs_init,
-           [J, ys, y, ys_init, ys, y, ys_init]);
-lex_tuple!(LexQuadruples,
-           lex_quadruples,
-           L,
-           ws,
-           w,
-           ws_init,
-           [J, ys, y, ys_init, zs, z, zs_init],
-           [K, zs, z, zs_init, ys, y, ys_init]);
-lex_tuple!(LexQuintuples,
-           lex_quintuples,
-           M,
-           vs,
-           v,
-           vs_init,
-           [J, ys, y, ys_init, ws, w, ws_init],
-           [K, zs, z, zs_init, zs, z, zs_init],
-           [L, ws, w, ws_init, ys, y, ys_init]);
-lex_tuple!(LexSextuples,
-           lex_sextuples,
-           N,
-           us,
-           u,
-           us_init,
-           [J, ys, y, ys_init, vs, v, vs_init],
-           [K, zs, z, zs_init, ws, w, ws_init],
-           [L, ws, w, ws_init, zs, z, zs_init],
-           [M, vs, v, vs_init, ys, y, ys_init]);
-lex_tuple!(LexSeptuples,
-           lex_septuples,
-           O,
-           ts,
-           t,
-           ts_init,
-           [J, ys, y, ys_init, us, u, us_init],
-           [K, zs, z, zs_init, vs, v, vs_init],
-           [L, ws, w, ws_init, ws, w, ws_init],
-           [M, vs, v, vs_init, zs, z, zs_init],
-           [N, us, u, us_init, ys, y, ys_init]);
-lex_tuple!(LexOctuples,
-           lex_octuples,
-           P,
-           ss,
-           s,
-           ss_init,
-           [J, ys, y, ys_init, ts, t, ts_init],
-           [K, zs, z, zs_init, us, u, us_init],
-           [L, ws, w, ws_init, vs, v, vs_init],
-           [M, vs, v, vs_init, ws, w, ws_init],
-           [N, us, u, us_init, zs, z, zs_init],
-           [O, ts, t, ts_init, ys, y, ys_init]);
+lex_tuple!(
+    LexTriples,
+    lex_triples,
+    K,
+    zs,
+    z,
+    zs_init,
+    [J, ys, y, ys_init, ys, y, ys_init]
+);
+lex_tuple!(
+    LexQuadruples,
+    lex_quadruples,
+    L,
+    ws,
+    w,
+    ws_init,
+    [J, ys, y, ys_init, zs, z, zs_init],
+    [K, zs, z, zs_init, ys, y, ys_init]
+);
+lex_tuple!(
+    LexQuintuples,
+    lex_quintuples,
+    M,
+    vs,
+    v,
+    vs_init,
+    [J, ys, y, ys_init, ws, w, ws_init],
+    [K, zs, z, zs_init, zs, z, zs_init],
+    [L, ws, w, ws_init, ys, y, ys_init]
+);
+lex_tuple!(
+    LexSextuples,
+    lex_sextuples,
+    N,
+    us,
+    u,
+    us_init,
+    [J, ys, y, ys_init, vs, v, vs_init],
+    [K, zs, z, zs_init, ws, w, ws_init],
+    [L, ws, w, ws_init, zs, z, zs_init],
+    [M, vs, v, vs_init, ys, y, ys_init]
+);
+lex_tuple!(
+    LexSeptuples,
+    lex_septuples,
+    O,
+    ts,
+    t,
+    ts_init,
+    [J, ys, y, ys_init, us, u, us_init],
+    [K, zs, z, zs_init, vs, v, vs_init],
+    [L, ws, w, ws_init, ws, w, ws_init],
+    [M, vs, v, vs_init, zs, z, zs_init],
+    [N, us, u, us_init, ys, y, ys_init]
+);
+lex_tuple!(
+    LexOctuples,
+    lex_octuples,
+    P,
+    ss,
+    s,
+    ss_init,
+    [J, ys, y, ys_init, ts, t, ts_init],
+    [K, zs, z, zs_init, us, u, us_init],
+    [L, ws, w, ws_init, vs, v, vs_init],
+    [M, vs, v, vs_init, ws, w, ws_init],
+    [N, us, u, us_init, zs, z, zs_init],
+    [O, ts, t, ts_init, ys, y, ys_init]
+);
 
 macro_rules! random_tuple_from_single {
     (
@@ -795,62 +857,93 @@ macro_rules! random_tuple_from_single {
     }
 }
 
-random_tuple_from_single!((I::Item, I::Item),
-                          RandomPairsFromSingle,
-                          random_pairs_from_single,
-                          [x],
-                          [y]);
-random_tuple_from_single!((I::Item, I::Item, I::Item),
-                          RandomTriplesFromSingle,
-                          random_triples_from_single,
-                          [x],
-                          [y],
-                          [z]);
-random_tuple_from_single!((I::Item, I::Item, I::Item, I::Item),
-                          RandomQuadruplesFromSingle,
-                          random_quadruples_from_single,
-                          [x],
-                          [y],
-                          [z],
-                          [w]);
-random_tuple_from_single!((I::Item, I::Item, I::Item, I::Item, I::Item),
-                          RandomQuintuplesFromSingle,
-                          random_quintuples_from_single,
-                          [x],
-                          [y],
-                          [z],
-                          [w],
-                          [v]);
-random_tuple_from_single!((I::Item, I::Item, I::Item, I::Item, I::Item, I::Item),
-                          RandomSextuplesFromSingle,
-                          random_sextuples_from_single,
-                          [x],
-                          [y],
-                          [z],
-                          [w],
-                          [v],
-                          [u]);
-random_tuple_from_single!((I::Item, I::Item, I::Item, I::Item, I::Item, I::Item, I::Item),
-                          RandomSeptuplesFromSingle,
-                          random_septuples_from_single,
-                          [x],
-                          [y],
-                          [z],
-                          [w],
-                          [v],
-                          [u],
-                          [t]);
-random_tuple_from_single!((I::Item, I::Item, I::Item, I::Item, I::Item, I::Item, I::Item, I::Item),
-                          RandomOctuplesFromSingle,
-                          random_octuples_from_single,
-                          [x],
-                          [y],
-                          [z],
-                          [w],
-                          [v],
-                          [u],
-                          [t],
-                          [s]);
+random_tuple_from_single!(
+    (I::Item, I::Item),
+    RandomPairsFromSingle,
+    random_pairs_from_single,
+    [x],
+    [y]
+);
+random_tuple_from_single!(
+    (I::Item, I::Item, I::Item),
+    RandomTriplesFromSingle,
+    random_triples_from_single,
+    [x],
+    [y],
+    [z]
+);
+random_tuple_from_single!(
+    (I::Item, I::Item, I::Item, I::Item),
+    RandomQuadruplesFromSingle,
+    random_quadruples_from_single,
+    [x],
+    [y],
+    [z],
+    [w]
+);
+random_tuple_from_single!(
+    (I::Item, I::Item, I::Item, I::Item, I::Item),
+    RandomQuintuplesFromSingle,
+    random_quintuples_from_single,
+    [x],
+    [y],
+    [z],
+    [w],
+    [v]
+);
+random_tuple_from_single!(
+    (I::Item, I::Item, I::Item, I::Item, I::Item, I::Item),
+    RandomSextuplesFromSingle,
+    random_sextuples_from_single,
+    [x],
+    [y],
+    [z],
+    [w],
+    [v],
+    [u]
+);
+random_tuple_from_single!(
+    (
+        I::Item,
+        I::Item,
+        I::Item,
+        I::Item,
+        I::Item,
+        I::Item,
+        I::Item,
+    ),
+    RandomSeptuplesFromSingle,
+    random_septuples_from_single,
+    [x],
+    [y],
+    [z],
+    [w],
+    [v],
+    [u],
+    [t]
+);
+random_tuple_from_single!(
+    (
+        I::Item,
+        I::Item,
+        I::Item,
+        I::Item,
+        I::Item,
+        I::Item,
+        I::Item,
+        I::Item,
+    ),
+    RandomOctuplesFromSingle,
+    random_octuples_from_single,
+    [x],
+    [y],
+    [z],
+    [w],
+    [v],
+    [u],
+    [t],
+    [s]
+);
 
 macro_rules! random_tuple {
     (
@@ -890,52 +983,66 @@ macro_rules! random_tuple {
     }
 }
 
-random_tuple!(RandomPairs,
-              random_pairs,
-              [I, xs_gen, xs, x, "xs"],
-              [J, ys_gen, ys, y, "ys"]);
-random_tuple!(RandomTriples,
-              random_triples,
-              [I, xs_gen, xs, x, "xs"],
-              [J, ys_gen, ys, y, "ys"],
-              [K, zs_gen, zs, z, "zs"]);
-random_tuple!(RandomQuadruples,
-              random_quadruples,
-              [I, xs_gen, xs, x, "xs"],
-              [J, ys_gen, ys, y, "ys"],
-              [K, zs_gen, zs, z, "zs"],
-              [L, ws_gen, ws, w, "ws"]);
-random_tuple!(RandomQuintuples,
-              random_quintuples,
-              [I, xs_gen, xs, x, "xs"],
-              [J, ys_gen, ys, y, "ys"],
-              [K, zs_gen, zs, z, "zs"],
-              [L, ws_gen, ws, w, "ws"],
-              [M, vs_gen, vs, v, "vs"]);
-random_tuple!(RandomSextuples,
-              random_sextuples,
-              [I, xs_gen, xs, x, "xs"],
-              [J, ys_gen, ys, y, "ys"],
-              [K, zs_gen, zs, z, "zs"],
-              [L, ws_gen, ws, w, "ws"],
-              [M, vs_gen, vs, v, "vs"],
-              [N, us_gen, us, u, "us"]);
-random_tuple!(RandomSeptuples,
-              random_septuples,
-              [I, xs_gen, xs, x, "xs"],
-              [J, ys_gen, ys, y, "ys"],
-              [K, zs_gen, zs, z, "zs"],
-              [L, ws_gen, ws, w, "ws"],
-              [M, vs_gen, vs, v, "vs"],
-              [N, us_gen, us, u, "us"],
-              [O, ts_gen, ts, t, "ts"]);
-random_tuple!(RandomOctuples,
-              random_octuples,
-              [I, xs_gen, xs, x, "xs"],
-              [J, ys_gen, ys, y, "ys"],
-              [K, zs_gen, zs, z, "zs"],
-              [L, ws_gen, ws, w, "ws"],
-              [M, vs_gen, vs, v, "vs"],
-              [N, us_gen, us, u, "us"],
-              [O, ts_gen, ts, t, "ts"],
-              [P, ss_gen, ss, s, "ss"]);
+random_tuple!(
+    RandomPairs,
+    random_pairs,
+    [I, xs_gen, xs, x, "xs"],
+    [J, ys_gen, ys, y, "ys"]
+);
+random_tuple!(
+    RandomTriples,
+    random_triples,
+    [I, xs_gen, xs, x, "xs"],
+    [J, ys_gen, ys, y, "ys"],
+    [K, zs_gen, zs, z, "zs"]
+);
+random_tuple!(
+    RandomQuadruples,
+    random_quadruples,
+    [I, xs_gen, xs, x, "xs"],
+    [J, ys_gen, ys, y, "ys"],
+    [K, zs_gen, zs, z, "zs"],
+    [L, ws_gen, ws, w, "ws"]
+);
+random_tuple!(
+    RandomQuintuples,
+    random_quintuples,
+    [I, xs_gen, xs, x, "xs"],
+    [J, ys_gen, ys, y, "ys"],
+    [K, zs_gen, zs, z, "zs"],
+    [L, ws_gen, ws, w, "ws"],
+    [M, vs_gen, vs, v, "vs"]
+);
+random_tuple!(
+    RandomSextuples,
+    random_sextuples,
+    [I, xs_gen, xs, x, "xs"],
+    [J, ys_gen, ys, y, "ys"],
+    [K, zs_gen, zs, z, "zs"],
+    [L, ws_gen, ws, w, "ws"],
+    [M, vs_gen, vs, v, "vs"],
+    [N, us_gen, us, u, "us"]
+);
+random_tuple!(
+    RandomSeptuples,
+    random_septuples,
+    [I, xs_gen, xs, x, "xs"],
+    [J, ys_gen, ys, y, "ys"],
+    [K, zs_gen, zs, z, "zs"],
+    [L, ws_gen, ws, w, "ws"],
+    [M, vs_gen, vs, v, "vs"],
+    [N, us_gen, us, u, "us"],
+    [O, ts_gen, ts, t, "ts"]
+);
+random_tuple!(
+    RandomOctuples,
+    random_octuples,
+    [I, xs_gen, xs, x, "xs"],
+    [J, ys_gen, ys, y, "ys"],
+    [K, zs_gen, zs, z, "zs"],
+    [L, ws_gen, ws, w, "ws"],
+    [M, vs_gen, vs, v, "vs"],
+    [N, us_gen, us, u, "us"],
+    [O, ts_gen, ts, t, "ts"],
+    [P, ss_gen, ss, s, "ss"]
+);

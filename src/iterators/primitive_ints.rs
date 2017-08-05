@@ -22,15 +22,13 @@ pub fn exhaustive_natural_i<T: PrimSignedInt>() -> RangeIncreasing<T> {
     range_increasing_x(T::from_u8(0), T::max_value())
 }
 
-pub fn exhaustive_nonzero_i<T: PrimSignedInt>
-    ()
+pub fn exhaustive_nonzero_i<T: PrimSignedInt>()
     -> Interleave<RangeIncreasing<T>, RangeDecreasing<T>>
 {
     exhaustive_positive_x().interleave(exhaustive_negative_i())
 }
 
-pub fn exhaustive_i<T: PrimSignedInt>
-    ()
+pub fn exhaustive_i<T: PrimSignedInt>()
     -> Chain<Once<T>, Interleave<RangeIncreasing<T>, RangeDecreasing<T>>>
 {
     once(T::from_u8(0)).chain(exhaustive_nonzero_i())
@@ -86,13 +84,11 @@ pub fn exhaustive_range_i<T: PrimSignedInt>(a: T, b: T) -> ExhaustiveRangeI<T> {
     } else if b <= zero {
         ExhaustiveRangeI::AllNonPositive(range_decreasing_x(a, b))
     } else {
-        ExhaustiveRangeI::SomeOfEachSign(
-                once(zero).chain(
-                        range_increasing_x(T::from_u8(1), b).interleave(
-                                range_decreasing_x(a, T::from_i8(-1))
-                        )
-                )
-        )
+        ExhaustiveRangeI::SomeOfEachSign(once(zero).chain(
+            range_increasing_x(T::from_u8(1), b).interleave(
+                range_decreasing_x(a, T::from_i8(-1)),
+            ),
+        ))
     }
 }
 
@@ -108,10 +104,10 @@ impl<T: PrimInt> Iterator for RandomRange<T> {
         match *self {
             RandomRange::Some(shift, ref mut rng, ref range) => {
                 Some(if shift {
-                         range.ind_sample(rng) + T::from_u8(1)
-                     } else {
-                         range.ind_sample(rng)
-                     })
+                    range.ind_sample(rng) + T::from_u8(1)
+                } else {
+                    range.ind_sample(rng)
+                })
             }
             RandomRange::All(ref mut xs) => xs.next(),
         }
@@ -210,13 +206,17 @@ pub fn random_range<T: PrimInt>(seed: &[u32], a: T, b: T) -> RandomRange<T> {
     if a == T::min_value() && b == T::max_value() {
         RandomRange::All(random_x(seed))
     } else if b == T::max_value() {
-        RandomRange::Some(true,
-                          Box::new(IsaacRng::from_seed(seed)),
-                          Range::new(a - T::from_u8(1), b))
+        RandomRange::Some(
+            true,
+            Box::new(IsaacRng::from_seed(seed)),
+            Range::new(a - T::from_u8(1), b),
+        )
     } else {
-        RandomRange::Some(false,
-                          Box::new(IsaacRng::from_seed(seed)),
-                          Range::new(a, b + T::from_u8(1)))
+        RandomRange::Some(
+            false,
+            Box::new(IsaacRng::from_seed(seed)),
+            Range::new(a, b + T::from_u8(1)),
+        )
     }
 }
 

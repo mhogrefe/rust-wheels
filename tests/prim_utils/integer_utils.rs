@@ -74,56 +74,66 @@ macro_rules! prim_fail {
     }
 }
 
-prim_fail!(u8,
-           ceiling_log_2_u8_fail,
-           digits_u8_fail_1,
-           digits_u8_fail_2,
-           digits_padded_u8_fail_1,
-           digits_padded_u8_fail_2,
-           big_endian_digits_u8_fail_1,
-           big_endian_digits_u8_fail_2,
-           big_endian_digits_padded_u8_fail_1,
-           big_endian_digits_padded_u8_fail_2);
-prim_fail!(u16,
-           ceiling_log_2_u16_fail,
-           digits_u16_fail_1,
-           digits_u16_fail_2,
-           digits_padded_u16_fail_1,
-           digits_padded_u16_fail_2,
-           big_endian_digits_u16_fail_1,
-           big_endian_digits_u16_fail_2,
-           big_endian_digits_padded_u16_fail_1,
-           big_endian_digits_padded_u16_fail_2);
-prim_fail!(u32,
-           ceiling_log_2_u32_fail,
-           digits_u32_fail_1,
-           digits_u32_fail_2,
-           digits_padded_u32_fail_1,
-           digits_padded_u32_fail_2,
-           big_endian_digits_u32_fail_1,
-           big_endian_digits_u32_fail_2,
-           big_endian_digits_padded_u32_fail_1,
-           big_endian_digits_padded_u32_fail_2);
-prim_fail!(u64,
-           ceiling_log_2_u64_fail,
-           digits_u64_fail_1,
-           digits_u64_fail_2,
-           digits_padded_u64_fail_1,
-           digits_padded_u64_fail_2,
-           big_endian_digits_u64_fail_1,
-           big_endian_digits_u64_fail_2,
-           big_endian_digits_padded_u64_fail_1,
-           big_endian_digits_padded_u64_fail_2);
-prim_fail!(usize,
-           ceiling_log_2_usize_fail,
-           digits_usize_fail_1,
-           digits_usize_fail_2,
-           digits_padded_usize_fail_1,
-           digits_padded_usize_fail_2,
-           big_endian_digits_usize_fail_1,
-           big_endian_digits_usize_fail_2,
-           big_endian_digits_padded_usize_fail_1,
-           big_endian_digits_padded_usize_fail_2);
+prim_fail!(
+    u8,
+    ceiling_log_2_u8_fail,
+    digits_u8_fail_1,
+    digits_u8_fail_2,
+    digits_padded_u8_fail_1,
+    digits_padded_u8_fail_2,
+    big_endian_digits_u8_fail_1,
+    big_endian_digits_u8_fail_2,
+    big_endian_digits_padded_u8_fail_1,
+    big_endian_digits_padded_u8_fail_2
+);
+prim_fail!(
+    u16,
+    ceiling_log_2_u16_fail,
+    digits_u16_fail_1,
+    digits_u16_fail_2,
+    digits_padded_u16_fail_1,
+    digits_padded_u16_fail_2,
+    big_endian_digits_u16_fail_1,
+    big_endian_digits_u16_fail_2,
+    big_endian_digits_padded_u16_fail_1,
+    big_endian_digits_padded_u16_fail_2
+);
+prim_fail!(
+    u32,
+    ceiling_log_2_u32_fail,
+    digits_u32_fail_1,
+    digits_u32_fail_2,
+    digits_padded_u32_fail_1,
+    digits_padded_u32_fail_2,
+    big_endian_digits_u32_fail_1,
+    big_endian_digits_u32_fail_2,
+    big_endian_digits_padded_u32_fail_1,
+    big_endian_digits_padded_u32_fail_2
+);
+prim_fail!(
+    u64,
+    ceiling_log_2_u64_fail,
+    digits_u64_fail_1,
+    digits_u64_fail_2,
+    digits_padded_u64_fail_1,
+    digits_padded_u64_fail_2,
+    big_endian_digits_u64_fail_1,
+    big_endian_digits_u64_fail_2,
+    big_endian_digits_padded_u64_fail_1,
+    big_endian_digits_padded_u64_fail_2
+);
+prim_fail!(
+    usize,
+    ceiling_log_2_usize_fail,
+    digits_usize_fail_1,
+    digits_usize_fail_2,
+    digits_padded_usize_fail_1,
+    digits_padded_usize_fail_2,
+    big_endian_digits_usize_fail_1,
+    big_endian_digits_usize_fail_2,
+    big_endian_digits_padded_usize_fail_1,
+    big_endian_digits_padded_usize_fail_2
+);
 
 fn ceiling_log_2_u_helper<T: PrimUnsignedInt>() {
     let test = |n, out| assert_eq!(ceiling_log_2_u(n), out);
@@ -185,25 +195,134 @@ fn bits_u_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
     test(T::from_u8(0), vec![]);
     test(T::from_u8(1), vec![true]);
     test(T::from_u8(6), vec![false, true, true]);
-    test(T::from_u8(105),
-         vec![true, false, false, true, false, true, true]);
+    test(
+        T::from_u8(105),
+        vec![true, false, false, true, false, true, true],
+    );
     test(T::max_value(), max_bits);
 }
 
 #[test]
 fn test_bits_u() {
     bits_u_helper::<u8>(vec![true, true, true, true, true, true, true, true]);
-    bits_u_helper::<u16>(vec![true, true, true, true, true, true, true, true, true, true, true,
-                              true, true, true, true, true]);
-    bits_u_helper::<u32>(vec![true, true, true, true, true, true, true, true, true, true, true,
-                              true, true, true, true, true, true, true, true, true, true, true,
-                              true, true, true, true, true, true, true, true, true, true]);
-    bits_u_helper::<u64>(vec![true, true, true, true, true, true, true, true, true, true, true,
-                              true, true, true, true, true, true, true, true, true, true, true,
-                              true, true, true, true, true, true, true, true, true, true, true,
-                              true, true, true, true, true, true, true, true, true, true, true,
-                              true, true, true, true, true, true, true, true, true, true, true,
-                              true, true, true, true, true, true, true, true, true]);
+    bits_u_helper::<u16>(vec![
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+    ]);
+    bits_u_helper::<u32>(vec![
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+    ]);
+    bits_u_helper::<u64>(vec![
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+    ]);
 }
 
 #[test]
@@ -223,89 +342,402 @@ fn bits_integer_fail() {
 
 fn bits_padded_u_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
     let test = |size, n, out| assert_eq!(bits_padded_u(size, n), out);
-    test(8,
-         T::from_u8(0),
-         vec![false, false, false, false, false, false, false, false]);
-    test(8,
-         T::from_u8(1),
-         vec![true, false, false, false, false, false, false, false]);
-    test(8,
-         T::from_u8(6),
-         vec![false, true, true, false, false, false, false, false]);
-    test(8,
-         T::from_u8(105),
-         vec![true, false, false, true, false, true, true, false]);
+    test(
+        8,
+        T::from_u8(0),
+        vec![false, false, false, false, false, false, false, false],
+    );
+    test(
+        8,
+        T::from_u8(1),
+        vec![true, false, false, false, false, false, false, false],
+    );
+    test(
+        8,
+        T::from_u8(6),
+        vec![false, true, true, false, false, false, false, false],
+    );
+    test(
+        8,
+        T::from_u8(105),
+        vec![true, false, false, true, false, true, true, false],
+    );
     test(2, T::from_u8(104), vec![false, false]);
     test(2, T::from_u8(105), vec![true, false]);
     test(1, T::from_u8(104), vec![false]);
     test(1, T::from_u8(105), vec![true]);
     test(0, T::from_u8(104), vec![]);
-    test(100,
-         T::from_u8(105),
-         vec![true, false, false, true, false, true, true, false, false, false, false, false,
-              false, false, false, false, false, false, false, false, false, false, false, false,
-              false, false, false, false, false, false, false, false, false, false, false, false,
-              false, false, false, false, false, false, false, false, false, false, false, false,
-              false, false, false, false, false, false, false, false, false, false, false, false,
-              false, false, false, false, false, false, false, false, false, false, false, false,
-              false, false, false, false, false, false, false, false, false, false, false, false,
-              false, false, false, false, false, false, false, false, false, false, false, false,
-              false, false, false, false]);
+    test(
+        100,
+        T::from_u8(105),
+        vec![
+            true,
+            false,
+            false,
+            true,
+            false,
+            true,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+        ],
+    );
     test(T::bit_count() as usize, T::max_value(), max_bits);
 }
 
 #[test]
 fn test_bits_padded_u() {
     bits_padded_u_helper::<u8>(vec![true, true, true, true, true, true, true, true]);
-    bits_padded_u_helper::<u16>(vec![true, true, true, true, true, true, true, true, true, true,
-                                     true, true, true, true, true, true]);
-    bits_padded_u_helper::<u32>(vec![true, true, true, true, true, true, true, true, true, true,
-                                     true, true, true, true, true, true, true, true, true, true,
-                                     true, true, true, true, true, true, true, true, true, true,
-                                     true, true]);
-    bits_padded_u_helper::<u64>(vec![true, true, true, true, true, true, true, true, true, true,
-                                     true, true, true, true, true, true, true, true, true, true,
-                                     true, true, true, true, true, true, true, true, true, true,
-                                     true, true, true, true, true, true, true, true, true, true,
-                                     true, true, true, true, true, true, true, true, true, true,
-                                     true, true, true, true, true, true, true, true, true, true,
-                                     true, true, true, true]);
+    bits_padded_u_helper::<u16>(vec![
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+    ]);
+    bits_padded_u_helper::<u32>(vec![
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+    ]);
+    bits_padded_u_helper::<u64>(vec![
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+    ]);
 }
 
 #[test]
 fn test_bits_padded_integer() {
     let test = |size, n, out| {
-        assert_eq!(bits_padded_integer(size, &Integer::from_str(n).unwrap()),
-                   out)
+        assert_eq!(
+            bits_padded_integer(size, &Integer::from_str(n).unwrap()),
+            out
+        )
     };
-    test(8,
-         "0",
-         vec![false, false, false, false, false, false, false, false]);
-    test(8,
-         "1",
-         vec![true, false, false, false, false, false, false, false]);
-    test(8,
-         "6",
-         vec![false, true, true, false, false, false, false, false]);
-    test(8,
-         "105",
-         vec![true, false, false, true, false, true, true, false]);
+    test(
+        8,
+        "0",
+        vec![false, false, false, false, false, false, false, false],
+    );
+    test(
+        8,
+        "1",
+        vec![true, false, false, false, false, false, false, false],
+    );
+    test(
+        8,
+        "6",
+        vec![false, true, true, false, false, false, false, false],
+    );
+    test(
+        8,
+        "105",
+        vec![true, false, false, true, false, true, true, false],
+    );
     test(2, "104", vec![false, false]);
     test(2, "105", vec![true, false]);
     test(1, "104", vec![false]);
     test(1, "105", vec![true]);
     test(0, "104", vec![]);
-    test(100,
-         "105",
-         vec![true, false, false, true, false, true, true, false, false, false, false, false,
-              false, false, false, false, false, false, false, false, false, false, false, false,
-              false, false, false, false, false, false, false, false, false, false, false, false,
-              false, false, false, false, false, false, false, false, false, false, false, false,
-              false, false, false, false, false, false, false, false, false, false, false, false,
-              false, false, false, false, false, false, false, false, false, false, false, false,
-              false, false, false, false, false, false, false, false, false, false, false, false,
-              false, false, false, false, false, false, false, false, false, false, false, false,
-              false, false, false, false]);
+    test(
+        100,
+        "105",
+        vec![
+            true,
+            false,
+            false,
+            true,
+            false,
+            true,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+        ],
+    );
 }
 
 #[test]
@@ -319,28 +751,134 @@ fn big_endian_bits_u_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
     test(T::from_u8(0), vec![]);
     test(T::from_u8(1), vec![true]);
     test(T::from_u8(6), vec![true, true, false]);
-    test(T::from_u8(105),
-         vec![true, true, false, true, false, false, true]);
+    test(
+        T::from_u8(105),
+        vec![true, true, false, true, false, false, true],
+    );
     test(T::max_value(), max_bits);
 }
 
 #[test]
 fn big_endian_test_bits_u() {
     big_endian_bits_u_helper::<u8>(vec![true, true, true, true, true, true, true, true]);
-    big_endian_bits_u_helper::<u16>(vec![true, true, true, true, true, true, true, true, true,
-                                         true, true, true, true, true, true, true]);
-    big_endian_bits_u_helper::<u32>(vec![true, true, true, true, true, true, true, true, true,
-                                         true, true, true, true, true, true, true, true, true,
-                                         true, true, true, true, true, true, true, true, true,
-                                         true, true, true, true, true]);
-    big_endian_bits_u_helper::<u64>(vec![true, true, true, true, true, true, true, true, true,
-                                         true, true, true, true, true, true, true, true, true,
-                                         true, true, true, true, true, true, true, true, true,
-                                         true, true, true, true, true, true, true, true, true,
-                                         true, true, true, true, true, true, true, true, true,
-                                         true, true, true, true, true, true, true, true, true,
-                                         true, true, true, true, true, true, true, true, true,
-                                         true]);
+    big_endian_bits_u_helper::<u16>(vec![
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+    ]);
+    big_endian_bits_u_helper::<u32>(vec![
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+    ]);
+    big_endian_bits_u_helper::<u64>(vec![
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+    ]);
 }
 
 #[test]
@@ -354,54 +892,261 @@ fn big_endian_bits_integer_helper() {
 
 fn big_endian_bits_padded_u_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
     let test = |size, n, out| assert_eq!(big_endian_bits_padded_u(size, n), out);
-    test(8,
-         T::from_u8(0),
-         vec![false, false, false, false, false, false, false, false]);
-    test(8,
-         T::from_u8(1),
-         vec![false, false, false, false, false, false, false, true]);
-    test(8,
-         T::from_u8(6),
-         vec![false, false, false, false, false, true, true, false]);
-    test(8,
-         T::from_u8(105),
-         vec![false, true, true, false, true, false, false, true]);
+    test(
+        8,
+        T::from_u8(0),
+        vec![false, false, false, false, false, false, false, false],
+    );
+    test(
+        8,
+        T::from_u8(1),
+        vec![false, false, false, false, false, false, false, true],
+    );
+    test(
+        8,
+        T::from_u8(6),
+        vec![false, false, false, false, false, true, true, false],
+    );
+    test(
+        8,
+        T::from_u8(105),
+        vec![false, true, true, false, true, false, false, true],
+    );
     test(2, T::from_u8(104), vec![false, false]);
     test(2, T::from_u8(105), vec![false, true]);
     test(1, T::from_u8(104), vec![false]);
     test(1, T::from_u8(105), vec![true]);
     test(0, T::from_u8(104), vec![]);
-    test(100,
-         T::from_u8(105),
-         vec![false, false, false, false, false, false, false, false, false, false, false, false,
-              false, false, false, false, false, false, false, false, false, false, false, false,
-              false, false, false, false, false, false, false, false, false, false, false, false,
-              false, false, false, false, false, false, false, false, false, false, false, false,
-              false, false, false, false, false, false, false, false, false, false, false, false,
-              false, false, false, false, false, false, false, false, false, false, false, false,
-              false, false, false, false, false, false, false, false, false, false, false, false,
-              false, false, false, false, false, false, false, false, false, true, true, false,
-              true, false, false, true]);
+    test(
+        100,
+        T::from_u8(105),
+        vec![
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            true,
+            true,
+            false,
+            true,
+            false,
+            false,
+            true,
+        ],
+    );
     test(T::bit_count() as usize, T::max_value(), max_bits);
 }
 
 #[test]
 fn test_big_endian_bits_padded_u() {
     big_endian_bits_padded_u_helper::<u8>(vec![true, true, true, true, true, true, true, true]);
-    big_endian_bits_padded_u_helper::<u16>(vec![true, true, true, true, true, true, true, true,
-                                                true, true, true, true, true, true, true, true]);
-    big_endian_bits_padded_u_helper::<u32>(vec![true, true, true, true, true, true, true, true,
-                                                true, true, true, true, true, true, true, true,
-                                                true, true, true, true, true, true, true, true,
-                                                true, true, true, true, true, true, true, true]);
-    big_endian_bits_padded_u_helper::<u64>(vec![true, true, true, true, true, true, true, true,
-                                                true, true, true, true, true, true, true, true,
-                                                true, true, true, true, true, true, true, true,
-                                                true, true, true, true, true, true, true, true,
-                                                true, true, true, true, true, true, true, true,
-                                                true, true, true, true, true, true, true, true,
-                                                true, true, true, true, true, true, true, true,
-                                                true, true, true, true, true, true, true, true]);
+    big_endian_bits_padded_u_helper::<u16>(vec![
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+    ]);
+    big_endian_bits_padded_u_helper::<u32>(vec![
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+    ]);
+    big_endian_bits_padded_u_helper::<u64>(vec![
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+    ]);
 }
 
 #[test]
@@ -411,47 +1156,145 @@ fn big_endian_bits_integer_fail() {
 }
 
 fn big_endian_bits_padded_integer_helper(size: usize, n: &str, out: &[bool]) {
-    assert_eq!(big_endian_bits_padded_integer(size, &Integer::from_str(n).unwrap()),
-               out);
+    assert_eq!(
+        big_endian_bits_padded_integer(size, &Integer::from_str(n).unwrap()),
+        out
+    );
 }
 
 #[test]
 fn test_big_endian_bits_padded_integer() {
-    big_endian_bits_padded_integer_helper(8,
-                                          "0",
-                                          &[false, false, false, false, false, false, false,
-                                            false]);
-    big_endian_bits_padded_integer_helper(8,
-                                          "1",
-                                          &[false, false, false, false, false, false, false, true]);
-    big_endian_bits_padded_integer_helper(8,
-                                          "6",
-                                          &[false, false, false, false, false, true, true, false]);
-    big_endian_bits_padded_integer_helper(8,
-                                          "105",
-                                          &[false, true, true, false, true, false, false, true]);
+    big_endian_bits_padded_integer_helper(
+        8,
+        "0",
+        &[false, false, false, false, false, false, false, false],
+    );
+    big_endian_bits_padded_integer_helper(
+        8,
+        "1",
+        &[false, false, false, false, false, false, false, true],
+    );
+    big_endian_bits_padded_integer_helper(
+        8,
+        "6",
+        &[false, false, false, false, false, true, true, false],
+    );
+    big_endian_bits_padded_integer_helper(
+        8,
+        "105",
+        &[false, true, true, false, true, false, false, true],
+    );
     big_endian_bits_padded_integer_helper(2, "104", &[false, false]);
     big_endian_bits_padded_integer_helper(2, "105", &[false, true]);
     big_endian_bits_padded_integer_helper(1, "104", &[false]);
     big_endian_bits_padded_integer_helper(1, "105", &[true]);
     big_endian_bits_padded_integer_helper(0, "104", &[]);
-    big_endian_bits_padded_integer_helper(100,
-                                          "105",
-                                          &[false, false, false, false, false, false, false,
-                                            false, false, false, false, false, false, false,
-                                            false, false, false, false, false, false, false,
-                                            false, false, false, false, false, false, false,
-                                            false, false, false, false, false, false, false,
-                                            false, false, false, false, false, false, false,
-                                            false, false, false, false, false, false, false,
-                                            false, false, false, false, false, false, false,
-                                            false, false, false, false, false, false, false,
-                                            false, false, false, false, false, false, false,
-                                            false, false, false, false, false, false, false,
-                                            false, false, false, false, false, false, false,
-                                            false, false, false, false, false, false, false,
-                                            false, false, true, true, false, true, false, false,
-                                            true]);
+    big_endian_bits_padded_integer_helper(
+        100,
+        "105",
+        &[
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            true,
+            true,
+            false,
+            true,
+            false,
+            false,
+            true,
+        ],
+    );
 }
 
 #[test]
@@ -539,10 +1382,16 @@ fn test_digits_u() {
 #[test]
 fn test_digits_integer() {
     let test = |radix, n, out| {
-        assert_eq!(format!("{:?}",
-                           digits_integer(&Integer::from_str(radix).unwrap(),
-                                          &Integer::from_str(n).unwrap())),
-                   out)
+        assert_eq!(
+            format!(
+                "{:?}",
+                digits_integer(
+                    &Integer::from_str(radix).unwrap(),
+                    &Integer::from_str(n).unwrap(),
+                )
+            ),
+            out
+        )
     };
     test("2", "0", "[]");
     test("3", "0", "[]");
@@ -571,8 +1420,10 @@ fn test_digits_integer() {
 }
 
 fn digits_integer_fail_helper(radix: &str, n: &str) {
-    digits_integer(&Integer::from_str(radix).unwrap(),
-                   &Integer::from_str(n).unwrap());
+    digits_integer(
+        &Integer::from_str(radix).unwrap(),
+        &Integer::from_str(n).unwrap(),
+    );
 }
 
 #[test]
@@ -646,22 +1497,30 @@ fn digits_padded_u_helper<T: PrimUnsignedInt>(max_digit: &str) {
     test(8, T::from_u8(57), T::from_u8(1), "[1, 0, 0, 0, 0, 0, 0, 0]");
     test(8, T::from_u8(2), T::from_u8(10), "[0, 1, 0, 1, 0, 0, 0, 0]");
     test(8, T::from_u8(3), T::from_u8(10), "[1, 0, 1, 0, 0, 0, 0, 0]");
-    test(8,
-         T::from_u8(57),
-         T::from_u8(10),
-         "[10, 0, 0, 0, 0, 0, 0, 0]");
-    test(8,
-         T::from_u8(2),
-         T::from_u8(107),
-         "[1, 1, 0, 1, 0, 1, 1, 0]");
-    test(8,
-         T::from_u8(3),
-         T::from_u8(107),
-         "[2, 2, 2, 0, 1, 0, 0, 0]");
-    test(8,
-         T::from_u8(57),
-         T::from_u8(107),
-         "[50, 1, 0, 0, 0, 0, 0, 0]");
+    test(
+        8,
+        T::from_u8(57),
+        T::from_u8(10),
+        "[10, 0, 0, 0, 0, 0, 0, 0]",
+    );
+    test(
+        8,
+        T::from_u8(2),
+        T::from_u8(107),
+        "[1, 1, 0, 1, 0, 1, 1, 0]",
+    );
+    test(
+        8,
+        T::from_u8(3),
+        T::from_u8(107),
+        "[2, 2, 2, 0, 1, 0, 0, 0]",
+    );
+    test(
+        8,
+        T::from_u8(57),
+        T::from_u8(107),
+        "[50, 1, 0, 0, 0, 0, 0, 0]",
+    );
     test(1, T::max_value(), T::from_u8(0), "[0]");
     test(1, T::max_value(), T::from_u8(107), "[107]");
     test(1, T::max_value(), T::max_value() - T::from_u8(1), max_digit);
@@ -679,11 +1538,17 @@ fn test_digits_padded_u() {
 #[test]
 fn test_digits_padded_integer() {
     let test = |size, radix, n, out| {
-        assert_eq!(format!("{:?}",
-                           digits_padded_integer(size,
-                                                 &Integer::from_str(radix).unwrap(),
-                                                 &Integer::from_str(n).unwrap())),
-                   out)
+        assert_eq!(
+            format!(
+                "{:?}",
+                digits_padded_integer(
+                    size,
+                    &Integer::from_str(radix).unwrap(),
+                    &Integer::from_str(n).unwrap(),
+                )
+            ),
+            out
+        )
     };
     test(0, "2", "0", "[]");
     test(0, "3", "0", "[]");
@@ -736,9 +1601,11 @@ fn test_digits_padded_integer() {
 }
 
 fn digits_padded_integer_fail_helper(size: usize, radix: &str, n: &str) {
-    digits_padded_integer(size,
-                          &Integer::from_str(radix).unwrap(),
-                          &Integer::from_str(n).unwrap());
+    digits_padded_integer(
+        size,
+        &Integer::from_str(radix).unwrap(),
+        &Integer::from_str(n).unwrap(),
+    );
 }
 
 #[test]
@@ -796,10 +1663,16 @@ fn test_big_endian_digits_u() {
 #[test]
 fn test_big_endian_digits_integer() {
     let test = |radix, n, out| {
-        assert_eq!(format!("{:?}",
-                           big_endian_digits_integer(&Integer::from_str(radix).unwrap(),
-                                                     &Integer::from_str(n).unwrap())),
-                   out)
+        assert_eq!(
+            format!(
+                "{:?}",
+                big_endian_digits_integer(
+                    &Integer::from_str(radix).unwrap(),
+                    &Integer::from_str(n).unwrap(),
+                )
+            ),
+            out
+        )
     };
     test("2", "0", "[]");
     test("3", "0", "[]");
@@ -829,8 +1702,10 @@ fn test_big_endian_digits_integer() {
 
 fn big_endian_digits_padded_u_helper<T: PrimUnsignedInt>(max_digit: &str) {
     let test = |size, radix, n, out| {
-        assert_eq!(format!("{:?}", big_endian_digits_padded_u(size, radix, n)),
-                   out)
+        assert_eq!(
+            format!("{:?}", big_endian_digits_padded_u(size, radix, n)),
+            out
+        )
     };
     test(0, T::from_u8(2), T::from_u8(0), "[]");
     test(0, T::from_u8(3), T::from_u8(0), "[]");
@@ -876,22 +1751,30 @@ fn big_endian_digits_padded_u_helper<T: PrimUnsignedInt>(max_digit: &str) {
     test(8, T::from_u8(57), T::from_u8(1), "[0, 0, 0, 0, 0, 0, 0, 1]");
     test(8, T::from_u8(2), T::from_u8(10), "[0, 0, 0, 0, 1, 0, 1, 0]");
     test(8, T::from_u8(3), T::from_u8(10), "[0, 0, 0, 0, 0, 1, 0, 1]");
-    test(8,
-         T::from_u8(57),
-         T::from_u8(10),
-         "[0, 0, 0, 0, 0, 0, 0, 10]");
-    test(8,
-         T::from_u8(2),
-         T::from_u8(107),
-         "[0, 1, 1, 0, 1, 0, 1, 1]");
-    test(8,
-         T::from_u8(3),
-         T::from_u8(107),
-         "[0, 0, 0, 1, 0, 2, 2, 2]");
-    test(8,
-         T::from_u8(57),
-         T::from_u8(107),
-         "[0, 0, 0, 0, 0, 0, 1, 50]");
+    test(
+        8,
+        T::from_u8(57),
+        T::from_u8(10),
+        "[0, 0, 0, 0, 0, 0, 0, 10]",
+    );
+    test(
+        8,
+        T::from_u8(2),
+        T::from_u8(107),
+        "[0, 1, 1, 0, 1, 0, 1, 1]",
+    );
+    test(
+        8,
+        T::from_u8(3),
+        T::from_u8(107),
+        "[0, 0, 0, 1, 0, 2, 2, 2]",
+    );
+    test(
+        8,
+        T::from_u8(57),
+        T::from_u8(107),
+        "[0, 0, 0, 0, 0, 0, 1, 50]",
+    );
     test(1, T::max_value(), T::from_u8(0), "[0]");
     test(1, T::max_value(), T::from_u8(107), "[107]");
     test(1, T::max_value(), T::max_value() - T::from_u8(1), max_digit);
@@ -909,11 +1792,17 @@ fn test_big_endian_digits_padded_u() {
 #[test]
 fn test_big_endian_digits_padded_integer() {
     let test = |size, radix, n, out| {
-        assert_eq!(format!("{:?}",
-                           big_endian_digits_padded_integer(size,
-                                                            &Integer::from_str(radix).unwrap(),
-                                                            &Integer::from_str(n).unwrap())),
-                   out)
+        assert_eq!(
+            format!(
+                "{:?}",
+                big_endian_digits_padded_integer(
+                    size,
+                    &Integer::from_str(radix).unwrap(),
+                    &Integer::from_str(n).unwrap(),
+                )
+            ),
+            out
+        )
     };
     test(0, "2", "0", "[]");
     test(0, "3", "0", "[]");
@@ -966,9 +1855,11 @@ fn test_big_endian_digits_padded_integer() {
 }
 
 fn big_endian_digits_padded_integer_fail_helper(size: usize, radix: &str, n: &str) {
-    big_endian_digits_padded_integer(size,
-                                     &Integer::from_str(radix).unwrap(),
-                                     &Integer::from_str(n).unwrap());
+    big_endian_digits_padded_integer(
+        size,
+        &Integer::from_str(radix).unwrap(),
+        &Integer::from_str(n).unwrap(),
+    );
 }
 
 #[test]
@@ -986,10 +1877,16 @@ fn big_endian_digits_padded_integer_fail_2() {
 #[test]
 fn test_from_digits() {
     let test = |radix, digits, out| {
-        assert_eq!(format!("{:?}",
-                           from_digits(&Integer::from_str(radix).unwrap(),
-                                       &parse_vec(digits).unwrap())),
-                   out)
+        assert_eq!(
+            format!(
+                "{:?}",
+                from_digits(
+                    &Integer::from_str(radix).unwrap(),
+                    &parse_vec(digits).unwrap(),
+                )
+            ),
+            out
+        )
     };
     test("2", "[]", "0");
     test("3", "[]", "0");
@@ -1018,8 +1915,10 @@ fn test_from_digits() {
 }
 
 fn from_digits_fail_helper(radix: &str, digits: &str) {
-    from_digits(&Integer::from_str(radix).unwrap(),
-                &parse_vec(digits).unwrap());
+    from_digits(
+        &Integer::from_str(radix).unwrap(),
+        &parse_vec(digits).unwrap(),
+    );
 }
 
 #[test]
@@ -1084,10 +1983,16 @@ fn from_digits_fail_9() {
 #[test]
 fn test_from_big_endian_digits() {
     let test = |radix, digits, out| {
-        assert_eq!(format!("{:?}",
-                           from_big_endian_digits(&Integer::from_str(radix).unwrap(),
-                                                  &parse_vec(digits).unwrap())),
-                   out)
+        assert_eq!(
+            format!(
+                "{:?}",
+                from_big_endian_digits(
+                    &Integer::from_str(radix).unwrap(),
+                    &parse_vec(digits).unwrap(),
+                )
+            ),
+            out
+        )
     };
     test("2", "[]", "0");
     test("3", "[]", "0");
@@ -1116,8 +2021,10 @@ fn test_from_big_endian_digits() {
 }
 
 fn from_big_endian_digits_fail_helper(radix: &str, digits: &str) {
-    from_big_endian_digits(&Integer::from_str(radix).unwrap(),
-                           &parse_vec(digits).unwrap());
+    from_big_endian_digits(
+        &Integer::from_str(radix).unwrap(),
+        &parse_vec(digits).unwrap(),
+    );
 }
 
 #[test]

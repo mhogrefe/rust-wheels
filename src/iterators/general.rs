@@ -119,7 +119,8 @@ pub fn random_from_vector<T>(seed: &[u32], xs: Vec<T>) -> RandomFromVector<T> {
 }
 
 pub struct CachedIterator<I: Iterator>
-    where I::Item: Clone
+where
+    I::Item: Clone,
 {
     xs: Peekable<I>,
     cache: Vec<I::Item>,
@@ -127,7 +128,8 @@ pub struct CachedIterator<I: Iterator>
 }
 
 impl<I: Iterator> Iterator for CachedIterator<I>
-    where I::Item: Clone
+where
+    I::Item: Clone,
 {
     type Item = I::Item;
 
@@ -150,7 +152,8 @@ impl<I: Iterator> Iterator for CachedIterator<I>
 }
 
 impl<I: Iterator> CachedIterator<I>
-    where I::Item: Clone
+where
+    I::Item: Clone,
 {
     pub fn get(&mut self, index: usize) -> Option<I::Item> {
         let old_len = self.cache.len();
@@ -165,10 +168,7 @@ impl<I: Iterator> CachedIterator<I>
                     return None;
                 }
             }
-            Some(self.cache
-                     .last()
-                     .unwrap()
-                     .clone())
+            Some(self.cache.last().unwrap().clone())
         }
     }
 
@@ -182,7 +182,8 @@ impl<I: Iterator> CachedIterator<I>
 }
 
 impl<I: Iterator> CachedIterator<I>
-    where I::Item: Clone
+where
+    I::Item: Clone,
 {
     pub fn new(xs: I) -> CachedIterator<I> {
         CachedIterator {

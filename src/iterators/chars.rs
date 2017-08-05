@@ -6,29 +6,33 @@ use rand::{IsaacRng, Rng, SeedableRng};
 use std::char;
 
 pub fn exhaustive_chars() -> MultiChain<RangeIncreasing<char>> {
-    MultiChain::new(vec![range_increasing_x('a', 'z'),
-                         range_increasing_x('A', 'Z'),
-                         range_increasing_x('0', '9'),
-                         range_increasing_x('!', '/'),
-                         range_increasing_x(':', '@'),
-                         range_increasing_x('[', '`'),
-                         range_increasing_x('{', '~'),
-                         range_increasing_x(' ', ' '),
-                         range_increasing_x('\0', '\u{1F}'),
-                         range_increasing_x('\u{7F}', char::MAX)])
+    MultiChain::new(vec![
+        range_increasing_x('a', 'z'),
+        range_increasing_x('A', 'Z'),
+        range_increasing_x('0', '9'),
+        range_increasing_x('!', '/'),
+        range_increasing_x(':', '@'),
+        range_increasing_x('[', '`'),
+        range_increasing_x('{', '~'),
+        range_increasing_x(' ', ' '),
+        range_increasing_x('\0', '\u{1F}'),
+        range_increasing_x('\u{7F}', char::MAX),
+    ])
 }
 
 pub fn exhaustive_ascii_chars() -> MultiChain<RangeIncreasing<char>> {
-    MultiChain::new(vec![range_increasing_x('a', 'z'),
-                         range_increasing_x('A', 'Z'),
-                         range_increasing_x('0', '9'),
-                         range_increasing_x('!', '/'),
-                         range_increasing_x(':', '@'),
-                         range_increasing_x('[', '`'),
-                         range_increasing_x('{', '~'),
-                         range_increasing_x(' ', ' '),
-                         range_increasing_x('\0', '\u{1F}'),
-                         range_increasing_x('\u{7F}', '\u{7F}')])
+    MultiChain::new(vec![
+        range_increasing_x('a', 'z'),
+        range_increasing_x('A', 'Z'),
+        range_increasing_x('0', '9'),
+        range_increasing_x('!', '/'),
+        range_increasing_x(':', '@'),
+        range_increasing_x('[', '`'),
+        range_increasing_x('{', '~'),
+        range_increasing_x(' ', ' '),
+        range_increasing_x('\0', '\u{1F}'),
+        range_increasing_x('\u{7F}', '\u{7F}'),
+    ])
 }
 
 pub fn exhaustive_range_up_char(a: char) -> RangeIncreasing<char> {

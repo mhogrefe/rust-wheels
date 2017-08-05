@@ -4,10 +4,12 @@ use prim_utils::traits::PrimUnsignedInt;
 
 pub fn demo_ceiling_log_2_u<T: PrimUnsignedInt>(limit: usize) {
     for i in exhaustive_positive_x::<T>().take(limit) {
-        println!("ceiling_log_2_{}({}) = {}",
-                 T::name(),
-                 i,
-                 ceiling_log_2_u(i));
+        println!(
+            "ceiling_log_2_{}({}) = {}",
+            T::name(),
+            i,
+            ceiling_log_2_u(i)
+        );
     }
 }
 

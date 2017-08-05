@@ -9,9 +9,13 @@ use std::str::FromStr;
 fn test_range_increasing_natural() {
     let eo = get_expected_test_outputs();
     let test = |number, a, b| {
-        eo.match_vec(&format!("exhaustive_range_increasing_natural_{}", number),
-                     &mut range_increasing_natural(Natural::from_str(a).unwrap(),
-                                                   Natural::from_str(b).unwrap()))
+        eo.match_vec(
+            &format!("exhaustive_range_increasing_natural_{}", number),
+            &mut range_increasing_natural(
+                Natural::from_str(a).unwrap(),
+                Natural::from_str(b).unwrap(),
+            ),
+        )
     };
     test("i", "0", "0");
     test("ii", "0", "10");
@@ -33,9 +37,13 @@ fn range_increasing_natural_fail() {
 fn test_range_decreasing_natural() {
     let eo = get_expected_test_outputs();
     let test = |number, a, b| {
-        eo.match_vec(&format!("exhaustive_range_decreasing_natural_{}", number),
-                     &mut range_decreasing_natural(Natural::from_str(a).unwrap(),
-                                                   Natural::from_str(b).unwrap()))
+        eo.match_vec(
+            &format!("exhaustive_range_decreasing_natural_{}", number),
+            &mut range_decreasing_natural(
+                Natural::from_str(a).unwrap(),
+                Natural::from_str(b).unwrap(),
+            ),
+        )
     };
     test("i", "0", "0");
     test("ii", "0", "10");
@@ -57,8 +65,10 @@ fn range_decreasing_natural_fail() {
 fn test_range_up_increasing_natural() {
     let eo = get_expected_test_outputs();
     let test = |number, a| {
-        eo.match_vec(&format!("exhaustive_range_up_increasing_natural_{}", number),
-                     &mut range_up_increasing_natural(Natural::from_str(a).unwrap()))
+        eo.match_vec(
+            &format!("exhaustive_range_up_increasing_natural_{}", number),
+            &mut range_up_increasing_natural(Natural::from_str(a).unwrap()),
+        )
     };
     test("i", "0");
     test("ii", "5");
@@ -68,8 +78,10 @@ fn test_range_up_increasing_natural() {
 fn test_range_down_increasing_natural() {
     let eo = get_expected_test_outputs();
     let test = |number, a| {
-        eo.match_vec(&format!("exhaustive_range_down_increasing_natural_{}", number),
-                     &mut range_down_increasing_natural(Natural::from_str(a).unwrap()))
+        eo.match_vec(
+            &format!("exhaustive_range_down_increasing_natural_{}", number),
+            &mut range_down_increasing_natural(Natural::from_str(a).unwrap()),
+        )
     };
     test("i", "0");
     test("ii", "5");
@@ -79,8 +91,10 @@ fn test_range_down_increasing_natural() {
 fn test_range_down_decreasing_natural() {
     let eo = get_expected_test_outputs();
     let test = |number, a| {
-        eo.match_vec(&format!("exhaustive_range_down_decreasing_natural_{}", number),
-                     &mut range_down_decreasing_natural(Natural::from_str(a).unwrap()))
+        eo.match_vec(
+            &format!("exhaustive_range_down_decreasing_natural_{}", number),
+            &mut range_down_decreasing_natural(Natural::from_str(a).unwrap()),
+        )
     };
     test("i", "0");
     test("ii", "5");
@@ -89,12 +103,16 @@ fn test_range_down_decreasing_natural() {
 #[test]
 fn test_positive_naturals() {
     let eo = get_expected_test_outputs();
-    eo.match_vec("exhaustive_positive_naturals",
-                 &mut exhaustive_positive_naturals());
+    eo.match_vec(
+        "exhaustive_positive_naturals",
+        &mut exhaustive_positive_naturals(),
+    );
 
     let test = |number, scale| {
-        eo.match_vec_f(&format!("random_positive_naturals_{}", number),
-                       &mut random_positive_naturals(&EXAMPLE_SEED[..], scale))
+        eo.match_vec_f(
+            &format!("random_positive_naturals_{}", number),
+            &mut random_positive_naturals(&EXAMPLE_SEED[..], scale),
+        )
     };
     test("i", 0);
     test("ii", 1);
@@ -110,8 +128,10 @@ fn test_naturals() {
     eo.match_vec("exhaustive_naturals", &mut exhaustive_naturals());
 
     let test = |number, scale| {
-        eo.match_vec_f(&format!("random_naturals_{}", number),
-                       &mut random_naturals(&EXAMPLE_SEED[..], scale))
+        eo.match_vec_f(
+            &format!("random_naturals_{}", number),
+            &mut random_naturals(&EXAMPLE_SEED[..], scale),
+        )
     };
     test("i", 0);
     test("ii", 1);

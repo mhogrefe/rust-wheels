@@ -112,12 +112,12 @@ pub fn range_decreasing_integer(a: Integer, b: Integer) -> RangeDecreasingIntege
     }
 }
 
+type T = Interleave<RangeIncreasingInteger, RangeDecreasingInteger>;
 #[derive(Clone)]
 pub enum ExhaustiveRangeInteger {
     AllNonNegative(RangeIncreasingInteger),
     AllNonPositive(RangeDecreasingInteger),
-    SomeOfEachSign(Chain<Once<Integer>,
-                         Interleave<RangeIncreasingInteger, RangeDecreasingInteger>>),
+    SomeOfEachSign(Chain<Once<Integer>, T>),
 }
 
 impl Iterator for ExhaustiveRangeInteger {
@@ -141,17 +141,11 @@ pub fn exhaustive_range_integer(a: Integer, b: Integer) -> ExhaustiveRangeIntege
     } else if b <= 0 {
         ExhaustiveRangeInteger::AllNonPositive(range_decreasing_integer(a, b))
     } else {
-        ExhaustiveRangeInteger::SomeOfEachSign(
-                once(Integer::from(0)).chain(
-                    range_increasing_integer(Integer::from(1), b)
-                        .interleave(
-                            range_decreasing_integer(
-                                a,
-                                Integer::from(-1)
-                            )
-                        )
-                )
-            )
+        ExhaustiveRangeInteger::SomeOfEachSign(once(Integer::from(0)).chain(
+            range_increasing_integer(Integer::from(1), b).interleave(
+                range_decreasing_integer(a, Integer::from(-1)),
+            ),
+        ))
     }
 }
 
@@ -167,16 +161,17 @@ pub fn exhaustive_negative_integers() -> RangeDecreasingUnboundedInteger {
     range_down_decreasing_integer(Integer::from(-1))
 }
 
-pub fn exhaustive_nonzero_integers
-    ()
+pub fn exhaustive_nonzero_integers()
     -> Interleave<RangeIncreasingUnboundedInteger, RangeDecreasingUnboundedInteger>
 {
     exhaustive_positive_integers().interleave(exhaustive_negative_integers())
 }
 
 pub fn exhaustive_integers()
-    -> Chain<Once<Integer>,
-             Interleave<RangeIncreasingUnboundedInteger, RangeDecreasingUnboundedInteger>>
+    -> Chain<
+    Once<Integer>,
+    Interleave<RangeIncreasingUnboundedInteger, RangeDecreasingUnboundedInteger>,
+>
 {
     once(Integer::from(0)).chain(exhaustive_nonzero_integers())
 }

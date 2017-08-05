@@ -4,13 +4,15 @@ use std::iter::{Chain, Once, once};
 
 //TODO test
 pub fn exhaustive_with_element<I>(x: I::Item, xs: I) -> Chain<Once<I::Item>, I>
-    where I: Iterator
+where
+    I: Iterator,
 {
     once(x).chain(xs)
 }
 
 pub struct RandomWithElement<I>
-    where I: Iterator
+where
+    I: Iterator,
 {
     rng: IsaacRng,
     weight: u32,
@@ -19,8 +21,9 @@ pub struct RandomWithElement<I>
 }
 
 impl<I> Iterator for RandomWithElement<I>
-    where I: Iterator,
-          I::Item: Clone
+where
+    I: Iterator,
+    I::Item: Clone,
 {
     type Item = I::Item;
 
@@ -34,12 +37,14 @@ impl<I> Iterator for RandomWithElement<I>
 }
 
 //TODO test
-pub fn random_with_element<I>(seed: &[u32],
-                              scale: u32,
-                              x: I::Item,
-                              xs_gen: &Fn(&[u32]) -> I)
-                              -> RandomWithElement<I>
-    where I: Iterator
+pub fn random_with_element<I>(
+    seed: &[u32],
+    scale: u32,
+    x: I::Item,
+    xs_gen: &Fn(&[u32]) -> I,
+) -> RandomWithElement<I>
+where
+    I: Iterator,
 {
     RandomWithElement {
         rng: IsaacRng::from_seed(&scramble(seed, "x")),
@@ -49,7 +54,9 @@ pub fn random_with_element<I>(seed: &[u32],
     }
 }
 
-pub struct Somes<I>(I) where I: Iterator;
+pub struct Somes<I>(I)
+where
+    I: Iterator;
 
 impl<I: Iterator> Iterator for Somes<I> {
     type Item = Option<I::Item>;
@@ -83,10 +90,11 @@ impl<I: Iterator> Iterator for RandomOptions<I> {
 }
 
 //TODO test
-pub fn random_options<I: Iterator>(seed: &[u32],
-                                   scale: u32,
-                                   xs_gen: &Fn(&[u32]) -> I)
-                                   -> RandomOptions<I> {
+pub fn random_options<I: Iterator>(
+    seed: &[u32],
+    scale: u32,
+    xs_gen: &Fn(&[u32]) -> I,
+) -> RandomOptions<I> {
     RandomOptions {
         weight: scale + 2,
         rng: IsaacRng::from_seed(&scramble(seed, "none")),

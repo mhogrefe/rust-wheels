@@ -6,8 +6,10 @@ use rust_wheels::iterators::common::EXAMPLE_SEED;
 #[test]
 fn test_orderings_increasing() {
     let eo = get_expected_test_outputs();
-    eo.match_vec_debug("exhaustive_orderings_increasing",
-                       &mut orderings_increasing());
+    eo.match_vec_debug(
+        "exhaustive_orderings_increasing",
+        &mut orderings_increasing(),
+    );
 }
 
 #[test]

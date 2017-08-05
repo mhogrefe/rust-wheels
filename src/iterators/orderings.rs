@@ -11,6 +11,8 @@ pub fn exhaustive_orderings() -> std::vec::IntoIter<Ordering> {
 }
 
 pub fn random_orderings(seed: &[u32]) -> RandomFromVector<Ordering> {
-    random_from_vector(seed,
-                       vec![Ordering::Equal, Ordering::Less, Ordering::Greater])
+    random_from_vector(
+        seed,
+        vec![Ordering::Equal, Ordering::Less, Ordering::Greater],
+    )
 }

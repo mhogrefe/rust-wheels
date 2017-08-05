@@ -7,7 +7,8 @@ use iterators::tuples::ZOrderTupleIndices;
 use std::iter::repeat;
 
 pub enum ExhaustiveFixedSizeVecsFromSingle<I: Iterator>
-    where I::Item: Clone
+where
+    I::Item: Clone,
 {
     Zero(bool),
     One(I),
@@ -15,7 +16,8 @@ pub enum ExhaustiveFixedSizeVecsFromSingle<I: Iterator>
 }
 
 impl<I: Iterator> Iterator for ExhaustiveFixedSizeVecsFromSingle<I>
-    where I::Item: Clone
+where
+    I::Item: Clone,
 {
     type Item = Vec<I::Item>;
 
@@ -75,43 +77,50 @@ impl<I: Iterator> Iterator for ExhaustiveFixedSizeVecsFromSingle<I>
 }
 
 //TODO test
-pub fn exhaustive_fixed_size_vecs_from_single<I: Iterator>
-    (size: usize,
-     xs: I)
-     -> ExhaustiveFixedSizeVecsFromSingle<I>
-    where I::Item: Clone
+pub fn exhaustive_fixed_size_vecs_from_single<I: Iterator>(
+    size: usize,
+    xs: I,
+) -> ExhaustiveFixedSizeVecsFromSingle<I>
+where
+    I::Item: Clone,
 {
     match size {
         0 => ExhaustiveFixedSizeVecsFromSingle::Zero(true),
         1 => ExhaustiveFixedSizeVecsFromSingle::One(xs),
         _ => {
-            ExhaustiveFixedSizeVecsFromSingle::MoreThanOne(false,
-                                                           CachedIterator::new(xs),
-                                                           ZOrderTupleIndices::new(size),
-                                                           false,
-                                                           None)
+            ExhaustiveFixedSizeVecsFromSingle::MoreThanOne(
+                false,
+                CachedIterator::new(xs),
+                ZOrderTupleIndices::new(size),
+                false,
+                None,
+            )
         }
     }
 }
 
-fn exhaustive_vecs_more_than_one<'a, I: Clone + Iterator + 'a>
-    (xs: I)
-     -> Box<Iterator<Item = Vec<I::Item>> + 'a>
-    where I::Item: Clone
+fn exhaustive_vecs_more_than_one<'a, I: Clone + Iterator + 'a>(
+    xs: I,
+) -> Box<Iterator<Item = Vec<I::Item>> + 'a>
+where
+    I::Item: Clone,
 {
     let f = move |size: &usize| {
         exhaustive_fixed_size_vecs_from_single(*size, xs.clone())
             .map(Option::Some)
             .chain(repeat(Option::None))
     };
-    Box::new(exhaustive_dependent_pairs_infinite_log(exhaustive_positive_x::<usize>(), f)
-                 .map(|(_, v)| v)
-                 .filter(|v| v.is_some())
-                 .map(|v| v.unwrap()))
+    Box::new(
+        exhaustive_dependent_pairs_infinite_log(exhaustive_positive_x::<usize>(), f)
+            .map(|(_, v)| v)
+            .filter(|v| v.is_some())
+            .map(|v| v.unwrap()),
+    )
 }
 
 pub enum ExhaustiveVecs<'a, I: Iterator>
-    where I::Item: Clone
+where
+    I::Item: Clone,
 {
     Zero(bool),
     One(I::Item, Vec<I::Item>),
@@ -119,7 +128,8 @@ pub enum ExhaustiveVecs<'a, I: Iterator>
 }
 
 impl<'a, I: Iterator> Iterator for ExhaustiveVecs<'a, I>
-    where I::Item: Clone
+where
+    I::Item: Clone,
 {
     type Item = Vec<I::Item>;
 
@@ -152,7 +162,8 @@ impl<'a, I: Iterator> Iterator for ExhaustiveVecs<'a, I>
 
 //TODO test
 pub fn exhaustive_vecs<'a, I: Clone + Iterator + 'a>(xs: I) -> ExhaustiveVecs<'a, I>
-    where I::Item: Clone
+where
+    I::Item: Clone,
 {
     let mut xs_cloned = xs.clone();
     let first = match xs_cloned.next() {
@@ -167,25 +178,32 @@ pub fn exhaustive_vecs<'a, I: Clone + Iterator + 'a>(xs: I) -> ExhaustiveVecs<'a
 }
 
 pub struct RandomVecs<I>
-    where I: Iterator
+where
+    I: Iterator,
 {
     lengths: NaturalU32sGeometric,
     xs: I,
 }
 
 impl<I> Iterator for RandomVecs<I>
-    where I: Iterator
+where
+    I: Iterator,
 {
     type Item = Vec<I::Item>;
 
     fn next(&mut self) -> Option<Vec<I::Item>> {
-        Some((&mut self.xs).take(self.lengths.next().unwrap() as usize).collect())
+        Some(
+            (&mut self.xs)
+                .take(self.lengths.next().unwrap() as usize)
+                .collect(),
+        )
     }
 }
 
 //TODO test
 pub fn random_vecs<I>(seed: &[u32], scale: u32, xs_gen: &Fn(&[u32]) -> I) -> RandomVecs<I>
-    where I: Iterator
+where
+    I: Iterator,
 {
     RandomVecs {
         lengths: natural_u32s_geometric(&scramble(seed, "lengths"), scale),

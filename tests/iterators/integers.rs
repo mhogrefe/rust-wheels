@@ -9,8 +9,10 @@ use std::str::FromStr;
 fn test_range_up_increasing_integer() {
     let eo = get_expected_test_outputs();
     let test = |number, a| {
-        eo.match_vec(&format!("exhaustive_range_up_increasing_integer_{}", number),
-                     &mut range_up_increasing_integer(Integer::from_str(a).unwrap()))
+        eo.match_vec(
+            &format!("exhaustive_range_up_increasing_integer_{}", number),
+            &mut range_up_increasing_integer(Integer::from_str(a).unwrap()),
+        )
     };
     test("i", "0");
     test("ii", "5");
@@ -21,8 +23,10 @@ fn test_range_up_increasing_integer() {
 fn test_range_down_decreasing_integer() {
     let eo = get_expected_test_outputs();
     let test = |number, a| {
-        eo.match_vec(&format!("exhaustive_range_down_decreasing_integer_{}", number),
-                     &mut range_down_decreasing_integer(Integer::from_str(a).unwrap()))
+        eo.match_vec(
+            &format!("exhaustive_range_down_decreasing_integer_{}", number),
+            &mut range_down_decreasing_integer(Integer::from_str(a).unwrap()),
+        )
     };
     test("i", "0");
     test("ii", "5");
@@ -33,9 +37,13 @@ fn test_range_down_decreasing_integer() {
 fn test_range_increasing_integer() {
     let eo = get_expected_test_outputs();
     let test = |number, a, b| {
-        eo.match_vec(&format!("exhaustive_range_increasing_integer_{}", number),
-                     &mut range_increasing_integer(Integer::from_str(a).unwrap(),
-                                                   Integer::from_str(b).unwrap()))
+        eo.match_vec(
+            &format!("exhaustive_range_increasing_integer_{}", number),
+            &mut range_increasing_integer(
+                Integer::from_str(a).unwrap(),
+                Integer::from_str(b).unwrap(),
+            ),
+        )
     };
     test("i", "0", "0");
     test("ii", "0", "10");
@@ -66,9 +74,13 @@ fn range_increasing_integer_fail_2() {
 fn test_range_decreasing_integer() {
     let eo = get_expected_test_outputs();
     let test = |number, a, b| {
-        eo.match_vec(&format!("exhaustive_range_decreasing_integer_{}", number),
-                     &mut range_decreasing_integer(Integer::from_str(a).unwrap(),
-                                                   Integer::from_str(b).unwrap()))
+        eo.match_vec(
+            &format!("exhaustive_range_decreasing_integer_{}", number),
+            &mut range_decreasing_integer(
+                Integer::from_str(a).unwrap(),
+                Integer::from_str(b).unwrap(),
+            ),
+        )
     };
     test("i", "0", "0");
     test("ii", "0", "10");
@@ -98,12 +110,16 @@ fn range_decreasing_integer_fail_2() {
 #[test]
 fn test_positive_integers() {
     let eo = get_expected_test_outputs();
-    eo.match_vec("exhaustive_positive_integers",
-                 &mut exhaustive_positive_integers());
+    eo.match_vec(
+        "exhaustive_positive_integers",
+        &mut exhaustive_positive_integers(),
+    );
 
     let test = |number, scale| {
-        eo.match_vec_f(&format!("random_positive_integers_{}", number),
-                       &mut random_positive_integers(&EXAMPLE_SEED[..], scale))
+        eo.match_vec_f(
+            &format!("random_positive_integers_{}", number),
+            &mut random_positive_integers(&EXAMPLE_SEED[..], scale),
+        )
     };
     test("i", 0);
     test("ii", 1);
@@ -116,12 +132,16 @@ fn test_positive_integers() {
 #[test]
 fn test_natural_integers() {
     let eo = get_expected_test_outputs();
-    eo.match_vec("exhaustive_natural_integers",
-                 &mut exhaustive_natural_integers());
+    eo.match_vec(
+        "exhaustive_natural_integers",
+        &mut exhaustive_natural_integers(),
+    );
 
     let test = |number, scale| {
-        eo.match_vec_f(&format!("random_natural_integers_{}", number),
-                       &mut random_natural_integers(&EXAMPLE_SEED[..], scale))
+        eo.match_vec_f(
+            &format!("random_natural_integers_{}", number),
+            &mut random_natural_integers(&EXAMPLE_SEED[..], scale),
+        )
     };
     test("i", 0);
     test("ii", 1);
@@ -134,12 +154,16 @@ fn test_natural_integers() {
 #[test]
 fn test_negative_integers() {
     let eo = get_expected_test_outputs();
-    eo.match_vec("exhaustive_negative_integers",
-                 &mut exhaustive_negative_integers());
+    eo.match_vec(
+        "exhaustive_negative_integers",
+        &mut exhaustive_negative_integers(),
+    );
 
     let test = |number, scale| {
-        eo.match_vec_f(&format!("random_negative_integers_{}", number),
-                       &mut random_negative_integers(&EXAMPLE_SEED[..], scale))
+        eo.match_vec_f(
+            &format!("random_negative_integers_{}", number),
+            &mut random_negative_integers(&EXAMPLE_SEED[..], scale),
+        )
     };
     test("i", 0);
     test("ii", 1);
@@ -152,12 +176,16 @@ fn test_negative_integers() {
 #[test]
 fn test_nonzero_integers() {
     let eo = get_expected_test_outputs();
-    eo.match_vec("exhaustive_nonzero_integers",
-                 &mut exhaustive_nonzero_integers());
+    eo.match_vec(
+        "exhaustive_nonzero_integers",
+        &mut exhaustive_nonzero_integers(),
+    );
 
     let test = |number, scale| {
-        eo.match_vec_f(&format!("random_nonzero_integers_{}", number),
-                       &mut random_nonzero_integers(&EXAMPLE_SEED[..], scale))
+        eo.match_vec_f(
+            &format!("random_nonzero_integers_{}", number),
+            &mut random_nonzero_integers(&EXAMPLE_SEED[..], scale),
+        )
     };
     test("i", 0);
     test("ii", 1);
@@ -173,8 +201,10 @@ fn test_integers() {
     eo.match_vec("exhaustive_integers", &mut exhaustive_integers());
 
     let test = |number, scale| {
-        eo.match_vec_f(&format!("random_integers_{}", number),
-                       &mut random_integers(&EXAMPLE_SEED[..], scale))
+        eo.match_vec_f(
+            &format!("random_integers_{}", number),
+            &mut random_integers(&EXAMPLE_SEED[..], scale),
+        )
     };
     test("i", 0);
     test("ii", 1);
@@ -188,9 +218,13 @@ fn test_integers() {
 fn test_range_integer() {
     let eo = get_expected_test_outputs();
     let e_test = |number, a, b| {
-        eo.match_vec(&format!("exhaustive_range_integer_{}", number),
-                     &mut exhaustive_range_integer(Integer::from_str(a).unwrap(),
-                                                   Integer::from_str(b).unwrap()))
+        eo.match_vec(
+            &format!("exhaustive_range_integer_{}", number),
+            &mut exhaustive_range_integer(
+                Integer::from_str(a).unwrap(),
+                Integer::from_str(b).unwrap(),
+            ),
+        )
     };
     e_test("i", "0", "0");
     e_test("ii", "0", "10");
@@ -200,10 +234,14 @@ fn test_range_integer() {
     e_test("vi", "-20", "-10");
     e_test("vii", "-100", "100");
     let r_test = |number, a, b| {
-        eo.match_vec_f(&format!("random_range_integer_{}", number),
-                       &mut random_range_integer(&EXAMPLE_SEED[..],
-                                                 Integer::from_str(a).unwrap(),
-                                                 Integer::from_str(b).unwrap()))
+        eo.match_vec_f(
+            &format!("random_range_integer_{}", number),
+            &mut random_range_integer(
+                &EXAMPLE_SEED[..],
+                Integer::from_str(a).unwrap(),
+                Integer::from_str(b).unwrap(),
+            ),
+        )
     };
     r_test("i", "0", "0");
     r_test("ii", "0", "10");
@@ -219,9 +257,11 @@ fn exhaustive_range_integer_fail_helper(a: &str, b: &str) {
 }
 
 fn random_range_integer_fail_helper(a: &str, b: &str) {
-    random_range_integer(&EXAMPLE_SEED[..],
-                         Integer::from_str(a).unwrap(),
-                         Integer::from_str(b).unwrap());
+    random_range_integer(
+        &EXAMPLE_SEED[..],
+        Integer::from_str(a).unwrap(),
+        Integer::from_str(b).unwrap(),
+    );
 }
 
 #[test]
