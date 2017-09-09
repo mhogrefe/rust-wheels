@@ -48,7 +48,7 @@ macro_rules! benchmark {
             where I::Item: Clone
         {
             let reps = 10;
-            let min_bucket_size = 5;
+            let min_bucket_size = 2;
 
             let mut xs_durations_map: HashMap<usize, Vec<f64>> = HashMap::new();
             $(
