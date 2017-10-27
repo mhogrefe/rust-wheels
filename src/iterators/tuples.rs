@@ -371,7 +371,7 @@ macro_rules! exhaustive_tuple_from_single {
             max_indices: Option<ZOrderTupleIndices>,
         }
 
-        #[allow(type_complexity, unknown_lints)]
+        #[allow(unknown_lints, type_complexity)]
         impl<I: Iterator> Iterator for $struct_name<I>
             where I::Item: Clone
         {
@@ -568,7 +568,7 @@ macro_rules! exhaustive_tuple {
         }
 
         //TODO test
-        #[allow(too_many_arguments, unknown_lints)]
+        #[allow(unknown_lints, too_many_arguments)]
         pub fn $fn_name<$($it_type: Iterator),*>($($it: $it_type),*) ->
             $struct_name<$($it_type),*> where $($it_type::Item: Clone),*
         {
@@ -734,7 +734,7 @@ macro_rules! lex_tuple {
         }
 
         //TODO test
-        #[allow(too_many_arguments, many_single_char_names, unknown_lints)]
+        #[allow(unknown_lints, too_many_arguments, many_single_char_names)]
         pub fn
             $fn_name<I: Iterator, $($it_type: Clone + Iterator,)* $last_it_type: Clone + Iterator>
             (mut xs: I, $(mut $it: $it_type,)* $last_it: $last_it_type) ->
@@ -838,7 +838,7 @@ macro_rules! random_tuple_from_single {
     ) => {
         pub struct $struct_name<I: Iterator>(I);
 
-        #[allow(type_complexity, unknown_lints)]
+        #[allow(unknown_lints, type_complexity)]
         impl<I: Iterator> Iterator for $struct_name<I> {
             type Item = $repeated_tuple;
 
@@ -970,7 +970,7 @@ macro_rules! random_tuple {
         }
 
         //TODO test
-        #[allow(too_many_arguments, unknown_lints)]
+        #[allow(unknown_lints, too_many_arguments)]
         pub fn $fn_name<$($it_type: Iterator),*>(seed: &[u32],
                                                       $($it_gen: &Fn(&[u32]) -> $it_type),*)
                                                       -> $struct_name<$($it_type),*> {
