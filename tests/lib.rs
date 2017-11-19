@@ -1,4 +1,5 @@
 extern crate malachite;
+extern crate malachite_base;
 extern crate rust_wheels;
 
 pub mod common;

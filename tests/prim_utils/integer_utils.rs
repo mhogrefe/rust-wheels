@@ -1,6 +1,7 @@
 use rust_wheels::prim_utils::integer_utils::*;
 
 use malachite::integer::Integer;
+use malachite_base::traits::NegativeOne;
 use rust_wheels::io::readers::parse_vec;
 use rust_wheels::prim_utils::traits::PrimUnsignedInt;
 use std::str::FromStr;
@@ -743,7 +744,7 @@ fn test_bits_padded_integer() {
 #[test]
 #[should_panic(expected = "n cannot be negative. Invalid n: -1")]
 fn bits_padded_integer_fail() {
-    bits_padded_integer(8, &Integer::from(-1));
+    bits_padded_integer(8, &Integer::negative_one());
 }
 
 fn big_endian_bits_u_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
@@ -1300,7 +1301,7 @@ fn test_big_endian_bits_padded_integer() {
 #[test]
 #[should_panic(expected = "n cannot be negative. Invalid n: -1")]
 fn big_endian_bits_padded_integer_fail() {
-    big_endian_bits_padded_integer(8, &Integer::from(-1));
+    big_endian_bits_padded_integer(8, &Integer::negative_one());
 }
 
 fn from_big_endian_bits_helper(bits: &[bool], out: &str) {

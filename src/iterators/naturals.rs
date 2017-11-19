@@ -1,6 +1,7 @@
 use iterators::common::scramble;
 use iterators::integers_geometric::{NaturalU32sGeometric, natural_u32s_geometric,
                                     PositiveU32sGeometric, positive_u32s_geometric};
+use malachite_base::traits::{One, Zero};
 use malachite::natural::Natural;
 use malachite::natural::random::random_natural_from_bits::random_natural_from_bits;
 use rand::{IsaacRng, SeedableRng};
@@ -93,19 +94,19 @@ pub fn range_up_increasing_natural(a: Natural) -> RangeIncreasingUnboundedNatura
 }
 
 pub fn range_down_increasing_natural(a: Natural) -> RangeIncreasingNatural {
-    range_increasing_natural(Natural::from(0u32), a)
+    range_increasing_natural(Natural::zero(), a)
 }
 
 pub fn range_down_decreasing_natural(a: Natural) -> RangeDecreasingNatural {
-    range_decreasing_natural(Natural::from(0u32), a)
+    range_decreasing_natural(Natural::zero(), a)
 }
 
 pub fn exhaustive_positive_naturals() -> RangeIncreasingUnboundedNatural {
-    range_up_increasing_natural(Natural::from(1u32))
+    range_up_increasing_natural(Natural::one())
 }
 
 pub fn exhaustive_naturals() -> RangeIncreasingUnboundedNatural {
-    range_up_increasing_natural(Natural::from(0u32))
+    range_up_increasing_natural(Natural::zero())
 }
 
 pub struct RandomPositiveNaturals {

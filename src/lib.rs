@@ -1,6 +1,7 @@
 extern crate gnuplot;
 extern crate itertools;
 extern crate malachite;
+extern crate malachite_base;
 extern crate rand;
 extern crate sha3;
 extern crate stats;
