@@ -7023,6 +7023,14 @@ exhaustive_range_up_increasing_u8_ii list 21
 exhaustive_range_up_increasing_u8_iii list 1
 255
 
+exhaustive_rounding_modes list 6
+Down
+Up
+Floor
+Ceiling
+Nearest
+Exact
+
 exhaustive_u16s list 21
 0
 1
@@ -16378,6 +16386,37 @@ random_range_up_u8_iii list 21
 
 random_range_up_u8_iii map 1
 255: 1000000
+
+random_rounding_modes list 21
+Nearest
+Exact
+Nearest
+Nearest
+Floor
+Nearest
+Ceiling
+Down
+Down
+Down
+Up
+Nearest
+Nearest
+Nearest
+Nearest
+Nearest
+Nearest
+Nearest
+Exact
+Floor
+...
+
+random_rounding_modes map 6
+Down: 167088
+Ceiling: 166925
+Nearest: 166880
+Floor: 166825
+Up: 166276
+Exact: 166006
 
 random_u16s list 21
 58739

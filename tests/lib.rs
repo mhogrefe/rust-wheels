@@ -13,6 +13,7 @@ pub mod iterators {
     pub mod naturals;
     pub mod orderings;
     pub mod primitive_ints;
+    pub mod rounding_modes;
 }
 
 pub mod prim_utils {

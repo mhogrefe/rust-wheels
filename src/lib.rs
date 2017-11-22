@@ -30,6 +30,7 @@ pub mod iterators {
     pub mod options;
     pub mod orderings;
     pub mod primitive_ints;
+    pub mod rounding_modes;
     pub mod tuples;
 }
 pub mod prim_utils {
