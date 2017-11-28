@@ -94,19 +94,19 @@ pub fn range_up_increasing_natural(a: Natural) -> RangeIncreasingUnboundedNatura
 }
 
 pub fn range_down_increasing_natural(a: Natural) -> RangeIncreasingNatural {
-    range_increasing_natural(Natural::zero(), a)
+    range_increasing_natural(Natural::ZERO, a)
 }
 
 pub fn range_down_decreasing_natural(a: Natural) -> RangeDecreasingNatural {
-    range_decreasing_natural(Natural::zero(), a)
+    range_decreasing_natural(Natural::ZERO, a)
 }
 
 pub fn exhaustive_positive_naturals() -> RangeIncreasingUnboundedNatural {
-    range_up_increasing_natural(Natural::one())
+    range_up_increasing_natural(Natural::ONE)
 }
 
 pub fn exhaustive_naturals() -> RangeIncreasingUnboundedNatural {
-    range_up_increasing_natural(Natural::zero())
+    range_up_increasing_natural(Natural::ZERO)
 }
 
 pub struct RandomPositiveNaturals {

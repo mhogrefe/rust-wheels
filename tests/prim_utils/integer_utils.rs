@@ -744,7 +744,7 @@ fn test_bits_padded_integer() {
 #[test]
 #[should_panic(expected = "n cannot be negative. Invalid n: -1")]
 fn bits_padded_integer_fail() {
-    bits_padded_integer(8, &Integer::negative_one());
+    bits_padded_integer(8, &Integer::NEGATIVE_ONE);
 }
 
 fn big_endian_bits_u_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
@@ -1301,7 +1301,7 @@ fn test_big_endian_bits_padded_integer() {
 #[test]
 #[should_panic(expected = "n cannot be negative. Invalid n: -1")]
 fn big_endian_bits_padded_integer_fail() {
-    big_endian_bits_padded_integer(8, &Integer::negative_one());
+    big_endian_bits_padded_integer(8, &Integer::NEGATIVE_ONE);
 }
 
 fn from_big_endian_bits_helper(bits: &[bool], out: &str) {

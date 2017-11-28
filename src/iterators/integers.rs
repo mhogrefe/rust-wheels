@@ -142,24 +142,24 @@ pub fn exhaustive_range_integer(a: Integer, b: Integer) -> ExhaustiveRangeIntege
     } else if b <= 0 {
         ExhaustiveRangeInteger::AllNonPositive(range_decreasing_integer(a, b))
     } else {
-        ExhaustiveRangeInteger::SomeOfEachSign(once(Integer::zero()).chain(
-            range_increasing_integer(Integer::one(), b).interleave(
-                range_decreasing_integer(a, Integer::negative_one()),
+        ExhaustiveRangeInteger::SomeOfEachSign(once(Integer::ZERO).chain(
+            range_increasing_integer(Integer::ONE, b).interleave(
+                range_decreasing_integer(a, Integer::NEGATIVE_ONE),
             ),
         ))
     }
 }
 
 pub fn exhaustive_positive_integers() -> RangeIncreasingUnboundedInteger {
-    range_up_increasing_integer(Integer::one())
+    range_up_increasing_integer(Integer::ONE)
 }
 
 pub fn exhaustive_natural_integers() -> RangeIncreasingUnboundedInteger {
-    range_up_increasing_integer(Integer::zero())
+    range_up_increasing_integer(Integer::ZERO)
 }
 
 pub fn exhaustive_negative_integers() -> RangeDecreasingUnboundedInteger {
-    range_down_decreasing_integer(Integer::negative_one())
+    range_down_decreasing_integer(Integer::NEGATIVE_ONE)
 }
 
 pub fn exhaustive_nonzero_integers()
@@ -174,7 +174,7 @@ pub fn exhaustive_integers()
     Interleave<RangeIncreasingUnboundedInteger, RangeDecreasingUnboundedInteger>,
 >
 {
-    once(Integer::zero()).chain(exhaustive_nonzero_integers())
+    once(Integer::ZERO).chain(exhaustive_nonzero_integers())
 }
 
 pub struct RandomPositiveIntegers(RandomPositiveNaturals);
