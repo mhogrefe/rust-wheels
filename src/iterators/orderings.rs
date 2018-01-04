@@ -1,4 +1,4 @@
-use iterators::general::{RandomFromVector, random_from_vector};
+use iterators::general::{random_from_vector, RandomFromVector};
 use std;
 use std::cmp::Ordering;
 

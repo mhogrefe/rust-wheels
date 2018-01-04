@@ -1,6 +1,6 @@
 use iterators::common::scramble;
-use iterators::integers_geometric::{NaturalU32sGeometric, natural_u32s_geometric,
-                                    PositiveU32sGeometric, positive_u32s_geometric};
+use iterators::integers_geometric::{NaturalU32sGeometric, PositiveU32sGeometric,
+                                    natural_u32s_geometric, positive_u32s_geometric};
 use malachite_base::traits::{One, Zero};
 use malachite::natural::Natural;
 use malachite::natural::random::random_natural_from_bits::random_natural_from_bits;

@@ -418,9 +418,7 @@ pub fn digits_padded_integer(size: usize, radix: &Integer, n: &Integer) -> Vec<I
             .chars()
             .rev()
             .map(|c| {
-                Integer::from(
-                    c as i32 - (if c >= '0' && c <= '9' { '0' } else { 'W' } as i32),
-                )
+                Integer::from(c as i32 - (if c >= '0' && c <= '9' { '0' } else { 'W' } as i32))
             })
             .chain(iter::repeat(Integer::ZERO))
             .take(size)
@@ -487,16 +485,13 @@ pub fn from_digits(radix: &Integer, digits: &[Integer]) -> Integer {
             if d.sign() == Ordering::Less {
                 panic!(
                     "Each element of digits must be non-negative. Invalid digit: {} in {:?}",
-                    d,
-                    digits
+                    d, digits
                 );
             } else if d >= radix {
                 panic!(
                     "Each element of digits must be less than radix, which is {}. Invalid \
-                        digit: {} in {:?}",
-                    radix,
-                    d,
-                    digits
+                     digit: {} in {:?}",
+                    radix, d, digits
                 );
             } else {
                 bits.append(&mut bits_padded_integer(radix_log as usize, d));
@@ -516,16 +511,13 @@ pub fn from_digits(radix: &Integer, digits: &[Integer]) -> Integer {
             if d.sign() == Ordering::Less {
                 panic!(
                     "Each element of digits must be non-negative. Invalid digit: {} in {:?}",
-                    d,
-                    digits
+                    d, digits
                 );
             } else if d >= radix {
                 panic!(
                     "Each element of digits must be less than radix, which is {}. Invalid \
-                        digit: {} in {:?}",
-                    radix,
-                    d,
-                    digits
+                     digit: {} in {:?}",
+                    radix, d, digits
                 );
             } else {
                 result *= radix;
@@ -548,16 +540,13 @@ pub fn from_big_endian_digits(radix: &Integer, digits: &[Integer]) -> Integer {
             if d.sign() == Ordering::Less {
                 panic!(
                     "Each element of digits must be non-negative. Invalid digit: {} in {:?}",
-                    d,
-                    digits
+                    d, digits
                 );
             } else if d >= radix {
                 panic!(
                     "Each element of digits must be less than radix, which is {}. Invalid \
-                        digit: {} in {:?}",
-                    radix,
-                    d,
-                    digits
+                     digit: {} in {:?}",
+                    radix, d, digits
                 );
             } else {
                 bits.append(&mut bits_padded_integer(radix_log as usize, d));
@@ -578,16 +567,13 @@ pub fn from_big_endian_digits(radix: &Integer, digits: &[Integer]) -> Integer {
             if d.sign() == Ordering::Less {
                 panic!(
                     "Each element of digits must be non-negative. Invalid digit: {} in {:?}",
-                    d,
-                    digits
+                    d, digits
                 );
             } else if d >= radix {
                 panic!(
                     "Each element of digits must be less than radix, which is {}. Invalid \
-                        digit: {} in {:?}",
-                    radix,
-                    d,
-                    digits
+                     digit: {} in {:?}",
+                    radix, d, digits
                 );
             } else {
                 result *= radix;

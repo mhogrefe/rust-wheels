@@ -1,13 +1,13 @@
 use iterators::common::scramble;
-use iterators::general::{Random, random_x};
-use iterators::naturals::{RandomNaturals, random_naturals, RandomPositiveNaturals,
-                          random_positive_naturals};
+use iterators::general::{random_x, Random};
+use iterators::naturals::{random_naturals, random_positive_naturals, RandomNaturals,
+                          RandomPositiveNaturals};
 use itertools::{Interleave, Itertools};
 use malachite_base::traits::{NegativeOne, One, Zero};
 use malachite::integer::Integer;
 use malachite::natural::Natural;
 use rand::{IsaacRng, SeedableRng};
-use std::iter::{Chain, Once, once};
+use std::iter::{once, Chain, Once};
 
 #[derive(Clone)]
 pub struct RangeIncreasingInteger {
@@ -142,11 +142,12 @@ pub fn exhaustive_range_integer(a: Integer, b: Integer) -> ExhaustiveRangeIntege
     } else if b <= 0 {
         ExhaustiveRangeInteger::AllNonPositive(range_decreasing_integer(a, b))
     } else {
-        ExhaustiveRangeInteger::SomeOfEachSign(once(Integer::ZERO).chain(
-            range_increasing_integer(Integer::ONE, b).interleave(
-                range_decreasing_integer(a, Integer::NEGATIVE_ONE),
+        ExhaustiveRangeInteger::SomeOfEachSign(
+            once(Integer::ZERO).chain(
+                range_increasing_integer(Integer::ONE, b)
+                    .interleave(range_decreasing_integer(a, Integer::NEGATIVE_ONE)),
             ),
-        ))
+        )
     }
 }
 
@@ -162,18 +163,15 @@ pub fn exhaustive_negative_integers() -> RangeDecreasingUnboundedInteger {
     range_down_decreasing_integer(Integer::NEGATIVE_ONE)
 }
 
-pub fn exhaustive_nonzero_integers()
-    -> Interleave<RangeIncreasingUnboundedInteger, RangeDecreasingUnboundedInteger>
-{
+pub fn exhaustive_nonzero_integers(
+) -> Interleave<RangeIncreasingUnboundedInteger, RangeDecreasingUnboundedInteger> {
     exhaustive_positive_integers().interleave(exhaustive_negative_integers())
 }
 
-pub fn exhaustive_integers()
-    -> Chain<
+pub fn exhaustive_integers() -> Chain<
     Once<Integer>,
     Interleave<RangeIncreasingUnboundedInteger, RangeDecreasingUnboundedInteger>,
->
-{
+> {
     once(Integer::ZERO).chain(exhaustive_nonzero_integers())
 }
 

@@ -174,12 +174,9 @@ where
     I: Iterator,
     <I as Iterator>::Item: Eq + Hash + Display,
 {
-    get_limited_string_vec_and_frequency_map_helper(
-        small_limit,
-        large_limit,
-        xs,
-        &|x| x.to_string(),
-    )
+    get_limited_string_vec_and_frequency_map_helper(small_limit, large_limit, xs, &|x| {
+        x.to_string()
+    })
 }
 
 pub fn get_limited_string_vec_and_frequency_map_debug<I>(
@@ -191,12 +188,9 @@ where
     I: Iterator,
     <I as Iterator>::Item: Eq + Hash + Debug,
 {
-    get_limited_string_vec_and_frequency_map_helper(
-        small_limit,
-        large_limit,
-        xs,
-        &|x| format!("{:?}", x),
-    )
+    get_limited_string_vec_and_frequency_map_helper(small_limit, large_limit, xs, &|x| {
+        format!("{:?}", x)
+    })
 }
 
 fn get_limited_string_vec_and_most_common_values_helper<I>(
@@ -314,12 +308,10 @@ where
         }
         loop {
             match self.xs.as_mut().unwrap().next() {
-                None => {
-                    match self.xss.next() {
-                        None => return None,
-                        Some(xs) => self.xs = Some(xs),
-                    }
-                }
+                None => match self.xss.next() {
+                    None => return None,
+                    Some(xs) => self.xs = Some(xs),
+                },
                 Some(x) => return Some(x),
             }
         }

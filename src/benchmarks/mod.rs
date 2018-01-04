@@ -1,4 +1,4 @@
-use gnuplot::{AxesCommon, Figure, Caption, Color};
+use gnuplot::{AxesCommon, Caption, Color, Figure};
 use stats::{mean, median};
 use std::collections::{BTreeMap, HashMap};
 use time::precise_time_ns;

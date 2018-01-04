@@ -1,10 +1,10 @@
-use iterators::general::{Random, random_x, RangeDecreasing, range_decreasing_x, RangeIncreasing,
-                         range_increasing_x};
+use iterators::general::{random_x, range_decreasing_x, range_increasing_x, Random,
+                         RangeDecreasing, RangeIncreasing};
 use itertools::{Interleave, Itertools};
 use prim_utils::traits::{PrimInt, PrimSignedInt, PrimUnsignedInt};
 use rand::distributions::{IndependentSample, Range};
 use rand::{IsaacRng, Rand, SeedableRng};
-use std::iter::{Chain, Once, once};
+use std::iter::{once, Chain, Once};
 
 pub fn exhaustive_positive_x<T: PrimInt>() -> RangeIncreasing<T> {
     range_increasing_x(T::from_u8(1), T::max_value())
@@ -22,15 +22,13 @@ pub fn exhaustive_natural_i<T: PrimSignedInt>() -> RangeIncreasing<T> {
     range_increasing_x(T::from_u8(0), T::max_value())
 }
 
-pub fn exhaustive_nonzero_i<T: PrimSignedInt>()
-    -> Interleave<RangeIncreasing<T>, RangeDecreasing<T>>
-{
+type UpDown<T> = Interleave<RangeIncreasing<T>, RangeDecreasing<T>>;
+
+pub fn exhaustive_nonzero_i<T: PrimSignedInt>() -> UpDown<T> {
     exhaustive_positive_x().interleave(exhaustive_negative_i())
 }
 
-pub fn exhaustive_i<T: PrimSignedInt>()
-    -> Chain<Once<T>, Interleave<RangeIncreasing<T>, RangeDecreasing<T>>>
-{
+pub fn exhaustive_i<T: PrimSignedInt>() -> Chain<Once<T>, UpDown<T>> {
     once(T::from_u8(0)).chain(exhaustive_nonzero_i())
 }
 
@@ -62,7 +60,7 @@ pub fn x_decreasing<T: PrimInt>() -> RangeDecreasing<T> {
 pub enum ExhaustiveRangeI<T: PrimSignedInt> {
     AllNonNegative(RangeIncreasing<T>),
     AllNonPositive(RangeDecreasing<T>),
-    SomeOfEachSign(Chain<Once<T>, Interleave<RangeIncreasing<T>, RangeDecreasing<T>>>),
+    SomeOfEachSign(Chain<Once<T>, UpDown<T>>),
 }
 
 impl<T: PrimSignedInt> Iterator for ExhaustiveRangeI<T> {
@@ -85,9 +83,7 @@ pub fn exhaustive_range_i<T: PrimSignedInt>(a: T, b: T) -> ExhaustiveRangeI<T> {
         ExhaustiveRangeI::AllNonPositive(range_decreasing_x(a, b))
     } else {
         ExhaustiveRangeI::SomeOfEachSign(once(zero).chain(
-            range_increasing_x(T::from_u8(1), b).interleave(
-                range_decreasing_x(a, T::from_i8(-1)),
-            ),
+            range_increasing_x(T::from_u8(1), b).interleave(range_decreasing_x(a, T::from_i8(-1))),
         ))
     }
 }
@@ -102,13 +98,11 @@ impl<T: PrimInt> Iterator for RandomRange<T> {
 
     fn next(&mut self) -> Option<T> {
         match *self {
-            RandomRange::Some(shift, ref mut rng, ref range) => {
-                Some(if shift {
-                    range.ind_sample(rng) + T::from_u8(1)
-                } else {
-                    range.ind_sample(rng)
-                })
-            }
+            RandomRange::Some(shift, ref mut rng, ref range) => Some(if shift {
+                range.ind_sample(rng) + T::from_u8(1)
+            } else {
+                range.ind_sample(rng)
+            }),
             RandomRange::All(ref mut xs) => xs.next(),
         }
     }

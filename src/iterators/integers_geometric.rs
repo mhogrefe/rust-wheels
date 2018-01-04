@@ -1,5 +1,5 @@
 use iterators::common::scramble;
-use iterators::general::{Random, random_x};
+use iterators::general::{random_x, Random};
 use rand::{IsaacRng, Rng, SeedableRng};
 
 pub struct PositiveU32sGeometric {

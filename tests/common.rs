@@ -95,9 +95,8 @@ impl TestOutput {
 pub fn get_expected_test_outputs() -> TestOutput {
     let mut f = File::open("tests/data/test-output.txt").expect("file not found");
     let mut contents = String::new();
-    f.read_to_string(&mut contents).expect(
-        "something went wrong reading the file",
-    );
+    f.read_to_string(&mut contents)
+        .expect("something went wrong reading the file");
     let mut vecs = HashMap::new();
     let mut maps = HashMap::new();
     let mut current_key = "";

@@ -1,5 +1,5 @@
 use iterators::adaptors::MultiChain;
-use iterators::general::{RangeDecreasing, range_decreasing_x, RangeIncreasing, range_increasing_x};
+use iterators::general::{range_decreasing_x, range_increasing_x, RangeDecreasing, RangeIncreasing};
 use prim_utils::char_utils::{char_to_contiguous_range, contiguous_range_to_char};
 use rand::distributions::{IndependentSample, Range};
 use rand::{IsaacRng, Rng, SeedableRng};

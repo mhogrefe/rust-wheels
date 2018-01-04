@@ -1,6 +1,6 @@
 use iterators::common::scramble;
 use rand::{IsaacRng, Rng, SeedableRng};
-use std::iter::{Chain, Once, once};
+use std::iter::{once, Chain, Once};
 
 //TODO test
 pub fn exhaustive_with_element<I>(x: I::Item, xs: I) -> Chain<Once<I::Item>, I>

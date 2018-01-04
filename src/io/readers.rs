@@ -34,5 +34,9 @@ pub fn parse_vec<T: FromStr>(s: &str) -> Option<Vec<T>> {
             buffer.clear();
         }
     }
-    if buffer.is_empty() { Some(xs) } else { None }
+    if buffer.is_empty() {
+        Some(xs)
+    } else {
+        None
+    }
 }

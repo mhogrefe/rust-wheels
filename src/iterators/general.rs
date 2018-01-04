@@ -1,4 +1,4 @@
-use iterators::primitive_ints::{RandomRange, random_range};
+use iterators::primitive_ints::{random_range, RandomRange};
 use prim_utils::traits::Walkable;
 use rand::{IsaacRng, Rand, Rng, SeedableRng};
 use std::iter::Peekable;

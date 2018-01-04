@@ -12,9 +12,9 @@ where
     F: Fn(&I::Item) -> J,
     I::Item: Clone,
 {
-    Box::new(Concat::new(
-        xs.map(move |x| f(&x).map(move |y| (x.clone(), y))),
-    ))
+    Box::new(Concat::new(xs.map(move |x| {
+        f(&x).map(move |y| (x.clone(), y))
+    })))
 }
 
 macro_rules! exhaustive_dependent_pairs {
@@ -71,18 +71,24 @@ macro_rules! exhaustive_dependent_pairs {
     }
 }
 
-exhaustive_dependent_pairs!(ExhaustiveDependentPairsInfiniteLog,
-                            exhaustive_dependent_pairs_infinite_log,
-                            LogPairIndices,
-                            LogPairIndices::new(),
-                            |i: &LogPairIndices| i.indices().1);
-exhaustive_dependent_pairs!(ExhaustiveDependentPairsInfiniteSqrt,
-                            exhaustive_dependent_pairs_infinite_sqrt,
-                            SqrtPairIndices,
-                            SqrtPairIndices::new(),
-                            |i: &SqrtPairIndices| i.y as usize);
-exhaustive_dependent_pairs!(ExhaustiveDependentPairsInfinite,
-                            exhaustive_dependent_pairs_infinite,
-                            ZOrderTupleIndices,
-                            ZOrderTupleIndices::new(2),
-                            |i: &ZOrderTupleIndices| i.0[1] as usize);
+exhaustive_dependent_pairs!(
+    ExhaustiveDependentPairsInfiniteLog,
+    exhaustive_dependent_pairs_infinite_log,
+    LogPairIndices,
+    LogPairIndices::new(),
+    |i: &LogPairIndices| i.indices().1
+);
+exhaustive_dependent_pairs!(
+    ExhaustiveDependentPairsInfiniteSqrt,
+    exhaustive_dependent_pairs_infinite_sqrt,
+    SqrtPairIndices,
+    SqrtPairIndices::new(),
+    |i: &SqrtPairIndices| i.y as usize
+);
+exhaustive_dependent_pairs!(
+    ExhaustiveDependentPairsInfinite,
+    exhaustive_dependent_pairs_infinite,
+    ZOrderTupleIndices,
+    ZOrderTupleIndices::new(2),
+    |i: &ZOrderTupleIndices| i.0[1] as usize
+);

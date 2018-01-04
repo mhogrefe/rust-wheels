@@ -12,7 +12,13 @@ where
 {
     Zero(bool),
     One(I),
-    MoreThanOne(bool, CachedIterator<I>, ZOrderTupleIndices, bool, Option<ZOrderTupleIndices>),
+    MoreThanOne(
+        bool,
+        CachedIterator<I>,
+        ZOrderTupleIndices,
+        bool,
+        Option<ZOrderTupleIndices>,
+    ),
 }
 
 impl<I: Iterator> Iterator for ExhaustiveFixedSizeVecsFromSingle<I>
@@ -32,11 +38,13 @@ where
                 }
             }
             ExhaustiveFixedSizeVecsFromSingle::One(ref mut xs) => xs.next().map(|x| vec![x]),
-            ExhaustiveFixedSizeVecsFromSingle::MoreThanOne(ref mut done,
-                                                           ref mut xs,
-                                                           ref mut i,
-                                                           ref mut stop_checking_size,
-                                                           ref mut max_indices) => {
+            ExhaustiveFixedSizeVecsFromSingle::MoreThanOne(
+                ref mut done,
+                ref mut xs,
+                ref mut i,
+                ref mut stop_checking_size,
+                ref mut max_indices,
+            ) => {
                 let mut result = Vec::with_capacity(i.size());
                 'outer: loop {
                     if *done {
@@ -87,15 +95,13 @@ where
     match size {
         0 => ExhaustiveFixedSizeVecsFromSingle::Zero(true),
         1 => ExhaustiveFixedSizeVecsFromSingle::One(xs),
-        _ => {
-            ExhaustiveFixedSizeVecsFromSingle::MoreThanOne(
-                false,
-                CachedIterator::new(xs),
-                ZOrderTupleIndices::new(size),
-                false,
-                None,
-            )
-        }
+        _ => ExhaustiveFixedSizeVecsFromSingle::MoreThanOne(
+            false,
+            CachedIterator::new(xs),
+            ZOrderTupleIndices::new(size),
+            false,
+            None,
+        ),
     }
 }
 
