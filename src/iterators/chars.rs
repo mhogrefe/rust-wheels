@@ -81,7 +81,7 @@ impl Iterator for RandomAsciiChars {
     type Item = char;
 
     fn next(&mut self) -> Option<char> {
-        Some(char::from_u32((self.0.gen::<u8>() & 0x7f) as u32).unwrap())
+        Some(char::from_u32(u32::from(self.0.gen::<u8>() & 0x7f)).unwrap())
     }
 }
 

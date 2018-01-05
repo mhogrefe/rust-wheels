@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use std::cmp::Ordering;
 use std::fmt::Debug;
 use std::fmt::Display;
-use std::hash::Hash;
+use std::hash::{BuildHasher, Hash};
 
 fn to_limited_string_vec_helper<I>(
     limit: usize,
@@ -83,9 +83,9 @@ impl PartialOrd for FrequencyRecord {
     }
 }
 
-fn get_most_common_values_helper<T>(
+fn get_most_common_values_helper<T, S: BuildHasher>(
     limit: usize,
-    map: HashMap<T, usize>,
+    map: HashMap<T, usize, S>,
     f: &Fn(&T) -> String,
 ) -> Vec<(String, usize)>
 where
@@ -121,14 +121,20 @@ where
     result
 }
 
-pub fn get_most_common_values<T>(limit: usize, map: HashMap<T, usize>) -> Vec<(String, usize)>
+pub fn get_most_common_values<T, S: BuildHasher>(
+    limit: usize,
+    map: HashMap<T, usize, S>,
+) -> Vec<(String, usize)>
 where
     T: Eq + Hash + Display,
 {
     get_most_common_values_helper(limit, map, &|x| x.to_string())
 }
 
-pub fn get_most_common_values_debug<T>(limit: usize, map: HashMap<T, usize>) -> Vec<(String, usize)>
+pub fn get_most_common_values_debug<T, S: BuildHasher>(
+    limit: usize,
+    map: HashMap<T, usize, S>,
+) -> Vec<(String, usize)>
 where
     T: Eq + Hash + Debug,
 {

@@ -1,7 +1,7 @@
 use prim_utils::traits::*;
 use std::char;
 
-pub const NUMBER_OF_CHARS: u32 = 0x10F800;
+pub const NUMBER_OF_CHARS: u32 = 0x10_f800;
 
 pub fn char_to_contiguous_range(c: char) -> u32 {
     if c <= '\u{D7FF}' {

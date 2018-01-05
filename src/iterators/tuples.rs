@@ -16,7 +16,7 @@ impl LogPairIndices {
             return None;
         }
         let i = (i << 1) | 1;
-        if (i.leading_zeros() as u64) < j {
+        if u64::from(i.leading_zeros()) < j {
             None
         } else {
             Some(LogPairIndices(i << j))

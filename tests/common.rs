@@ -9,7 +9,7 @@ use std::hash::Hash;
 use std::io::prelude::*;
 
 const TINY_LIMIT: usize = 20;
-const HUGE_LIMIT: usize = 1000000;
+const HUGE_LIMIT: usize = 1_000_000;
 
 #[derive(Debug)]
 pub struct TestOutput {
