@@ -1,7 +1,7 @@
 use rust_wheels::iterators::integers::*;
 
 use common::get_expected_test_outputs;
-use malachite::integer::Integer;
+use malachite_nz::integer::Integer;
 use rust_wheels::iterators::common::EXAMPLE_SEED;
 use std::str::FromStr;
 

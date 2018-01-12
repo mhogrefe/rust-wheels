@@ -4,8 +4,9 @@ use iterators::naturals::{random_naturals, random_positive_naturals, RandomNatur
                           RandomPositiveNaturals};
 use itertools::{Interleave, Itertools};
 use malachite_base::traits::{NegativeOne, One, Zero};
-use malachite::integer::Integer;
-use malachite::natural::Natural;
+use malachite_nz::integer::Integer;
+use malachite_nz::natural::Natural;
+use malachite_nz::natural::random::random_natural_below;
 use rand::{IsaacRng, SeedableRng};
 use std::iter::{once, Chain, Once};
 
@@ -267,7 +268,7 @@ pub fn random_integers(seed: &[u32], scale: u32) -> RandomIntegers {
 
 pub struct RandomRangeInteger {
     rng: IsaacRng,
-    diameter: Integer,
+    diameter: Natural,
     a: Integer,
 }
 
@@ -275,10 +276,7 @@ impl Iterator for RandomRangeInteger {
     type Item = Integer;
 
     fn next(&mut self) -> Option<Integer> {
-        let mut random = self.diameter.clone();
-        random.random_below(&mut self.rng);
-        random += self.a.clone();
-        Some(random)
+        Some(random_natural_below(&mut self.rng, &(&self.diameter + 1)).into_integer() + &self.a)
     }
 }
 
@@ -286,11 +284,9 @@ pub fn random_range_integer(seed: &[u32], a: Integer, b: Integer) -> RandomRange
     if a > b {
         panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
     }
-    let mut diameter = b - &a;
-    diameter += 1;
     RandomRangeInteger {
         rng: IsaacRng::from_seed(seed),
-        diameter,
+        diameter: (b - &a).into_natural().unwrap(),
         a,
     }
 }

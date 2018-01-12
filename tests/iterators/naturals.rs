@@ -1,7 +1,7 @@
 use rust_wheels::iterators::naturals::*;
 
 use common::get_expected_test_outputs;
-use malachite::natural::Natural;
+use malachite_nz::natural::Natural;
 use rust_wheels::iterators::common::EXAMPLE_SEED;
 use std::str::FromStr;
 

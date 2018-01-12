@@ -128,6 +128,78 @@ macro_rules! benchmark {
     }
 }
 
+pub struct BenchmarkOptions1<'a, I: Iterator, IR, T>
+where
+    I::Item: 'a,
+    IR: 'a,
+    T: 'a,
+{
+    pub xs: I,
+    pub function_f: &'a Fn(T) -> IR,
+    pub x_cons: &'a Fn(&I::Item) -> T,
+    pub x_param: &'a Fn(&I::Item) -> usize,
+    pub limit: usize,
+    pub f_name: &'a str,
+    pub title: &'a str,
+    pub x_axis_label: &'a str,
+    pub y_axis_label: &'a str,
+    pub file_name: &'a str,
+}
+
+#[allow(unused_variables)]
+pub fn benchmark_1<I: Iterator, IR, T>(options: BenchmarkOptions1<I, IR, T>)
+where
+    I::Item: Clone,
+{
+    let reps = 10;
+    let min_bucket_size = 2;
+
+    let mut xs_durations_map: HashMap<usize, Vec<f64>> = HashMap::new();
+    for x in options.xs.take(options.limit) {
+        let size = (options.x_param)(&x);
+        let mut x_durations = Vec::new();
+        for _ in 0..reps {
+            let xx = (options.x_cons)(&x);
+            let start_time = precise_time_ns();
+            let result = (options.function_f)(xx);
+            let end_time = precise_time_ns();
+            x_durations.push(end_time - start_time);
+        }
+        let x_duration = median(x_durations.iter().cloned()).unwrap();
+        xs_durations_map
+            .entry(size)
+            .or_insert_with(Vec::new)
+            .push(x_duration);
+    }
+    let mut xs_median_durations_map: BTreeMap<usize, u64> = BTreeMap::new();
+    for (size, durations) in xs_durations_map {
+        if durations.len() >= min_bucket_size {
+            xs_median_durations_map.insert(size, mean(durations.iter().cloned()) as u64);
+        }
+    }
+    let xs_sizes: Vec<usize> = xs_median_durations_map
+        .iter()
+        .map(|entry| *entry.0)
+        .collect();
+    let xs_durations: Vec<u64> = xs_median_durations_map
+        .iter()
+        .map(|entry| *entry.1)
+        .collect();
+    let mut fg = Figure::new();
+    {
+        let axes = fg.axes2d();
+        axes.set_title(options.title, &[]);
+        axes.set_x_label(options.x_axis_label, &[]);
+        axes.set_y_label(options.y_axis_label, &[]);
+        axes.lines(
+            &xs_sizes,
+            &xs_durations,
+            &[Caption(options.f_name), Color("black")],
+        );
+    }
+    fg.echo_to_file(options.file_name);
+}
+
 benchmark!(
     BenchmarkOptions2,
     benchmark_2,
