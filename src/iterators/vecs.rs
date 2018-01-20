@@ -86,7 +86,7 @@ where
 
 //TODO test
 pub fn exhaustive_fixed_size_vecs_from_single<I: Iterator>(
-    size: usize,
+    size: u64,
     xs: I,
 ) -> ExhaustiveFixedSizeVecsFromSingle<I>
 where
@@ -111,13 +111,13 @@ fn exhaustive_vecs_more_than_one<'a, I: Clone + Iterator + 'a>(
 where
     I::Item: Clone,
 {
-    let f = move |size: &usize| {
+    let f = move |size: &u64| {
         exhaustive_fixed_size_vecs_from_single(*size, xs.clone())
             .map(Option::Some)
             .chain(repeat(Option::None))
     };
     Box::new(
-        exhaustive_dependent_pairs_infinite_log(exhaustive_positive_x::<usize>(), f)
+        exhaustive_dependent_pairs_infinite_log(exhaustive_positive_x(), f)
             .map(|(_, v)| v)
             .filter(|v| v.is_some())
             .map(|v| v.unwrap()),

@@ -80,9 +80,9 @@ impl SqrtPairIndices {
 pub struct ZOrderTupleIndices(pub Vec<u64>);
 
 impl ZOrderTupleIndices {
-    pub fn new(size: usize) -> ZOrderTupleIndices {
+    pub fn new(size: u64) -> ZOrderTupleIndices {
         let mut v = Vec::new();
-        v.resize(size, 0);
+        v.resize(size as usize, 0);
         ZOrderTupleIndices(v)
     }
 

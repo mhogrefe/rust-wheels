@@ -1,3 +1,4 @@
+use malachite_base::num::{BitAccess, SignificantBits};
 use malachite_nz::integer::Integer;
 use prim_utils::traits::*;
 use std::char;
@@ -30,16 +31,6 @@ macro_rules! prim_impls {
                 $t::leading_zeros(*self)
             }
         }
-
-        impl Walkable for $t {
-            fn increment(&mut self) {
-                *self += 1
-            }
-
-            fn decrement(&mut self) {
-                *self -= 1
-            }
-        }
     }
 }
 
@@ -47,18 +38,15 @@ prim_impls!(u8, "u8", i, i, 8);
 prim_impls!(u16, "u16", i, u16::from(i), 16);
 prim_impls!(u32, "u32", i, u32::from(i), 32);
 prim_impls!(u64, "u64", i, u64::from(i), 64);
-prim_impls!(usize, "usize", i, i as usize, (0 as usize).count_zeros());
 prim_impls!(i8, "i8", i, i as i8, 8);
 prim_impls!(i16, "i16", i, i16::from(i), 16);
 prim_impls!(i32, "i32", i, i32::from(i), 32);
 prim_impls!(i64, "i64", i, i64::from(i), 64);
-prim_impls!(isize, "isize", i, i as isize, (0 as isize).count_zeros());
 
 impl PrimUnsignedInt for u8 {}
 impl PrimUnsignedInt for u16 {}
 impl PrimUnsignedInt for u32 {}
 impl PrimUnsignedInt for u64 {}
-impl PrimUnsignedInt for usize {}
 
 macro_rules! prim_impls_i {
     ($t: ident, $i: ident, $from_i8: expr) => {
@@ -74,7 +62,6 @@ prim_impls_i!(i8, i, i);
 prim_impls_i!(i16, i, i16::from(i));
 prim_impls_i!(i32, i, i32::from(i));
 prim_impls_i!(i64, i, i64::from(i));
-prim_impls_i!(isize, i, i as isize);
 
 pub fn ceiling_log_2_u<T: PrimUnsignedInt>(n: T) -> u32 {
     let zero = T::from_u8(0);

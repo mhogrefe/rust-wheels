@@ -1,6 +1,7 @@
 use iterators::primitive_ints::{random_range, RandomRange};
-use prim_utils::traits::Walkable;
+use malachite_base::num::Walkable;
 use rand::{IsaacRng, Rand, Rng, SeedableRng};
+use std::fmt::Display;
 use std::iter::Peekable;
 use std::marker::PhantomData;
 
@@ -28,13 +29,13 @@ impl<T: Walkable> Iterator for RangeIncreasing<T> {
     }
 }
 
-pub fn range_increasing_x<T: Walkable>(a: T, b: T) -> RangeIncreasing<T> {
+pub fn range_increasing_x<T: Display + Walkable>(a: T, b: T) -> RangeIncreasing<T> {
     if a > b {
         panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
     }
     RangeIncreasing {
         i: a,
-        b: b,
+        b,
         done: false,
     }
 }
@@ -63,12 +64,12 @@ impl<T: Walkable> Iterator for RangeDecreasing<T> {
     }
 }
 
-pub fn range_decreasing_x<T: Walkable>(a: T, b: T) -> RangeDecreasing<T> {
+pub fn range_decreasing_x<T: Display + Walkable>(a: T, b: T) -> RangeDecreasing<T> {
     if a > b {
         panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
     }
     RangeDecreasing {
-        a: a,
+        a,
         i: b,
         done: false,
     }
@@ -96,14 +97,14 @@ pub fn random_x<T: Rand>(seed: &[u32]) -> Random<T> {
 
 pub struct RandomFromVector<T> {
     xs: Vec<T>,
-    range: RandomRange<usize>,
+    range: RandomRange<u64>,
 }
 
 impl<T: Clone> Iterator for RandomFromVector<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        self.range.next().map(|i| self.xs[i].clone())
+        self.range.next().map(|i| self.xs[i as usize].clone())
     }
 }
 
@@ -113,8 +114,8 @@ pub fn random_from_vector<T>(seed: &[u32], xs: Vec<T>) -> RandomFromVector<T> {
     }
     let limit = &xs.len() - 1;
     RandomFromVector {
-        xs: xs,
-        range: random_range(seed, 0, limit),
+        xs,
+        range: random_range(seed, 0, limit as u64),
     }
 }
 

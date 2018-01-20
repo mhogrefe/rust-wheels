@@ -8,11 +8,6 @@ extern crate stats;
 extern crate time;
 
 pub mod benchmarks;
-pub mod demos {
-    pub mod prim_utils {
-        pub mod integer_utils_demos;
-    }
-}
 pub mod io {
     pub mod readers;
 }
@@ -34,7 +29,6 @@ pub mod iterators {
     pub mod tuples;
 }
 pub mod prim_utils {
-    pub mod char_utils;
     pub mod integer_utils;
     pub mod traits;
 }

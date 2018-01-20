@@ -1,3 +1,4 @@
+use malachite_base::num::Walkable;
 use rand::distributions::range::SampleRange;
 use rand::Rand;
 use std::fmt::Debug;
@@ -44,10 +45,4 @@ pub trait PrimUnsignedInt: PrimInt {}
 
 pub trait PrimSignedInt: PrimInt {
     fn from_i8(i: i8) -> Self;
-}
-
-pub trait Walkable: Copy + Display + Eq + Ord {
-    fn increment(&mut self);
-
-    fn decrement(&mut self);
 }

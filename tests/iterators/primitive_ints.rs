@@ -1,9 +1,9 @@
 use rust_wheels::iterators::primitive_ints::*;
 
 use common::{get_expected_test_outputs, TestOutput};
+use malachite_base::num::{PrimitiveInteger, PrimitiveSigned, PrimitiveUnsigned};
 use rust_wheels::iterators::common::EXAMPLE_SEED;
 use rust_wheels::iterators::general::{random_x, range_decreasing_x, range_increasing_x};
-use rust_wheels::prim_utils::traits::{PrimInt, PrimSignedInt, PrimUnsignedInt};
 
 macro_rules! prim_fail {
     ($t: ty, $range_increasing_fail: ident, $range_decreasing_fail: ident) => {
@@ -25,11 +25,6 @@ prim_fail!(u8, range_increasing_u8_fail, range_decreasing_u8_fail);
 prim_fail!(u16, range_increasing_u16_fail, range_decreasing_u16_fail);
 prim_fail!(u32, range_increasing_u32_fail, range_decreasing_u32_fail);
 prim_fail!(u64, range_increasing_u64_fail, range_decreasing_u64_fail);
-prim_fail!(
-    usize,
-    range_increasing_usize_fail,
-    range_decreasing_usize_fail
-);
 prim_fail!(i8, range_increasing_i8_fail_1, range_decreasing_i8_fail_1);
 prim_fail!(
     i16,
@@ -45,11 +40,6 @@ prim_fail!(
     i64,
     range_increasing_i64_fail_1,
     range_decreasing_i64_fail_1
-);
-prim_fail!(
-    isize,
-    range_increasing_isize_fail_1,
-    range_decreasing_isize_fail_1
 );
 
 macro_rules! prim_fail_u {
@@ -72,7 +62,6 @@ prim_fail_u!(u8, range_fail_u8_1, range_fail_u8_2);
 prim_fail_u!(u16, range_fail_u16_1, range_fail_u16_2);
 prim_fail_u!(u32, range_fail_u32_1, range_fail_u32_2);
 prim_fail_u!(u64, range_fail_u64_1, range_fail_u64_2);
-prim_fail_u!(usize, range_fail_usize_1, range_fail_usize_2);
 
 macro_rules! prim_fail_i {
     (
@@ -158,23 +147,14 @@ prim_fail_i!(
     random_range_fail_i64_3,
     random_range_fail_i64_4
 );
-prim_fail_i!(
-    isize,
-    range_increasing_isize_fail_2,
-    range_decreasing_isize_fail_2,
-    random_range_fail_isize_1,
-    random_range_fail_isize_2,
-    random_range_fail_isize_3,
-    random_range_fail_isize_4
-);
 
-fn positive_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
+fn positive_u_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
     eo.match_vec(
-        &format!("exhaustive_positive_{}s", T::name()),
+        &format!("exhaustive_positive_{}s", T::NAME),
         &mut exhaustive_positive_x::<T>(),
     );
     eo.match_vec_f(
-        &format!("random_positive_{}s", T::name()),
+        &format!("random_positive_{}s", T::NAME),
         &mut random_positive_u::<T>(&EXAMPLE_SEED[..]),
     );
 }
@@ -188,13 +168,13 @@ fn test_positive_u() {
     positive_u_helper::<u64>(&eo);
 }
 
-fn positive_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
+fn positive_i_helper<T: PrimitiveSigned>(eo: &TestOutput) {
     eo.match_vec(
-        &format!("exhaustive_positive_{}s", T::name()),
+        &format!("exhaustive_positive_{}s", T::NAME),
         &mut exhaustive_positive_x::<T>(),
     );
     eo.match_vec_f(
-        &format!("random_positive_{}s", T::name()),
+        &format!("random_positive_{}s", T::NAME),
         &mut random_positive_i::<T>(&EXAMPLE_SEED[..]),
     );
 }
@@ -208,13 +188,13 @@ fn test_positive_i() {
     positive_i_helper::<i64>(&eo);
 }
 
-fn negative_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
+fn negative_i_helper<T: PrimitiveSigned>(eo: &TestOutput) {
     eo.match_vec(
-        &format!("exhaustive_negative_{}s", T::name()),
+        &format!("exhaustive_negative_{}s", T::NAME),
         &mut exhaustive_negative_i::<T>(),
     );
     eo.match_vec_f(
-        &format!("random_negative_{}s", T::name()),
+        &format!("random_negative_{}s", T::NAME),
         &mut random_negative_i::<T>(&EXAMPLE_SEED[..]),
     );
 }
@@ -228,13 +208,13 @@ fn test_negative_i() {
     negative_i_helper::<i64>(&eo);
 }
 
-fn natural_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
+fn natural_i_helper<T: PrimitiveSigned>(eo: &TestOutput) {
     eo.match_vec(
-        &format!("exhaustive_natural_{}s", T::name()),
+        &format!("exhaustive_natural_{}s", T::NAME),
         &mut exhaustive_natural_i::<T>(),
     );
     eo.match_vec_f(
-        &format!("random_natural_{}s", T::name()),
+        &format!("random_natural_{}s", T::NAME),
         &mut random_natural_i::<T>(&EXAMPLE_SEED[..]),
     );
 }
@@ -248,13 +228,13 @@ fn test_natural_i() {
     natural_i_helper::<i64>(&eo);
 }
 
-fn nonzero_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
+fn nonzero_i_helper<T: PrimitiveSigned>(eo: &TestOutput) {
     eo.match_vec(
-        &format!("exhaustive_nonzero_{}s", T::name()),
+        &format!("exhaustive_nonzero_{}s", T::NAME),
         &mut exhaustive_nonzero_i::<T>(),
     );
     eo.match_vec_f(
-        &format!("random_nonzero_{}s", T::name()),
+        &format!("random_nonzero_{}s", T::NAME),
         &mut random_nonzero_i::<T>(&EXAMPLE_SEED[..]),
     );
 }
@@ -268,13 +248,13 @@ fn test_nonzero_i() {
     nonzero_i_helper::<i64>(&eo);
 }
 
-fn all_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
+fn all_u_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
     eo.match_vec(
-        &format!("exhaustive_{}s", T::name()),
+        &format!("exhaustive_{}s", T::NAME),
         &mut exhaustive_u::<T>(),
     );
     eo.match_vec_f(
-        &format!("random_{}s", T::name()),
+        &format!("random_{}s", T::NAME),
         &mut random_x::<T>(&EXAMPLE_SEED[..]),
     );
 }
@@ -288,13 +268,13 @@ fn test_all_u() {
     all_u_helper::<u64>(&eo);
 }
 
-fn all_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
+fn all_i_helper<T: PrimitiveSigned>(eo: &TestOutput) {
     eo.match_vec(
-        &format!("exhaustive_{}s", T::name()),
+        &format!("exhaustive_{}s", T::NAME),
         &mut exhaustive_i::<T>(),
     );
     eo.match_vec_f(
-        &format!("random_{}s", T::name()),
+        &format!("random_{}s", T::NAME),
         &mut random_x::<T>(&EXAMPLE_SEED[..]),
     );
 }
@@ -308,16 +288,16 @@ fn test_all_i() {
     all_i_helper::<i64>(&eo);
 }
 
-fn range_up_increasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
+fn range_up_increasing_u_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec(
-            &format!("exhaustive_range_up_increasing_{}_{}", T::name(), number),
+            &format!("exhaustive_range_up_increasing_{}_{}", T::NAME, number),
             &mut range_up_increasing_x(a),
         )
     };
-    test("i", T::from_u8(0));
-    test("ii", T::from_u8(5));
-    test("iii", T::max_value());
+    test("i", T::ZERO);
+    test("ii", T::from_u32(5));
+    test("iii", T::MAX);
 }
 
 #[test]
@@ -329,18 +309,18 @@ fn test_range_up_increasing_u() {
     range_up_increasing_u_helper::<u64>(&eo);
 }
 
-fn range_up_increasing_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
+fn range_up_increasing_i_helper<T: PrimitiveSigned>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec(
-            &format!("exhaustive_range_up_increasing_{}_{}", T::name(), number),
+            &format!("exhaustive_range_up_increasing_{}_{}", T::NAME, number),
             &mut range_up_increasing_x(a),
         )
     };
-    test("i", T::from_u8(0));
-    test("ii", T::from_u8(5));
-    test("iii", T::max_value());
-    test("iv", T::from_i8(-5));
-    test("v", T::min_value());
+    test("i", T::ZERO);
+    test("ii", T::from_u32(5));
+    test("iii", T::MAX);
+    test("iv", T::from_i32(-5));
+    test("v", T::MIN);
 }
 
 #[test]
@@ -352,16 +332,16 @@ fn test_range_up_increasing_i() {
     range_up_increasing_i_helper::<i64>(&eo);
 }
 
-fn range_up_decreasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
+fn range_up_decreasing_u_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec(
-            &format!("exhaustive_range_up_decreasing_{}_{}", T::name(), number),
+            &format!("exhaustive_range_up_decreasing_{}_{}", T::NAME, number),
             &mut range_up_decreasing_x(a),
         )
     };
-    test("i", T::from_u8(0));
-    test("ii", T::from_u8(5));
-    test("iii", T::max_value());
+    test("i", T::ZERO);
+    test("ii", T::from_u32(5));
+    test("iii", T::MAX);
 }
 
 #[test]
@@ -373,18 +353,18 @@ fn test_range_up_decreasing_u() {
     range_up_decreasing_u_helper::<u64>(&eo);
 }
 
-fn range_up_decreasing_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
+fn range_up_decreasing_i_helper<T: PrimitiveSigned>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec(
-            &format!("exhaustive_range_up_decreasing_{}_{}", T::name(), number),
+            &format!("exhaustive_range_up_decreasing_{}_{}", T::NAME, number),
             &mut range_up_decreasing_x(a),
         )
     };
-    test("i", T::from_u8(0));
-    test("ii", T::from_u8(5));
-    test("iii", T::max_value());
-    test("iv", T::from_i8(-5));
-    test("v", T::min_value());
+    test("i", T::ZERO);
+    test("ii", T::from_u32(5));
+    test("iii", T::MAX);
+    test("iv", T::from_i32(-5));
+    test("v", T::MIN);
 }
 
 #[test]
@@ -396,16 +376,16 @@ fn test_range_up_decreasing_i() {
     range_up_decreasing_i_helper::<i64>(&eo);
 }
 
-fn range_down_increasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
+fn range_down_increasing_u_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec(
-            &format!("exhaustive_range_down_increasing_{}_{}", T::name(), number),
+            &format!("exhaustive_range_down_increasing_{}_{}", T::NAME, number),
             &mut range_down_increasing_x(a),
         )
     };
-    test("i", T::from_u8(0));
-    test("ii", T::from_u8(5));
-    test("iii", T::max_value());
+    test("i", T::ZERO);
+    test("ii", T::from_u32(5));
+    test("iii", T::MAX);
 }
 
 #[test]
@@ -417,18 +397,18 @@ fn test_range_down_increasing_u() {
     range_down_increasing_u_helper::<u64>(&eo);
 }
 
-fn range_down_increasing_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
+fn range_down_increasing_i_helper<T: PrimitiveSigned>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec(
-            &format!("exhaustive_range_down_increasing_{}_{}", T::name(), number),
+            &format!("exhaustive_range_down_increasing_{}_{}", T::NAME, number),
             &mut range_down_increasing_x(a),
         )
     };
-    test("i", T::from_u8(0));
-    test("ii", T::from_u8(5));
-    test("iii", T::max_value());
-    test("iv", T::from_i8(-5));
-    test("v", T::min_value());
+    test("i", T::ZERO);
+    test("ii", T::from_u32(5));
+    test("iii", T::MAX);
+    test("iv", T::from_i32(-5));
+    test("v", T::MIN);
 }
 
 #[test]
@@ -440,16 +420,16 @@ fn test_range_down_increasing_i() {
     range_down_increasing_i_helper::<i64>(&eo);
 }
 
-fn range_down_decreasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
+fn range_down_decreasing_u_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec(
-            &format!("exhaustive_range_down_decreasing_{}_{}", T::name(), number),
+            &format!("exhaustive_range_down_decreasing_{}_{}", T::NAME, number),
             &mut range_down_decreasing_x(a),
         )
     };
-    test("i", T::from_u8(0));
-    test("ii", T::from_u8(5));
-    test("iii", T::max_value());
+    test("i", T::ZERO);
+    test("ii", T::from_u32(5));
+    test("iii", T::MAX);
 }
 
 #[test]
@@ -461,18 +441,18 @@ fn test_range_down_decreasing_u() {
     range_down_decreasing_u_helper::<u64>(&eo);
 }
 
-fn range_down_decreasing_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
+fn range_down_decreasing_i_helper<T: PrimitiveSigned>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec(
-            &format!("exhaustive_range_down_decreasing_{}_{}", T::name(), number),
+            &format!("exhaustive_range_down_decreasing_{}_{}", T::NAME, number),
             &mut range_down_decreasing_x(a),
         )
     };
-    test("i", T::from_u8(0));
-    test("ii", T::from_u8(5));
-    test("iii", T::max_value());
-    test("iv", T::from_i8(-5));
-    test("v", T::min_value());
+    test("i", T::ZERO);
+    test("ii", T::from_u32(5));
+    test("iii", T::MAX);
+    test("iv", T::from_i32(-5));
+    test("v", T::MIN);
 }
 
 #[test]
@@ -484,19 +464,19 @@ fn test_range_down_decreasing_i() {
     range_down_decreasing_i_helper::<i64>(&eo);
 }
 
-fn range_increasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
+fn range_increasing_u_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
     let test = |number, a, b| {
         eo.match_vec(
-            &format!("exhaustive_range_increasing_{}_{}", T::name(), number),
+            &format!("exhaustive_range_increasing_{}_{}", T::NAME, number),
             &mut range_increasing_x(a, b),
         )
     };
-    test("i", T::from_u8(0), T::from_u8(0));
-    test("ii", T::from_u8(0), T::from_u8(10));
-    test("iii", T::from_u8(10), T::from_u8(20));
-    test("iv", T::from_u8(10), T::from_u8(10));
-    test("v", T::from_u8(0), T::max_value());
-    test("vi", T::from_u8(0), T::max_value() - T::from_u8(1));
+    test("i", T::ZERO, T::ZERO);
+    test("ii", T::ZERO, T::from_u32(10));
+    test("iii", T::from_u32(10), T::from_u32(20));
+    test("iv", T::from_u32(10), T::from_u32(10));
+    test("v", T::ZERO, T::MAX);
+    test("vi", T::ZERO, T::MAX - T::ONE);
 }
 
 #[test]
@@ -508,28 +488,24 @@ fn test_range_increasing_u() {
     range_increasing_u_helper::<u64>(&eo);
 }
 
-fn range_increasing_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
+fn range_increasing_i_helper<T: PrimitiveSigned>(eo: &TestOutput) {
     let test = |number, a, b| {
         eo.match_vec(
-            &format!("exhaustive_range_increasing_{}_{}", T::name(), number),
+            &format!("exhaustive_range_increasing_{}_{}", T::NAME, number),
             &mut range_increasing_x(a, b),
         )
     };
-    test("i", T::from_u8(0), T::from_u8(0));
-    test("ii", T::from_u8(0), T::from_u8(10));
-    test("iii", T::from_u8(10), T::from_u8(20));
-    test("iv", T::from_u8(10), T::from_u8(10));
-    test("v", T::from_u8(0), T::max_value());
-    test("vi", T::from_u8(0), T::max_value() - T::from_u8(1));
-    test("vii", T::from_i8(-10), T::from_i8(-10));
-    test("viii", T::from_i8(-20), T::from_i8(-10));
-    test("ix", T::from_i8(-100), T::from_u8(100));
-    test("x", T::min_value(), T::max_value());
-    test(
-        "xi",
-        T::min_value() + T::from_u8(1),
-        T::max_value() - T::from_u8(1),
-    );
+    test("i", T::ZERO, T::ZERO);
+    test("ii", T::ZERO, T::from_u32(10));
+    test("iii", T::from_u32(10), T::from_u32(20));
+    test("iv", T::from_u32(10), T::from_u32(10));
+    test("v", T::ZERO, T::MAX);
+    test("vi", T::ZERO, T::MAX - T::ONE);
+    test("vii", T::from_i32(-10), T::from_i32(-10));
+    test("viii", T::from_i32(-20), T::from_i32(-10));
+    test("ix", T::from_i32(-100), T::from_u32(100));
+    test("x", T::MIN, T::MAX);
+    test("xi", T::MIN + T::ONE, T::MAX - T::ONE);
 }
 
 #[test]
@@ -541,19 +517,19 @@ fn test_range_increasing_i() {
     range_increasing_i_helper::<i64>(&eo);
 }
 
-fn range_decreasing_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
+fn range_decreasing_u_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
     let test = |number, a, b| {
         eo.match_vec(
-            &format!("exhaustive_range_decreasing_{}_{}", T::name(), number),
+            &format!("exhaustive_range_decreasing_{}_{}", T::NAME, number),
             &mut range_decreasing_x(a, b),
         )
     };
-    test("i", T::from_u8(0), T::from_u8(0));
-    test("ii", T::from_u8(0), T::from_u8(10));
-    test("iii", T::from_u8(10), T::from_u8(20));
-    test("iv", T::from_u8(10), T::from_u8(10));
-    test("v", T::from_u8(0), T::max_value());
-    test("vi", T::from_u8(0), T::max_value() - T::from_u8(1));
+    test("i", T::ZERO, T::ZERO);
+    test("ii", T::ZERO, T::from_u32(10));
+    test("iii", T::from_u32(10), T::from_u32(20));
+    test("iv", T::from_u32(10), T::from_u32(10));
+    test("v", T::ZERO, T::MAX);
+    test("vi", T::ZERO, T::MAX - T::ONE);
 }
 
 #[test]
@@ -565,28 +541,24 @@ fn test_range_decreasing_u() {
     range_decreasing_u_helper::<u64>(&eo);
 }
 
-fn range_decreasing_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
+fn range_decreasing_i_helper<T: PrimitiveSigned>(eo: &TestOutput) {
     let test = |number, a, b| {
         eo.match_vec(
-            &format!("exhaustive_range_decreasing_{}_{}", T::name(), number),
+            &format!("exhaustive_range_decreasing_{}_{}", T::NAME, number),
             &mut range_decreasing_x(a, b),
         )
     };
-    test("i", T::from_u8(0), T::from_u8(0));
-    test("ii", T::from_u8(0), T::from_u8(10));
-    test("iii", T::from_u8(10), T::from_u8(20));
-    test("iv", T::from_u8(10), T::from_u8(10));
-    test("v", T::from_u8(0), T::max_value());
-    test("vi", T::from_u8(0), T::max_value() - T::from_u8(1));
-    test("vii", T::from_i8(-10), T::from_i8(-10));
-    test("viii", T::from_i8(-20), T::from_i8(-10));
-    test("ix", T::from_i8(-100), T::from_u8(100));
-    test("x", T::min_value(), T::max_value());
-    test(
-        "xi",
-        T::min_value() + T::from_u8(1),
-        T::max_value() - T::from_u8(1),
-    );
+    test("i", T::ZERO, T::ZERO);
+    test("ii", T::ZERO, T::from_u32(10));
+    test("iii", T::from_u32(10), T::from_u32(20));
+    test("iv", T::from_u32(10), T::from_u32(10));
+    test("v", T::ZERO, T::MAX);
+    test("vi", T::ZERO, T::MAX - T::ONE);
+    test("vii", T::from_i32(-10), T::from_i32(-10));
+    test("viii", T::from_i32(-20), T::from_i32(-10));
+    test("ix", T::from_i32(-100), T::from_u32(100));
+    test("x", T::MIN, T::MAX);
+    test("xi", T::MIN + T::ONE, T::MAX - T::ONE);
 }
 
 #[test]
@@ -598,9 +570,9 @@ fn test_range_decreasing_i() {
     range_decreasing_i_helper::<i64>(&eo);
 }
 
-fn x_increasing_helper<T: PrimInt>(eo: &TestOutput) {
+fn x_increasing_helper<T: PrimitiveInteger>(eo: &TestOutput) {
     eo.match_vec(
-        &format!("exhaustive_{}s_increasing", T::name()),
+        &format!("exhaustive_{}s_increasing", T::NAME),
         &mut x_increasing::<T>(),
     );
 }
@@ -618,9 +590,9 @@ fn test_x_increasing() {
     x_increasing_helper::<i64>(&eo);
 }
 
-fn x_decreasing_helper<T: PrimInt>(eo: &TestOutput) {
+fn x_decreasing_helper<T: PrimitiveInteger>(eo: &TestOutput) {
     eo.match_vec(
-        &format!("exhaustive_{}s_decreasing", T::name()),
+        &format!("exhaustive_{}s_decreasing", T::NAME),
         &mut x_decreasing::<T>(),
     );
 }
@@ -638,30 +610,30 @@ fn test_x_decreasing() {
     x_decreasing_helper::<i64>(&eo);
 }
 
-fn random_range_up_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
+fn random_range_up_u_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec_f(
-            &format!("random_range_up_{}_{}", T::name(), number),
+            &format!("random_range_up_{}_{}", T::NAME, number),
             &mut random_range_up::<T>(&EXAMPLE_SEED[..], a),
         )
     };
-    test("i", T::from_u8(0));
-    test("ii", T::from_u8(5));
-    test("iii", T::max_value());
+    test("i", T::ZERO);
+    test("ii", T::from_u32(5));
+    test("iii", T::MAX);
 }
 
-fn random_range_up_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
+fn random_range_up_i_helper<T: PrimitiveSigned>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec_f(
-            &format!("random_range_up_{}_{}", T::name(), number),
+            &format!("random_range_up_{}_{}", T::NAME, number),
             &mut random_range_up::<T>(&EXAMPLE_SEED[..], a),
         )
     };
-    test("i", T::from_u8(0));
-    test("ii", T::from_u8(5));
-    test("iii", T::max_value());
-    test("iv", T::from_i8(-5));
-    test("v", T::min_value());
+    test("i", T::ZERO);
+    test("ii", T::from_u32(5));
+    test("iii", T::MAX);
+    test("iv", T::from_i32(-5));
+    test("v", T::MIN);
 }
 
 #[test]
@@ -677,30 +649,30 @@ fn test_random_range_up() {
     random_range_up_i_helper::<i64>(&eo);
 }
 
-fn random_range_down_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
+fn random_range_down_u_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec_f(
-            &format!("random_range_down_{}_{}", T::name(), number),
+            &format!("random_range_down_{}_{}", T::NAME, number),
             &mut random_range_down::<T>(&EXAMPLE_SEED[..], a),
         )
     };
-    test("i", T::from_u8(0));
-    test("ii", T::from_u8(5));
-    test("iii", T::max_value());
+    test("i", T::ZERO);
+    test("ii", T::from_u32(5));
+    test("iii", T::MAX);
 }
 
-fn random_range_down_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
+fn random_range_down_i_helper<T: PrimitiveSigned>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec_f(
-            &format!("random_range_down_{}_{}", T::name(), number),
+            &format!("random_range_down_{}_{}", T::NAME, number),
             &mut random_range_down::<T>(&EXAMPLE_SEED[..], a),
         )
     };
-    test("i", T::from_u8(0));
-    test("ii", T::from_u8(5));
-    test("iii", T::max_value());
-    test("iv", T::from_i8(-5));
-    test("v", T::min_value());
+    test("i", T::ZERO);
+    test("ii", T::from_u32(5));
+    test("iii", T::MAX);
+    test("iv", T::from_i32(-5));
+    test("v", T::MIN);
 }
 
 #[test]
@@ -716,47 +688,43 @@ fn test_random_range_down() {
     random_range_down_i_helper::<i64>(&eo);
 }
 
-fn random_range_u_helper<T: PrimUnsignedInt>(eo: &TestOutput) {
+fn random_range_u_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
     let test = |number, a, b| {
         eo.match_vec_f(
-            &format!("random_range_{}_{}", T::name(), number),
+            &format!("random_range_{}_{}", T::NAME, number),
             &mut random_range::<T>(&EXAMPLE_SEED[..], a, b),
         )
     };
-    test("i", T::from_u8(0), T::from_u8(0));
-    test("ii", T::from_u8(0), T::from_u8(10));
-    test("iii", T::from_u8(10), T::from_u8(20));
-    test("iv", T::from_u8(10), T::from_u8(10));
-    test("v", T::from_u8(0), T::max_value());
-    test("vi", T::from_u8(0), T::max_value() - T::from_u8(1));
+    test("i", T::ZERO, T::ZERO);
+    test("ii", T::ZERO, T::from_u32(10));
+    test("iii", T::from_u32(10), T::from_u32(20));
+    test("iv", T::from_u32(10), T::from_u32(10));
+    test("v", T::ZERO, T::MAX);
+    test("vi", T::ZERO, T::MAX - T::ONE);
 }
 
-fn range_i_helper<T: PrimSignedInt>(eo: &TestOutput) {
+fn range_i_helper<T: PrimitiveSigned>(eo: &TestOutput) {
     let test = |number, a, b| {
         eo.match_vec(
-            &format!("exhaustive_range_{}_{}", T::name(), number),
+            &format!("exhaustive_range_{}_{}", T::NAME, number),
             &mut exhaustive_range_i::<T>(a, b),
         );
         eo.match_vec_f(
-            &format!("random_range_{}_{}", T::name(), number),
+            &format!("random_range_{}_{}", T::NAME, number),
             &mut random_range::<T>(&EXAMPLE_SEED[..], a, b),
         )
     };
-    test("i", T::from_u8(0), T::from_u8(0));
-    test("ii", T::from_u8(0), T::from_u8(10));
-    test("iii", T::from_u8(10), T::from_u8(20));
-    test("iv", T::from_u8(10), T::from_u8(10));
-    test("v", T::from_u8(0), T::max_value());
-    test("vi", T::from_u8(0), T::max_value() - T::from_u8(1));
-    test("vii", T::from_i8(-10), T::from_i8(-10));
-    test("viii", T::from_i8(-20), T::from_i8(-10));
-    test("ix", T::from_i8(-100), T::from_u8(100));
-    test("x", T::min_value(), T::max_value());
-    test(
-        "xi",
-        T::min_value() + T::from_u8(1),
-        T::max_value() - T::from_u8(1),
-    );
+    test("i", T::ZERO, T::ZERO);
+    test("ii", T::ZERO, T::from_u32(10));
+    test("iii", T::from_u32(10), T::from_u32(20));
+    test("iv", T::from_u32(10), T::from_u32(10));
+    test("v", T::ZERO, T::MAX);
+    test("vi", T::ZERO, T::MAX - T::ONE);
+    test("vii", T::from_i32(-10), T::from_i32(-10));
+    test("viii", T::from_i32(-20), T::from_i32(-10));
+    test("ix", T::from_i32(-100), T::from_u32(100));
+    test("x", T::MIN, T::MAX);
+    test("xi", T::MIN + T::ONE, T::MAX - T::ONE);
 }
 
 #[test]

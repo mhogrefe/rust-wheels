@@ -122,18 +122,6 @@ prim_fail!(
     big_endian_digits_padded_u64_fail_1,
     big_endian_digits_padded_u64_fail_2
 );
-prim_fail!(
-    usize,
-    ceiling_log_2_usize_fail,
-    digits_usize_fail_1,
-    digits_usize_fail_2,
-    digits_padded_usize_fail_1,
-    digits_padded_usize_fail_2,
-    big_endian_digits_usize_fail_1,
-    big_endian_digits_usize_fail_2,
-    big_endian_digits_padded_usize_fail_1,
-    big_endian_digits_padded_usize_fail_2
-);
 
 fn ceiling_log_2_u_helper<T: PrimUnsignedInt>() {
     let test = |n, out| assert_eq!(ceiling_log_2_u(n), out);
@@ -156,7 +144,6 @@ fn test_ceiling_log_2_u() {
     ceiling_log_2_u_helper::<u16>();
     ceiling_log_2_u_helper::<u32>();
     ceiling_log_2_u_helper::<u64>();
-    ceiling_log_2_u_helper::<usize>();
 }
 
 #[test]

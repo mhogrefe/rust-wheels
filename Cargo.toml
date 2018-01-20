@@ -7,10 +7,6 @@ authors = ["Mikhail Hogrefe <mikhailhogrefe@gmail.com>"]
 name = "rust_wheels"
 path = "src/lib.rs"
 
-[[bin]]
-name = "rust_wheels_main"
-path = "src/bin.rs"
-
 [dependencies]
 gnuplot = "0.0.22"
 malachite-nz = { path = "../malachite/malachite-nz" }
