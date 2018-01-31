@@ -1,4 +1,4 @@
-use malachite_base::num::Walkable;
+use malachite_base::misc::Walkable;
 use rand::distributions::range::SampleRange;
 use rand::Rand;
 use std::fmt::Debug;

@@ -1,7 +1,7 @@
 use iterators::common::scramble;
 use iterators::integers_geometric::{NaturalU32sGeometric, PositiveU32sGeometric,
                                     natural_u32s_geometric, positive_u32s_geometric};
-use malachite_base::traits::{One, Zero};
+use malachite_base::num::{One, Zero};
 use malachite_nz::natural::Natural;
 use malachite_nz::natural::random::random_natural_from_bits;
 use rand::{IsaacRng, SeedableRng};

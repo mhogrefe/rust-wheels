@@ -1,5 +1,5 @@
 use iterators::primitive_ints::{random_range, RandomRange};
-use malachite_base::num::Walkable;
+use malachite_base::misc::Walkable;
 use rand::{IsaacRng, Rand, Rng, SeedableRng};
 use std::fmt::Display;
 use std::iter::Peekable;

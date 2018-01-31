@@ -3,7 +3,7 @@ use iterators::general::{random_x, Random};
 use iterators::naturals::{random_naturals, random_positive_naturals, RandomNaturals,
                           RandomPositiveNaturals};
 use itertools::{Interleave, Itertools};
-use malachite_base::traits::{NegativeOne, One, Zero};
+use malachite_base::num::{NegativeOne, One, Zero};
 use malachite_nz::integer::Integer;
 use malachite_nz::natural::Natural;
 use malachite_nz::natural::random::random_natural_below;
