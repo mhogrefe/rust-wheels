@@ -165,9 +165,7 @@ where
                 return None;
             }
             for _ in old_len..(index + 1) {
-                if self.next().is_none() {
-                    return None;
-                }
+                self.next()?;
             }
             Some(self.cache.last().unwrap().clone())
         }

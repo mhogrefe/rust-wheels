@@ -895,12 +895,12 @@ random_tuple_from_single!(
     (I::Item, I::Item, I::Item, I::Item, I::Item, I::Item),
     RandomSextuplesFromSingle,
     random_sextuples_from_single,
-    [x],
-    [y],
-    [z],
-    [w],
-    [v],
-    [u]
+    [x_0],
+    [x_1],
+    [x_2],
+    [x_3],
+    [x_4],
+    [x_5]
 );
 random_tuple_from_single!(
     (
@@ -914,13 +914,13 @@ random_tuple_from_single!(
     ),
     RandomSeptuplesFromSingle,
     random_septuples_from_single,
-    [x],
-    [y],
-    [z],
-    [w],
-    [v],
-    [u],
-    [t]
+    [x_0],
+    [x_1],
+    [x_2],
+    [x_3],
+    [x_4],
+    [x_5],
+    [x_6]
 );
 random_tuple_from_single!(
     (
@@ -935,14 +935,14 @@ random_tuple_from_single!(
     ),
     RandomOctuplesFromSingle,
     random_octuples_from_single,
-    [x],
-    [y],
-    [z],
-    [w],
-    [v],
-    [u],
-    [t],
-    [s]
+    [x_0],
+    [x_1],
+    [x_2],
+    [x_3],
+    [x_4],
+    [x_5],
+    [x_6],
+    [x_7]
 );
 
 macro_rules! random_tuple {
@@ -1016,33 +1016,33 @@ random_tuple!(
 random_tuple!(
     RandomSextuples,
     random_sextuples,
-    [I, xs_gen, xs, x, "xs"],
-    [J, ys_gen, ys, y, "ys"],
-    [K, zs_gen, zs, z, "zs"],
-    [L, ws_gen, ws, w, "ws"],
-    [M, vs_gen, vs, v, "vs"],
-    [N, us_gen, us, u, "us"]
+    [I, xs_gen, xs, x_0, "xs"],
+    [J, ys_gen, ys, x_1, "ys"],
+    [K, zs_gen, zs, x_2, "zs"],
+    [L, ws_gen, ws, x_3, "ws"],
+    [M, vs_gen, vs, x_4, "vs"],
+    [N, us_gen, us, x_5, "us"]
 );
 random_tuple!(
     RandomSeptuples,
     random_septuples,
-    [I, xs_gen, xs, x, "xs"],
-    [J, ys_gen, ys, y, "ys"],
-    [K, zs_gen, zs, z, "zs"],
-    [L, ws_gen, ws, w, "ws"],
-    [M, vs_gen, vs, v, "vs"],
-    [N, us_gen, us, u, "us"],
-    [O, ts_gen, ts, t, "ts"]
+    [I, xs_gen, xs, x_0, "xs"],
+    [J, ys_gen, ys, x_1, "ys"],
+    [K, zs_gen, zs, x_2, "zs"],
+    [L, ws_gen, ws, x_3, "ws"],
+    [M, vs_gen, vs, x_4, "vs"],
+    [N, us_gen, us, x_5, "us"],
+    [O, ts_gen, ts, x_6, "ts"]
 );
 random_tuple!(
     RandomOctuples,
     random_octuples,
-    [I, xs_gen, xs, x, "xs"],
-    [J, ys_gen, ys, y, "ys"],
-    [K, zs_gen, zs, z, "zs"],
-    [L, ws_gen, ws, w, "ws"],
-    [M, vs_gen, vs, v, "vs"],
-    [N, us_gen, us, u, "us"],
-    [O, ts_gen, ts, t, "ts"],
-    [P, ss_gen, ss, s, "ss"]
+    [I, xs_gen, xs, x_0, "xs"],
+    [J, ys_gen, ys, x_1, "ys"],
+    [K, zs_gen, zs, x_2, "zs"],
+    [L, ws_gen, ws, x_3, "ws"],
+    [M, vs_gen, vs, x_4, "vs"],
+    [N, us_gen, us, x_5, "us"],
+    [O, ts_gen, ts, x_6, "ts"],
+    [P, ss_gen, ss, x_7, "ss"]
 );
