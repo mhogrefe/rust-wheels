@@ -692,6 +692,7 @@ macro_rules! lex_tuple {
             }
         }
 
+        #[allow(unknown_lints, question_mark)]
         impl<I: Iterator, $($it_type: Clone + Iterator,)* $last_it_type: Clone + Iterator> Iterator
             for $struct_name<I, $($it_type,)* $last_it_type>
                 where I::Item: Clone $(,$it_type::Item: Clone)* {
@@ -885,11 +886,11 @@ random_tuple_from_single!(
     (I::Item, I::Item, I::Item, I::Item, I::Item),
     RandomQuintuplesFromSingle,
     random_quintuples_from_single,
-    [x],
-    [y],
-    [z],
-    [w],
-    [v]
+    [x_0],
+    [x_1],
+    [x_2],
+    [x_3],
+    [x_4]
 );
 random_tuple_from_single!(
     (I::Item, I::Item, I::Item, I::Item, I::Item, I::Item),
