@@ -1008,11 +1008,11 @@ random_tuple!(
 random_tuple!(
     RandomQuintuples,
     random_quintuples,
-    [I, xs_gen, xs, x, "xs"],
-    [J, ys_gen, ys, y, "ys"],
-    [K, zs_gen, zs, z, "zs"],
-    [L, ws_gen, ws, w, "ws"],
-    [M, vs_gen, vs, v, "vs"]
+    [I, xs_gen, xs, x_0, "xs"],
+    [J, ys_gen, ys, x_1, "ys"],
+    [K, zs_gen, zs, x_2, "zs"],
+    [L, ws_gen, ws, x_3, "ws"],
+    [M, vs_gen, vs, x_4, "vs"]
 );
 random_tuple!(
     RandomSextuples,
