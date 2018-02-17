@@ -1,5 +1,6 @@
 use iterators::common::scramble;
-use iterators::general::{random_x, Random};
+use iterators::general::{random_x, range_decreasing_x, range_increasing_x, Random,
+                         RangeDecreasing, RangeIncreasing};
 use iterators::naturals::{random_naturals, random_positive_naturals, RandomNaturals,
                           RandomPositiveNaturals};
 use itertools::{Interleave, Itertools};
@@ -9,54 +10,6 @@ use malachite_nz::natural::Natural;
 use malachite_nz::natural::random::random_natural_below;
 use rand::{IsaacRng, SeedableRng};
 use std::iter::{once, Chain, Once};
-
-#[derive(Clone)]
-pub struct RangeIncreasingInteger {
-    i: Integer,
-    b: Integer,
-    done: bool,
-}
-
-impl Iterator for RangeIncreasingInteger {
-    type Item = Integer;
-
-    fn next(&mut self) -> Option<Integer> {
-        if self.done {
-            None
-        } else {
-            self.done = self.i == self.b;
-            let ret = self.i.clone();
-            if !self.done {
-                self.i += 1
-            }
-            Some(ret)
-        }
-    }
-}
-
-#[derive(Clone)]
-pub struct RangeDecreasingInteger {
-    a: Integer,
-    i: Integer,
-    done: bool,
-}
-
-impl Iterator for RangeDecreasingInteger {
-    type Item = Integer;
-
-    fn next(&mut self) -> Option<Integer> {
-        if self.done {
-            None
-        } else {
-            self.done = self.i == self.a;
-            let ret = self.i.clone();
-            if !self.done {
-                self.i -= 1
-            }
-            Some(ret)
-        }
-    }
-}
 
 #[derive(Clone)]
 pub struct RangeIncreasingUnboundedInteger(Integer);
@@ -92,33 +45,11 @@ pub fn range_down_decreasing_integer(a: Integer) -> RangeDecreasingUnboundedInte
     RangeDecreasingUnboundedInteger(a)
 }
 
-pub fn range_increasing_integer(a: Integer, b: Integer) -> RangeIncreasingInteger {
-    if a > b {
-        panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
-    }
-    RangeIncreasingInteger {
-        i: a,
-        b: b,
-        done: false,
-    }
-}
-
-pub fn range_decreasing_integer(a: Integer, b: Integer) -> RangeDecreasingInteger {
-    if a > b {
-        panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
-    }
-    RangeDecreasingInteger {
-        a: a,
-        i: b,
-        done: false,
-    }
-}
-
-type T = Interleave<RangeIncreasingInteger, RangeDecreasingInteger>;
+type T = Interleave<RangeIncreasing<Integer>, RangeDecreasing<Integer>>;
 #[derive(Clone)]
 pub enum ExhaustiveRangeInteger {
-    AllNonNegative(RangeIncreasingInteger),
-    AllNonPositive(RangeDecreasingInteger),
+    AllNonNegative(RangeIncreasing<Integer>),
+    AllNonPositive(RangeDecreasing<Integer>),
     SomeOfEachSign(Chain<Once<Integer>, T>),
 }
 
@@ -139,14 +70,14 @@ pub fn exhaustive_range_integer(a: Integer, b: Integer) -> ExhaustiveRangeIntege
         panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
     }
     if a >= 0 {
-        ExhaustiveRangeInteger::AllNonNegative(range_increasing_integer(a, b))
+        ExhaustiveRangeInteger::AllNonNegative(range_increasing_x(a, b))
     } else if b <= 0 {
-        ExhaustiveRangeInteger::AllNonPositive(range_decreasing_integer(a, b))
+        ExhaustiveRangeInteger::AllNonPositive(range_decreasing_x(a, b))
     } else {
         ExhaustiveRangeInteger::SomeOfEachSign(
             once(Integer::ZERO).chain(
-                range_increasing_integer(Integer::ONE, b)
-                    .interleave(range_decreasing_integer(a, Integer::NEGATIVE_ONE)),
+                range_increasing_x(Integer::ONE, b)
+                    .interleave(range_decreasing_x(a, Integer::NEGATIVE_ONE)),
             ),
         )
     }

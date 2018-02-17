@@ -3,6 +3,8 @@ use rust_wheels::iterators::naturals::*;
 use common::get_expected_test_outputs;
 use malachite_nz::natural::Natural;
 use rust_wheels::iterators::common::EXAMPLE_SEED;
+use rust_wheels::iterators::general::{range_decreasing_x, range_increasing_x};
+use rust_wheels::iterators::primitive_ints::{range_down_decreasing_x, range_down_increasing_x};
 use std::str::FromStr;
 
 #[test]
@@ -11,10 +13,7 @@ fn test_range_increasing_natural() {
     let test = |number, a, b| {
         eo.match_vec(
             &format!("exhaustive_range_increasing_natural_{}", number),
-            &mut range_increasing_natural(
-                Natural::from_str(a).unwrap(),
-                Natural::from_str(b).unwrap(),
-            ),
+            &mut range_increasing_x(Natural::from_str(a).unwrap(), Natural::from_str(b).unwrap()),
         )
     };
     test("i", "0", "0");
@@ -24,7 +23,7 @@ fn test_range_increasing_natural() {
 }
 
 fn range_increasing_natural_fail_helper(a: &str, b: &str) {
-    range_increasing_natural(Natural::from_str(a).unwrap(), Natural::from_str(b).unwrap());
+    range_increasing_x(Natural::from_str(a).unwrap(), Natural::from_str(b).unwrap());
 }
 
 #[test]
@@ -39,10 +38,7 @@ fn test_range_decreasing_natural() {
     let test = |number, a, b| {
         eo.match_vec(
             &format!("exhaustive_range_decreasing_natural_{}", number),
-            &mut range_decreasing_natural(
-                Natural::from_str(a).unwrap(),
-                Natural::from_str(b).unwrap(),
-            ),
+            &mut range_decreasing_x(Natural::from_str(a).unwrap(), Natural::from_str(b).unwrap()),
         )
     };
     test("i", "0", "0");
@@ -52,7 +48,7 @@ fn test_range_decreasing_natural() {
 }
 
 fn range_decreasing_natural_fail_helper(a: &str, b: &str) {
-    range_decreasing_natural(Natural::from_str(a).unwrap(), Natural::from_str(b).unwrap());
+    range_decreasing_x(Natural::from_str(a).unwrap(), Natural::from_str(b).unwrap());
 }
 
 #[test]
@@ -80,7 +76,7 @@ fn test_range_down_increasing_natural() {
     let test = |number, a| {
         eo.match_vec(
             &format!("exhaustive_range_down_increasing_natural_{}", number),
-            &mut range_down_increasing_natural(Natural::from_str(a).unwrap()),
+            &mut range_down_increasing_x(Natural::from_str(a).unwrap()),
         )
     };
     test("i", "0");
@@ -93,7 +89,7 @@ fn test_range_down_decreasing_natural() {
     let test = |number, a| {
         eo.match_vec(
             &format!("exhaustive_range_down_decreasing_natural_{}", number),
-            &mut range_down_decreasing_natural(Natural::from_str(a).unwrap()),
+            &mut range_down_decreasing_x(Natural::from_str(a).unwrap()),
         )
     };
     test("i", "0");

@@ -12,7 +12,7 @@ pub struct RangeIncreasing<T: Walkable> {
     done: bool,
 }
 
-impl<T: Walkable> Iterator for RangeIncreasing<T> {
+impl<T: Clone + Walkable> Iterator for RangeIncreasing<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
@@ -20,7 +20,7 @@ impl<T: Walkable> Iterator for RangeIncreasing<T> {
             None
         } else {
             self.done = self.i == self.b;
-            let ret = self.i;
+            let ret = self.i.clone();
             if !self.done {
                 self.i.increment();
             }
@@ -47,7 +47,7 @@ pub struct RangeDecreasing<T: Walkable> {
     done: bool,
 }
 
-impl<T: Walkable> Iterator for RangeDecreasing<T> {
+impl<T: Clone + Walkable> Iterator for RangeDecreasing<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
@@ -55,7 +55,7 @@ impl<T: Walkable> Iterator for RangeDecreasing<T> {
             None
         } else {
             self.done = self.i == self.a;
-            let ret = self.i;
+            let ret = self.i.clone();
             if !self.done {
                 self.i.decrement();
             }

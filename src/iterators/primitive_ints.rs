@@ -1,10 +1,12 @@
 use iterators::general::{random_x, range_decreasing_x, range_increasing_x, Random,
                          RangeDecreasing, RangeIncreasing};
 use itertools::{Interleave, Itertools};
+use malachite_base::misc::{Min, Walkable};
 use malachite_base::num::{PrimitiveInteger, PrimitiveSigned, PrimitiveUnsigned};
 use rand::distributions::{IndependentSample, Range};
 use rand::{IsaacRng, Rand, SeedableRng};
 use std::iter::{once, Chain, Once};
+use std::fmt::Display;
 
 pub fn exhaustive_positive_x<T: PrimitiveInteger>() -> RangeIncreasing<T> {
     range_increasing_x(T::ONE, T::MAX)
@@ -40,11 +42,11 @@ pub fn range_up_decreasing_x<T: PrimitiveInteger>(a: T) -> RangeDecreasing<T> {
     range_decreasing_x(a, T::MAX)
 }
 
-pub fn range_down_increasing_x<T: PrimitiveInteger>(b: T) -> RangeIncreasing<T> {
+pub fn range_down_increasing_x<T: Display + Min + Walkable>(b: T) -> RangeIncreasing<T> {
     range_increasing_x(T::MIN, b)
 }
 
-pub fn range_down_decreasing_x<T: PrimitiveInteger>(b: T) -> RangeDecreasing<T> {
+pub fn range_down_decreasing_x<T: Display + Min + Walkable>(b: T) -> RangeDecreasing<T> {
     range_decreasing_x(T::MIN, b)
 }
 
