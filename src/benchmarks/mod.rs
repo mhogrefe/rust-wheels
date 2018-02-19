@@ -27,8 +27,8 @@ macro_rules! benchmark {
             where I::Item: 'a, IR: 'a, T: 'a, $($ind_type: 'a, $dep_type: 'a),*
         {
             pub xs: I,
-            pub function_f: &'a Fn(T) -> IR,
-            $(pub $fun: &'a Fn($ind_type) -> $dep_type),*,
+            pub function_f: &'a mut FnMut(T) -> IR,
+            $(pub $fun: &'a mut FnMut($ind_type) -> $dep_type),*,
             pub x_cons: &'a Fn(&I::Item) -> T,
             $(pub $conv: &'a Fn(&I::Item) -> $ind_type),*,
             pub x_param: &'a Fn(&I::Item) -> usize,
@@ -135,7 +135,7 @@ where
     T: 'a,
 {
     pub xs: I,
-    pub function_f: &'a Fn(T) -> IR,
+    pub function_f: &'a mut FnMut(T) -> IR,
     pub x_cons: &'a Fn(&I::Item) -> T,
     pub x_param: &'a Fn(&I::Item) -> usize,
     pub limit: usize,

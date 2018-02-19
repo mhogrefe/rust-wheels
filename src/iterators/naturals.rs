@@ -3,7 +3,7 @@ use iterators::integers_geometric::{NaturalU32sGeometric, PositiveU32sGeometric,
                                     natural_u32s_geometric, positive_u32s_geometric};
 use malachite_base::num::{One, Zero};
 use malachite_nz::natural::Natural;
-use malachite_nz::natural::random::random_natural_from_bits;
+use malachite_nz::natural::random::random_natural_with_bits::random_natural_with_bits;
 use rand::{IsaacRng, SeedableRng};
 
 #[derive(Clone)]
@@ -40,7 +40,7 @@ impl Iterator for RandomPositiveNaturals {
     type Item = Natural;
 
     fn next(&mut self) -> Option<Natural> {
-        Some(random_natural_from_bits(
+        Some(random_natural_with_bits(
             &mut self.rng,
             self.bitsizes.next().unwrap().into(),
         ))
@@ -63,7 +63,7 @@ impl Iterator for RandomNaturals {
     type Item = Natural;
 
     fn next(&mut self) -> Option<Natural> {
-        Some(random_natural_from_bits(
+        Some(random_natural_with_bits(
             &mut self.rng,
             self.bitsizes.next().unwrap().into(),
         ))

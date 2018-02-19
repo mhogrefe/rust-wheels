@@ -7,7 +7,7 @@ use itertools::{Interleave, Itertools};
 use malachite_base::num::{NegativeOne, One, Zero};
 use malachite_nz::integer::Integer;
 use malachite_nz::natural::Natural;
-use malachite_nz::natural::random::random_natural_below;
+use malachite_nz::natural::random::random_natural_below::random_natural_below;
 use rand::{IsaacRng, SeedableRng};
 use std::iter::{once, Chain, Once};
 
