@@ -2,7 +2,7 @@ use std::collections::BinaryHeap;
 use std::collections::HashMap;
 use std::cmp::Ordering;
 use std::fmt::Debug;
-use std::fmt::Display;
+use std::fmt::{Binary, Display};
 use std::hash::{BuildHasher, Hash};
 
 pub struct GeneratorFromFunction<F, T>(F)
@@ -68,6 +68,14 @@ where
     to_limited_string_vec_helper(limit, xs, &|x| format!("{:?}", x))
 }
 
+pub fn to_limited_string_vec_binary<I>(limit: usize, xs: &mut I) -> Vec<String>
+where
+    I: Iterator,
+    <I as Iterator>::Item: Binary,
+{
+    to_limited_string_vec_helper(limit, xs, &|x| format!("{:#b}", x))
+}
+
 fn to_limited_string_helper<I>(limit: usize, xs: &mut I, f: &Fn(&I::Item) -> String) -> String
 where
     I: Iterator,
@@ -109,6 +117,14 @@ where
     <I as Iterator>::Item: Debug,
 {
     to_limited_string_helper(limit, xs, &|x| format!("{:?}", x))
+}
+
+pub fn to_limited_string_binary<I>(limit: usize, xs: &mut I) -> String
+where
+    I: Iterator,
+    <I as Iterator>::Item: Binary,
+{
+    to_limited_string_helper(limit, xs, &|x| format!("{:#b}", x))
 }
 
 pub fn to_frequency_map<I>(xs: &mut I) -> HashMap<I::Item, usize>
