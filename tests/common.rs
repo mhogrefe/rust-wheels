@@ -2,8 +2,7 @@ extern crate rust_wheels;
 
 use rust_wheels::iterators::adaptors::*;
 use std::collections::HashMap;
-use std::fmt::Debug;
-use std::fmt::Display;
+use std::fmt::{Binary, Debug, Display};
 use std::fs::File;
 use std::hash::Hash;
 use std::io::prelude::*;
@@ -88,6 +87,16 @@ impl TestOutput {
     {
         let (vec, map) =
             get_limited_string_vec_and_most_common_values_debug(10, TINY_LIMIT, HUGE_LIMIT, xs);
+        self.match_vec_f_helper(key, vec, map);
+    }
+
+    pub fn match_vec_f_binary<I>(&self, key: &str, xs: &mut I)
+    where
+        I: Iterator,
+        <I as Iterator>::Item: Binary + Clone + Eq + Hash,
+    {
+        let (vec, map) =
+            get_limited_string_vec_and_most_common_values_binary(10, TINY_LIMIT, HUGE_LIMIT, xs);
         self.match_vec_f_helper(key, vec, map);
     }
 }

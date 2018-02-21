@@ -1,8 +1,10 @@
 use iterators::common::scramble;
 use iterators::general::{random_x, range_decreasing_x, range_increasing_x, Random,
                          RangeDecreasing, RangeIncreasing};
-use iterators::naturals::{random_naturals, random_positive_naturals, RandomNaturals,
-                          RandomPositiveNaturals};
+use iterators::naturals::{random_naturals, random_positive_naturals, special_random_naturals,
+                          special_random_positive_naturals, RandomNaturals,
+                          RandomPositiveNaturals, SpecialRandomNaturals,
+                          SpecialRandomPositiveNaturals};
 use itertools::{Interleave, Itertools};
 use malachite_base::num::{NegativeOne, One, Zero};
 use malachite_nz::integer::Integer;
@@ -219,5 +221,95 @@ pub fn random_range_integer(seed: &[u32], a: Integer, b: Integer) -> RandomRange
         rng: IsaacRng::from_seed(seed),
         diameter: (b - &a).into_natural().unwrap(),
         a,
+    }
+}
+
+pub struct SpecialRandomPositiveIntegers(SpecialRandomPositiveNaturals);
+
+impl Iterator for SpecialRandomPositiveIntegers {
+    type Item = Integer;
+
+    fn next(&mut self) -> Option<Integer> {
+        self.0.next().map(Natural::into_integer)
+    }
+}
+
+pub fn special_random_positive_integers(seed: &[u32], scale: u32) -> SpecialRandomPositiveIntegers {
+    SpecialRandomPositiveIntegers(special_random_positive_naturals(seed, scale))
+}
+
+pub struct SpecialRandomNaturalIntegers(SpecialRandomNaturals);
+
+impl Iterator for SpecialRandomNaturalIntegers {
+    type Item = Integer;
+
+    fn next(&mut self) -> Option<Integer> {
+        self.0.next().map(Natural::into_integer)
+    }
+}
+
+pub fn special_random_natural_integers(seed: &[u32], scale: u32) -> SpecialRandomNaturalIntegers {
+    SpecialRandomNaturalIntegers(special_random_naturals(seed, scale))
+}
+
+pub struct SpecialRandomNegativeIntegers(SpecialRandomPositiveIntegers);
+
+impl Iterator for SpecialRandomNegativeIntegers {
+    type Item = Integer;
+
+    fn next(&mut self) -> Option<Integer> {
+        self.0.next().map(|i| -i)
+    }
+}
+
+pub fn special_random_negative_integers(seed: &[u32], scale: u32) -> SpecialRandomNegativeIntegers {
+    SpecialRandomNegativeIntegers(special_random_positive_integers(seed, scale))
+}
+
+pub struct SpecialRandomNonzeroIntegers {
+    signs: Random<bool>,
+    abs: SpecialRandomPositiveIntegers,
+}
+
+impl Iterator for SpecialRandomNonzeroIntegers {
+    type Item = Integer;
+
+    fn next(&mut self) -> Option<Integer> {
+        if self.signs.next().unwrap() {
+            self.abs.next()
+        } else {
+            self.abs.next().map(|i| -i)
+        }
+    }
+}
+
+pub fn special_random_nonzero_integers(seed: &[u32], scale: u32) -> SpecialRandomNonzeroIntegers {
+    SpecialRandomNonzeroIntegers {
+        signs: random_x(&scramble(seed, "signs")),
+        abs: special_random_positive_integers(&scramble(seed, "abs"), scale),
+    }
+}
+
+pub struct SpecialRandomIntegers {
+    signs: Random<bool>,
+    abs: SpecialRandomNaturalIntegers,
+}
+
+impl Iterator for SpecialRandomIntegers {
+    type Item = Integer;
+
+    fn next(&mut self) -> Option<Integer> {
+        if self.signs.next().unwrap() {
+            self.abs.next()
+        } else {
+            self.abs.next().map(|i| -i)
+        }
+    }
+}
+
+pub fn special_random_integers(seed: &[u32], scale: u32) -> SpecialRandomIntegers {
+    SpecialRandomIntegers {
+        signs: random_x(&scramble(seed, "signs")),
+        abs: special_random_natural_integers(&scramble(seed, "abs"), scale),
     }
 }

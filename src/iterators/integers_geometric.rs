@@ -47,7 +47,7 @@ impl Iterator for NaturalU32sGeometric {
     }
 }
 
-pub fn natural_u32s_geometric(seed: &[u32], scale: u32) -> NaturalU32sGeometric {
+pub fn u32s_geometric(seed: &[u32], scale: u32) -> NaturalU32sGeometric {
     NaturalU32sGeometric {
         rng: IsaacRng::from_seed(seed),
         weight: scale + 2,
@@ -112,7 +112,7 @@ impl Iterator for I32sGeometric {
 pub fn i32s_geometric(seed: &[u32], scale: u32) -> I32sGeometric {
     I32sGeometric {
         signs: random_x(&scramble(seed, "signs")),
-        abs: natural_u32s_geometric(&scramble(seed, "abs"), scale),
+        abs: u32s_geometric(&scramble(seed, "abs"), scale),
     }
 }
 
@@ -131,7 +131,7 @@ impl Iterator for RangeUpGeometricU32 {
 
 pub fn range_up_geometric_u32(seed: &[u32], scale: u32, min: u32) -> RangeUpGeometricU32 {
     RangeUpGeometricU32 {
-        naturals: natural_u32s_geometric(seed, scale),
+        naturals: u32s_geometric(seed, scale),
         min: min,
     }
 }
@@ -151,7 +151,7 @@ impl Iterator for RangeUpGeometricI32 {
 
 pub fn range_up_geometric_i32(seed: &[u32], scale: u32, min: i32) -> RangeUpGeometricI32 {
     RangeUpGeometricI32 {
-        naturals: natural_u32s_geometric(seed, scale),
+        naturals: u32s_geometric(seed, scale),
         min: min,
     }
 }
@@ -171,7 +171,7 @@ impl Iterator for RangeDownGeometric {
 
 pub fn range_down_geometric(seed: &[u32], scale: u32, max: i32) -> RangeDownGeometric {
     RangeDownGeometric {
-        naturals: natural_u32s_geometric(seed, scale),
+        naturals: u32s_geometric(seed, scale),
         max: max,
     }
 }

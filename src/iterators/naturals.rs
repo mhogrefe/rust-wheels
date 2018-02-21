@@ -1,9 +1,10 @@
 use iterators::common::scramble;
 use iterators::integers_geometric::{NaturalU32sGeometric, PositiveU32sGeometric,
-                                    natural_u32s_geometric, positive_u32s_geometric};
+                                    positive_u32s_geometric, u32s_geometric};
 use malachite_base::num::{One, Zero};
 use malachite_nz::natural::Natural;
 use malachite_nz::natural::random::random_natural_with_bits::random_natural_with_bits;
+use malachite_nz::natural::random::special_random_natural_with_bits::*;
 use rand::{IsaacRng, SeedableRng};
 
 #[derive(Clone)]
@@ -73,6 +74,52 @@ impl Iterator for RandomNaturals {
 pub fn random_naturals(seed: &[u32], scale: u32) -> RandomNaturals {
     RandomNaturals {
         rng: IsaacRng::from_seed(&scramble(seed, "bits")),
-        bitsizes: natural_u32s_geometric(&scramble(seed, "bitsizes"), scale),
+        bitsizes: u32s_geometric(&scramble(seed, "bitsizes"), scale),
+    }
+}
+
+pub struct SpecialRandomPositiveNaturals {
+    rng: IsaacRng,
+    bitsizes: PositiveU32sGeometric,
+}
+
+impl Iterator for SpecialRandomPositiveNaturals {
+    type Item = Natural;
+
+    fn next(&mut self) -> Option<Natural> {
+        Some(special_random_natural_with_bits(
+            &mut self.rng,
+            self.bitsizes.next().unwrap().into(),
+        ))
+    }
+}
+
+pub fn special_random_positive_naturals(seed: &[u32], scale: u32) -> SpecialRandomPositiveNaturals {
+    SpecialRandomPositiveNaturals {
+        rng: IsaacRng::from_seed(&scramble(seed, "bits")),
+        bitsizes: positive_u32s_geometric(&scramble(seed, "bitsizes"), scale),
+    }
+}
+
+pub struct SpecialRandomNaturals {
+    rng: IsaacRng,
+    bitsizes: NaturalU32sGeometric,
+}
+
+impl Iterator for SpecialRandomNaturals {
+    type Item = Natural;
+
+    fn next(&mut self) -> Option<Natural> {
+        Some(special_random_natural_with_bits(
+            &mut self.rng,
+            self.bitsizes.next().unwrap().into(),
+        ))
+    }
+}
+
+pub fn special_random_naturals(seed: &[u32], scale: u32) -> SpecialRandomNaturals {
+    SpecialRandomNaturals {
+        rng: IsaacRng::from_seed(&scramble(seed, "bits")),
+        bitsizes: u32s_geometric(&scramble(seed, "bitsizes"), scale),
     }
 }

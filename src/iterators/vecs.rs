@@ -1,7 +1,7 @@
 use iterators::common::scramble;
 use iterators::dependent_pairs::exhaustive_dependent_pairs_infinite_log;
 use iterators::general::CachedIterator;
-use iterators::integers_geometric::{NaturalU32sGeometric, natural_u32s_geometric};
+use iterators::integers_geometric::{NaturalU32sGeometric, u32s_geometric};
 use iterators::primitive_ints::exhaustive_positive_x;
 use iterators::tuples::ZOrderTupleIndices;
 use std::iter::repeat;
@@ -212,7 +212,7 @@ where
     I: Iterator,
 {
     RandomVecs {
-        lengths: natural_u32s_geometric(&scramble(seed, "lengths"), scale),
+        lengths: u32s_geometric(&scramble(seed, "lengths"), scale),
         xs: xs_gen(&scramble(seed, "xs")),
     }
 }

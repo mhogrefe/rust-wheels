@@ -21,12 +21,12 @@ fn test_positive_u32s_geometric() {
 }
 
 #[test]
-fn test_natural_u32s_geometric() {
+fn test_u32s_geometric() {
     let eo = get_expected_test_outputs();
     let test = |number, scale| {
         eo.match_vec_f(
-            &format!("random_natural_u32s_geometric_{}", number),
-            &mut natural_u32s_geometric(&EXAMPLE_SEED[..], scale),
+            &format!("random_u32s_geometric_{}", number),
+            &mut u32s_geometric(&EXAMPLE_SEED[..], scale),
         )
     };
     test("i", 0);

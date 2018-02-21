@@ -334,6 +334,25 @@ where
     )
 }
 
+pub fn get_limited_string_vec_and_most_common_values_binary<I>(
+    tiny_limit: usize,
+    small_limit: usize,
+    large_limit: usize,
+    xs: &mut I,
+) -> (Vec<String>, Vec<(String, usize)>)
+where
+    I: Iterator,
+    <I as Iterator>::Item: Binary + Clone + Eq + Hash,
+{
+    get_limited_string_vec_and_most_common_values_helper(
+        tiny_limit,
+        small_limit,
+        large_limit,
+        xs,
+        &|x| format!("{:#b}", x),
+    )
+}
+
 pub struct MultiChain<I> {
     ranges: Vec<I>,
     i: usize,
