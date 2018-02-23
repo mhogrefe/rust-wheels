@@ -21,55 +21,55 @@ macro_rules! prim_fail {
         #[test]
         #[should_panic(expected = "n must be positive. Invalid n: 0")]
         fn $ceiling_log_2_fail() {
-            ceiling_log_2_u::<$t>(0);
+            ceiling_log_2_unsigned::<$t>(0);
         }
 
         #[test]
         #[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
         fn $digits_fail_1() {
-            digits_u::<$t>(1, 10);
+            digits_unsigned::<$t>(1, 10);
         }
 
         #[test]
         #[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
         fn $digits_fail_2() {
-            digits_u::<$t>(0, 10);
+            digits_unsigned::<$t>(0, 10);
         }
 
         #[test]
         #[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
         fn $digits_padded_fail_1() {
-            digits_padded_u::<$t>(3, 1, 10);
+            digits_padded_unsigned::<$t>(3, 1, 10);
         }
 
         #[test]
         #[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
         fn $digits_padded_fail_2() {
-            digits_padded_u::<$t>(3, 0, 10);
+            digits_padded_unsigned::<$t>(3, 0, 10);
         }
 
         #[test]
         #[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
         fn $big_endian_digits_fail_1() {
-            big_endian_digits_u::<$t>(1, 10);
+            big_endian_digits_unsigned::<$t>(1, 10);
         }
 
         #[test]
         #[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
         fn $big_endian_digits_fail_2() {
-            big_endian_digits_u::<$t>(0, 10);
+            big_endian_digits_unsigned::<$t>(0, 10);
         }
 
         #[test]
         #[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
         fn $big_endian_digits_padded_fail_1() {
-            big_endian_digits_padded_u::<$t>(3, 1, 10);
+            big_endian_digits_padded_unsigned::<$t>(3, 1, 10);
         }
 
         #[test]
         #[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
         fn $big_endian_digits_padded_fail_2() {
-            big_endian_digits_padded_u::<$t>(3, 0, 10);
+            big_endian_digits_padded_unsigned::<$t>(3, 0, 10);
         }
     }
 }
@@ -123,8 +123,8 @@ prim_fail!(
     big_endian_digits_padded_u64_fail_2
 );
 
-fn ceiling_log_2_u_helper<T: PrimUnsignedInt>() {
-    let test = |n, out| assert_eq!(ceiling_log_2_u(n), out);
+fn ceiling_log_2_unsigned_helper<T: PrimUnsignedInt>() {
+    let test = |n, out| assert_eq!(ceiling_log_2_unsigned(n), out);
     test(T::from_u8(1), 0);
     test(T::from_u8(2), 1);
     test(T::from_u8(3), 2);
@@ -139,11 +139,11 @@ fn ceiling_log_2_u_helper<T: PrimUnsignedInt>() {
 }
 
 #[test]
-fn test_ceiling_log_2_u() {
-    ceiling_log_2_u_helper::<u8>();
-    ceiling_log_2_u_helper::<u16>();
-    ceiling_log_2_u_helper::<u32>();
-    ceiling_log_2_u_helper::<u64>();
+fn test_ceiling_log_2_unsigned() {
+    ceiling_log_2_unsigned_helper::<u8>();
+    ceiling_log_2_unsigned_helper::<u16>();
+    ceiling_log_2_unsigned_helper::<u32>();
+    ceiling_log_2_unsigned_helper::<u64>();
 }
 
 #[test]
@@ -177,8 +177,8 @@ fn ceiling_log_2_integer_fail_2() {
     ceiling_log_2_integer_fail_helper("-5");
 }
 
-fn bits_u_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
-    let test = |n, out| assert_eq!(bits_u(n), out);
+fn bits_unsigned_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
+    let test = |n, out| assert_eq!(bits_unsigned(n), out);
     test(T::from_u8(0), vec![]);
     test(T::from_u8(1), vec![true]);
     test(T::from_u8(6), vec![false, true, true]);
@@ -190,18 +190,18 @@ fn bits_u_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
 }
 
 #[test]
-fn test_bits_u() {
-    bits_u_helper::<u8>(vec![true, true, true, true, true, true, true, true]);
-    bits_u_helper::<u16>(vec![
+fn test_bits_unsigned() {
+    bits_unsigned_helper::<u8>(vec![true, true, true, true, true, true, true, true]);
+    bits_unsigned_helper::<u16>(vec![
         true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
         true,
     ]);
-    bits_u_helper::<u32>(vec![
+    bits_unsigned_helper::<u32>(vec![
         true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
         true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
         true, true,
     ]);
-    bits_u_helper::<u64>(vec![
+    bits_unsigned_helper::<u64>(vec![
         true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
         true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
         true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
@@ -225,8 +225,8 @@ fn bits_integer_fail() {
     bits_integer(&Integer::from(-5));
 }
 
-fn bits_padded_u_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
-    let test = |size, n, out| assert_eq!(bits_padded_u(size, n), out);
+fn bits_padded_unsigned_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
+    let test = |size, n, out| assert_eq!(bits_padded_unsigned(size, n), out);
     test(
         8,
         T::from_u8(0),
@@ -271,18 +271,18 @@ fn bits_padded_u_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
 }
 
 #[test]
-fn test_bits_padded_u() {
-    bits_padded_u_helper::<u8>(vec![true, true, true, true, true, true, true, true]);
-    bits_padded_u_helper::<u16>(vec![
+fn test_bits_padded_unsigned() {
+    bits_padded_unsigned_helper::<u8>(vec![true, true, true, true, true, true, true, true]);
+    bits_padded_unsigned_helper::<u16>(vec![
         true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
         true,
     ]);
-    bits_padded_u_helper::<u32>(vec![
+    bits_padded_unsigned_helper::<u32>(vec![
         true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
         true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
         true, true,
     ]);
-    bits_padded_u_helper::<u64>(vec![
+    bits_padded_unsigned_helper::<u64>(vec![
         true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
         true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
         true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
@@ -347,8 +347,8 @@ fn bits_padded_integer_fail() {
     bits_padded_integer(8, &Integer::NEGATIVE_ONE);
 }
 
-fn big_endian_bits_u_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
-    let test = |n, out| assert_eq!(big_endian_bits_u(n), out);
+fn big_endian_bits_unsigned_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
+    let test = |n, out| assert_eq!(big_endian_bits_unsigned(n), out);
     test(T::from_u8(0), vec![]);
     test(T::from_u8(1), vec![true]);
     test(T::from_u8(6), vec![true, true, false]);
@@ -360,18 +360,18 @@ fn big_endian_bits_u_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
 }
 
 #[test]
-fn big_endian_test_bits_u() {
-    big_endian_bits_u_helper::<u8>(vec![true, true, true, true, true, true, true, true]);
-    big_endian_bits_u_helper::<u16>(vec![
+fn big_endian_test_bits_unsigned() {
+    big_endian_bits_unsigned_helper::<u8>(vec![true, true, true, true, true, true, true, true]);
+    big_endian_bits_unsigned_helper::<u16>(vec![
         true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
         true,
     ]);
-    big_endian_bits_u_helper::<u32>(vec![
+    big_endian_bits_unsigned_helper::<u32>(vec![
         true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
         true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
         true, true,
     ]);
-    big_endian_bits_u_helper::<u64>(vec![
+    big_endian_bits_unsigned_helper::<u64>(vec![
         true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
         true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
         true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
@@ -389,8 +389,8 @@ fn big_endian_bits_integer_helper() {
     test("105", vec![true, true, false, true, false, false, true]);
 }
 
-fn big_endian_bits_padded_u_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
-    let test = |size, n, out| assert_eq!(big_endian_bits_padded_u(size, n), out);
+fn big_endian_bits_padded_unsigned_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
+    let test = |size, n, out| assert_eq!(big_endian_bits_padded_unsigned(size, n), out);
     test(
         8,
         T::from_u8(0),
@@ -435,18 +435,20 @@ fn big_endian_bits_padded_u_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
 }
 
 #[test]
-fn test_big_endian_bits_padded_u() {
-    big_endian_bits_padded_u_helper::<u8>(vec![true, true, true, true, true, true, true, true]);
-    big_endian_bits_padded_u_helper::<u16>(vec![
+fn test_big_endian_bits_padded_unsigned() {
+    big_endian_bits_padded_unsigned_helper::<u8>(vec![
+        true, true, true, true, true, true, true, true
+    ]);
+    big_endian_bits_padded_unsigned_helper::<u16>(vec![
         true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
         true,
     ]);
-    big_endian_bits_padded_u_helper::<u32>(vec![
+    big_endian_bits_padded_unsigned_helper::<u32>(vec![
         true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
         true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
         true, true,
     ]);
-    big_endian_bits_padded_u_helper::<u64>(vec![
+    big_endian_bits_padded_unsigned_helper::<u64>(vec![
         true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
         true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
         true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
@@ -554,8 +556,8 @@ fn test_char_to_digit() {
     test('A', None);
 }
 
-fn digits_u_helper<T: PrimUnsignedInt>(max_digit: &str) {
-    let test = |radix, n, out| assert_eq!(format!("{:?}", digits_u(radix, n)), out);
+fn digits_unsigned_helper<T: PrimUnsignedInt>(max_digit: &str) {
+    let test = |radix, n, out| assert_eq!(format!("{:?}", digits_unsigned(radix, n)), out);
     test(T::from_u8(2), T::from_u8(0), "[]");
     test(T::from_u8(3), T::from_u8(0), "[]");
     test(T::from_u8(8), T::from_u8(0), "[]");
@@ -587,11 +589,11 @@ fn digits_u_helper<T: PrimUnsignedInt>(max_digit: &str) {
 }
 
 #[test]
-fn test_digits_u() {
-    digits_u_helper::<u8>("[254]");
-    digits_u_helper::<u16>("[65534]");
-    digits_u_helper::<u32>("[4294967294]");
-    digits_u_helper::<u64>("[18446744073709551614]");
+fn test_digits_unsigned() {
+    digits_unsigned_helper::<u8>("[254]");
+    digits_unsigned_helper::<u16>("[65534]");
+    digits_unsigned_helper::<u32>("[4294967294]");
+    digits_unsigned_helper::<u64>("[18446744073709551614]");
 }
 
 //#[test]
@@ -665,9 +667,10 @@ fn test_digits_u() {
 //    digits_integer_fail_helper("0", "-1");
 //}
 
-fn digits_padded_u_helper<T: PrimUnsignedInt>(max_digit: &str) {
-    let test =
-        |size, radix, n, out| assert_eq!(format!("{:?}", digits_padded_u(size, radix, n)), out);
+fn digits_padded_unsigned_helper<T: PrimUnsignedInt>(max_digit: &str) {
+    let test = |size, radix, n, out| {
+        assert_eq!(format!("{:?}", digits_padded_unsigned(size, radix, n)), out)
+    };
     test(0, T::from_u8(2), T::from_u8(0), "[]");
     test(0, T::from_u8(3), T::from_u8(0), "[]");
     test(0, T::from_u8(57), T::from_u8(0), "[]");
@@ -743,11 +746,11 @@ fn digits_padded_u_helper<T: PrimUnsignedInt>(max_digit: &str) {
 }
 
 #[test]
-fn test_digits_padded_u() {
-    digits_padded_u_helper::<u8>("[254]");
-    digits_padded_u_helper::<u16>("[65534]");
-    digits_padded_u_helper::<u32>("[4294967294]");
-    digits_padded_u_helper::<u64>("[18446744073709551614]");
+fn test_digits_padded_unsigned() {
+    digits_padded_unsigned_helper::<u8>("[254]");
+    digits_padded_unsigned_helper::<u16>("[65534]");
+    digits_padded_unsigned_helper::<u32>("[4294967294]");
+    digits_padded_unsigned_helper::<u64>("[18446744073709551614]");
 }
 
 //#[test]
@@ -835,8 +838,9 @@ fn test_digits_padded_u() {
 //    digits_padded_integer_fail_helper(3, "0", "10");
 //}
 
-fn big_endian_digits_u_helper<T: PrimUnsignedInt>(max_digit: &str) {
-    let test = |radix, n, out| assert_eq!(format!("{:?}", big_endian_digits_u(radix, n)), out);
+fn big_endian_digits_unsigned_helper<T: PrimUnsignedInt>(max_digit: &str) {
+    let test =
+        |radix, n, out| assert_eq!(format!("{:?}", big_endian_digits_unsigned(radix, n)), out);
     test(T::from_u8(2), T::from_u8(0), "[]");
     test(T::from_u8(3), T::from_u8(0), "[]");
     test(T::from_u8(8), T::from_u8(0), "[]");
@@ -868,11 +872,11 @@ fn big_endian_digits_u_helper<T: PrimUnsignedInt>(max_digit: &str) {
 }
 
 #[test]
-fn test_big_endian_digits_u() {
-    big_endian_digits_u_helper::<u8>("[254]");
-    big_endian_digits_u_helper::<u16>("[65534]");
-    big_endian_digits_u_helper::<u32>("[4294967294]");
-    big_endian_digits_u_helper::<u64>("[18446744073709551614]");
+fn test_big_endian_digits_unsigned() {
+    big_endian_digits_unsigned_helper::<u8>("[254]");
+    big_endian_digits_unsigned_helper::<u16>("[65534]");
+    big_endian_digits_unsigned_helper::<u32>("[4294967294]");
+    big_endian_digits_unsigned_helper::<u64>("[18446744073709551614]");
 }
 
 //#[test]
@@ -915,10 +919,10 @@ fn test_big_endian_digits_u() {
 //    test("57", "187", "[3, 16]");
 //}
 
-fn big_endian_digits_padded_u_helper<T: PrimUnsignedInt>(max_digit: &str) {
+fn big_endian_digits_padded_unsigned_helper<T: PrimUnsignedInt>(max_digit: &str) {
     let test = |size, radix, n, out| {
         assert_eq!(
-            format!("{:?}", big_endian_digits_padded_u(size, radix, n)),
+            format!("{:?}", big_endian_digits_padded_unsigned(size, radix, n)),
             out
         )
     };
@@ -997,11 +1001,11 @@ fn big_endian_digits_padded_u_helper<T: PrimUnsignedInt>(max_digit: &str) {
 }
 
 #[test]
-fn test_big_endian_digits_padded_u() {
-    big_endian_digits_padded_u_helper::<u8>("[254]");
-    big_endian_digits_padded_u_helper::<u16>("[65534]");
-    big_endian_digits_padded_u_helper::<u32>("[4294967294]");
-    big_endian_digits_padded_u_helper::<u64>("[18446744073709551614]");
+fn test_big_endian_digits_padded_unsigned() {
+    big_endian_digits_padded_unsigned_helper::<u8>("[254]");
+    big_endian_digits_padded_unsigned_helper::<u16>("[65534]");
+    big_endian_digits_padded_unsigned_helper::<u32>("[4294967294]");
+    big_endian_digits_padded_unsigned_helper::<u64>("[18446744073709551614]");
 }
 
 //#[test]

@@ -1,5 +1,5 @@
 use iterators::common::scramble;
-use iterators::general::{random_x, Random};
+use iterators::general::{random, Random};
 use rand::{IsaacRng, Rng, SeedableRng};
 
 pub struct PositiveU32sGeometric {
@@ -87,7 +87,7 @@ impl Iterator for NonzeroI32sGeometric {
 
 pub fn nonzero_i32s_geometric(seed: &[u32], scale: u32) -> NonzeroI32sGeometric {
     NonzeroI32sGeometric {
-        sign_gen: random_x(&scramble(seed, "sign")),
+        sign_gen: random(&scramble(seed, "sign")),
         abs_gen: positive_u32s_geometric(&scramble(seed, "abs"), scale),
     }
 }
@@ -111,7 +111,7 @@ impl Iterator for I32sGeometric {
 
 pub fn i32s_geometric(seed: &[u32], scale: u32) -> I32sGeometric {
     I32sGeometric {
-        signs: random_x(&scramble(seed, "signs")),
+        signs: random(&scramble(seed, "signs")),
         abs: u32s_geometric(&scramble(seed, "abs"), scale),
     }
 }

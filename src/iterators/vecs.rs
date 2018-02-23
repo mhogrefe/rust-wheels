@@ -2,7 +2,7 @@ use iterators::common::scramble;
 use iterators::dependent_pairs::exhaustive_dependent_pairs_infinite_log;
 use iterators::general::CachedIterator;
 use iterators::integers_geometric::{NaturalU32sGeometric, u32s_geometric};
-use iterators::primitive_ints::exhaustive_positive_x;
+use iterators::primitive_ints::exhaustive_positive;
 use iterators::tuples::ZOrderTupleIndices;
 use std::iter::repeat;
 
@@ -117,7 +117,7 @@ where
             .chain(repeat(Option::None))
     };
     Box::new(
-        exhaustive_dependent_pairs_infinite_log(exhaustive_positive_x(), f)
+        exhaustive_dependent_pairs_infinite_log(exhaustive_positive(), f)
             .map(|(_, v)| v)
             .filter(|v| v.is_some())
             .map(|v| v.unwrap()),

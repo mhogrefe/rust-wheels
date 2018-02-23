@@ -29,7 +29,7 @@ impl<T: Clone + Walkable> Iterator for RangeIncreasing<T> {
     }
 }
 
-pub fn range_increasing_x<T: Display + Walkable>(a: T, b: T) -> RangeIncreasing<T> {
+pub fn range_increasing<T: Display + Walkable>(a: T, b: T) -> RangeIncreasing<T> {
     if a > b {
         panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
     }
@@ -64,7 +64,7 @@ impl<T: Clone + Walkable> Iterator for RangeDecreasing<T> {
     }
 }
 
-pub fn range_decreasing_x<T: Display + Walkable>(a: T, b: T) -> RangeDecreasing<T> {
+pub fn range_decreasing<T: Display + Walkable>(a: T, b: T) -> RangeDecreasing<T> {
     if a > b {
         panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
     }
@@ -76,8 +76,8 @@ pub fn range_decreasing_x<T: Display + Walkable>(a: T, b: T) -> RangeDecreasing<
 }
 
 pub struct Random<T: Rand> {
-    rng: IsaacRng,
-    boo: PhantomData<T>,
+    pub(crate) rng: IsaacRng,
+    boo: PhantomData<*const T>,
 }
 
 impl<T: Rand> Iterator for Random<T> {
@@ -88,7 +88,7 @@ impl<T: Rand> Iterator for Random<T> {
     }
 }
 
-pub fn random_x<T: Rand>(seed: &[u32]) -> Random<T> {
+pub fn random<T: Rand>(seed: &[u32]) -> Random<T> {
     Random {
         rng: IsaacRng::from_seed(seed),
         boo: PhantomData,

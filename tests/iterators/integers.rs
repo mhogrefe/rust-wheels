@@ -3,7 +3,7 @@ use rust_wheels::iterators::integers::*;
 use common::get_expected_test_outputs;
 use malachite_nz::integer::Integer;
 use rust_wheels::iterators::common::EXAMPLE_SEED;
-use rust_wheels::iterators::general::{range_decreasing_x, range_increasing_x};
+use rust_wheels::iterators::general::{range_decreasing, range_increasing};
 use std::str::FromStr;
 
 #[test]
@@ -40,7 +40,7 @@ fn test_range_increasing_integer() {
     let test = |number, a, b| {
         eo.match_vec(
             &format!("exhaustive_range_increasing_integer_{}", number),
-            &mut range_increasing_x(Integer::from_str(a).unwrap(), Integer::from_str(b).unwrap()),
+            &mut range_increasing(Integer::from_str(a).unwrap(), Integer::from_str(b).unwrap()),
         )
     };
     test("i", "0", "0");
@@ -53,7 +53,7 @@ fn test_range_increasing_integer() {
 }
 
 fn range_increasing_integer_fail_helper(a: &str, b: &str) {
-    range_increasing_x(Integer::from_str(a).unwrap(), Integer::from_str(b).unwrap());
+    range_increasing(Integer::from_str(a).unwrap(), Integer::from_str(b).unwrap());
 }
 
 #[test]
@@ -74,7 +74,7 @@ fn test_range_decreasing_integer() {
     let test = |number, a, b| {
         eo.match_vec(
             &format!("exhaustive_range_decreasing_integer_{}", number),
-            &mut range_decreasing_x(Integer::from_str(a).unwrap(), Integer::from_str(b).unwrap()),
+            &mut range_decreasing(Integer::from_str(a).unwrap(), Integer::from_str(b).unwrap()),
         )
     };
     test("i", "0", "0");
@@ -87,7 +87,7 @@ fn test_range_decreasing_integer() {
 }
 
 fn range_decreasing_integer_fail_helper(a: &str, b: &str) {
-    range_decreasing_x(Integer::from_str(a).unwrap(), Integer::from_str(b).unwrap());
+    range_decreasing(Integer::from_str(a).unwrap(), Integer::from_str(b).unwrap());
 }
 
 #[test]

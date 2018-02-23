@@ -63,7 +63,7 @@ prim_impls_i!(i16, i, i16::from(i));
 prim_impls_i!(i32, i, i32::from(i));
 prim_impls_i!(i64, i, i64::from(i));
 
-pub fn ceiling_log_2_u<T: PrimUnsignedInt>(n: T) -> u32 {
+pub fn ceiling_log_2_unsigned<T: PrimUnsignedInt>(n: T) -> u32 {
     let zero = T::from_u8(0);
     let one = T::from_u8(1);
     if n < one {
@@ -89,7 +89,7 @@ pub fn ceiling_log_2_integer(n: &Integer) -> u64 {
     }
 }
 
-pub fn bits_u<T: PrimUnsignedInt>(n: T) -> Vec<bool> {
+pub fn bits_unsigned<T: PrimUnsignedInt>(n: T) -> Vec<bool> {
     let zero = T::from_u8(0);
     let one = T::from_u8(1);
     let mut bits = Vec::new();
@@ -116,7 +116,7 @@ pub fn bits_integer(n: &Integer) -> Vec<bool> {
     }
 }
 
-pub fn bits_padded_u<T: PrimUnsignedInt>(size: usize, n: T) -> Vec<bool> {
+pub fn bits_padded_unsigned<T: PrimUnsignedInt>(size: usize, n: T) -> Vec<bool> {
     let zero = T::from_u8(0);
     let one = T::from_u8(1);
     let mut bits = Vec::with_capacity(size);
@@ -139,7 +139,7 @@ pub fn bits_padded_integer(size: usize, n: &Integer) -> Vec<bool> {
     bits
 }
 
-pub fn big_endian_bits_u<T: PrimUnsignedInt>(n: T) -> Vec<bool> {
+pub fn big_endian_bits_unsigned<T: PrimUnsignedInt>(n: T) -> Vec<bool> {
     let zero = T::from_u8(0);
     let one = T::from_u8(1);
     let mut bits = Vec::new();
@@ -175,7 +175,7 @@ pub fn big_endian_bits_integer(n: &Integer) -> Vec<bool> {
     }
 }
 
-pub fn big_endian_bits_padded_u<T: PrimUnsignedInt>(size: usize, n: T) -> Vec<bool> {
+pub fn big_endian_bits_padded_unsigned<T: PrimUnsignedInt>(size: usize, n: T) -> Vec<bool> {
     let mut bits = Vec::new();
     if size == 0 {
         return bits;
@@ -242,14 +242,14 @@ pub fn char_to_digit(c: char) -> Option<u32> {
     }
 }
 
-pub fn digits_u<T: PrimUnsignedInt>(radix: T, n: T) -> Vec<T> {
+pub fn digits_unsigned<T: PrimUnsignedInt>(radix: T, n: T) -> Vec<T> {
     if radix < T::from_u8(2) {
         panic!("radix must be at least 2. Invalid radix: {}", radix);
     }
     let zero = T::from_u8(0);
     let one = T::from_u8(1);
     let mut digits = Vec::new();
-    let log = ceiling_log_2_u(radix);
+    let log = ceiling_log_2_unsigned(radix);
     let mut remaining = n;
     if one << log == radix {
         let mask = radix - one;
@@ -328,13 +328,13 @@ pub fn digits_u<T: PrimUnsignedInt>(radix: T, n: T) -> Vec<T> {
 //    }
 //}
 
-pub fn digits_padded_u<T: PrimUnsignedInt>(size: usize, radix: T, n: T) -> Vec<T> {
+pub fn digits_padded_unsigned<T: PrimUnsignedInt>(size: usize, radix: T, n: T) -> Vec<T> {
     if radix < T::from_u8(2) {
         panic!("radix must be at least 2. Invalid radix: {}", radix);
     }
     let one = T::from_u8(1);
     let mut digits = Vec::new();
-    let log = ceiling_log_2_u(radix);
+    let log = ceiling_log_2_unsigned(radix);
     let mut remaining = n;
     if one << log == radix {
         let mask = radix - one;
@@ -423,8 +423,8 @@ pub fn digits_padded_u<T: PrimUnsignedInt>(size: usize, radix: T, n: T) -> Vec<T
 //    }
 //}
 
-pub fn big_endian_digits_u<T: PrimUnsignedInt>(radix: T, n: T) -> Vec<T> {
-    digits_u(radix, n).into_iter().rev().collect()
+pub fn big_endian_digits_unsigned<T: PrimUnsignedInt>(radix: T, n: T) -> Vec<T> {
+    digits_unsigned(radix, n).into_iter().rev().collect()
 }
 
 //pub fn big_endian_digits_integer(radix: &Integer, n: &Integer) -> Vec<Integer> {
@@ -446,8 +446,15 @@ pub fn big_endian_digits_u<T: PrimUnsignedInt>(radix: T, n: T) -> Vec<T> {
 //    }
 //}
 
-pub fn big_endian_digits_padded_u<T: PrimUnsignedInt>(size: usize, radix: T, n: T) -> Vec<T> {
-    digits_padded_u(size, radix, n).into_iter().rev().collect()
+pub fn big_endian_digits_padded_unsigned<T: PrimUnsignedInt>(
+    size: usize,
+    radix: T,
+    n: T,
+) -> Vec<T> {
+    digits_padded_unsigned(size, radix, n)
+        .into_iter()
+        .rev()
+        .collect()
 }
 
 //pub fn big_endian_digits_padded_integer(size: usize, radix: &Integer, n: &Integer) ->

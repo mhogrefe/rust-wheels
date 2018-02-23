@@ -1,5 +1,5 @@
 use iterators::adaptors::MultiChain;
-use iterators::general::{range_decreasing_x, range_increasing_x, RangeDecreasing, RangeIncreasing};
+use iterators::general::{range_decreasing, range_increasing, RangeDecreasing, RangeIncreasing};
 use malachite_base::chars::{char_to_contiguous_range, contiguous_range_to_char};
 use rand::distributions::{IndependentSample, Range};
 use rand::{IsaacRng, Rng, SeedableRng};
@@ -7,72 +7,72 @@ use std::char;
 
 pub fn exhaustive_chars() -> MultiChain<RangeIncreasing<char>> {
     MultiChain::new(vec![
-        range_increasing_x('a', 'z'),
-        range_increasing_x('A', 'Z'),
-        range_increasing_x('0', '9'),
-        range_increasing_x('!', '/'),
-        range_increasing_x(':', '@'),
-        range_increasing_x('[', '`'),
-        range_increasing_x('{', '~'),
-        range_increasing_x(' ', ' '),
-        range_increasing_x('\0', '\u{1F}'),
-        range_increasing_x('\u{7F}', char::MAX),
+        range_increasing('a', 'z'),
+        range_increasing('A', 'Z'),
+        range_increasing('0', '9'),
+        range_increasing('!', '/'),
+        range_increasing(':', '@'),
+        range_increasing('[', '`'),
+        range_increasing('{', '~'),
+        range_increasing(' ', ' '),
+        range_increasing('\0', '\u{1F}'),
+        range_increasing('\u{7F}', char::MAX),
     ])
 }
 
 pub fn exhaustive_ascii_chars() -> MultiChain<RangeIncreasing<char>> {
     MultiChain::new(vec![
-        range_increasing_x('a', 'z'),
-        range_increasing_x('A', 'Z'),
-        range_increasing_x('0', '9'),
-        range_increasing_x('!', '/'),
-        range_increasing_x(':', '@'),
-        range_increasing_x('[', '`'),
-        range_increasing_x('{', '~'),
-        range_increasing_x(' ', ' '),
-        range_increasing_x('\0', '\u{1F}'),
-        range_increasing_x('\u{7F}', '\u{7F}'),
+        range_increasing('a', 'z'),
+        range_increasing('A', 'Z'),
+        range_increasing('0', '9'),
+        range_increasing('!', '/'),
+        range_increasing(':', '@'),
+        range_increasing('[', '`'),
+        range_increasing('{', '~'),
+        range_increasing(' ', ' '),
+        range_increasing('\0', '\u{1F}'),
+        range_increasing('\u{7F}', '\u{7F}'),
     ])
 }
 
 pub fn exhaustive_range_up_char(a: char) -> RangeIncreasing<char> {
-    range_increasing_x(a, char::MAX)
+    range_increasing(a, char::MAX)
 }
 
 pub fn exhaustive_range_down_char(a: char) -> RangeIncreasing<char> {
-    range_increasing_x('\0', a)
+    range_increasing('\0', a)
 }
 
 pub fn chars_increasing() -> RangeIncreasing<char> {
-    range_increasing_x('\0', char::MAX)
+    range_increasing('\0', char::MAX)
 }
 
 pub fn chars_decreasing() -> RangeDecreasing<char> {
-    range_decreasing_x('\0', char::MAX)
+    range_decreasing('\0', char::MAX)
 }
 
 pub fn ascii_chars_increasing() -> RangeIncreasing<char> {
-    range_increasing_x('\0', char::from_u32(127).unwrap())
+    range_increasing('\0', char::from_u32(127).unwrap())
 }
 
 pub fn ascii_chars_decreasing() -> RangeDecreasing<char> {
-    range_decreasing_x('\0', char::from_u32(127).unwrap())
+    range_decreasing('\0', char::from_u32(127).unwrap())
 }
 
 pub fn range_up_increasing_char(a: char) -> RangeIncreasing<char> {
-    range_increasing_x(a, char::MAX)
+    range_increasing(a, char::MAX)
 }
 
 pub fn range_up_decreasing_char(a: char) -> RangeDecreasing<char> {
-    range_decreasing_x(a, char::MAX)
+    range_decreasing(a, char::MAX)
 }
 
 pub fn range_down_increasing_char(a: char) -> RangeIncreasing<char> {
-    range_increasing_x('\0', a)
+    range_increasing('\0', a)
 }
 
 pub fn range_down_decreasing_char(a: char) -> RangeDecreasing<char> {
-    range_decreasing_x('\0', a)
+    range_decreasing('\0', a)
 }
 
 pub struct RandomAsciiChars(IsaacRng);

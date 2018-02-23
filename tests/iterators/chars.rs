@@ -2,7 +2,7 @@ use rust_wheels::iterators::chars::*;
 
 use common::get_expected_test_outputs;
 use rust_wheels::iterators::common::EXAMPLE_SEED;
-use rust_wheels::iterators::general::{random_x, range_decreasing_x, range_increasing_x};
+use rust_wheels::iterators::general::{random, range_decreasing, range_increasing};
 use std::char;
 
 #[test]
@@ -105,7 +105,7 @@ fn test_range_increasing_char() {
     let test = |number, a, b| {
         eo.match_vec_debug(
             &format!("exhaustive_range_increasing_char_{}", number),
-            &mut range_increasing_x(a, b),
+            &mut range_increasing(a, b),
         )
     };
     test("i", 'a', 'z');
@@ -117,7 +117,7 @@ fn test_range_increasing_char() {
 #[test]
 #[should_panic(expected = "a must be less than or equal to b. a: a, b: A")]
 fn range_increasing_char_fail() {
-    range_increasing_x('a', 'A');
+    range_increasing('a', 'A');
 }
 
 #[test]
@@ -126,7 +126,7 @@ fn test_range_decreasing_char() {
     let test = |number, a, b| {
         eo.match_vec_debug(
             &format!("exhaustive_range_decreasing_char_{}", number),
-            &mut range_decreasing_x(a, b),
+            &mut range_decreasing(a, b),
         )
     };
     test("i", 'a', 'z');
@@ -138,14 +138,14 @@ fn test_range_decreasing_char() {
 #[test]
 #[should_panic(expected = "a must be less than or equal to b. a: a, b: A")]
 fn range_decreasing_char_fail() {
-    range_decreasing_x('a', 'A');
+    range_decreasing('a', 'A');
 }
 
 #[test]
 fn test_chars() {
     let eo = get_expected_test_outputs();
     eo.match_vec_debug("exhaustive_chars", &mut exhaustive_chars());
-    eo.match_vec_f_debug("random_chars", &mut random_x::<char>(&EXAMPLE_SEED[..]));
+    eo.match_vec_f_debug("random_chars", &mut random::<char>(&EXAMPLE_SEED[..]));
 }
 
 #[test]
@@ -218,7 +218,7 @@ fn test_range_char() {
     let e_test = |number, a, b| {
         eo.match_vec_debug(
             &format!("exhaustive_range_char_{}", number),
-            &mut range_increasing_x(a, b),
+            &mut range_increasing(a, b),
         )
     };
     e_test("i", 'a', 'z');
@@ -240,7 +240,7 @@ fn test_range_char() {
 #[test]
 #[should_panic(expected = "a must be less than or equal to b. a: a, b: A")]
 fn range_char_fail_1() {
-    range_increasing_x('a', 'A');
+    range_increasing('a', 'A');
 }
 
 #[test]

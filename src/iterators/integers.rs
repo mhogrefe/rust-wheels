@@ -1,6 +1,6 @@
 use iterators::common::scramble;
-use iterators::general::{random_x, range_decreasing_x, range_increasing_x, Random,
-                         RangeDecreasing, RangeIncreasing};
+use iterators::general::{random, range_decreasing, range_increasing, Random, RangeDecreasing,
+                         RangeIncreasing};
 use iterators::naturals::{random_naturals, random_positive_naturals, special_random_naturals,
                           special_random_positive_naturals, RandomNaturals,
                           RandomPositiveNaturals, SpecialRandomNaturals,
@@ -72,14 +72,14 @@ pub fn exhaustive_range_integer(a: Integer, b: Integer) -> ExhaustiveRangeIntege
         panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
     }
     if a >= 0 {
-        ExhaustiveRangeInteger::AllNonNegative(range_increasing_x(a, b))
+        ExhaustiveRangeInteger::AllNonNegative(range_increasing(a, b))
     } else if b <= 0 {
-        ExhaustiveRangeInteger::AllNonPositive(range_decreasing_x(a, b))
+        ExhaustiveRangeInteger::AllNonPositive(range_decreasing(a, b))
     } else {
         ExhaustiveRangeInteger::SomeOfEachSign(
             once(Integer::ZERO).chain(
-                range_increasing_x(Integer::ONE, b)
-                    .interleave(range_decreasing_x(a, Integer::NEGATIVE_ONE)),
+                range_increasing(Integer::ONE, b)
+                    .interleave(range_decreasing(a, Integer::NEGATIVE_ONE)),
             ),
         )
     }
@@ -170,7 +170,7 @@ impl Iterator for RandomNonzeroIntegers {
 
 pub fn random_nonzero_integers(seed: &[u32], scale: u32) -> RandomNonzeroIntegers {
     RandomNonzeroIntegers {
-        signs: random_x(&scramble(seed, "signs")),
+        signs: random(&scramble(seed, "signs")),
         abs: random_positive_integers(&scramble(seed, "abs"), scale),
     }
 }
@@ -194,7 +194,7 @@ impl Iterator for RandomIntegers {
 
 pub fn random_integers(seed: &[u32], scale: u32) -> RandomIntegers {
     RandomIntegers {
-        signs: random_x(&scramble(seed, "signs")),
+        signs: random(&scramble(seed, "signs")),
         abs: random_natural_integers(&scramble(seed, "abs"), scale),
     }
 }
@@ -285,7 +285,7 @@ impl Iterator for SpecialRandomNonzeroIntegers {
 
 pub fn special_random_nonzero_integers(seed: &[u32], scale: u32) -> SpecialRandomNonzeroIntegers {
     SpecialRandomNonzeroIntegers {
-        signs: random_x(&scramble(seed, "signs")),
+        signs: random(&scramble(seed, "signs")),
         abs: special_random_positive_integers(&scramble(seed, "abs"), scale),
     }
 }
@@ -309,7 +309,7 @@ impl Iterator for SpecialRandomIntegers {
 
 pub fn special_random_integers(seed: &[u32], scale: u32) -> SpecialRandomIntegers {
     SpecialRandomIntegers {
-        signs: random_x(&scramble(seed, "signs")),
+        signs: random(&scramble(seed, "signs")),
         abs: special_random_natural_integers(&scramble(seed, "abs"), scale),
     }
 }
