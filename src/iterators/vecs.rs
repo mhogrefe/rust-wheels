@@ -4,7 +4,11 @@ use iterators::general::CachedIterator;
 use iterators::integers_geometric::{NaturalU32sGeometric, u32s_geometric};
 use iterators::primitive_ints::exhaustive_positive;
 use iterators::tuples::ZOrderTupleIndices;
+use malachite_base::num::{BitAccess, PrimitiveInteger, PrimitiveUnsigned};
+use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
+use rand::{IsaacRng, SeedableRng};
 use std::iter::repeat;
+use std::marker::PhantomData;
 
 pub enum ExhaustiveFixedSizeVecsFromSingle<I: Iterator>
 where
@@ -214,5 +218,41 @@ where
     RandomVecs {
         lengths: u32s_geometric(&scramble(seed, "lengths"), scale),
         xs: xs_gen(&scramble(seed, "xs")),
+    }
+}
+
+pub struct SpecialRandomUnsignedVecs<T: PrimitiveUnsigned> {
+    lengths: NaturalU32sGeometric,
+    rng: Box<IsaacRng>,
+    boo: PhantomData<*const T>,
+}
+
+impl<T: PrimitiveUnsigned> Iterator for SpecialRandomUnsignedVecs<T> {
+    type Item = Vec<T>;
+
+    fn next(&mut self) -> Option<Vec<T>> {
+        let mut limbs = limbs_special_random_up_to_bits(
+            &mut self.rng,
+            u64::from(self.lengths.next().unwrap() * T::WIDTH),
+        );
+        //TODO make this more generic
+        if T::WIDTH == u64::WIDTH && (limbs.len() as u64).get_bit(0) {
+            limbs.push(0);
+        }
+        let mut result = vec![T::ZERO; limbs.len() * ((u32::WIDTH / T::WIDTH) as usize)];
+        T::copy_from_u32_slice(&mut result, &limbs);
+        Some(result)
+    }
+}
+
+//TODO test
+pub fn special_random_unsigned_vecs<T: PrimitiveUnsigned>(
+    seed: &[u32],
+    scale: u32,
+) -> SpecialRandomUnsignedVecs<T> {
+    SpecialRandomUnsignedVecs {
+        lengths: u32s_geometric(&scramble(seed, "lengths"), scale),
+        rng: Box::new(IsaacRng::from_seed(&scramble(seed, "xs"))),
+        boo: PhantomData,
     }
 }
