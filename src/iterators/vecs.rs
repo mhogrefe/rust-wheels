@@ -233,13 +233,13 @@ impl<T: PrimitiveUnsigned> Iterator for SpecialRandomUnsignedVecs<T> {
     fn next(&mut self) -> Option<Vec<T>> {
         let mut limbs = limbs_special_random_up_to_bits(
             &mut self.rng,
-            u64::from(self.lengths.next().unwrap() * T::WIDTH),
+            u64::from(self.lengths.next().unwrap() << T::LOG_WIDTH),
         );
         //TODO make this more generic
         if T::WIDTH == u64::WIDTH && (limbs.len() as u64).get_bit(0) {
             limbs.push(0);
         }
-        let mut result = vec![T::ZERO; limbs.len() * ((u32::WIDTH / T::WIDTH) as usize)];
+        let mut result = vec![T::ZERO; limbs.len() << u32::LOG_WIDTH >> T::LOG_WIDTH];
         T::copy_from_u32_slice(&mut result, &limbs);
         Some(result)
     }
