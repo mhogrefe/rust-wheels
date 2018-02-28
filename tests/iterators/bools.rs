@@ -8,5 +8,5 @@ use rust_wheels::iterators::general::random;
 fn test_bools() {
     let eo = get_expected_test_outputs();
     eo.match_vec("exhaustive_bools", &mut exhaustive_bools());
-    eo.match_vec_f("random_bools", &mut random::<bool>(&EXAMPLE_SEED[..]));
+    eo.match_vec_f("random_bools", &mut random::<bool>(&EXAMPLE_SEED));
 }

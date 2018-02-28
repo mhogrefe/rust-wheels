@@ -76,7 +76,7 @@ pub fn range_decreasing<T: Display + Walkable>(a: T, b: T) -> RangeDecreasing<T>
 }
 
 pub struct Random<T: Rand> {
-    pub(crate) rng: IsaacRng,
+    pub(crate) rng: Box<IsaacRng>,
     boo: PhantomData<*const T>,
 }
 
@@ -90,7 +90,7 @@ impl<T: Rand> Iterator for Random<T> {
 
 pub fn random<T: Rand>(seed: &[u32]) -> Random<T> {
     Random {
-        rng: IsaacRng::from_seed(seed),
+        rng: Box::new(IsaacRng::from_seed(seed)),
         boo: PhantomData,
     }
 }

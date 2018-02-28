@@ -47,13 +47,13 @@ macro_rules! prim_fail_u {
         #[test]
         #[should_panic(expected = "Range::new called with `low >= high")]
         fn $random_range_fail_1() {
-            random_range::<$t>(&EXAMPLE_SEED[..], 10, 9);
+            random_range::<$t>(&EXAMPLE_SEED, 10, 9);
         }
 
         #[test]
         #[should_panic(expected = "Range::new called with `low >= high")]
         fn $random_range_fail_2() {
-            random_range::<$t>(&EXAMPLE_SEED[..], 10, 9);
+            random_range::<$t>(&EXAMPLE_SEED, 10, 9);
         }
     }
 }
@@ -88,25 +88,25 @@ macro_rules! prim_fail_i {
         #[test]
         #[should_panic(expected = "Range::new called with `low >= high")]
         fn $random_range_fail_1() {
-            random_range::<$t>(&EXAMPLE_SEED[..], 10, 9);
+            random_range::<$t>(&EXAMPLE_SEED, 10, 9);
         }
 
         #[test]
         #[should_panic(expected = "Range::new called with `low >= high")]
         fn $random_range_fail_2() {
-            random_range::<$t>(&EXAMPLE_SEED[..], 10, 9,);
+            random_range::<$t>(&EXAMPLE_SEED, 10, 9,);
         }
 
         #[test]
         #[should_panic(expected = "Range::new called with `low >= high")]
         fn $random_range_fail_3() {
-            random_range::<$t>(&EXAMPLE_SEED[..], -9, -10);
+            random_range::<$t>(&EXAMPLE_SEED, -9, -10);
         }
 
         #[test]
         #[should_panic(expected = "Range::new called with `low >= high")]
         fn $random_range_fail_4() {
-            random_range::<$t>(&EXAMPLE_SEED[..], -9, -10);
+            random_range::<$t>(&EXAMPLE_SEED, -9, -10);
         }
     }
 }
@@ -155,11 +155,11 @@ fn positive_unsigned_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
     );
     eo.match_vec_f(
         &format!("random_positive_{}s", T::NAME),
-        &mut random_positive_unsigned::<T>(&EXAMPLE_SEED[..]),
+        &mut random_positive_unsigned::<T>(&EXAMPLE_SEED),
     );
     eo.match_vec_f_binary(
         &format!("special_random_positive_{}s", T::NAME),
-        &mut special_random_positive_unsigned::<T>(&EXAMPLE_SEED[..]),
+        &mut special_random_positive_unsigned::<T>(&EXAMPLE_SEED),
     );
 }
 
@@ -179,11 +179,11 @@ fn positive_signed_helper<T: PrimitiveSigned>(eo: &TestOutput) {
     );
     eo.match_vec_f(
         &format!("random_positive_{}s", T::NAME),
-        &mut random_positive_signed::<T>(&EXAMPLE_SEED[..]),
+        &mut random_positive_signed::<T>(&EXAMPLE_SEED),
     );
     eo.match_vec_f_binary(
         &format!("special_random_positive_{}s", T::NAME),
-        &mut special_random_positive_signed::<T>(&EXAMPLE_SEED[..]),
+        &mut special_random_positive_signed::<T>(&EXAMPLE_SEED),
     );
 }
 
@@ -203,11 +203,11 @@ fn negative_signed_helper<T: PrimitiveSigned>(eo: &TestOutput) {
     );
     eo.match_vec_f(
         &format!("random_negative_{}s", T::NAME),
-        &mut random_negative_signed::<T>(&EXAMPLE_SEED[..]),
+        &mut random_negative_signed::<T>(&EXAMPLE_SEED),
     );
     eo.match_vec_f_binary(
         &format!("special_random_negative_{}s", T::NAME),
-        &mut special_random_negative_signed::<T>(&EXAMPLE_SEED[..]),
+        &mut special_random_negative_signed::<T>(&EXAMPLE_SEED),
     );
 }
 
@@ -227,11 +227,11 @@ fn natural_signed_helper<T: PrimitiveSigned>(eo: &TestOutput) {
     );
     eo.match_vec_f(
         &format!("random_natural_{}s", T::NAME),
-        &mut random_natural_signed::<T>(&EXAMPLE_SEED[..]),
+        &mut random_natural_signed::<T>(&EXAMPLE_SEED),
     );
     eo.match_vec_f_binary(
         &format!("special_random_natural_{}s", T::NAME),
-        &mut special_random_natural_signed::<T>(&EXAMPLE_SEED[..]),
+        &mut special_random_natural_signed::<T>(&EXAMPLE_SEED),
     );
 }
 
@@ -251,11 +251,11 @@ fn nonzero_signed_helper<T: PrimitiveSigned>(eo: &TestOutput) {
     );
     eo.match_vec_f(
         &format!("random_nonzero_{}s", T::NAME),
-        &mut random_nonzero_signed::<T>(&EXAMPLE_SEED[..]),
+        &mut random_nonzero_signed::<T>(&EXAMPLE_SEED),
     );
     eo.match_vec_f_binary(
         &format!("special_random_nonzero_{}s", T::NAME),
-        &mut special_random_nonzero_signed::<T>(&EXAMPLE_SEED[..]),
+        &mut special_random_nonzero_signed::<T>(&EXAMPLE_SEED),
     );
 }
 
@@ -275,11 +275,11 @@ fn all_unsigned_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
     );
     eo.match_vec_f(
         &format!("random_{}s", T::NAME),
-        &mut random::<T>(&EXAMPLE_SEED[..]),
+        &mut random::<T>(&EXAMPLE_SEED),
     );
     eo.match_vec_f_binary(
         &format!("special_random_{}s", T::NAME),
-        &mut special_random_unsigned::<T>(&EXAMPLE_SEED[..]),
+        &mut special_random_unsigned::<T>(&EXAMPLE_SEED),
     );
 }
 
@@ -299,11 +299,11 @@ fn all_signed_helper<T: PrimitiveSigned>(eo: &TestOutput) {
     );
     eo.match_vec_f(
         &format!("random_{}s", T::NAME),
-        &mut random::<T>(&EXAMPLE_SEED[..]),
+        &mut random::<T>(&EXAMPLE_SEED),
     );
     eo.match_vec_f_binary(
         &format!("special_random_{}s", T::NAME),
-        &mut special_random_signed::<T>(&EXAMPLE_SEED[..]),
+        &mut special_random_signed::<T>(&EXAMPLE_SEED),
     );
 }
 
@@ -642,7 +642,7 @@ fn random_range_up_u_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec_f(
             &format!("random_range_up_{}_{}", T::NAME, number),
-            &mut random_range_up::<T>(&EXAMPLE_SEED[..], a),
+            &mut random_range_up::<T>(&EXAMPLE_SEED, a),
         )
     };
     test("i", T::ZERO);
@@ -654,7 +654,7 @@ fn random_range_up_i_helper<T: PrimitiveSigned>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec_f(
             &format!("random_range_up_{}_{}", T::NAME, number),
-            &mut random_range_up::<T>(&EXAMPLE_SEED[..], a),
+            &mut random_range_up::<T>(&EXAMPLE_SEED, a),
         )
     };
     test("i", T::ZERO);
@@ -681,7 +681,7 @@ fn random_range_down_u_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec_f(
             &format!("random_range_down_{}_{}", T::NAME, number),
-            &mut random_range_down::<T>(&EXAMPLE_SEED[..], a),
+            &mut random_range_down::<T>(&EXAMPLE_SEED, a),
         )
     };
     test("i", T::ZERO);
@@ -693,7 +693,7 @@ fn random_range_down_i_helper<T: PrimitiveSigned>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec_f(
             &format!("random_range_down_{}_{}", T::NAME, number),
-            &mut random_range_down::<T>(&EXAMPLE_SEED[..], a),
+            &mut random_range_down::<T>(&EXAMPLE_SEED, a),
         )
     };
     test("i", T::ZERO);
@@ -720,7 +720,7 @@ fn random_range_u_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
     let test = |number, a, b| {
         eo.match_vec_f(
             &format!("random_range_{}_{}", T::NAME, number),
-            &mut random_range::<T>(&EXAMPLE_SEED[..], a, b),
+            &mut random_range::<T>(&EXAMPLE_SEED, a, b),
         )
     };
     test("i", T::ZERO, T::ZERO);
@@ -739,7 +739,7 @@ fn range_i_helper<T: PrimitiveSigned>(eo: &TestOutput) {
         );
         eo.match_vec_f(
             &format!("random_range_{}_{}", T::NAME, number),
-            &mut random_range::<T>(&EXAMPLE_SEED[..], a, b),
+            &mut random_range::<T>(&EXAMPLE_SEED, a, b),
         )
     };
     test("i", T::ZERO, T::ZERO);

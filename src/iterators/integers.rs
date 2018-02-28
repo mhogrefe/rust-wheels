@@ -1,16 +1,19 @@
 use iterators::common::scramble;
 use iterators::general::{random, range_decreasing, range_increasing, Random, RangeDecreasing,
                          RangeIncreasing};
+use iterators::integers_geometric::{RangeUpGeometricU32, range_up_geometric_u32};
 use iterators::naturals::{random_naturals, random_positive_naturals, special_random_naturals,
                           special_random_positive_naturals, RandomNaturals,
                           RandomPositiveNaturals, SpecialRandomNaturals,
                           SpecialRandomPositiveNaturals};
 use itertools::{Interleave, Itertools};
-use malachite_base::num::{NegativeOne, One, Zero};
+use malachite_base::num::{NegativeOne, One, SignificantBits, Zero};
 use malachite_nz::integer::Integer;
 use malachite_nz::natural::Natural;
 use malachite_nz::natural::random::random_natural_below::random_natural_below;
-use rand::{IsaacRng, SeedableRng};
+use malachite_nz::natural::random::random_natural_with_bits::random_natural_with_bits;
+use rand::{IsaacRng, Rng, SeedableRng};
+use std::cmp::Ordering;
 use std::iter::{once, Chain, Once};
 
 #[derive(Clone)]
@@ -199,31 +202,6 @@ pub fn random_integers(seed: &[u32], scale: u32) -> RandomIntegers {
     }
 }
 
-pub struct RandomRangeInteger {
-    rng: IsaacRng,
-    diameter: Natural,
-    a: Integer,
-}
-
-impl Iterator for RandomRangeInteger {
-    type Item = Integer;
-
-    fn next(&mut self) -> Option<Integer> {
-        Some(random_natural_below(&mut self.rng, &(&self.diameter + 1)).into_integer() + &self.a)
-    }
-}
-
-pub fn random_range_integer(seed: &[u32], a: Integer, b: Integer) -> RandomRangeInteger {
-    if a > b {
-        panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
-    }
-    RandomRangeInteger {
-        rng: IsaacRng::from_seed(seed),
-        diameter: (b - &a).into_natural().unwrap(),
-        a,
-    }
-}
-
 pub struct SpecialRandomPositiveIntegers(SpecialRandomPositiveNaturals);
 
 impl Iterator for SpecialRandomPositiveIntegers {
@@ -312,4 +290,122 @@ pub fn special_random_integers(seed: &[u32], scale: u32) -> SpecialRandomInteger
         signs: random(&scramble(seed, "signs")),
         abs: special_random_natural_integers(&scramble(seed, "abs"), scale),
     }
+}
+
+pub struct RandomRangeInteger {
+    rng: Box<IsaacRng>,
+    diameter_plus_one: Natural,
+    a: Integer,
+}
+
+impl Iterator for RandomRangeInteger {
+    type Item = Integer;
+
+    fn next(&mut self) -> Option<Integer> {
+        Some(random_natural_below(&mut self.rng, &self.diameter_plus_one).into_integer() + &self.a)
+    }
+}
+
+pub fn random_range_integer(seed: &[u32], a: Integer, b: Integer) -> RandomRangeInteger {
+    if a > b {
+        panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
+    }
+    RandomRangeInteger {
+        rng: Box::new(IsaacRng::from_seed(seed)),
+        diameter_plus_one: (b - &a).into_natural().unwrap() + 1u32,
+        a,
+    }
+}
+
+pub struct RandomRangeUpInteger {
+    rng: Box<IsaacRng>,
+    bit_sizes: RangeUpGeometricU32,
+    a: Integer,
+    a_bit_size: u64,
+    offset_limit: Option<Natural>,
+}
+
+impl Iterator for RandomRangeUpInteger {
+    type Item = Integer;
+
+    fn next(&mut self) -> Option<Integer> {
+        let bit_size = u64::from(self.bit_sizes.next().unwrap());
+        Some(if bit_size == 0 {
+            Integer::ZERO
+        } else {
+            match bit_size.cmp(&self.a_bit_size) {
+                Ordering::Less => {
+                    // a < 0
+                    // Generates values between 2^(n - 1) and 2^n - 1, inclusive, or
+                    // between -(2^n - 1) and -2^(n - 1), inclusive.
+                    let abs_result = random_natural_with_bits(&mut self.rng, bit_size);
+                    if self.rng.gen() {
+                        abs_result.into_integer()
+                    } else {
+                        -abs_result
+                    }
+                }
+                Ordering::Greater => {
+                    // Generates values between 2^(n - 1) and 2^n - 1, inclusive.
+                    random_natural_with_bits(&mut self.rng, bit_size).into_integer()
+                }
+                Ordering::Equal => {
+                    if let Some(ref offset_limit) = self.offset_limit {
+                        // a >= 0
+                        // Generates values between a and 2^n - 1, inclusive.
+                        random_natural_below(&mut self.rng, offset_limit).into_integer() + &self.a
+                    } else {
+                        // a < 0
+                        // Generates values between 2^(n - 1) and 2^n - 1, inclusive, or
+                        // between a and -2^(n - 1), inclusive.
+                        //
+                        // Loop loops <= 2 times on average.
+                        loop {
+                            let abs_result = random_natural_with_bits(&mut self.rng, bit_size);
+                            let result = if self.rng.gen() {
+                                abs_result.into_integer()
+                            } else {
+                                -abs_result
+                            };
+                            if result >= self.a {
+                                return Some(result);
+                            }
+                        }
+                    }
+                }
+            }
+        })
+    }
+}
+
+pub fn random_range_up_integer(seed: &[u32], scale: u32, a: Integer) -> RandomRangeUpInteger {
+    let a_bit_size = a.significant_bits();
+    let min_bit_size = if a < 0 { 0 } else { a_bit_size as u32 };
+    //TODO use more efficient abs
+    let offset_limit = if a < 0 {
+        None
+    } else {
+        Some(((Natural::ONE << (a_bit_size as u32)) - &a.natural_abs_ref()).unwrap())
+    };
+    RandomRangeUpInteger {
+        rng: Box::new(IsaacRng::from_seed(&scramble(seed, "bits"))),
+        bit_sizes: range_up_geometric_u32(&scramble(seed, "bitsizes"), scale, min_bit_size),
+        a,
+        a_bit_size,
+        offset_limit,
+    }
+}
+
+pub struct RandomRangeDownInteger(RandomRangeUpInteger);
+
+impl Iterator for RandomRangeDownInteger {
+    type Item = Integer;
+
+    fn next(&mut self) -> Option<Integer> {
+        self.0.next().map(|i| -i)
+    }
+}
+
+pub fn random_range_down_integer(seed: &[u32], scale: u32, a: Integer) -> RandomRangeDownInteger {
+    RandomRangeDownInteger(random_range_up_integer(seed, scale, -a))
 }

@@ -14,7 +14,7 @@ pub struct RandomWithElement<I>
 where
     I: Iterator,
 {
-    rng: IsaacRng,
+    rng: Box<IsaacRng>,
     weight: u32,
     x: I::Item,
     xs: I,
@@ -47,7 +47,7 @@ where
     I: Iterator,
 {
     RandomWithElement {
-        rng: IsaacRng::from_seed(&scramble(seed, "x")),
+        rng: Box::new(IsaacRng::from_seed(&scramble(seed, "x"))),
         weight: scale + 2,
         x,
         xs: xs_gen(&scramble(seed, "xs")),
@@ -72,7 +72,7 @@ pub fn exhaustive_options<I: Iterator>(xs: I) -> Chain<Once<Option<I::Item>>, So
 }
 
 pub struct RandomOptions<I: Iterator> {
-    rng: IsaacRng,
+    rng: Box<IsaacRng>,
     weight: u32,
     xs: I,
 }
@@ -97,7 +97,7 @@ pub fn random_options<I: Iterator>(
 ) -> RandomOptions<I> {
     RandomOptions {
         weight: scale + 2,
-        rng: IsaacRng::from_seed(&scramble(seed, "none")),
+        rng: Box::new(IsaacRng::from_seed(&scramble(seed, "none"))),
         xs: xs_gen(&scramble(seed, "some")),
     }
 }

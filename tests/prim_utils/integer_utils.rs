@@ -521,7 +521,7 @@ fn big_endian_bits_padded_integer_fail() {
 }
 
 //fn from_big_endian_bits_helper(bits: &[bool], out: &str) {
-//    assert_eq!(format!("{}", from_big_endian_bits(&bits[..])), out);
+//    assert_eq!(format!("{}", from_big_endian_bits(&bits)), out);
 //}
 //
 //#[test]

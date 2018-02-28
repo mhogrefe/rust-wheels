@@ -1,7 +1,7 @@
 use iterators::common::scramble;
 use iterators::dependent_pairs::exhaustive_dependent_pairs_infinite_log;
 use iterators::general::CachedIterator;
-use iterators::integers_geometric::{NaturalU32sGeometric, u32s_geometric};
+use iterators::integers_geometric::{U32sGeometric, u32s_geometric};
 use iterators::primitive_ints::exhaustive_positive;
 use iterators::tuples::ZOrderTupleIndices;
 use malachite_base::num::{BitAccess, PrimitiveInteger, PrimitiveUnsigned};
@@ -191,7 +191,7 @@ pub struct RandomVecs<I>
 where
     I: Iterator,
 {
-    lengths: NaturalU32sGeometric,
+    lengths: U32sGeometric,
     xs: I,
 }
 
@@ -222,7 +222,7 @@ where
 }
 
 pub struct SpecialRandomUnsignedVecs<T: PrimitiveUnsigned> {
-    lengths: NaturalU32sGeometric,
+    lengths: U32sGeometric,
     rng: Box<IsaacRng>,
     boo: PhantomData<*const T>,
 }

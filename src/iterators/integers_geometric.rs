@@ -3,7 +3,7 @@ use iterators::general::{random, Random};
 use rand::{IsaacRng, Rng, SeedableRng};
 
 pub struct PositiveU32sGeometric {
-    rng: IsaacRng,
+    rng: Box<IsaacRng>,
     weight: u32,
 }
 
@@ -23,17 +23,17 @@ impl Iterator for PositiveU32sGeometric {
 
 pub fn positive_u32s_geometric(seed: &[u32], scale: u32) -> PositiveU32sGeometric {
     PositiveU32sGeometric {
-        rng: IsaacRng::from_seed(seed),
+        rng: Box::new(IsaacRng::from_seed(seed)),
         weight: scale + 2,
     }
 }
 
-pub struct NaturalU32sGeometric {
-    rng: IsaacRng,
+pub struct U32sGeometric {
+    rng: Box<IsaacRng>,
     weight: u32,
 }
 
-impl Iterator for NaturalU32sGeometric {
+impl Iterator for U32sGeometric {
     type Item = u32;
 
     fn next(&mut self) -> Option<u32> {
@@ -47,9 +47,9 @@ impl Iterator for NaturalU32sGeometric {
     }
 }
 
-pub fn u32s_geometric(seed: &[u32], scale: u32) -> NaturalU32sGeometric {
-    NaturalU32sGeometric {
-        rng: IsaacRng::from_seed(seed),
+pub fn u32s_geometric(seed: &[u32], scale: u32) -> U32sGeometric {
+    U32sGeometric {
+        rng: Box::new(IsaacRng::from_seed(seed)),
         weight: scale + 2,
     }
 }
@@ -94,7 +94,7 @@ pub fn nonzero_i32s_geometric(seed: &[u32], scale: u32) -> NonzeroI32sGeometric 
 
 pub struct I32sGeometric {
     signs: Random<bool>,
-    abs: NaturalU32sGeometric,
+    abs: U32sGeometric,
 }
 
 impl Iterator for I32sGeometric {
@@ -117,7 +117,7 @@ pub fn i32s_geometric(seed: &[u32], scale: u32) -> I32sGeometric {
 }
 
 pub struct RangeUpGeometricU32 {
-    naturals: NaturalU32sGeometric,
+    naturals: U32sGeometric,
     min: u32,
 }
 
@@ -132,12 +132,12 @@ impl Iterator for RangeUpGeometricU32 {
 pub fn range_up_geometric_u32(seed: &[u32], scale: u32, min: u32) -> RangeUpGeometricU32 {
     RangeUpGeometricU32 {
         naturals: u32s_geometric(seed, scale),
-        min: min,
+        min,
     }
 }
 
 pub struct RangeUpGeometricI32 {
-    naturals: NaturalU32sGeometric,
+    naturals: U32sGeometric,
     min: i32,
 }
 
@@ -152,12 +152,12 @@ impl Iterator for RangeUpGeometricI32 {
 pub fn range_up_geometric_i32(seed: &[u32], scale: u32, min: i32) -> RangeUpGeometricI32 {
     RangeUpGeometricI32 {
         naturals: u32s_geometric(seed, scale),
-        min: min,
+        min,
     }
 }
 
 pub struct RangeDownGeometric {
-    naturals: NaturalU32sGeometric,
+    naturals: U32sGeometric,
     max: i32,
 }
 

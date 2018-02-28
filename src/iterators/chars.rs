@@ -90,7 +90,7 @@ pub fn random_ascii_chars(seed: &[u32]) -> RandomAsciiChars {
 }
 
 pub struct RandomRangeChar {
-    rng: IsaacRng,
+    rng: Box<IsaacRng>,
     range: Range<u32>,
 }
 
@@ -107,7 +107,7 @@ pub fn random_range_char(seed: &[u32], a: char, b: char) -> RandomRangeChar {
         panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
     }
     RandomRangeChar {
-        rng: IsaacRng::from_seed(seed),
+        rng: Box::new(IsaacRng::from_seed(seed)),
         range: Range::new(char_to_contiguous_range(a), char_to_contiguous_range(b) + 1),
     }
 }

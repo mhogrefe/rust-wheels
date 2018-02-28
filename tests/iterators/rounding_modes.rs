@@ -12,6 +12,6 @@ fn test_rounding_modes() {
     );
     eo.match_vec_f_debug(
         "random_rounding_modes",
-        &mut random_rounding_modes(&EXAMPLE_SEED[..]),
+        &mut random_rounding_modes(&EXAMPLE_SEED),
     );
 }

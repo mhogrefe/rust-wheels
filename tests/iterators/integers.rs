@@ -113,11 +113,11 @@ fn test_positive_integers() {
     let test = |number, scale| {
         eo.match_vec_f(
             &format!("random_positive_integers_{}", number),
-            &mut random_positive_integers(&EXAMPLE_SEED[..], scale),
+            &mut random_positive_integers(&EXAMPLE_SEED, scale),
         );
         eo.match_vec_f_binary(
             &format!("special_random_positive_integers_{}", number),
-            &mut special_random_positive_integers(&EXAMPLE_SEED[..], scale),
+            &mut special_random_positive_integers(&EXAMPLE_SEED, scale),
         );
     };
     test("i", 0);
@@ -139,11 +139,11 @@ fn test_natural_integers() {
     let test = |number, scale| {
         eo.match_vec_f(
             &format!("random_natural_integers_{}", number),
-            &mut random_natural_integers(&EXAMPLE_SEED[..], scale),
+            &mut random_natural_integers(&EXAMPLE_SEED, scale),
         );
         eo.match_vec_f_binary(
             &format!("special_random_natural_integers_{}", number),
-            &mut special_random_natural_integers(&EXAMPLE_SEED[..], scale),
+            &mut special_random_natural_integers(&EXAMPLE_SEED, scale),
         );
     };
     test("i", 0);
@@ -165,11 +165,11 @@ fn test_negative_integers() {
     let test = |number, scale| {
         eo.match_vec_f(
             &format!("random_negative_integers_{}", number),
-            &mut random_negative_integers(&EXAMPLE_SEED[..], scale),
+            &mut random_negative_integers(&EXAMPLE_SEED, scale),
         );
         eo.match_vec_f_binary(
             &format!("special_random_negative_integers_{}", number),
-            &mut special_random_negative_integers(&EXAMPLE_SEED[..], scale),
+            &mut special_random_negative_integers(&EXAMPLE_SEED, scale),
         );
     };
     test("i", 0);
@@ -191,11 +191,11 @@ fn test_nonzero_integers() {
     let test = |number, scale| {
         eo.match_vec_f(
             &format!("random_nonzero_integers_{}", number),
-            &mut random_nonzero_integers(&EXAMPLE_SEED[..], scale),
+            &mut random_nonzero_integers(&EXAMPLE_SEED, scale),
         );
         eo.match_vec_f_binary(
             &format!("special_random_nonzero_integers_{}", number),
-            &mut special_random_nonzero_integers(&EXAMPLE_SEED[..], scale),
+            &mut special_random_nonzero_integers(&EXAMPLE_SEED, scale),
         );
     };
     test("i", 0);
@@ -214,11 +214,11 @@ fn test_integers() {
     let test = |number, scale| {
         eo.match_vec_f(
             &format!("random_integers_{}", number),
-            &mut random_integers(&EXAMPLE_SEED[..], scale),
+            &mut random_integers(&EXAMPLE_SEED, scale),
         );
         eo.match_vec_f_binary(
             &format!("special_random_integers_{}", number),
-            &mut special_random_integers(&EXAMPLE_SEED[..], scale),
+            &mut special_random_integers(&EXAMPLE_SEED, scale),
         );
     };
     test("i", 0);
@@ -239,7 +239,15 @@ fn test_range_integer() {
                 Integer::from_str(a).unwrap(),
                 Integer::from_str(b).unwrap(),
             ),
-        )
+        );
+        eo.match_vec_f(
+            &format!("random_range_integer_{}", number),
+            &mut random_range_integer(
+                &EXAMPLE_SEED,
+                Integer::from_str(a).unwrap(),
+                Integer::from_str(b).unwrap(),
+            ),
+        );
     };
     e_test("i", "0", "0");
     e_test("ii", "0", "10");
@@ -248,23 +256,6 @@ fn test_range_integer() {
     e_test("v", "-10", "-10");
     e_test("vi", "-20", "-10");
     e_test("vii", "-100", "100");
-    let r_test = |number, a, b| {
-        eo.match_vec_f(
-            &format!("random_range_integer_{}", number),
-            &mut random_range_integer(
-                &EXAMPLE_SEED[..],
-                Integer::from_str(a).unwrap(),
-                Integer::from_str(b).unwrap(),
-            ),
-        )
-    };
-    r_test("i", "0", "0");
-    r_test("ii", "0", "10");
-    r_test("iii", "10", "20");
-    r_test("iv", "10", "10");
-    r_test("v", "-10", "-10");
-    r_test("vi", "-20", "-10");
-    r_test("vii", "-100", "100");
 }
 
 fn exhaustive_range_integer_fail_helper(a: &str, b: &str) {
@@ -273,7 +264,7 @@ fn exhaustive_range_integer_fail_helper(a: &str, b: &str) {
 
 fn random_range_integer_fail_helper(a: &str, b: &str) {
     random_range_integer(
-        &EXAMPLE_SEED[..],
+        &EXAMPLE_SEED,
         Integer::from_str(a).unwrap(),
         Integer::from_str(b).unwrap(),
     );
@@ -301,4 +292,46 @@ fn range_integer_fail_3() {
 #[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
 fn range_integer_fail_4() {
     random_range_integer_fail_helper("-9", "-10")
+}
+
+#[test]
+fn test_range_up_integer() {
+    let eo = get_expected_test_outputs();
+    let e_test = |number, scale, a| {
+        eo.match_vec_f(
+            &format!("random_range_up_integer_{}", number),
+            &mut random_range_up_integer(&EXAMPLE_SEED, scale, Integer::from_str(a).unwrap()),
+        );
+    };
+    e_test("i", 0, "0");
+    e_test("ii", 10, "0");
+    e_test("iii", 0, "16");
+    e_test("iv", 10, "16");
+    e_test("v", 0, "1000000000000");
+    e_test("vi", 10, "1000000000000");
+    e_test("vii", 0, "-16");
+    e_test("viii", 10, "-16");
+    e_test("ix", 0, "-1000000000000");
+    e_test("x", 10, "-1000000000000");
+}
+
+#[test]
+fn test_range_down_integer() {
+    let eo = get_expected_test_outputs();
+    let e_test = |number, scale, a| {
+        eo.match_vec_f(
+            &format!("random_range_down_integer_{}", number),
+            &mut random_range_down_integer(&EXAMPLE_SEED, scale, Integer::from_str(a).unwrap()),
+        );
+    };
+    e_test("i", 0, "0");
+    e_test("ii", 10, "0");
+    e_test("iii", 0, "16");
+    e_test("iv", 10, "16");
+    e_test("v", 0, "1000000000000");
+    e_test("vi", 10, "1000000000000");
+    e_test("vii", 0, "-16");
+    e_test("viii", 10, "-16");
+    e_test("ix", 0, "-1000000000000");
+    e_test("x", 10, "-1000000000000");
 }

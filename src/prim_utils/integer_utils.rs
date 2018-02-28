@@ -218,7 +218,7 @@ pub fn big_endian_bits_padded_integer(size: usize, n: &Integer) -> Vec<bool> {
 
 //pub fn from_big_endian_bits(bits: &[bool]) -> Integer {
 //    let mut result = Integer::ZERO;
-//    result.assign_bits_unsigned(&bits.iter().cloned().rev().collect::<Vec<bool>>()[..]);
+//    result.assign_bits_unsigned(&bits.iter().cloned().rev().collect::<Vec<bool>>());
 //    result
 //}
 
@@ -490,12 +490,12 @@ pub fn big_endian_digits_padded_unsigned<T: PrimUnsignedInt>(
 //            }
 //        }
 //        let mut result = Integer::ZERO;
-//        result.assign_bits_unsigned(&bits[..]);
+//        result.assign_bits_unsigned(&bits);
 //        result
 //    } else if *radix <= 36 {
 //        from_big_endian_digits(
 //            radix,
-//            &digits.iter().rev().cloned().collect::<Vec<Integer>>()[..],
+//            &digits.iter().rev().cloned().collect::<Vec<Integer>>(),
 //        )
 //    } else {
 //        let mut result = Integer::ZERO;
@@ -545,14 +545,14 @@ pub fn big_endian_digits_padded_unsigned<T: PrimUnsignedInt>(
 //            }
 //        }
 //        let mut result = Integer::ZERO;
-//        result.assign_bits_unsigned(&bits[..]);
+//        result.assign_bits_unsigned(&bits);
 //        result
 //    } else if *radix <= 36 {
 //        let s: String = digits
 //            .iter()
 //            .map(|i| digit_to_char(i.to_u32().unwrap()).unwrap())
 //            .collect();
-//        Integer::from_str_radix(&s[..], radix.to_i32().unwrap()).unwrap()
+//        Integer::from_str_radix(&s, radix.to_i32().unwrap()).unwrap()
 //    } else {
 //        let mut result = Integer::ZERO;
 //        for d in digits {

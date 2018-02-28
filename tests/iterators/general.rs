@@ -11,7 +11,7 @@ fn test_random_from_vector() {
         let xs: Vec<u32> = parse_vec(xs).unwrap();
         eo.match_vec_f(
             &format!("random_from_vector_{}", number),
-            &mut random_from_vector(&EXAMPLE_SEED[..], xs),
+            &mut random_from_vector(&EXAMPLE_SEED, xs),
         );
     };
     test("i", "[5]");
@@ -22,5 +22,5 @@ fn test_random_from_vector() {
 #[test]
 #[should_panic(expected = "Cannot randomly generate values from an empty Vec.")]
 fn random_from_vector_fail() {
-    random_from_vector(&EXAMPLE_SEED[..], Vec::<u32>::new());
+    random_from_vector(&EXAMPLE_SEED, Vec::<u32>::new());
 }
