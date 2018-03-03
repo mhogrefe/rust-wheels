@@ -7,6 +7,7 @@ pub mod common;
 pub mod iterators {
     pub mod bools;
     pub mod chars;
+    pub mod floats;
     pub mod general;
     pub mod integers;
     pub mod integers_geometric;

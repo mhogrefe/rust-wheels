@@ -17,6 +17,7 @@ pub mod iterators {
     pub mod chars;
     pub mod common;
     pub mod dependent_pairs;
+    pub mod floats;
     pub mod general;
     pub mod integers;
     pub mod integers_geometric;
@@ -29,6 +30,7 @@ pub mod iterators {
     pub mod tuples;
 }
 pub mod prim_utils {
+    pub mod float_utils;
     pub mod integer_utils;
     pub mod traits;
 }
