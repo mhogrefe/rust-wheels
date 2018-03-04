@@ -3,6 +3,17 @@ use stats::{mean, median};
 use std::collections::{BTreeMap, HashMap};
 use time::precise_time_ns;
 
+fn escape_label_string(s: &str) -> String {
+    let mut escaped = String::new();
+    for c in s.chars() {
+        if c == '_' || c == '&' {
+            escaped.push_str("\\\\");
+        }
+        escaped.push(c);
+    }
+    escaped
+}
+
 macro_rules! benchmark {
     (
         $struct_name: ident, $fn_name: ident,
@@ -111,9 +122,9 @@ macro_rules! benchmark {
             let mut fg = Figure::new();
             {
                 let axes = fg.axes2d();
-                axes.set_title(options.title, &[]);
-                axes.set_x_label(options.x_axis_label, &[]);
-                axes.set_y_label(options.y_axis_label, &[]);
+                axes.set_title(&escape_label_string(options.title), &[]);
+                axes.set_x_label(&escape_label_string(options.x_axis_label), &[]);
+                axes.set_y_label(&escape_label_string(options.y_axis_label), &[]);
                 axes.lines(&xs_sizes,
                            &xs_durations,
                            &[Caption(options.f_name), Color("green")]);
