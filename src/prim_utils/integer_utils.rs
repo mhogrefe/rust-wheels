@@ -63,32 +63,6 @@ prim_impls_i!(i16, i, i16::from(i));
 prim_impls_i!(i32, i, i32::from(i));
 prim_impls_i!(i64, i, i64::from(i));
 
-pub fn ceiling_log_2_unsigned<T: PrimUnsignedInt>(n: T) -> u32 {
-    let zero = T::from_u8(0);
-    let one = T::from_u8(1);
-    if n < one {
-        panic!("n must be positive. Invalid n: {}", n);
-    }
-    let bit_length = T::bit_count() - n.leading_zeros();
-    if n & (n - one) == zero {
-        bit_length - 1
-    } else {
-        bit_length
-    }
-}
-
-pub fn ceiling_log_2_integer(n: &Integer) -> u64 {
-    if n.sign() != Ordering::Greater {
-        panic!("n must be positive. Invalid n: {}", n);
-    }
-    let bit_length = n.significant_bits();
-    if n.count_ones().unwrap() == 1 {
-        bit_length - 1
-    } else {
-        bit_length
-    }
-}
-
 pub fn bits_unsigned<T: PrimUnsignedInt>(n: T) -> Vec<bool> {
     let zero = T::from_u8(0);
     let one = T::from_u8(1);
@@ -242,29 +216,29 @@ pub fn char_to_digit(c: char) -> Option<u32> {
     }
 }
 
-pub fn digits_unsigned<T: PrimUnsignedInt>(radix: T, n: T) -> Vec<T> {
-    if radix < T::from_u8(2) {
-        panic!("radix must be at least 2. Invalid radix: {}", radix);
-    }
-    let zero = T::from_u8(0);
-    let one = T::from_u8(1);
-    let mut digits = Vec::new();
-    let log = ceiling_log_2_unsigned(radix);
-    let mut remaining = n;
-    if one << log == radix {
-        let mask = radix - one;
-        while remaining != zero {
-            digits.push(remaining & mask);
-            remaining >>= log;
-        }
-    } else {
-        while remaining != zero {
-            digits.push(remaining % radix);
-            remaining /= radix;
-        }
-    }
-    digits
-}
+//pub fn digits_unsigned<T: PrimUnsignedInt>(radix: T, n: T) -> Vec<T> {
+//    if radix < T::from_u8(2) {
+//        panic!("radix must be at least 2. Invalid radix: {}", radix);
+//    }
+//    let zero = T::from_u8(0);
+//    let one = T::from_u8(1);
+//    let mut digits = Vec::new();
+//    let log = ceiling_log_2_unsigned(radix);
+//    let mut remaining = n;
+//    if one << log == radix {
+//        let mask = radix - one;
+//        while remaining != zero {
+//            digits.push(remaining & mask);
+//            remaining >>= log;
+//        }
+//    } else {
+//        while remaining != zero {
+//            digits.push(remaining % radix);
+//            remaining /= radix;
+//        }
+//    }
+//    digits
+//}
 
 //pub fn digits_integer(radix: &Integer, n: &Integer) -> Vec<Integer> {
 //    if *radix < 2 {
@@ -328,28 +302,28 @@ pub fn digits_unsigned<T: PrimUnsignedInt>(radix: T, n: T) -> Vec<T> {
 //    }
 //}
 
-pub fn digits_padded_unsigned<T: PrimUnsignedInt>(size: usize, radix: T, n: T) -> Vec<T> {
-    if radix < T::from_u8(2) {
-        panic!("radix must be at least 2. Invalid radix: {}", radix);
-    }
-    let one = T::from_u8(1);
-    let mut digits = Vec::new();
-    let log = ceiling_log_2_unsigned(radix);
-    let mut remaining = n;
-    if one << log == radix {
-        let mask = radix - one;
-        for _ in 0..size {
-            digits.push(remaining & mask);
-            remaining >>= log;
-        }
-    } else {
-        for _ in 0..size {
-            digits.push(remaining % radix);
-            remaining /= radix;
-        }
-    }
-    digits
-}
+//pub fn digits_padded_unsigned<T: PrimUnsignedInt>(size: usize, radix: T, n: T) -> Vec<T> {
+//    if radix < T::from_u8(2) {
+//        panic!("radix must be at least 2. Invalid radix: {}", radix);
+//    }
+//    let one = T::from_u8(1);
+//    let mut digits = Vec::new();
+//    let log = ceiling_log_2_unsigned(radix);
+//    let mut remaining = n;
+//    if one << log == radix {
+//        let mask = radix - one;
+//        for _ in 0..size {
+//            digits.push(remaining & mask);
+//            remaining >>= log;
+//        }
+//    } else {
+//        for _ in 0..size {
+//            digits.push(remaining % radix);
+//            remaining /= radix;
+//        }
+//    }
+//    digits
+//}
 
 //pub fn digits_padded_integer(size: usize, radix: &Integer, n: &Integer) -> Vec<Integer> {
 //    if *radix < 2 {
@@ -423,9 +397,9 @@ pub fn digits_padded_unsigned<T: PrimUnsignedInt>(size: usize, radix: T, n: T) -
 //    }
 //}
 
-pub fn big_endian_digits_unsigned<T: PrimUnsignedInt>(radix: T, n: T) -> Vec<T> {
-    digits_unsigned(radix, n).into_iter().rev().collect()
-}
+//pub fn big_endian_digits_unsigned<T: PrimUnsignedInt>(radix: T, n: T) -> Vec<T> {
+//    digits_unsigned(radix, n).into_iter().rev().collect()
+//}
 
 //pub fn big_endian_digits_integer(radix: &Integer, n: &Integer) -> Vec<Integer> {
 //    if *radix < 2 {
@@ -446,16 +420,16 @@ pub fn big_endian_digits_unsigned<T: PrimUnsignedInt>(radix: T, n: T) -> Vec<T> 
 //    }
 //}
 
-pub fn big_endian_digits_padded_unsigned<T: PrimUnsignedInt>(
-    size: usize,
-    radix: T,
-    n: T,
-) -> Vec<T> {
-    digits_padded_unsigned(size, radix, n)
-        .into_iter()
-        .rev()
-        .collect()
-}
+//pub fn big_endian_digits_padded_unsigned<T: PrimUnsignedInt>(
+//    size: usize,
+//    radix: T,
+//    n: T,
+//) -> Vec<T> {
+//    digits_padded_unsigned(size, radix, n)
+//        .into_iter()
+//        .rev()
+//        .collect()
+//}
 
 //pub fn big_endian_digits_padded_integer(size: usize, radix: &Integer, n: &Integer) ->
 //  Vec<Integer> {
