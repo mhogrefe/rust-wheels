@@ -50,8 +50,8 @@ where
         for (i, series) in options.series_options.iter().enumerate() {
             let mut durations_vec = Vec::new();
             for _ in 0..reps {
-                let start_time = precise_time_ns();
                 let x = x.clone();
+                let start_time = precise_time_ns();
                 (series.function)(x);
                 let end_time = precise_time_ns();
                 durations_vec.push(end_time - start_time);
