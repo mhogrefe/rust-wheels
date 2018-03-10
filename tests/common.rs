@@ -181,8 +181,5 @@ pub fn get_expected_test_outputs() -> TestOutput {
         }
         maps.insert(current_key.to_string(), current_map.clone());
     }
-    TestOutput {
-        vecs: vecs,
-        maps: maps,
-    }
+    TestOutput { vecs, maps }
 }

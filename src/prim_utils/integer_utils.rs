@@ -31,7 +31,7 @@ macro_rules! prim_impls {
                 $t::leading_zeros(*self)
             }
         }
-    }
+    };
 }
 
 prim_impls!(u8, "u8", i, i, 8);
@@ -55,7 +55,7 @@ macro_rules! prim_impls_i {
                 $from_i8
             }
         }
-    }
+    };
 }
 
 prim_impls_i!(i8, i, i);

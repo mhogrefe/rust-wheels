@@ -1,3 +1,5 @@
+#![allow(unknown_lints, suspicious_arithmetic_impl, suspicious_op_assign_impl)]
+
 extern crate gnuplot;
 extern crate itertools;
 extern crate malachite_base;
@@ -32,5 +34,6 @@ pub mod iterators {
 pub mod prim_utils {
     pub mod float_utils;
     pub mod integer_utils;
+    pub mod string_utils;
     pub mod traits;
 }

@@ -18,7 +18,7 @@ macro_rules! prim_fail {
         fn $range_decreasing_fail() {
             range_decreasing::<$t>(10, 9);
         }
-    }
+    };
 }
 
 prim_fail!(u8, range_increasing_u8_fail, range_decreasing_u8_fail);
@@ -55,7 +55,7 @@ macro_rules! prim_fail_u {
         fn $random_range_fail_2() {
             random_range::<$t>(&EXAMPLE_SEED, 10, 9);
         }
-    }
+    };
 }
 
 prim_fail_u!(u8, range_fail_u8_1, range_fail_u8_2);

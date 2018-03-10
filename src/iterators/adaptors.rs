@@ -185,7 +185,7 @@ where
         for x in xs {
             most_common_values.push(FrequencyRecord {
                 item: f(x),
-                frequency: frequency,
+                frequency,
             });
             if i < limit {
                 i += 1;
@@ -360,10 +360,7 @@ pub struct MultiChain<I> {
 
 impl<I> MultiChain<I> {
     pub fn new(ranges: Vec<I>) -> MultiChain<I> {
-        MultiChain {
-            ranges: ranges,
-            i: 0,
-        }
+        MultiChain { ranges, i: 0 }
     }
 }
 
@@ -395,7 +392,7 @@ pub struct Concat<I: Iterator> {
 
 impl<I: Iterator> Concat<I> {
     pub fn new(xss: I) -> Concat<I> {
-        Concat { xss: xss, xs: None }
+        Concat { xss, xs: None }
     }
 }
 

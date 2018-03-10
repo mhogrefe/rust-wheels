@@ -62,7 +62,7 @@ macro_rules! exhaustive_dependent_pairs {
                   I::Item: Clone + Eq + Hash
         {
             $struct_name {
-                f: f,
+                f,
                 xs: CachedIterator::new(xs),
                 x_to_ys: HashMap::new(),
                 i: $index_ctor,

@@ -172,6 +172,6 @@ impl Iterator for RangeDownGeometric {
 pub fn range_down_geometric(seed: &[u32], scale: u32, max: i32) -> RangeDownGeometric {
     RangeDownGeometric {
         naturals: u32s_geometric(seed, scale),
-        max: max,
+        max,
     }
 }

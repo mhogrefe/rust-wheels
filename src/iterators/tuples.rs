@@ -747,12 +747,12 @@ macro_rules! lex_tuple {
                 let $it_elem = $it.next();
             )*
             $struct_name {
-                x: x,
-                $($it_elem: $it_elem,)*
-                xs: xs,
-                $($it: $it,)*
+                x,
+                $($it_elem,)*
+                xs,
+                $($it,)*
                 $last_it: $last_it.clone(),
-                $($it_init: $it_init,)*
+                $($it_init,)*
                 $last_it_init: $last_it
             }
         }
