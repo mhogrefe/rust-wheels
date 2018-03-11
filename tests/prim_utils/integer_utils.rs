@@ -11,12 +11,8 @@ use std::str::FromStr;
 //        $ceiling_log_2_fail: ident,
 //        $digits_fail_1: ident,
 //        $digits_fail_2: ident,
-//        $digits_padded_fail_1: ident,
-//        $digits_padded_fail_2: ident,
 //        $big_endian_digits_fail_1: ident,
 //        $big_endian_digits_fail_2: ident,
-//        $big_endian_digits_padded_fail_1: ident,
-//        $big_endian_digits_padded_fail_2: ident
 //    ) => {
 //        #[test]
 //        #[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
@@ -32,18 +28,6 @@ use std::str::FromStr;
 
 //        #[test]
 //        #[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
-//        fn $digits_padded_fail_1() {
-//            digits_padded_unsigned::<$t>(3, 1, 10);
-//        }
-
-//        #[test]
-//        #[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
-//        fn $digits_padded_fail_2() {
-//            digits_padded_unsigned::<$t>(3, 0, 10);
-//        }
-
-//        #[test]
-//        #[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
 //        fn $big_endian_digits_fail_1() {
 //            big_endian_digits_unsigned::<$t>(1, 10);
 //        }
@@ -53,18 +37,6 @@ use std::str::FromStr;
 //        fn $big_endian_digits_fail_2() {
 //            big_endian_digits_unsigned::<$t>(0, 10);
 //        }
-//
-//        #[test]
-//        #[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
-//        fn $big_endian_digits_padded_fail_1() {
-//            big_endian_digits_padded_unsigned::<$t>(3, 1, 10);
-//        }
-//
-//        #[test]
-//        #[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
-//        fn $big_endian_digits_padded_fail_2() {
-//            big_endian_digits_padded_unsigned::<$t>(3, 0, 10);
-//        }
 //    }
 //}
 
@@ -73,48 +45,32 @@ use std::str::FromStr;
 //    ceiling_log_2_u8_fail,
 //    digits_u8_fail_1,
 //    digits_u8_fail_2,
-//    digits_padded_u8_fail_1,
-//    digits_padded_u8_fail_2,
 //    big_endian_digits_u8_fail_1,
 //    big_endian_digits_u8_fail_2,
-//    big_endian_digits_padded_u8_fail_1,
-//    big_endian_digits_padded_u8_fail_2
 //);
 //prim_fail!(
 //    u16,
 //    ceiling_log_2_u16_fail,
 //    digits_u16_fail_1,
 //    digits_u16_fail_2,
-//    digits_padded_u16_fail_1,
-//    digits_padded_u16_fail_2,
 //    big_endian_digits_u16_fail_1,
 //    big_endian_digits_u16_fail_2,
-//    big_endian_digits_padded_u16_fail_1,
-//    big_endian_digits_padded_u16_fail_2
 //);
 //prim_fail!(
 //    u32,
 //    ceiling_log_2_u32_fail,
 //    digits_u32_fail_1,
 //    digits_u32_fail_2,
-//    digits_padded_u32_fail_1,
-//    digits_padded_u32_fail_2,
 //    big_endian_digits_u32_fail_1,
 //    big_endian_digits_u32_fail_2,
-//    big_endian_digits_padded_u32_fail_1,
-//    big_endian_digits_padded_u32_fail_2
 //);
 //prim_fail!(
 //    u64,
 //    ceiling_log_2_u64_fail,
 //    digits_u64_fail_1,
 //    digits_u64_fail_2,
-//    digits_padded_u64_fail_1,
-//    digits_padded_u64_fail_2,
 //    big_endian_digits_u64_fail_1,
 //    big_endian_digits_u64_fail_2,
-//    big_endian_digits_padded_u64_fail_1,
-//    big_endian_digits_padded_u64_fail_2
 //);
 
 fn bits_unsigned_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
@@ -165,128 +121,6 @@ fn bits_integer_fail() {
     bits_integer(&Integer::from(-5));
 }
 
-fn bits_padded_unsigned_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
-    let test = |size, n, out| assert_eq!(bits_padded_unsigned(size, n), out);
-    test(
-        8,
-        T::from_u8(0),
-        vec![false, false, false, false, false, false, false, false],
-    );
-    test(
-        8,
-        T::from_u8(1),
-        vec![true, false, false, false, false, false, false, false],
-    );
-    test(
-        8,
-        T::from_u8(6),
-        vec![false, true, true, false, false, false, false, false],
-    );
-    test(
-        8,
-        T::from_u8(105),
-        vec![true, false, false, true, false, true, true, false],
-    );
-    test(2, T::from_u8(104), vec![false, false]);
-    test(2, T::from_u8(105), vec![true, false]);
-    test(1, T::from_u8(104), vec![false]);
-    test(1, T::from_u8(105), vec![true]);
-    test(0, T::from_u8(104), vec![]);
-    test(
-        100,
-        T::from_u8(105),
-        vec![
-            true, false, false, true, false, true, true, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false,
-        ],
-    );
-    test(T::bit_count() as usize, T::max_value(), max_bits);
-}
-
-#[test]
-fn test_bits_padded_unsigned() {
-    bits_padded_unsigned_helper::<u8>(vec![true, true, true, true, true, true, true, true]);
-    bits_padded_unsigned_helper::<u16>(vec![
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true,
-    ]);
-    bits_padded_unsigned_helper::<u32>(vec![
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true, true,
-    ]);
-    bits_padded_unsigned_helper::<u64>(vec![
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true, true, true, true,
-    ]);
-}
-
-#[test]
-fn test_bits_padded_integer() {
-    let test = |size, n, out| {
-        assert_eq!(
-            bits_padded_integer(size, &Integer::from_str(n).unwrap()),
-            out
-        )
-    };
-    test(
-        8,
-        "0",
-        vec![false, false, false, false, false, false, false, false],
-    );
-    test(
-        8,
-        "1",
-        vec![true, false, false, false, false, false, false, false],
-    );
-    test(
-        8,
-        "6",
-        vec![false, true, true, false, false, false, false, false],
-    );
-    test(
-        8,
-        "105",
-        vec![true, false, false, true, false, true, true, false],
-    );
-    test(2, "104", vec![false, false]);
-    test(2, "105", vec![true, false]);
-    test(1, "104", vec![false]);
-    test(1, "105", vec![true]);
-    test(0, "104", vec![]);
-    test(
-        100,
-        "105",
-        vec![
-            true, false, false, true, false, true, true, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false,
-        ],
-    );
-}
-
-#[test]
-#[should_panic(expected = "n cannot be negative. Invalid n: -1")]
-fn bits_padded_integer_fail() {
-    bits_padded_integer(8, &Integer::NEGATIVE_ONE);
-}
-
 fn big_endian_bits_unsigned_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
     let test = |n, out| assert_eq!(big_endian_bits_unsigned(n), out);
     test(T::from_u8(0), vec![]);
@@ -329,135 +163,10 @@ fn big_endian_bits_integer_helper() {
     test("105", vec![true, true, false, true, false, false, true]);
 }
 
-fn big_endian_bits_padded_unsigned_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
-    let test = |size, n, out| assert_eq!(big_endian_bits_padded_unsigned(size, n), out);
-    test(
-        8,
-        T::from_u8(0),
-        vec![false, false, false, false, false, false, false, false],
-    );
-    test(
-        8,
-        T::from_u8(1),
-        vec![false, false, false, false, false, false, false, true],
-    );
-    test(
-        8,
-        T::from_u8(6),
-        vec![false, false, false, false, false, true, true, false],
-    );
-    test(
-        8,
-        T::from_u8(105),
-        vec![false, true, true, false, true, false, false, true],
-    );
-    test(2, T::from_u8(104), vec![false, false]);
-    test(2, T::from_u8(105), vec![false, true]);
-    test(1, T::from_u8(104), vec![false]);
-    test(1, T::from_u8(105), vec![true]);
-    test(0, T::from_u8(104), vec![]);
-    test(
-        100,
-        T::from_u8(105),
-        vec![
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, true, true, false, true,
-            false, false, true,
-        ],
-    );
-    test(T::bit_count() as usize, T::max_value(), max_bits);
-}
-
-#[test]
-fn test_big_endian_bits_padded_unsigned() {
-    big_endian_bits_padded_unsigned_helper::<u8>(vec![
-        true, true, true, true, true, true, true, true
-    ]);
-    big_endian_bits_padded_unsigned_helper::<u16>(vec![
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true,
-    ]);
-    big_endian_bits_padded_unsigned_helper::<u32>(vec![
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true, true,
-    ]);
-    big_endian_bits_padded_unsigned_helper::<u64>(vec![
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true, true, true, true,
-    ]);
-}
-
 #[test]
 #[should_panic(expected = "n cannot be negative. Invalid n: -5")]
 fn big_endian_bits_integer_fail() {
     big_endian_bits_integer(&Integer::from(-5));
-}
-
-fn big_endian_bits_padded_integer_helper(size: usize, n: &str, out: &[bool]) {
-    assert_eq!(
-        big_endian_bits_padded_integer(size, &Integer::from_str(n).unwrap()),
-        out
-    );
-}
-
-#[test]
-fn test_big_endian_bits_padded_integer() {
-    big_endian_bits_padded_integer_helper(
-        8,
-        "0",
-        &[false, false, false, false, false, false, false, false],
-    );
-    big_endian_bits_padded_integer_helper(
-        8,
-        "1",
-        &[false, false, false, false, false, false, false, true],
-    );
-    big_endian_bits_padded_integer_helper(
-        8,
-        "6",
-        &[false, false, false, false, false, true, true, false],
-    );
-    big_endian_bits_padded_integer_helper(
-        8,
-        "105",
-        &[false, true, true, false, true, false, false, true],
-    );
-    big_endian_bits_padded_integer_helper(2, "104", &[false, false]);
-    big_endian_bits_padded_integer_helper(2, "105", &[false, true]);
-    big_endian_bits_padded_integer_helper(1, "104", &[false]);
-    big_endian_bits_padded_integer_helper(1, "105", &[true]);
-    big_endian_bits_padded_integer_helper(0, "104", &[]);
-    big_endian_bits_padded_integer_helper(
-        100,
-        "105",
-        &[
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, false, false, false,
-            false, false, false, false, false, false, false, false, false, true, true, false, true,
-            false, false, true,
-        ],
-    );
-}
-
-#[test]
-#[should_panic(expected = "n cannot be negative. Invalid n: -1")]
-fn big_endian_bits_padded_integer_fail() {
-    big_endian_bits_padded_integer(8, &Integer::NEGATIVE_ONE);
 }
 
 //fn from_big_endian_bits_helper(bits: &[bool], out: &str) {
@@ -607,177 +316,6 @@ fn test_char_to_digit() {
 //    digits_integer_fail_helper("0", "-1");
 //}
 
-//fn digits_padded_unsigned_helper<T: PrimUnsignedInt>(max_digit: &str) {
-//    let test = |size, radix, n, out| {
-//        assert_eq!(format!("{:?}", digits_padded_unsigned(size, radix, n)), out)
-//    };
-//    test(0, T::from_u8(2), T::from_u8(0), "[]");
-//    test(0, T::from_u8(3), T::from_u8(0), "[]");
-//    test(0, T::from_u8(57), T::from_u8(0), "[]");
-//    test(0, T::from_u8(2), T::from_u8(1), "[]");
-//    test(0, T::from_u8(3), T::from_u8(1), "[]");
-//    test(0, T::from_u8(57), T::from_u8(1), "[]");
-//    test(0, T::from_u8(2), T::from_u8(10), "[]");
-//    test(0, T::from_u8(3), T::from_u8(10), "[]");
-//    test(0, T::from_u8(57), T::from_u8(10), "[]");
-//    test(0, T::from_u8(2), T::from_u8(107), "[]");
-//    test(0, T::from_u8(3), T::from_u8(107), "[]");
-//    test(0, T::from_u8(57), T::from_u8(107), "[]");
-//    test(1, T::from_u8(2), T::from_u8(0), "[0]");
-//    test(1, T::from_u8(3), T::from_u8(0), "[0]");
-//    test(1, T::from_u8(57), T::from_u8(0), "[0]");
-//    test(1, T::from_u8(2), T::from_u8(1), "[1]");
-//    test(1, T::from_u8(3), T::from_u8(1), "[1]");
-//    test(1, T::from_u8(57), T::from_u8(1), "[1]");
-//    test(1, T::from_u8(2), T::from_u8(10), "[0]");
-//    test(1, T::from_u8(3), T::from_u8(10), "[1]");
-//    test(1, T::from_u8(57), T::from_u8(10), "[10]");
-//    test(1, T::from_u8(2), T::from_u8(107), "[1]");
-//    test(1, T::from_u8(3), T::from_u8(107), "[2]");
-//    test(1, T::from_u8(57), T::from_u8(107), "[50]");
-//    test(2, T::from_u8(2), T::from_u8(0), "[0, 0]");
-//    test(2, T::from_u8(3), T::from_u8(0), "[0, 0]");
-//    test(2, T::from_u8(57), T::from_u8(0), "[0, 0]");
-//    test(2, T::from_u8(2), T::from_u8(1), "[1, 0]");
-//    test(2, T::from_u8(3), T::from_u8(1), "[1, 0]");
-//    test(2, T::from_u8(57), T::from_u8(1), "[1, 0]");
-//    test(2, T::from_u8(2), T::from_u8(10), "[0, 1]");
-//    test(2, T::from_u8(3), T::from_u8(10), "[1, 0]");
-//    test(2, T::from_u8(57), T::from_u8(10), "[10, 0]");
-//    test(2, T::from_u8(2), T::from_u8(107), "[1, 1]");
-//    test(2, T::from_u8(3), T::from_u8(107), "[2, 2]");
-//    test(2, T::from_u8(57), T::from_u8(107), "[50, 1]");
-//    test(8, T::from_u8(2), T::from_u8(0), "[0, 0, 0, 0, 0, 0, 0, 0]");
-//    test(8, T::from_u8(3), T::from_u8(0), "[0, 0, 0, 0, 0, 0, 0, 0]");
-//    test(8, T::from_u8(57), T::from_u8(0), "[0, 0, 0, 0, 0, 0, 0, 0]");
-//    test(8, T::from_u8(2), T::from_u8(1), "[1, 0, 0, 0, 0, 0, 0, 0]");
-//    test(8, T::from_u8(3), T::from_u8(1), "[1, 0, 0, 0, 0, 0, 0, 0]");
-//    test(8, T::from_u8(57), T::from_u8(1), "[1, 0, 0, 0, 0, 0, 0, 0]");
-//    test(8, T::from_u8(2), T::from_u8(10), "[0, 1, 0, 1, 0, 0, 0, 0]");
-//    test(8, T::from_u8(3), T::from_u8(10), "[1, 0, 1, 0, 0, 0, 0, 0]");
-//    test(
-//        8,
-//        T::from_u8(57),
-//        T::from_u8(10),
-//        "[10, 0, 0, 0, 0, 0, 0, 0]",
-//    );
-//    test(
-//        8,
-//        T::from_u8(2),
-//        T::from_u8(107),
-//        "[1, 1, 0, 1, 0, 1, 1, 0]",
-//    );
-//    test(
-//        8,
-//        T::from_u8(3),
-//        T::from_u8(107),
-//        "[2, 2, 2, 0, 1, 0, 0, 0]",
-//    );
-//    test(
-//        8,
-//        T::from_u8(57),
-//        T::from_u8(107),
-//        "[50, 1, 0, 0, 0, 0, 0, 0]",
-//    );
-//    test(1, T::max_value(), T::from_u8(0), "[0]");
-//    test(1, T::max_value(), T::from_u8(107), "[107]");
-//    test(1, T::max_value(), T::max_value() - T::from_u8(1), max_digit);
-//    test(2, T::max_value(), T::max_value(), "[0, 1]");
-//}
-//
-//#[test]
-//fn test_digits_padded_unsigned() {
-//    digits_padded_unsigned_helper::<u8>("[254]");
-//    digits_padded_unsigned_helper::<u16>("[65534]");
-//    digits_padded_unsigned_helper::<u32>("[4294967294]");
-//    digits_padded_unsigned_helper::<u64>("[18446744073709551614]");
-//}
-
-//#[test]
-//fn test_digits_padded_integer() {
-//    let test = |size, radix, n, out| {
-//        assert_eq!(
-//            format!(
-//                "{:?}",
-//                digits_padded_integer(
-//                    size,
-//                    &Integer::from_str(radix).unwrap(),
-//                    &Integer::from_str(n).unwrap(),
-//                )
-//            ),
-//            out
-//        )
-//    };
-//    test(0, "2", "0", "[]");
-//    test(0, "3", "0", "[]");
-//    test(0, "57", "0", "[]");
-//    test(0, "2", "1", "[]");
-//    test(0, "3", "1", "[]");
-//    test(0, "57", "1", "[]");
-//    test(0, "2", "10", "[]");
-//    test(0, "3", "10", "[]");
-//    test(0, "57", "10", "[]");
-//    test(0, "2", "107", "[]");
-//    test(0, "3", "107", "[]");
-//    test(0, "57", "107", "[]");
-//    test(1, "2", "0", "[0]");
-//    test(1, "3", "0", "[0]");
-//    test(1, "57", "0", "[0]");
-//    test(1, "2", "1", "[1]");
-//    test(1, "3", "1", "[1]");
-//    test(1, "57", "1", "[1]");
-//    test(1, "2", "10", "[0]");
-//    test(1, "3", "10", "[1]");
-//    test(1, "57", "10", "[10]");
-//    test(1, "2", "107", "[1]");
-//    test(1, "3", "107", "[2]");
-//    test(1, "57", "107", "[50]");
-//    test(2, "2", "0", "[0, 0]");
-//    test(2, "3", "0", "[0, 0]");
-//    test(2, "57", "0", "[0, 0]");
-//    test(2, "2", "1", "[1, 0]");
-//    test(2, "3", "1", "[1, 0]");
-//    test(2, "57", "1", "[1, 0]");
-//    test(2, "2", "10", "[0, 1]");
-//    test(2, "3", "10", "[1, 0]");
-//    test(2, "57", "10", "[10, 0]");
-//    test(2, "2", "107", "[1, 1]");
-//    test(2, "3", "107", "[2, 2]");
-//    test(2, "57", "107", "[50, 1]");
-//    test(8, "2", "0", "[0, 0, 0, 0, 0, 0, 0, 0]");
-//    test(8, "3", "0", "[0, 0, 0, 0, 0, 0, 0, 0]");
-//    test(8, "57", "0", "[0, 0, 0, 0, 0, 0, 0, 0]");
-//    test(8, "2", "1", "[1, 0, 0, 0, 0, 0, 0, 0]");
-//    test(8, "3", "1", "[1, 0, 0, 0, 0, 0, 0, 0]");
-//    test(8, "57", "1", "[1, 0, 0, 0, 0, 0, 0, 0]");
-//    test(8, "2", "10", "[0, 1, 0, 1, 0, 0, 0, 0]");
-//    test(8, "3", "10", "[1, 0, 1, 0, 0, 0, 0, 0]");
-//    test(8, "57", "10", "[10, 0, 0, 0, 0, 0, 0, 0]");
-//    test(8, "2", "107", "[1, 1, 0, 1, 0, 1, 1, 0]");
-//    test(8, "3", "107", "[2, 2, 2, 0, 1, 0, 0, 0]");
-//    test(8, "57", "107", "[50, 1, 0, 0, 0, 0, 0, 0]");
-//}
-//
-//fn digits_padded_integer_fail_helper(size: usize, radix: &str, n: &str) {
-//    digits_padded_integer(
-//        size,
-//        &Integer::from_str(radix).unwrap(),
-//        &Integer::from_str(n).unwrap(),
-//    );
-//}
-//
-//#[test]
-//#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
-//fn digits_padded_integer_fail_1() {
-//    digits_padded_integer_fail_helper(3, "1", "10");
-//}
-//
-//#[test]
-//#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
-//fn digits_padded_integer_fail_2() {
-//    digits_padded_integer_fail_helper(3, "0", "10");
-//}
-
 //fn big_endian_digits_unsigned_helper<T: PrimUnsignedInt>(max_digit: &str) {
 //    let test =
 //        |radix, n, out| assert_eq!(format!("{:?}", big_endian_digits_unsigned(radix, n)), out);
@@ -857,180 +395,6 @@ fn test_char_to_digit() {
 //    test("10", "187", "[1, 8, 7]");
 //    test("12", "187", "[1, 3, 7]");
 //    test("57", "187", "[3, 16]");
-//}
-
-//fn big_endian_digits_padded_unsigned_helper<T: PrimUnsignedInt>(max_digit: &str) {
-//    let test = |size, radix, n, out| {
-//        assert_eq!(
-//            format!("{:?}", big_endian_digits_padded_unsigned(size, radix, n)),
-//            out
-//        )
-//    };
-//    test(0, T::from_u8(2), T::from_u8(0), "[]");
-//    test(0, T::from_u8(3), T::from_u8(0), "[]");
-//    test(0, T::from_u8(57), T::from_u8(0), "[]");
-//    test(0, T::from_u8(2), T::from_u8(1), "[]");
-//    test(0, T::from_u8(3), T::from_u8(1), "[]");
-//    test(0, T::from_u8(57), T::from_u8(1), "[]");
-//    test(0, T::from_u8(2), T::from_u8(10), "[]");
-//    test(0, T::from_u8(3), T::from_u8(10), "[]");
-//    test(0, T::from_u8(57), T::from_u8(10), "[]");
-//    test(0, T::from_u8(2), T::from_u8(107), "[]");
-//    test(0, T::from_u8(3), T::from_u8(107), "[]");
-//    test(0, T::from_u8(57), T::from_u8(107), "[]");
-//    test(1, T::from_u8(2), T::from_u8(0), "[0]");
-//    test(1, T::from_u8(3), T::from_u8(0), "[0]");
-//    test(1, T::from_u8(57), T::from_u8(0), "[0]");
-//    test(1, T::from_u8(2), T::from_u8(1), "[1]");
-//    test(1, T::from_u8(3), T::from_u8(1), "[1]");
-//    test(1, T::from_u8(57), T::from_u8(1), "[1]");
-//    test(1, T::from_u8(2), T::from_u8(10), "[0]");
-//    test(1, T::from_u8(3), T::from_u8(10), "[1]");
-//    test(1, T::from_u8(57), T::from_u8(10), "[10]");
-//    test(1, T::from_u8(2), T::from_u8(107), "[1]");
-//    test(1, T::from_u8(3), T::from_u8(107), "[2]");
-//    test(1, T::from_u8(57), T::from_u8(107), "[50]");
-//    test(2, T::from_u8(2), T::from_u8(0), "[0, 0]");
-//    test(2, T::from_u8(3), T::from_u8(0), "[0, 0]");
-//    test(2, T::from_u8(57), T::from_u8(0), "[0, 0]");
-//    test(2, T::from_u8(2), T::from_u8(1), "[0, 1]");
-//    test(2, T::from_u8(3), T::from_u8(1), "[0, 1]");
-//    test(2, T::from_u8(57), T::from_u8(1), "[0, 1]");
-//    test(2, T::from_u8(2), T::from_u8(10), "[1, 0]");
-//    test(2, T::from_u8(3), T::from_u8(10), "[0, 1]");
-//    test(2, T::from_u8(57), T::from_u8(10), "[0, 10]");
-//    test(2, T::from_u8(2), T::from_u8(107), "[1, 1]");
-//    test(2, T::from_u8(3), T::from_u8(107), "[2, 2]");
-//    test(2, T::from_u8(57), T::from_u8(107), "[1, 50]");
-//    test(8, T::from_u8(2), T::from_u8(0), "[0, 0, 0, 0, 0, 0, 0, 0]");
-//    test(8, T::from_u8(3), T::from_u8(0), "[0, 0, 0, 0, 0, 0, 0, 0]");
-//    test(8, T::from_u8(57), T::from_u8(0), "[0, 0, 0, 0, 0, 0, 0, 0]");
-//    test(8, T::from_u8(2), T::from_u8(1), "[0, 0, 0, 0, 0, 0, 0, 1]");
-//    test(8, T::from_u8(3), T::from_u8(1), "[0, 0, 0, 0, 0, 0, 0, 1]");
-//    test(8, T::from_u8(57), T::from_u8(1), "[0, 0, 0, 0, 0, 0, 0, 1]");
-//    test(8, T::from_u8(2), T::from_u8(10), "[0, 0, 0, 0, 1, 0, 1, 0]");
-//    test(8, T::from_u8(3), T::from_u8(10), "[0, 0, 0, 0, 0, 1, 0, 1]");
-//    test(
-//        8,
-//        T::from_u8(57),
-//        T::from_u8(10),
-//        "[0, 0, 0, 0, 0, 0, 0, 10]",
-//    );
-//    test(
-//        8,
-//        T::from_u8(2),
-//        T::from_u8(107),
-//        "[0, 1, 1, 0, 1, 0, 1, 1]",
-//    );
-//    test(
-//        8,
-//        T::from_u8(3),
-//        T::from_u8(107),
-//        "[0, 0, 0, 1, 0, 2, 2, 2]",
-//    );
-//    test(
-//        8,
-//        T::from_u8(57),
-//        T::from_u8(107),
-//        "[0, 0, 0, 0, 0, 0, 1, 50]",
-//    );
-//    test(1, T::max_value(), T::from_u8(0), "[0]");
-//    test(1, T::max_value(), T::from_u8(107), "[107]");
-//    test(1, T::max_value(), T::max_value() - T::from_u8(1), max_digit);
-//    test(2, T::max_value(), T::max_value(), "[1, 0]");
-//}
-//
-//#[test]
-//fn test_big_endian_digits_padded_unsigned() {
-//    big_endian_digits_padded_unsigned_helper::<u8>("[254]");
-//    big_endian_digits_padded_unsigned_helper::<u16>("[65534]");
-//    big_endian_digits_padded_unsigned_helper::<u32>("[4294967294]");
-//    big_endian_digits_padded_unsigned_helper::<u64>("[18446744073709551614]");
-//}
-
-//#[test]
-//fn test_big_endian_digits_padded_integer() {
-//    let test = |size, radix, n, out| {
-//        assert_eq!(
-//            format!(
-//                "{:?}",
-//                big_endian_digits_padded_integer(
-//                    size,
-//                    &Integer::from_str(radix).unwrap(),
-//                    &Integer::from_str(n).unwrap(),
-//                )
-//            ),
-//            out
-//        )
-//    };
-//    test(0, "2", "0", "[]");
-//    test(0, "3", "0", "[]");
-//    test(0, "57", "0", "[]");
-//    test(0, "2", "1", "[]");
-//    test(0, "3", "1", "[]");
-//    test(0, "57", "1", "[]");
-//    test(0, "2", "10", "[]");
-//    test(0, "3", "10", "[]");
-//    test(0, "57", "10", "[]");
-//    test(0, "2", "107", "[]");
-//    test(0, "3", "107", "[]");
-//    test(0, "57", "107", "[]");
-//    test(1, "2", "0", "[0]");
-//    test(1, "3", "0", "[0]");
-//    test(1, "57", "0", "[0]");
-//    test(1, "2", "1", "[1]");
-//    test(1, "3", "1", "[1]");
-//    test(1, "57", "1", "[1]");
-//    test(1, "2", "10", "[0]");
-//    test(1, "3", "10", "[1]");
-//    test(1, "57", "10", "[10]");
-//    test(1, "2", "107", "[1]");
-//    test(1, "3", "107", "[2]");
-//    test(1, "57", "107", "[50]");
-//    test(2, "2", "0", "[0, 0]");
-//    test(2, "3", "0", "[0, 0]");
-//    test(2, "57", "0", "[0, 0]");
-//    test(2, "2", "1", "[0, 1]");
-//    test(2, "3", "1", "[0, 1]");
-//    test(2, "57", "1", "[0, 1]");
-//    test(2, "2", "10", "[1, 0]");
-//    test(2, "3", "10", "[0, 1]");
-//    test(2, "57", "10", "[0, 10]");
-//    test(2, "2", "107", "[1, 1]");
-//    test(2, "3", "107", "[2, 2]");
-//    test(2, "57", "107", "[1, 50]");
-//    test(8, "2", "0", "[0, 0, 0, 0, 0, 0, 0, 0]");
-//    test(8, "3", "0", "[0, 0, 0, 0, 0, 0, 0, 0]");
-//    test(8, "57", "0", "[0, 0, 0, 0, 0, 0, 0, 0]");
-//    test(8, "2", "1", "[0, 0, 0, 0, 0, 0, 0, 1]");
-//    test(8, "3", "1", "[0, 0, 0, 0, 0, 0, 0, 1]");
-//    test(8, "57", "1", "[0, 0, 0, 0, 0, 0, 0, 1]");
-//    test(8, "2", "10", "[0, 0, 0, 0, 1, 0, 1, 0]");
-//    test(8, "3", "10", "[0, 0, 0, 0, 0, 1, 0, 1]");
-//    test(8, "57", "10", "[0, 0, 0, 0, 0, 0, 0, 10]");
-//    test(8, "2", "107", "[0, 1, 1, 0, 1, 0, 1, 1]");
-//    test(8, "3", "107", "[0, 0, 0, 1, 0, 2, 2, 2]");
-//    test(8, "57", "107", "[0, 0, 0, 0, 0, 0, 1, 50]");
-//}
-//
-//fn big_endian_digits_padded_integer_fail_helper(size: usize, radix: &str, n: &str) {
-//    big_endian_digits_padded_integer(
-//        size,
-//        &Integer::from_str(radix).unwrap(),
-//        &Integer::from_str(n).unwrap(),
-//    );
-//}
-//
-//#[test]
-//#[should_panic(expected = "radix must be at least 2. Invalid radix: 1")]
-//fn big_endian_digits_padded_integer_fail_1() {
-//    big_endian_digits_padded_integer_fail_helper(3, "1", "10");
-//}
-//
-//#[test]
-//#[should_panic(expected = "radix must be at least 2. Invalid radix: 0")]
-//fn big_endian_digits_padded_integer_fail_2() {
-//    big_endian_digits_padded_integer_fail_helper(3, "0", "10");
 //}
 
 //#[test]

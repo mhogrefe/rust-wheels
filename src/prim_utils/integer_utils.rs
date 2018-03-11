@@ -90,29 +90,6 @@ pub fn bits_integer(n: &Integer) -> Vec<bool> {
     }
 }
 
-pub fn bits_padded_unsigned<T: PrimUnsignedInt>(size: usize, n: T) -> Vec<bool> {
-    let zero = T::from_u8(0);
-    let one = T::from_u8(1);
-    let mut bits = Vec::with_capacity(size);
-    let mut remaining = n;
-    for _ in 0..size {
-        bits.push(remaining & one != zero);
-        remaining >>= 1;
-    }
-    bits
-}
-
-pub fn bits_padded_integer(size: usize, n: &Integer) -> Vec<bool> {
-    if n.sign() == Ordering::Less {
-        panic!("n cannot be negative. Invalid n: {}", n);
-    }
-    let mut bits = Vec::with_capacity(size);
-    for i in 0..(size as u64) {
-        bits.push(n.get_bit(i));
-    }
-    bits
-}
-
 pub fn big_endian_bits_unsigned<T: PrimUnsignedInt>(n: T) -> Vec<bool> {
     let zero = T::from_u8(0);
     let one = T::from_u8(1);
@@ -147,47 +124,6 @@ pub fn big_endian_bits_integer(n: &Integer) -> Vec<bool> {
             bits
         }
     }
-}
-
-pub fn big_endian_bits_padded_unsigned<T: PrimUnsignedInt>(size: usize, n: T) -> Vec<bool> {
-    let mut bits = Vec::new();
-    if size == 0 {
-        return bits;
-    }
-    let mut size = size;
-    let max_bits = T::bit_count();
-    while (size as u32) > max_bits {
-        bits.push(false);
-        size -= 1;
-    }
-    let zero = T::from_u8(0);
-    let one = T::from_u8(1);
-    let mut mask = one << (size as u32 - 1);
-    while mask != zero {
-        bits.push(n & mask != zero);
-        mask >>= 1;
-    }
-    bits
-}
-
-pub fn big_endian_bits_padded_integer(size: usize, n: &Integer) -> Vec<bool> {
-    if n.sign() == Ordering::Less {
-        panic!("n cannot be negative. Invalid n: {}", n);
-    }
-    let mut bits = Vec::new();
-    if size == 0 {
-        return bits;
-    }
-    let mut i = size - 1;
-    loop {
-        bits.push(n.get_bit(i as u64));
-        if i == 0 {
-            break;
-        } else {
-            i -= 1;
-        }
-    }
-    bits
 }
 
 //pub fn from_big_endian_bits(bits: &[bool]) -> Integer {
@@ -302,101 +238,6 @@ pub fn char_to_digit(c: char) -> Option<u32> {
 //    }
 //}
 
-//pub fn digits_padded_unsigned<T: PrimUnsignedInt>(size: usize, radix: T, n: T) -> Vec<T> {
-//    if radix < T::from_u8(2) {
-//        panic!("radix must be at least 2. Invalid radix: {}", radix);
-//    }
-//    let one = T::from_u8(1);
-//    let mut digits = Vec::new();
-//    let log = ceiling_log_2_unsigned(radix);
-//    let mut remaining = n;
-//    if one << log == radix {
-//        let mask = radix - one;
-//        for _ in 0..size {
-//            digits.push(remaining & mask);
-//            remaining >>= log;
-//        }
-//    } else {
-//        for _ in 0..size {
-//            digits.push(remaining % radix);
-//            remaining /= radix;
-//        }
-//    }
-//    digits
-//}
-
-//pub fn digits_padded_integer(size: usize, radix: &Integer, n: &Integer) -> Vec<Integer> {
-//    if *radix < 2 {
-//        panic!("radix must be at least 2. Invalid radix: {}", radix);
-//    }
-//    let sign = n.sign();
-//    if sign == Ordering::Less {
-//        panic!("n cannot be negative. Invalid n: {}", n);
-//    } else if size == 0 {
-//        Vec::new()
-//    } else if sign == Ordering::Equal {
-//        iter::repeat(Integer::ZERO).take(size).collect()
-//    } else if radix.natural_abs_ref().is_power_of_2() {
-//        let log = ceiling_log_2_integer(radix);
-//        let mut digits = Vec::new();
-//        let mut digit = Integer::ZERO;
-//        let mut i = 0;
-//        let mut j = 0;
-//        let mut mask = 1;
-//        for x in n.natural_abs_ref().into_limbs_le().iter() {
-//            loop {
-//                if i == size {
-//                    break;
-//                }
-//                if x & mask != 0 {
-//                    digit.set_bit(j);
-//                }
-//                i += 1;
-//                j += 1;
-//                if j == log {
-//                    let last_index = digits.len();
-//                    digits.push(Integer::ZERO);
-//                    mem::swap(&mut digits[last_index], &mut digit);
-//                    j = 0;
-//                }
-//                if mask == 0 {
-//                    break;
-//                }
-//                mask <<= 1;
-//            }
-//        }
-//        if digit != 0 {
-//            let last_index = digits.len();
-//            digits.push(Integer::ZERO);
-//            mem::swap(&mut digits[last_index], &mut digit);
-//        }
-//        digits
-//    } else if *radix <= 36 {
-//        n.to_string_radix(radix.to_i32().unwrap())
-//            .chars()
-//            .rev()
-//            .map(|c| {
-//                Integer::from(c as i32 - (if c >= '0' && c <= '9' { '0' } else { 'W' } as i32))
-//            })
-//            .chain(iter::repeat(Integer::ZERO))
-//            .take(size)
-//            .collect()
-//    } else {
-//        let mut digits = Vec::new();
-//        let mut remaining = n.clone();
-//        for _ in 0..size {
-//            if remaining == 0 {
-//                digits.push(Integer::ZERO);
-//            } else {
-//                let mut new_digit = radix.clone();
-//                remaining.div_rem_in_place(&mut new_digit);
-//                digits.push(new_digit);
-//            }
-//        }
-//        digits
-//    }
-//}
-
 //pub fn big_endian_digits_unsigned<T: PrimUnsignedInt>(radix: T, n: T) -> Vec<T> {
 //    digits_unsigned(radix, n).into_iter().rev().collect()
 //}
@@ -418,25 +259,6 @@ pub fn char_to_digit(c: char) -> Option<u32> {
 //    } else {
 //        digits_integer(radix, n).into_iter().rev().collect()
 //    }
-//}
-
-//pub fn big_endian_digits_padded_unsigned<T: PrimUnsignedInt>(
-//    size: usize,
-//    radix: T,
-//    n: T,
-//) -> Vec<T> {
-//    digits_padded_unsigned(size, radix, n)
-//        .into_iter()
-//        .rev()
-//        .collect()
-//}
-
-//pub fn big_endian_digits_padded_integer(size: usize, radix: &Integer, n: &Integer) ->
-//  Vec<Integer> {
-//    digits_padded_integer(size, radix, n)
-//        .into_iter()
-//        .rev()
-//        .collect()
 //}
 
 //pub fn from_digits(radix: &Integer, digits: &[Integer]) -> Integer {
