@@ -1,7 +1,6 @@
 use rust_wheels::prim_utils::integer_utils::*;
 
 use malachite_nz::integer::Integer;
-use malachite_base::num::NegativeOne;
 use rust_wheels::prim_utils::traits::PrimUnsignedInt;
 use std::str::FromStr;
 
