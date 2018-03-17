@@ -30,15 +30,11 @@ pub trait PrimInt
     + Walkable {
     fn name() -> &'static str;
 
-    fn bit_count() -> u32;
-
     fn min_value() -> Self;
 
     fn max_value() -> Self;
 
     fn from_u8(i: u8) -> Self;
-
-    fn leading_zeros(&self) -> u32;
 }
 
 pub trait PrimUnsignedInt: PrimInt {}

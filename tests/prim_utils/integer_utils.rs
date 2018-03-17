@@ -1,9 +1,5 @@
 use rust_wheels::prim_utils::integer_utils::*;
 
-use malachite_nz::integer::Integer;
-use rust_wheels::prim_utils::traits::PrimUnsignedInt;
-use std::str::FromStr;
-
 //macro_rules! prim_fail {
 //    (
 //        $t: ty,
@@ -71,115 +67,6 @@ use std::str::FromStr;
 //    big_endian_digits_u64_fail_1,
 //    big_endian_digits_u64_fail_2,
 //);
-
-fn bits_unsigned_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
-    let test = |n, out| assert_eq!(bits_unsigned(n), out);
-    test(T::from_u8(0), vec![]);
-    test(T::from_u8(1), vec![true]);
-    test(T::from_u8(6), vec![false, true, true]);
-    test(
-        T::from_u8(105),
-        vec![true, false, false, true, false, true, true],
-    );
-    test(T::max_value(), max_bits);
-}
-
-#[test]
-fn test_bits_unsigned() {
-    bits_unsigned_helper::<u8>(vec![true, true, true, true, true, true, true, true]);
-    bits_unsigned_helper::<u16>(vec![
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true,
-    ]);
-    bits_unsigned_helper::<u32>(vec![
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true, true,
-    ]);
-    bits_unsigned_helper::<u64>(vec![
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true, true, true, true,
-    ]);
-}
-
-#[test]
-fn test_bits_integer() {
-    let test = |n, out| assert_eq!(bits_integer(&Integer::from_str(n).unwrap()), out);
-    test("0", vec![]);
-    test("1", vec![true]);
-    test("6", vec![false, true, true]);
-    test("105", vec![true, false, false, true, false, true, true]);
-}
-
-#[test]
-#[should_panic(expected = "n cannot be negative. Invalid n: -5")]
-fn bits_integer_fail() {
-    bits_integer(&Integer::from(-5));
-}
-
-fn big_endian_bits_unsigned_helper<T: PrimUnsignedInt>(max_bits: Vec<bool>) {
-    let test = |n, out| assert_eq!(big_endian_bits_unsigned(n), out);
-    test(T::from_u8(0), vec![]);
-    test(T::from_u8(1), vec![true]);
-    test(T::from_u8(6), vec![true, true, false]);
-    test(
-        T::from_u8(105),
-        vec![true, true, false, true, false, false, true],
-    );
-    test(T::max_value(), max_bits);
-}
-
-#[test]
-fn big_endian_test_bits_unsigned() {
-    big_endian_bits_unsigned_helper::<u8>(vec![true, true, true, true, true, true, true, true]);
-    big_endian_bits_unsigned_helper::<u16>(vec![
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true,
-    ]);
-    big_endian_bits_unsigned_helper::<u32>(vec![
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true, true,
-    ]);
-    big_endian_bits_unsigned_helper::<u64>(vec![
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-        true, true, true, true,
-    ]);
-}
-
-#[test]
-fn big_endian_bits_integer_helper() {
-    let test = |n, out| assert_eq!(big_endian_bits_integer(&Integer::from_str(n).unwrap()), out);
-    test("0", vec![]);
-    test("1", vec![true]);
-    test("6", vec![true, true, false]);
-    test("105", vec![true, true, false, true, false, false, true]);
-}
-
-#[test]
-#[should_panic(expected = "n cannot be negative. Invalid n: -5")]
-fn big_endian_bits_integer_fail() {
-    big_endian_bits_integer(&Integer::from(-5));
-}
-
-//fn from_big_endian_bits_helper(bits: &[bool], out: &str) {
-//    assert_eq!(format!("{}", from_big_endian_bits(&bits)), out);
-//}
-//
-//#[test]
-//fn test_from_big_endian_bits() {
-//    from_big_endian_bits_helper(&[], "0");
-//    from_big_endian_bits_helper(&[false, false], "0");
-//    from_big_endian_bits_helper(&[false, true], "1");
-//    from_big_endian_bits_helper(&[false, false, false, false, false, true, true, false], "6");
-//    from_big_endian_bits_helper(&[true, true, false, true, false, false, true], "105");
-//}
 
 #[test]
 fn test_digit_to_char() {

@@ -6,7 +6,8 @@ use iterators::primitive_ints::exhaustive_positive;
 use iterators::tuples::ZOrderTupleIndices;
 use malachite_base::num::{BitAccess, PrimitiveInteger, PrimitiveUnsigned};
 use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
-use rand::{IsaacRng, SeedableRng};
+use malachite_nz::natural::random::special_random_natural_with_bits::*;
+use rand::{IsaacRng, Rng, SeedableRng};
 use std::iter::repeat;
 use std::marker::PhantomData;
 
@@ -254,5 +255,35 @@ pub fn special_random_unsigned_vecs<T: PrimitiveUnsigned>(
         lengths: u32s_geometric(&scramble(seed, "lengths"), scale),
         rng: Box::new(IsaacRng::from_seed(&scramble(seed, "xs"))),
         boo: PhantomData,
+    }
+}
+
+pub struct SpecialRandomBoolVecs {
+    lengths: U32sGeometric,
+    rng: Box<IsaacRng>,
+}
+
+impl Iterator for SpecialRandomBoolVecs {
+    type Item = Vec<bool>;
+
+    fn next(&mut self) -> Option<Vec<bool>> {
+        let n = special_random_natural_with_bits(
+            &mut self.rng,
+            u64::from(self.lengths.next().unwrap()),
+        );
+        let mut bits = n.to_bits_asc();
+        // The last element of bits is always true; flip it to false 50% of the time.
+        if !bits.is_empty() && self.rng.gen() {
+            *bits.last_mut().unwrap() = true;
+        }
+        Some(bits)
+    }
+}
+
+//TODO test
+pub fn special_random_bool_vecs(seed: &[u32], scale: u32) -> SpecialRandomBoolVecs {
+    SpecialRandomBoolVecs {
+        lengths: u32s_geometric(&scramble(seed, "lengths"), scale),
+        rng: Box::new(IsaacRng::from_seed(&scramble(seed, "xs"))),
     }
 }

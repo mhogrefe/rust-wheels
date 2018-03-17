@@ -1,18 +1,11 @@
-use malachite_base::num::{BitAccess, SignificantBits};
-use malachite_nz::integer::Integer;
 use prim_utils::traits::*;
 use std::char;
-use std::cmp::Ordering;
 
 macro_rules! prim_impls {
     ($t: ident, $name: expr, $i: ident, $from_u8: expr, $bit_count: expr) => {
         impl PrimInt for $t {
             fn name() -> &'static str {
                 $name
-            }
-
-            fn bit_count() -> u32 {
-                $bit_count
             }
 
             fn min_value() -> $t {
@@ -25,10 +18,6 @@ macro_rules! prim_impls {
 
             fn from_u8($i: u8) -> $t {
                 $from_u8
-            }
-
-            fn leading_zeros(&self) -> u32 {
-                $t::leading_zeros(*self)
             }
         }
     };
@@ -62,75 +51,6 @@ prim_impls_i!(i8, i, i);
 prim_impls_i!(i16, i, i16::from(i));
 prim_impls_i!(i32, i, i32::from(i));
 prim_impls_i!(i64, i, i64::from(i));
-
-pub fn bits_unsigned<T: PrimUnsignedInt>(n: T) -> Vec<bool> {
-    let zero = T::from_u8(0);
-    let one = T::from_u8(1);
-    let mut bits = Vec::new();
-    let mut remaining = n;
-    while remaining != zero {
-        bits.push(remaining & one != zero);
-        remaining >>= 1;
-    }
-    bits
-}
-
-pub fn bits_integer(n: &Integer) -> Vec<bool> {
-    match n.sign() {
-        Ordering::Less => panic!("n cannot be negative. Invalid n: {}", n),
-        Ordering::Equal => Vec::new(),
-        Ordering::Greater => {
-            let bit_length = n.significant_bits();
-            let mut bits = Vec::with_capacity(bit_length as usize);
-            for i in 0..bit_length {
-                bits.push(n.get_bit(i));
-            }
-            bits
-        }
-    }
-}
-
-pub fn big_endian_bits_unsigned<T: PrimUnsignedInt>(n: T) -> Vec<bool> {
-    let zero = T::from_u8(0);
-    let one = T::from_u8(1);
-    let mut bits = Vec::new();
-    if n == zero {
-        return bits;
-    }
-    let mut mask: T = one << (T::bit_count() - n.leading_zeros() - 1);
-    while mask != zero {
-        bits.push(n & mask != zero);
-        mask >>= 1;
-    }
-    bits
-}
-
-pub fn big_endian_bits_integer(n: &Integer) -> Vec<bool> {
-    match n.sign() {
-        Ordering::Less => panic!("n cannot be negative. Invalid n: {}", n),
-        Ordering::Equal => Vec::new(),
-        Ordering::Greater => {
-            let bit_length = n.significant_bits();
-            let mut bits = Vec::with_capacity(bit_length as usize);
-            let mut i = bit_length - 1;
-            loop {
-                bits.push(n.get_bit(i));
-                if i == 0 {
-                    break;
-                } else {
-                    i -= 1;
-                }
-            }
-            bits
-        }
-    }
-}
-
-//pub fn from_big_endian_bits(bits: &[bool]) -> Integer {
-//    let mut result = Integer::ZERO;
-//    result.assign_bits_unsigned(&bits.iter().cloned().rev().collect::<Vec<bool>>());
-//    result
-//}
 
 pub fn digit_to_char(i: u32) -> Option<char> {
     if i < 10 {
