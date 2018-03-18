@@ -6,8 +6,8 @@ use std::fmt::Display;
 use std::hash::Hash;
 use std::ops::*;
 
-pub trait PrimInt
-    : BitAnd<Output = Self>
+pub trait PrimInt:
+    BitAnd<Output = Self>
     + BitOr<Output = Self>
     + BitXor<Output = Self>
     + Copy
@@ -27,7 +27,8 @@ pub trait PrimInt
     + Not<Output = Self>
     + Rand
     + SampleRange
-    + Walkable {
+    + Walkable
+{
     fn name() -> &'static str;
 
     fn min_value() -> Self;
