@@ -1,4 +1,4 @@
-use rust_wheels::prim_utils::integer_utils::*;
+use rust_wheels::prim_utils::primitive_int_utils::*;
 
 //macro_rules! prim_fail {
 //    (

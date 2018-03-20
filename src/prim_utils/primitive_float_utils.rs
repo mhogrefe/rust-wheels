@@ -1,4 +1,4 @@
-use malachite_base::num::{BitAccess, Float, One, PrimitiveUnsigned, SignificantBits, Zero};
+use malachite_base::num::{BitAccess, One, PrimitiveFloat, PrimitiveUnsigned, SignificantBits, Zero};
 use malachite_nz::integer::Integer;
 use std::cmp::Ordering;
 use std::ops::{Add, Neg, Shl, Shr, Sub};
@@ -180,7 +180,7 @@ impl BinaryFraction {
         }
     }
 
-    pub fn from_float<T: Float>(mut f: T) -> Option<BinaryFraction>
+    pub fn from_float<T: PrimitiveFloat>(mut f: T) -> Option<BinaryFraction>
     where
         Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     {
@@ -212,14 +212,14 @@ impl BinaryFraction {
         }
     }
 
-    pub fn largest_finite_float<T: Float>() -> BinaryFraction
+    pub fn largest_finite_float<T: PrimitiveFloat>() -> BinaryFraction
     where
         Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     {
         BinaryFraction::from_float(T::MAX_FINITE).unwrap()
     }
 
-    pub fn to_float<T: Float>(&self) -> Option<T>
+    pub fn to_float<T: PrimitiveFloat>(&self) -> Option<T>
     where
         Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
         T::UnsignedOfEqualWidth: From<Integer>,
@@ -256,7 +256,7 @@ impl BinaryFraction {
     }
 }
 
-pub fn from_mantissa_and_exponent<T: Float>(
+pub fn from_mantissa_and_exponent<T: PrimitiveFloat>(
     mantissa: T::SignedOfEqualWidth,
     exponent: i32,
 ) -> Option<T>

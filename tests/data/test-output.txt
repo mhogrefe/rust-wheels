@@ -140,52 +140,6 @@ exhaustive_chars_increasing list 21
 '\u{13}'
 ...
 
-exhaustive_floats_f32 list 21
-NaN
-inf
--inf
-0
-0
-1
--1
-2
--2
-3
--3
-6
--6
-0.5
--0.5
-4
--4
-1.5
--1.5
-12
-...
-
-exhaustive_floats_f64 list 21
-NaN
-inf
--inf
-0
-0
-1
--1
-2
--2
-3
--3
-6
--6
-0.5
--0.5
-4
--4
-1.5
--1.5
-12
-...
-
 exhaustive_i16s list 21
 0
 1
@@ -623,52 +577,6 @@ exhaustive_naturals list 21
 19
 ...
 
-exhaustive_negative_floats_f32 list 21
--inf
--1
--2
--3
--6
--0.5
--4
--1.5
--12
--5
--10
--7
--14
--2.5
--20
--3.5
--28
--0.25
--8
--0.75
-...
-
-exhaustive_negative_floats_f64 list 21
--inf
--1
--2
--3
--6
--0.5
--4
--1.5
--12
--5
--10
--7
--14
--2.5
--20
--3.5
--28
--0.25
--8
--0.75
-...
-
 exhaustive_negative_i16s list 21
 -1
 -2
@@ -784,7 +692,7 @@ exhaustive_negative_integers list 21
 -20
 ...
 
-exhaustive_negative_ordinary_floats_f32 list 21
+exhaustive_negative_ordinary_primitive_floats_f32 list 21
 -1
 -2
 -3
@@ -807,7 +715,7 @@ exhaustive_negative_ordinary_floats_f32 list 21
 -24
 ...
 
-exhaustive_negative_ordinary_floats_f64 list 21
+exhaustive_negative_ordinary_primitive_floats_f64 list 21
 -1
 -2
 -3
@@ -830,50 +738,50 @@ exhaustive_negative_ordinary_floats_f64 list 21
 -24
 ...
 
-exhaustive_nonzero_floats_f32 list 21
-NaN
-inf
+exhaustive_negative_primitive_floats_f32 list 21
 -inf
-1
 -1
-2
 -2
-3
 -3
-6
 -6
-0.5
 -0.5
-4
 -4
-1.5
 -1.5
-12
 -12
-5
+-5
+-10
+-7
+-14
+-2.5
+-20
+-3.5
+-28
+-0.25
+-8
+-0.75
 ...
 
-exhaustive_nonzero_floats_f64 list 21
-NaN
-inf
+exhaustive_negative_primitive_floats_f64 list 21
 -inf
-1
 -1
-2
 -2
-3
 -3
-6
 -6
-0.5
 -0.5
-4
 -4
-1.5
 -1.5
-12
 -12
-5
+-5
+-10
+-7
+-14
+-2.5
+-20
+-3.5
+-28
+-0.25
+-8
+-0.75
 ...
 
 exhaustive_nonzero_i16s list 21
@@ -991,7 +899,7 @@ exhaustive_nonzero_integers list 21
 -10
 ...
 
-exhaustive_nonzero_ordinary_floats_f32 list 21
+exhaustive_nonzero_ordinary_primitive_floats_f32 list 21
 1
 -1
 2
@@ -1014,7 +922,7 @@ exhaustive_nonzero_ordinary_floats_f32 list 21
 -10
 ...
 
-exhaustive_nonzero_ordinary_floats_f64 list 21
+exhaustive_nonzero_ordinary_primitive_floats_f64 list 21
 1
 -1
 2
@@ -1035,6 +943,52 @@ exhaustive_nonzero_ordinary_floats_f64 list 21
 -5
 10
 -10
+...
+
+exhaustive_nonzero_primitive_floats_f32 list 21
+NaN
+inf
+-inf
+1
+-1
+2
+-2
+3
+-3
+6
+-6
+0.5
+-0.5
+4
+-4
+1.5
+-1.5
+12
+-12
+5
+...
+
+exhaustive_nonzero_primitive_floats_f64 list 21
+NaN
+inf
+-inf
+1
+-1
+2
+-2
+3
+-3
+6
+-6
+0.5
+-0.5
+4
+-4
+1.5
+-1.5
+12
+-12
+5
 ...
 
 exhaustive_orderings list 3
@@ -1046,52 +1000,6 @@ exhaustive_orderings_increasing list 3
 Less
 Equal
 Greater
-
-exhaustive_positive_floats_f32 list 21
-inf
-1
-2
-3
-6
-0.5
-4
-1.5
-12
-5
-10
-7
-14
-2.5
-20
-3.5
-28
-0.25
-8
-0.75
-...
-
-exhaustive_positive_floats_f64 list 21
-inf
-1
-2
-3
-6
-0.5
-4
-1.5
-12
-5
-10
-7
-14
-2.5
-20
-3.5
-28
-0.25
-8
-0.75
-...
 
 exhaustive_positive_i16s list 21
 1
@@ -1231,7 +1139,7 @@ exhaustive_positive_naturals list 21
 20
 ...
 
-exhaustive_positive_ordinary_floats_f32 list 21
+exhaustive_positive_ordinary_primitive_floats_f32 list 21
 1
 2
 3
@@ -1254,7 +1162,7 @@ exhaustive_positive_ordinary_floats_f32 list 21
 24
 ...
 
-exhaustive_positive_ordinary_floats_f64 list 21
+exhaustive_positive_ordinary_primitive_floats_f64 list 21
 1
 2
 3
@@ -1275,6 +1183,52 @@ exhaustive_positive_ordinary_floats_f64 list 21
 8
 0.75
 24
+...
+
+exhaustive_positive_primitive_floats_f32 list 21
+inf
+1
+2
+3
+6
+0.5
+4
+1.5
+12
+5
+10
+7
+14
+2.5
+20
+3.5
+28
+0.25
+8
+0.75
+...
+
+exhaustive_positive_primitive_floats_f64 list 21
+inf
+1
+2
+3
+6
+0.5
+4
+1.5
+12
+5
+10
+7
+14
+2.5
+20
+3.5
+28
+0.25
+8
+0.75
 ...
 
 exhaustive_positive_u16s list 21
@@ -1367,6 +1321,52 @@ exhaustive_positive_u8s list 21
 18
 19
 20
+...
+
+exhaustive_primitive_floats_f32 list 21
+NaN
+inf
+-inf
+0
+0
+1
+-1
+2
+-2
+3
+-3
+6
+-6
+0.5
+-0.5
+4
+-4
+1.5
+-1.5
+12
+...
+
+exhaustive_primitive_floats_f64 list 21
+NaN
+inf
+-inf
+0
+0
+1
+-1
+2
+-2
+3
+-3
+6
+-6
+0.5
+-0.5
+4
+-4
+1.5
+-1.5
+12
 ...
 
 exhaustive_range_char_i list 21

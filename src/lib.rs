@@ -19,7 +19,6 @@ pub mod iterators {
     pub mod chars;
     pub mod common;
     pub mod dependent_pairs;
-    pub mod floats;
     pub mod general;
     pub mod integers;
     pub mod integers_geometric;
@@ -27,13 +26,14 @@ pub mod iterators {
     pub mod naturals;
     pub mod options;
     pub mod orderings;
+    pub mod primitive_floats;
     pub mod primitive_ints;
     pub mod rounding_modes;
     pub mod tuples;
 }
 pub mod prim_utils {
-    pub mod float_utils;
-    pub mod integer_utils;
+    pub mod primitive_float_utils;
+    pub mod primitive_int_utils;
     pub mod string_utils;
     pub mod traits;
 }
