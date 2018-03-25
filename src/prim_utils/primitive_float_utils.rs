@@ -223,7 +223,7 @@ impl BinaryFraction {
     pub fn to_float<T: PrimitiveFloat>(&self) -> Option<T>
     where
         Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
-        T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
+        T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
     {
         if *self == BinaryFraction::ZERO {
             return Some(T::ZERO);
@@ -252,7 +252,7 @@ impl BinaryFraction {
         };
         adjusted_mantissa.into_integer().map(|i| {
             T::from_adjusted_mantissa_and_exponent(
-                i.checked_into().unwrap(),
+                (&i).checked_into().unwrap(),
                 adjusted_exponent as u32,
             )
         })
@@ -266,7 +266,7 @@ pub fn from_mantissa_and_exponent<T: PrimitiveFloat>(
 where
     Integer: From<T::SignedOfEqualWidth>,
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
+    T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
 {
     if mantissa == <T::SignedOfEqualWidth as Zero>::ZERO && exponent != 0 || !mantissa.get_bit(0) {
         None

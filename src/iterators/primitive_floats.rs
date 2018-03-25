@@ -43,7 +43,7 @@ impl<T: 'static + PrimitiveFloat> Iterator for ExhaustivePositiveOrdinaryPrimiti
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
+    T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
 {
     type Item = T;
 
@@ -63,7 +63,7 @@ pub fn exhaustive_positive_ordinary_primitive_floats<T: 'static + PrimitiveFloat
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
+    T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
 {
     ExhaustivePositiveOrdinaryPrimitiveFloats(exhaustive_pairs(
         positive_mantissas::<T>(),
@@ -79,7 +79,7 @@ impl<T: 'static + PrimitiveFloat> Iterator for ExhaustiveNegativeOrdinaryPrimiti
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
+    T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
 {
     type Item = T;
 
@@ -93,7 +93,7 @@ pub fn exhaustive_negative_ordinary_primitive_floats<T: 'static + PrimitiveFloat
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
+    T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
 {
     ExhaustiveNegativeOrdinaryPrimitiveFloats(exhaustive_positive_ordinary_primitive_floats())
 }
@@ -105,7 +105,7 @@ pub fn exhaustive_nonzero_ordinary_primitive_floats<T: 'static + PrimitiveFloat>
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
+    T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
 {
     exhaustive_positive_ordinary_primitive_floats()
         .interleave(exhaustive_negative_ordinary_primitive_floats())
@@ -116,7 +116,7 @@ pub fn exhaustive_positive_primitive_floats<T: 'static + PrimitiveFloat>(
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
+    T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
 {
     once(T::INFINITY).chain(exhaustive_positive_ordinary_primitive_floats())
 }
@@ -126,7 +126,7 @@ pub fn exhaustive_negative_primitive_floats<T: 'static + PrimitiveFloat>(
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
+    T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
 {
     once(T::NEG_INFINITY).chain(exhaustive_negative_ordinary_primitive_floats())
 }
@@ -141,7 +141,7 @@ pub fn exhaustive_nonzero_primitive_floats<T: 'static + PrimitiveFloat>() -> Cha
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
+    T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
 {
     vec![T::NAN, T::INFINITY, T::NEG_INFINITY]
         .into_iter()
@@ -158,7 +158,7 @@ pub fn exhaustive_primitive_floats<T: 'static + PrimitiveFloat>() -> Chain<
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
+    T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
 {
     vec![T::NAN, T::INFINITY, T::NEG_INFINITY, T::ZERO, T::NEG_ZERO]
         .into_iter()
