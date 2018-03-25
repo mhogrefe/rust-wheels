@@ -1,3 +1,4 @@
+use malachite_base::misc::{CheckedFrom, CheckedInto};
 use malachite_base::num::{BitAccess, One, PrimitiveFloat, PrimitiveUnsigned, SignificantBits, Zero};
 use malachite_nz::integer::Integer;
 use std::cmp::Ordering;
@@ -222,7 +223,7 @@ impl BinaryFraction {
     pub fn to_float<T: PrimitiveFloat>(&self) -> Option<T>
     where
         Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
-        T::UnsignedOfEqualWidth: From<Integer>,
+        T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
     {
         if *self == BinaryFraction::ZERO {
             return Some(T::ZERO);
@@ -230,9 +231,8 @@ impl BinaryFraction {
         if self.mantissa < 0 {
             return (-self).to_float::<T>().map(|f| -f);
         }
-        let fp_exponent = self.mantissa
-            .significant_bits()
-            .to_u32()
+        let fp_exponent = u32::checked_from(self.mantissa.significant_bits())
+            .unwrap()
             .to_signed_checked()
             .unwrap() + self.exponent - 1;
         let signed_max_exponent = T::MAX_EXPONENT.to_signed_checked().unwrap();
@@ -250,9 +250,12 @@ impl BinaryFraction {
                 fp_exponent + T::MAX_EXPONENT as i32,
             )
         };
-        adjusted_mantissa
-            .into_integer()
-            .map(|i| T::from_adjusted_mantissa_and_exponent(i.into(), adjusted_exponent as u32))
+        adjusted_mantissa.into_integer().map(|i| {
+            T::from_adjusted_mantissa_and_exponent(
+                i.checked_into().unwrap(),
+                adjusted_exponent as u32,
+            )
+        })
     }
 }
 
@@ -263,7 +266,7 @@ pub fn from_mantissa_and_exponent<T: PrimitiveFloat>(
 where
     Integer: From<T::SignedOfEqualWidth>,
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: From<Integer>,
+    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
 {
     if mantissa == <T::SignedOfEqualWidth as Zero>::ZERO && exponent != 0 || !mantissa.get_bit(0) {
         None

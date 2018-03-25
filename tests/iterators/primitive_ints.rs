@@ -324,7 +324,7 @@ fn range_up_increasing_unsigned_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
         )
     };
     test("i", T::ZERO);
-    test("ii", T::from_u32(5));
+    test("ii", T::from(5));
     test("iii", T::MAX);
 }
 
@@ -345,9 +345,9 @@ fn range_up_increasing_signed_helper<T: PrimitiveSigned>(eo: &TestOutput) {
         )
     };
     test("i", T::ZERO);
-    test("ii", T::from_u32(5));
+    test("ii", T::from(5));
     test("iii", T::MAX);
-    test("iv", T::from_i32(-5));
+    test("iv", T::from(-5));
     test("v", T::MIN);
 }
 
@@ -368,7 +368,7 @@ fn range_up_decreasing_unsigned_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
         )
     };
     test("i", T::ZERO);
-    test("ii", T::from_u32(5));
+    test("ii", T::from(5));
     test("iii", T::MAX);
 }
 
@@ -389,9 +389,9 @@ fn range_up_decreasing_signed_helper<T: PrimitiveSigned>(eo: &TestOutput) {
         )
     };
     test("i", T::ZERO);
-    test("ii", T::from_u32(5));
+    test("ii", T::from(5));
     test("iii", T::MAX);
-    test("iv", T::from_i32(-5));
+    test("iv", T::from(-5));
     test("v", T::MIN);
 }
 
@@ -412,7 +412,7 @@ fn range_down_increasing_unsigned_helper<T: PrimitiveUnsigned>(eo: &TestOutput) 
         )
     };
     test("i", T::ZERO);
-    test("ii", T::from_u32(5));
+    test("ii", T::from(5));
     test("iii", T::MAX);
 }
 
@@ -433,9 +433,9 @@ fn range_down_increasing_signed_helper<T: PrimitiveSigned>(eo: &TestOutput) {
         )
     };
     test("i", T::ZERO);
-    test("ii", T::from_u32(5));
+    test("ii", T::from(5));
     test("iii", T::MAX);
-    test("iv", T::from_i32(-5));
+    test("iv", T::from(-5));
     test("v", T::MIN);
 }
 
@@ -456,7 +456,7 @@ fn range_down_decreasing_unsigned_helper<T: PrimitiveUnsigned>(eo: &TestOutput) 
         )
     };
     test("i", T::ZERO);
-    test("ii", T::from_u32(5));
+    test("ii", T::from(5));
     test("iii", T::MAX);
 }
 
@@ -477,9 +477,9 @@ fn range_down_decreasing_signed_helper<T: PrimitiveSigned>(eo: &TestOutput) {
         )
     };
     test("i", T::ZERO);
-    test("ii", T::from_u32(5));
+    test("ii", T::from(5));
     test("iii", T::MAX);
-    test("iv", T::from_i32(-5));
+    test("iv", T::from(-5));
     test("v", T::MIN);
 }
 
@@ -500,9 +500,9 @@ fn range_increasing_unsigned_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
         )
     };
     test("i", T::ZERO, T::ZERO);
-    test("ii", T::ZERO, T::from_u32(10));
-    test("iii", T::from_u32(10), T::from_u32(20));
-    test("iv", T::from_u32(10), T::from_u32(10));
+    test("ii", T::ZERO, T::from(10));
+    test("iii", T::from(10), T::from(20));
+    test("iv", T::from(10), T::from(10));
     test("v", T::ZERO, T::MAX);
     test("vi", T::ZERO, T::MAX - T::ONE);
 }
@@ -524,14 +524,14 @@ fn range_increasing_signed_helper<T: PrimitiveSigned>(eo: &TestOutput) {
         )
     };
     test("i", T::ZERO, T::ZERO);
-    test("ii", T::ZERO, T::from_u32(10));
-    test("iii", T::from_u32(10), T::from_u32(20));
-    test("iv", T::from_u32(10), T::from_u32(10));
+    test("ii", T::ZERO, T::from(10));
+    test("iii", T::from(10), T::from(20));
+    test("iv", T::from(10), T::from(10));
     test("v", T::ZERO, T::MAX);
     test("vi", T::ZERO, T::MAX - T::ONE);
-    test("vii", T::from_i32(-10), T::from_i32(-10));
-    test("viii", T::from_i32(-20), T::from_i32(-10));
-    test("ix", T::from_i32(-100), T::from_u32(100));
+    test("vii", T::from(-10), T::from(-10));
+    test("viii", T::from(-20), T::from(-10));
+    test("ix", T::from(-100), T::from(100));
     test("x", T::MIN, T::MAX);
     test("xi", T::MIN + T::ONE, T::MAX - T::ONE);
 }
@@ -553,9 +553,9 @@ fn range_decreasing_unsigned_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
         )
     };
     test("i", T::ZERO, T::ZERO);
-    test("ii", T::ZERO, T::from_u32(10));
-    test("iii", T::from_u32(10), T::from_u32(20));
-    test("iv", T::from_u32(10), T::from_u32(10));
+    test("ii", T::ZERO, T::from(10));
+    test("iii", T::from(10), T::from(20));
+    test("iv", T::from(10), T::from(10));
     test("v", T::ZERO, T::MAX);
     test("vi", T::ZERO, T::MAX - T::ONE);
 }
@@ -577,14 +577,14 @@ fn range_decreasing_signed_helper<T: PrimitiveSigned>(eo: &TestOutput) {
         )
     };
     test("i", T::ZERO, T::ZERO);
-    test("ii", T::ZERO, T::from_u32(10));
-    test("iii", T::from_u32(10), T::from_u32(20));
-    test("iv", T::from_u32(10), T::from_u32(10));
+    test("ii", T::ZERO, T::from(10));
+    test("iii", T::from(10), T::from(20));
+    test("iv", T::from(10), T::from(10));
     test("v", T::ZERO, T::MAX);
     test("vi", T::ZERO, T::MAX - T::ONE);
-    test("vii", T::from_i32(-10), T::from_i32(-10));
-    test("viii", T::from_i32(-20), T::from_i32(-10));
-    test("ix", T::from_i32(-100), T::from_u32(100));
+    test("vii", T::from(-10), T::from(-10));
+    test("viii", T::from(-20), T::from(-10));
+    test("ix", T::from(-100), T::from(100));
     test("x", T::MIN, T::MAX);
     test("xi", T::MIN + T::ONE, T::MAX - T::ONE);
 }
@@ -646,7 +646,7 @@ fn random_range_up_u_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
         )
     };
     test("i", T::ZERO);
-    test("ii", T::from_u32(5));
+    test("ii", T::from(5));
     test("iii", T::MAX);
 }
 
@@ -658,9 +658,9 @@ fn random_range_up_i_helper<T: PrimitiveSigned>(eo: &TestOutput) {
         )
     };
     test("i", T::ZERO);
-    test("ii", T::from_u32(5));
+    test("ii", T::from(5));
     test("iii", T::MAX);
-    test("iv", T::from_i32(-5));
+    test("iv", T::from(-5));
     test("v", T::MIN);
 }
 
@@ -685,7 +685,7 @@ fn random_range_down_u_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
         )
     };
     test("i", T::ZERO);
-    test("ii", T::from_u32(5));
+    test("ii", T::from(5));
     test("iii", T::MAX);
 }
 
@@ -697,9 +697,9 @@ fn random_range_down_i_helper<T: PrimitiveSigned>(eo: &TestOutput) {
         )
     };
     test("i", T::ZERO);
-    test("ii", T::from_u32(5));
+    test("ii", T::from(5));
     test("iii", T::MAX);
-    test("iv", T::from_i32(-5));
+    test("iv", T::from(-5));
     test("v", T::MIN);
 }
 
@@ -724,9 +724,9 @@ fn random_range_u_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
         )
     };
     test("i", T::ZERO, T::ZERO);
-    test("ii", T::ZERO, T::from_u32(10));
-    test("iii", T::from_u32(10), T::from_u32(20));
-    test("iv", T::from_u32(10), T::from_u32(10));
+    test("ii", T::ZERO, T::from(10));
+    test("iii", T::from(10), T::from(20));
+    test("iv", T::from(10), T::from(10));
     test("v", T::ZERO, T::MAX);
     test("vi", T::ZERO, T::MAX - T::ONE);
 }
@@ -743,14 +743,14 @@ fn range_i_helper<T: PrimitiveSigned>(eo: &TestOutput) {
         )
     };
     test("i", T::ZERO, T::ZERO);
-    test("ii", T::ZERO, T::from_u32(10));
-    test("iii", T::from_u32(10), T::from_u32(20));
-    test("iv", T::from_u32(10), T::from_u32(10));
+    test("ii", T::ZERO, T::from(10));
+    test("iii", T::from(10), T::from(20));
+    test("iv", T::from(10), T::from(10));
     test("v", T::ZERO, T::MAX);
     test("vi", T::ZERO, T::MAX - T::ONE);
-    test("vii", T::from_i32(-10), T::from_i32(-10));
-    test("viii", T::from_i32(-20), T::from_i32(-10));
-    test("ix", T::from_i32(-100), T::from_u32(100));
+    test("vii", T::from(-10), T::from(-10));
+    test("viii", T::from(-20), T::from(-10));
+    test("ix", T::from(-100), T::from(100));
     test("x", T::MIN, T::MAX);
     test("xi", T::MIN + T::ONE, T::MAX - T::ONE);
 }

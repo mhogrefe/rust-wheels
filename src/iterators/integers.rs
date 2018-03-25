@@ -7,7 +7,7 @@ use iterators::naturals::{random_naturals, random_positive_naturals, special_ran
                           RandomPositiveNaturals, SpecialRandomNaturals,
                           SpecialRandomPositiveNaturals};
 use itertools::{Interleave, Itertools};
-use malachite_base::num::{NegativeOne, One, SignificantBits, Zero};
+use malachite_base::num::{NegativeOne, One, SignificantBits, UnsignedAbs, Zero};
 use malachite_nz::integer::Integer;
 use malachite_nz::natural::Natural;
 use malachite_nz::natural::random::random_natural_below::random_natural_below;
@@ -386,7 +386,7 @@ pub fn random_range_up_integer(seed: &[u32], scale: u32, a: Integer) -> RandomRa
         None
     } else {
         // this is always Some
-        (Natural::ONE << (a_bit_size as u32)) - &a.natural_abs_ref()
+        (Natural::ONE << (a_bit_size as u32)) - &(&a).unsigned_abs()
     };
     RandomRangeUpInteger {
         rng: Box::new(IsaacRng::from_seed(&scramble(seed, "bits"))),

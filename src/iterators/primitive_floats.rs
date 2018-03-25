@@ -3,6 +3,7 @@ use iterators::primitive_ints::{exhaustive_range_signed, range_down_increasing,
                                 ExhaustiveRangeSigned};
 use iterators::tuples::{exhaustive_pairs, ExhaustivePairs};
 use itertools::{Interleave, Itertools};
+use malachite_base::misc::CheckedFrom;
 use malachite_base::num::{One, PrimitiveFloat, PrimitiveSigned, PrimitiveUnsigned};
 use malachite_nz::integer::Integer;
 use prim_utils::primitive_float_utils::from_mantissa_and_exponent;
@@ -42,7 +43,7 @@ impl<T: 'static + PrimitiveFloat> Iterator for ExhaustivePositiveOrdinaryPrimiti
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: From<Integer>,
+    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
 {
     type Item = T;
 
@@ -62,7 +63,7 @@ pub fn exhaustive_positive_ordinary_primitive_floats<T: 'static + PrimitiveFloat
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: From<Integer>,
+    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
 {
     ExhaustivePositiveOrdinaryPrimitiveFloats(exhaustive_pairs(
         positive_mantissas::<T>(),
@@ -78,7 +79,7 @@ impl<T: 'static + PrimitiveFloat> Iterator for ExhaustiveNegativeOrdinaryPrimiti
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: From<Integer>,
+    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
 {
     type Item = T;
 
@@ -92,7 +93,7 @@ pub fn exhaustive_negative_ordinary_primitive_floats<T: 'static + PrimitiveFloat
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: From<Integer>,
+    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
 {
     ExhaustiveNegativeOrdinaryPrimitiveFloats(exhaustive_positive_ordinary_primitive_floats())
 }
@@ -104,7 +105,7 @@ pub fn exhaustive_nonzero_ordinary_primitive_floats<T: 'static + PrimitiveFloat>
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: From<Integer>,
+    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
 {
     exhaustive_positive_ordinary_primitive_floats()
         .interleave(exhaustive_negative_ordinary_primitive_floats())
@@ -115,7 +116,7 @@ pub fn exhaustive_positive_primitive_floats<T: 'static + PrimitiveFloat>(
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: From<Integer>,
+    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
 {
     once(T::INFINITY).chain(exhaustive_positive_ordinary_primitive_floats())
 }
@@ -125,7 +126,7 @@ pub fn exhaustive_negative_primitive_floats<T: 'static + PrimitiveFloat>(
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: From<Integer>,
+    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
 {
     once(T::NEG_INFINITY).chain(exhaustive_negative_ordinary_primitive_floats())
 }
@@ -140,7 +141,7 @@ pub fn exhaustive_nonzero_primitive_floats<T: 'static + PrimitiveFloat>() -> Cha
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: From<Integer>,
+    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
 {
     vec![T::NAN, T::INFINITY, T::NEG_INFINITY]
         .into_iter()
@@ -157,7 +158,7 @@ pub fn exhaustive_primitive_floats<T: 'static + PrimitiveFloat>() -> Chain<
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: From<Integer>,
+    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
 {
     vec![T::NAN, T::INFINITY, T::NEG_INFINITY, T::ZERO, T::NEG_ZERO]
         .into_iter()

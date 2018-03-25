@@ -1,4 +1,5 @@
 use common::{get_expected_test_outputs, TestOutput};
+use malachite_base::misc::CheckedFrom;
 use malachite_base::num::{PrimitiveFloat, PrimitiveUnsigned};
 use malachite_nz::integer::Integer;
 use rust_wheels::iterators::primitive_floats::*;
@@ -8,7 +9,7 @@ fn exhaustive_positive_ordinary_primitive_floats_helper<T: 'static + PrimitiveFl
 ) where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: From<Integer>,
+    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
 {
     eo.match_vec(
         &format!("exhaustive_positive_ordinary_primitive_floats_{}", T::NAME),
@@ -28,7 +29,7 @@ fn exhaustive_negative_ordinary_primitive_floats_helper<T: 'static + PrimitiveFl
 ) where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: From<Integer>,
+    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
 {
     eo.match_vec(
         &format!("exhaustive_negative_ordinary_primitive_floats_{}", T::NAME),
@@ -47,7 +48,7 @@ fn exhaustive_nonzero_ordinary_primitive_floats_helper<T: 'static + PrimitiveFlo
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: From<Integer>,
+    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
 {
     eo.match_vec(
         &format!("exhaustive_nonzero_ordinary_primitive_floats_{}", T::NAME),
@@ -66,7 +67,7 @@ fn exhaustive_positive_primitive_floats_helper<T: 'static + PrimitiveFloat>(eo: 
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: From<Integer>,
+    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
 {
     eo.match_vec(
         &format!("exhaustive_positive_primitive_floats_{}", T::NAME),
@@ -85,7 +86,7 @@ fn exhaustive_negative_primitive_floats_helper<T: 'static + PrimitiveFloat>(eo: 
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: From<Integer>,
+    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
 {
     eo.match_vec(
         &format!("exhaustive_negative_primitive_floats_{}", T::NAME),
@@ -104,7 +105,7 @@ fn exhaustive_nonzero_primitive_floats_helper<T: 'static + PrimitiveFloat>(eo: &
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: From<Integer>,
+    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
 {
     eo.match_vec(
         &format!("exhaustive_nonzero_primitive_floats_{}", T::NAME),
@@ -123,7 +124,7 @@ fn exhaustive_primitive_floats_helper<T: 'static + PrimitiveFloat>(eo: &TestOutp
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: From<Integer>,
+    T::UnsignedOfEqualWidth: CheckedFrom<Integer>,
 {
     eo.match_vec(
         &format!("exhaustive_primitive_floats_{}", T::NAME),
