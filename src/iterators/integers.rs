@@ -7,7 +7,8 @@ use iterators::naturals::{random_naturals, random_positive_naturals, special_ran
                           RandomPositiveNaturals, SpecialRandomNaturals,
                           SpecialRandomPositiveNaturals};
 use itertools::{Interleave, Itertools};
-use malachite_base::num::{NegativeOne, One, SignificantBits, UnsignedAbs, Zero};
+use malachite_base::misc::CheckedFrom;
+use malachite_base::num::{NegativeOne, One, SignificantBits, Zero};
 use malachite_nz::integer::Integer;
 use malachite_nz::natural::Natural;
 use malachite_nz::natural::random::random_natural_below::random_natural_below;
@@ -118,7 +119,7 @@ impl Iterator for RandomPositiveIntegers {
     type Item = Integer;
 
     fn next(&mut self) -> Option<Integer> {
-        self.0.next().map(Natural::into_integer)
+        self.0.next().map(Natural::into)
     }
 }
 
@@ -132,7 +133,7 @@ impl Iterator for RandomNaturalIntegers {
     type Item = Integer;
 
     fn next(&mut self) -> Option<Integer> {
-        self.0.next().map(Natural::into_integer)
+        self.0.next().map(Natural::into)
     }
 }
 
@@ -208,7 +209,7 @@ impl Iterator for SpecialRandomPositiveIntegers {
     type Item = Integer;
 
     fn next(&mut self) -> Option<Integer> {
-        self.0.next().map(Natural::into_integer)
+        self.0.next().map(Natural::into)
     }
 }
 
@@ -222,7 +223,7 @@ impl Iterator for SpecialRandomNaturalIntegers {
     type Item = Integer;
 
     fn next(&mut self) -> Option<Integer> {
-        self.0.next().map(Natural::into_integer)
+        self.0.next().map(Natural::into)
     }
 }
 
@@ -302,7 +303,7 @@ impl Iterator for RandomRangeInteger {
     type Item = Integer;
 
     fn next(&mut self) -> Option<Integer> {
-        Some(random_natural_below(&mut self.rng, &self.diameter_plus_one).into_integer() + &self.a)
+        Some(Integer::from(random_natural_below(&mut self.rng, &self.diameter_plus_one)) + &self.a)
     }
 }
 
@@ -312,7 +313,7 @@ pub fn random_range_integer(seed: &[u32], a: Integer, b: Integer) -> RandomRange
     }
     RandomRangeInteger {
         rng: Box::new(IsaacRng::from_seed(seed)),
-        diameter_plus_one: (b - &a).into_natural().unwrap() + 1u32,
+        diameter_plus_one: Natural::checked_from(b - &a).unwrap() + 1u32,
         a,
     }
 }
@@ -340,20 +341,20 @@ impl Iterator for RandomRangeUpInteger {
                     // between -(2^n - 1) and -2^(n - 1), inclusive.
                     let abs_result = random_natural_with_bits(&mut self.rng, bit_size);
                     if self.rng.gen() {
-                        abs_result.into_integer()
+                        abs_result.into()
                     } else {
                         -abs_result
                     }
                 }
                 Ordering::Greater => {
                     // Generates values between 2^(n - 1) and 2^n - 1, inclusive.
-                    random_natural_with_bits(&mut self.rng, bit_size).into_integer()
+                    random_natural_with_bits(&mut self.rng, bit_size).into()
                 }
                 Ordering::Equal => {
                     if let Some(ref offset_limit) = self.offset_limit {
                         // a >= 0
                         // Generates values between a and 2^n - 1, inclusive.
-                        random_natural_below(&mut self.rng, offset_limit).into_integer() + &self.a
+                        Integer::from(random_natural_below(&mut self.rng, offset_limit)) + &self.a
                     } else {
                         // a < 0
                         // Generates values between 2^(n - 1) and 2^n - 1, inclusive, or
@@ -363,7 +364,7 @@ impl Iterator for RandomRangeUpInteger {
                         loop {
                             let abs_result = random_natural_with_bits(&mut self.rng, bit_size);
                             let result = if self.rng.gen() {
-                                abs_result.into_integer()
+                                abs_result.into()
                             } else {
                                 -abs_result
                             };
@@ -386,7 +387,7 @@ pub fn random_range_up_integer(seed: &[u32], scale: u32, a: Integer) -> RandomRa
         None
     } else {
         // this is always Some
-        (Natural::ONE << (a_bit_size as u32)) - &(&a).unsigned_abs()
+        (Natural::ONE << (a_bit_size as u32)) - (&a).unsigned_abs_ref()
     };
     RandomRangeUpInteger {
         rng: Box::new(IsaacRng::from_seed(&scramble(seed, "bits"))),
