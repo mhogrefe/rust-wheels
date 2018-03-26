@@ -382,7 +382,6 @@ impl Iterator for RandomRangeUpInteger {
 pub fn random_range_up_integer(seed: &[u32], scale: u32, a: Integer) -> RandomRangeUpInteger {
     let a_bit_size = a.significant_bits();
     let min_bit_size = if a < 0 { 0 } else { a_bit_size as u32 };
-    //TODO use more efficient abs
     let offset_limit = if a < 0 {
         None
     } else {
