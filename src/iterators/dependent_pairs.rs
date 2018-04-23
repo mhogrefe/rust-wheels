@@ -18,15 +18,10 @@ where
 }
 
 macro_rules! exhaustive_dependent_pairs {
-    (
-        $struct_name: ident,
-        $fn_name: ident,
-        $index_type: ident,
-        $index_ctor: expr,
-        $x_index_fn: expr
-    ) => {
+    ($struct_name:ident, $fn_name:ident, $index_type:ident, $index_ctor:expr, $x_index_fn:expr) => {
         pub struct $struct_name<I: Iterator, J: Iterator, F>
-            where I::Item: Clone
+        where
+            I::Item: Clone,
         {
             f: F,
             xs: CachedIterator<I>,
@@ -35,8 +30,9 @@ macro_rules! exhaustive_dependent_pairs {
         }
 
         impl<I: Iterator, J: Iterator, F> Iterator for $struct_name<I, J, F>
-            where F: Fn(&I::Item) -> J,
-                  I::Item: Clone + Eq + Hash
+        where
+            F: Fn(&I::Item) -> J,
+            I::Item: Clone + Eq + Hash,
         {
             type Item = (I::Item, J::Item);
 
@@ -54,12 +50,10 @@ macro_rules! exhaustive_dependent_pairs {
             }
         }
 
-        pub fn $fn_name<I: Iterator, J: Iterator, F>
-            (xs: I,
-             f: F)
-             -> $struct_name<I, J, F>
-            where F: Fn(&I::Item) -> J,
-                  I::Item: Clone + Eq + Hash
+        pub fn $fn_name<I: Iterator, J: Iterator, F>(xs: I, f: F) -> $struct_name<I, J, F>
+        where
+            F: Fn(&I::Item) -> J,
+            I::Item: Clone + Eq + Hash,
         {
             $struct_name {
                 f,
@@ -68,7 +62,7 @@ macro_rules! exhaustive_dependent_pairs {
                 i: $index_ctor,
             }
         }
-    }
+    };
 }
 
 exhaustive_dependent_pairs!(

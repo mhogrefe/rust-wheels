@@ -1,7 +1,7 @@
 use iterators::common::scramble;
 use iterators::general::{random, range_decreasing, range_increasing, Random, RangeDecreasing,
                          RangeIncreasing};
-use iterators::integers_geometric::{RangeUpGeometricU32, range_up_geometric_u32};
+use iterators::integers_geometric::{range_up_geometric_u32, RangeUpGeometricU32};
 use iterators::naturals::{random_naturals, random_positive_naturals, special_random_naturals,
                           special_random_positive_naturals, RandomNaturals,
                           RandomPositiveNaturals, SpecialRandomNaturals,
@@ -10,9 +10,9 @@ use itertools::{Interleave, Itertools};
 use malachite_base::misc::CheckedFrom;
 use malachite_base::num::{NegativeOne, One, SignificantBits, Zero};
 use malachite_nz::integer::Integer;
-use malachite_nz::natural::Natural;
 use malachite_nz::natural::random::random_natural_below::random_natural_below;
 use malachite_nz::natural::random::random_natural_with_bits::random_natural_with_bits;
+use malachite_nz::natural::Natural;
 use rand::{IsaacRng, Rng, SeedableRng};
 use std::cmp::Ordering;
 use std::iter::{once, Chain, Once};

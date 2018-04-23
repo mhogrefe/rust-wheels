@@ -6,7 +6,7 @@ use rust_wheels::iterators::common::EXAMPLE_SEED;
 use rust_wheels::iterators::general::{random, range_decreasing, range_increasing};
 
 macro_rules! prim_fail {
-    ($t: ty, $range_increasing_fail: ident, $range_decreasing_fail: ident) => {
+    ($t:ty, $range_increasing_fail:ident, $range_decreasing_fail:ident) => {
         #[test]
         #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
         fn $range_increasing_fail() {
@@ -43,7 +43,7 @@ prim_fail!(
 );
 
 macro_rules! prim_fail_u {
-    ($t: ty, $random_range_fail_1: ident, $random_range_fail_2: ident) => {
+    ($t:ty, $random_range_fail_1:ident, $random_range_fail_2:ident) => {
         #[test]
         #[should_panic(expected = "Range::new called with `low >= high")]
         fn $random_range_fail_1() {
@@ -65,13 +65,13 @@ prim_fail_u!(u64, range_fail_u64_1, range_fail_u64_2);
 
 macro_rules! prim_fail_i {
     (
-        $t: ty,
-        $range_increasing_fail: ident,
-        $range_decreasing_fail: ident,
-        $random_range_fail_1: ident,
-        $random_range_fail_2: ident,
-        $random_range_fail_3: ident,
-        $random_range_fail_4: ident
+        $t:ty,
+        $range_increasing_fail:ident,
+        $range_decreasing_fail:ident,
+        $random_range_fail_1:ident,
+        $random_range_fail_2:ident,
+        $random_range_fail_3:ident,
+        $random_range_fail_4:ident
     ) => {
         #[test]
         #[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
@@ -94,7 +94,7 @@ macro_rules! prim_fail_i {
         #[test]
         #[should_panic(expected = "Range::new called with `low >= high")]
         fn $random_range_fail_2() {
-            random_range::<$t>(&EXAMPLE_SEED, 10, 9,);
+            random_range::<$t>(&EXAMPLE_SEED, 10, 9);
         }
 
         #[test]
@@ -108,7 +108,7 @@ macro_rules! prim_fail_i {
         fn $random_range_fail_4() {
             random_range::<$t>(&EXAMPLE_SEED, -9, -10);
         }
-    }
+    };
 }
 
 prim_fail_i!(

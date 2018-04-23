@@ -22,7 +22,6 @@ pub mod iterators {
     pub mod general;
     pub mod integers;
     pub mod integers_geometric;
-    pub mod vecs;
     pub mod naturals;
     pub mod options;
     pub mod orderings;
@@ -30,6 +29,7 @@ pub mod iterators {
     pub mod primitive_ints;
     pub mod rounding_modes;
     pub mod tuples;
+    pub mod vecs;
 }
 pub mod prim_utils {
     pub mod primitive_float_utils;

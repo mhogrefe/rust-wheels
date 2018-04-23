@@ -1,6 +1,6 @@
+use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 use std::collections::HashMap;
-use std::cmp::Ordering;
 use std::fmt::Debug;
 use std::fmt::{Binary, Display};
 use std::hash::{BuildHasher, Hash};

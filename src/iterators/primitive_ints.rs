@@ -6,8 +6,8 @@ use malachite_base::num::{PrimitiveInteger, PrimitiveSigned, PrimitiveUnsigned};
 use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
 use rand::distributions::{IndependentSample, Range};
 use rand::{IsaacRng, Rand, SeedableRng};
-use std::iter::{once, Chain, Once};
 use std::fmt::Display;
+use std::iter::{once, Chain, Once};
 
 pub fn exhaustive_positive<T: PrimitiveInteger>() -> RangeIncreasing<T> {
     range_increasing(T::ONE, T::MAX)
