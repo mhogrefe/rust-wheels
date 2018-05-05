@@ -1,5 +1,7 @@
 use malachite_base::misc::{CheckedFrom, CheckedInto};
-use malachite_base::num::{BitAccess, One, PrimitiveFloat, PrimitiveUnsigned, SignificantBits, Zero};
+use malachite_base::num::{
+    BitAccess, One, PrimitiveFloat, PrimitiveUnsigned, SignificantBits, Zero,
+};
 use malachite_nz::integer::Integer;
 use std::cmp::Ordering;
 use std::ops::{Add, Neg, Shl, Shr, Sub};

@@ -1,6 +1,7 @@
 use iterators::general::RangeIncreasing;
-use iterators::primitive_ints::{exhaustive_range_signed, range_down_increasing,
-                                ExhaustiveRangeSigned};
+use iterators::primitive_ints::{
+    exhaustive_range_signed, range_down_increasing, ExhaustiveRangeSigned,
+};
 use iterators::tuples::{exhaustive_pairs, ExhaustivePairs};
 use itertools::{Interleave, Itertools};
 use malachite_base::misc::CheckedFrom;

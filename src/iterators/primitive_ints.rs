@@ -1,5 +1,6 @@
-use iterators::general::{random, range_decreasing, range_increasing, Random, RangeDecreasing,
-                         RangeIncreasing};
+use iterators::general::{
+    random, range_decreasing, range_increasing, Random, RangeDecreasing, RangeIncreasing,
+};
 use itertools::{Interleave, Itertools};
 use malachite_base::misc::{Min, Walkable};
 use malachite_base::num::{PrimitiveInteger, PrimitiveSigned, PrimitiveUnsigned};

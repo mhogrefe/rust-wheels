@@ -1,11 +1,13 @@
 use iterators::common::scramble;
-use iterators::general::{random, range_decreasing, range_increasing, Random, RangeDecreasing,
-                         RangeIncreasing};
+use iterators::general::{
+    random, range_decreasing, range_increasing, Random, RangeDecreasing, RangeIncreasing,
+};
 use iterators::integers_geometric::{range_up_geometric_u32, RangeUpGeometricU32};
-use iterators::naturals::{random_naturals, random_positive_naturals, special_random_naturals,
-                          special_random_positive_naturals, RandomNaturals,
-                          RandomPositiveNaturals, SpecialRandomNaturals,
-                          SpecialRandomPositiveNaturals};
+use iterators::naturals::{
+    random_naturals, random_positive_naturals, special_random_naturals,
+    special_random_positive_naturals, RandomNaturals, RandomPositiveNaturals,
+    SpecialRandomNaturals, SpecialRandomPositiveNaturals,
+};
 use itertools::{Interleave, Itertools};
 use malachite_base::misc::CheckedFrom;
 use malachite_base::num::{NegativeOne, One, SignificantBits, Zero};

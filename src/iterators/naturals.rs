@@ -1,7 +1,8 @@
 use iterators::common::scramble;
-use iterators::integers_geometric::{positive_u32s_geometric, range_up_geometric_u32,
-                                    u32s_geometric, PositiveU32sGeometric, RangeUpGeometricU32,
-                                    U32sGeometric};
+use iterators::integers_geometric::{
+    positive_u32s_geometric, range_up_geometric_u32, u32s_geometric, PositiveU32sGeometric,
+    RangeUpGeometricU32, U32sGeometric,
+};
 use malachite_base::num::{One, SignificantBits, Zero};
 use malachite_nz::natural::random::random_natural_below::random_natural_below;
 use malachite_nz::natural::random::random_natural_with_bits::random_natural_with_bits;
