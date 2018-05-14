@@ -12,9 +12,9 @@ where
     F: Fn(&I::Item) -> J,
     I::Item: Clone,
 {
-    Box::new(Concat::new(xs.map(move |x| {
-        f(&x).map(move |y| (x.clone(), y))
-    })))
+    Box::new(Concat::new(
+        xs.map(move |x| f(&x).map(move |y| (x.clone(), y))),
+    ))
 }
 
 macro_rules! exhaustive_dependent_pairs {

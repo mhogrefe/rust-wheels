@@ -56,7 +56,8 @@ impl PartialOrd for BinaryFraction {
         } else {
             match self.exponent.cmp(&other.exponent) {
                 Ordering::Equal => self.mantissa.cmp(&other.mantissa),
-                Ordering::Less => self.mantissa
+                Ordering::Less => self
+                    .mantissa
                     .cmp(&(&other.mantissa << (other.exponent - self.exponent))),
                 Ordering::Greater => {
                     (&self.mantissa << (self.exponent - other.exponent)).cmp(&other.mantissa)
