@@ -197,7 +197,7 @@ impl BinaryFraction {
         } else {
             let positive = f.is_sign_positive();
             if !positive {
-                f = -f;
+                f.neg_assign();
             }
             let (mut mantissa, offset_exponent) = f.to_adjusted_mantissa_and_exponent();
             let mut exponent = offset_exponent as i32;
