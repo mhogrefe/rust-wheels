@@ -387,8 +387,7 @@ pub fn random_range_up_integer(seed: &[u32], scale: u32, a: Integer) -> RandomRa
     let offset_limit = if a < 0 {
         None
     } else {
-        // this is always Some
-        (Natural::ONE << (a_bit_size as u32)) - (&a).unsigned_abs_ref()
+        Some((Natural::ONE << (a_bit_size as u32)) - (&a).unsigned_abs_ref())
     };
     RandomRangeUpInteger {
         rng: Box::new(IsaacRng::from_seed(&scramble(seed, "bits"))),
