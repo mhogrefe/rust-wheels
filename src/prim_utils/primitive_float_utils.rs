@@ -237,7 +237,9 @@ impl BinaryFraction {
         let fp_exponent = u32::checked_from(self.mantissa.significant_bits())
             .unwrap()
             .to_signed_checked()
-            .unwrap() + self.exponent - 1;
+            .unwrap()
+            + self.exponent
+            - 1;
         let signed_max_exponent = T::MAX_EXPONENT.to_signed_checked().unwrap();
         if fp_exponent > signed_max_exponent
             || fp_exponent == signed_max_exponent
