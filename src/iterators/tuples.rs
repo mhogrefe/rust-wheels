@@ -950,12 +950,12 @@ macro_rules! random_tuple {
     (
         $struct_name: ident, $fn_name: ident,
         $(
-            [ $it_type: ident, $it_gen: ident, $cached_it: ident, $elem: ident, $it_name: expr ]
+            [ $it_type: ident, $it_gen: ident, $it: ident, $elem: ident, $it_name: expr ]
         ),*
     ) => {
         pub struct $struct_name<$($it_type: Iterator),*> {
             $(
-                $cached_it: $it_type
+                $it: $it_type
             ),*
         }
 
@@ -964,7 +964,7 @@ macro_rules! random_tuple {
 
             fn next(&mut self) -> Option<Self::Item> {
                 $(
-                    let $elem = self.$cached_it.next().unwrap();
+                    let $elem = self.$it.next().unwrap();
                 )*
                 Some(($($elem),*))
             }
@@ -977,7 +977,7 @@ macro_rules! random_tuple {
                                                       -> $struct_name<$($it_type),*> {
             $struct_name {
                 $(
-                    $cached_it: $it_gen(&scramble(seed, $it_name))
+                    $it: $it_gen(&scramble(seed, $it_name))
                 ),*
             }
         }
