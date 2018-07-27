@@ -11,16 +11,16 @@ use prim_utils::primitive_float_utils::from_mantissa_and_exponent;
 use std;
 use std::iter::{once, Chain, Once};
 
-struct PositiveMantissas<T: 'static + PrimitiveFloat>(
+struct PositiveMantissas<T: PrimitiveFloat>(
     RangeIncreasing<<T::SignedOfEqualWidth as PrimitiveSigned>::UnsignedOfEqualWidth>,
 );
 
-impl<T: 'static + PrimitiveFloat> PositiveMantissas<T> {
+impl<T: PrimitiveFloat> PositiveMantissas<T> {
     const ONE: <T::SignedOfEqualWidth as PrimitiveSigned>::UnsignedOfEqualWidth =
         <<T::SignedOfEqualWidth as PrimitiveSigned>::UnsignedOfEqualWidth as One>::ONE;
 }
 
-impl<T: 'static + PrimitiveFloat> Iterator for PositiveMantissas<T> {
+impl<T: PrimitiveFloat> Iterator for PositiveMantissas<T> {
     type Item = <T::SignedOfEqualWidth as PrimitiveSigned>::UnsignedOfEqualWidth;
 
     fn next(&mut self) -> Option<<T::SignedOfEqualWidth as PrimitiveSigned>::UnsignedOfEqualWidth> {
@@ -30,17 +30,17 @@ impl<T: 'static + PrimitiveFloat> Iterator for PositiveMantissas<T> {
     }
 }
 
-fn positive_mantissas<T: 'static + PrimitiveFloat>() -> PositiveMantissas<T> {
+fn positive_mantissas<T: PrimitiveFloat>() -> PositiveMantissas<T> {
     PositiveMantissas(range_down_increasing(
         (PositiveMantissas::<T>::ONE << T::MANTISSA_WIDTH) - PositiveMantissas::<T>::ONE,
     ))
 }
 
-pub struct ExhaustivePositiveOrdinaryPrimitiveFloats<T: 'static + PrimitiveFloat>(
+pub struct ExhaustivePositiveOrdinaryPrimitiveFloats<T: PrimitiveFloat>(
     ExhaustivePairs<PositiveMantissas<T>, ExhaustiveRangeSigned<i32>>,
 );
 
-impl<T: 'static + PrimitiveFloat> Iterator for ExhaustivePositiveOrdinaryPrimitiveFloats<T>
+impl<T: PrimitiveFloat> Iterator for ExhaustivePositiveOrdinaryPrimitiveFloats<T>
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
@@ -59,7 +59,7 @@ where
     }
 }
 
-pub fn exhaustive_positive_ordinary_primitive_floats<T: 'static + PrimitiveFloat>(
+pub fn exhaustive_positive_ordinary_primitive_floats<T: PrimitiveFloat>(
 ) -> ExhaustivePositiveOrdinaryPrimitiveFloats<T>
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
@@ -72,11 +72,11 @@ where
     ))
 }
 
-pub struct ExhaustiveNegativeOrdinaryPrimitiveFloats<T: 'static + PrimitiveFloat>(
+pub struct ExhaustiveNegativeOrdinaryPrimitiveFloats<T: PrimitiveFloat>(
     ExhaustivePositiveOrdinaryPrimitiveFloats<T>,
 );
 
-impl<T: 'static + PrimitiveFloat> Iterator for ExhaustiveNegativeOrdinaryPrimitiveFloats<T>
+impl<T: PrimitiveFloat> Iterator for ExhaustiveNegativeOrdinaryPrimitiveFloats<T>
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
@@ -89,7 +89,7 @@ where
     }
 }
 
-pub fn exhaustive_negative_ordinary_primitive_floats<T: 'static + PrimitiveFloat>(
+pub fn exhaustive_negative_ordinary_primitive_floats<T: PrimitiveFloat>(
 ) -> ExhaustiveNegativeOrdinaryPrimitiveFloats<T>
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
@@ -99,7 +99,7 @@ where
     ExhaustiveNegativeOrdinaryPrimitiveFloats(exhaustive_positive_ordinary_primitive_floats())
 }
 
-pub fn exhaustive_nonzero_ordinary_primitive_floats<T: 'static + PrimitiveFloat>() -> Interleave<
+pub fn exhaustive_nonzero_ordinary_primitive_floats<T: PrimitiveFloat>() -> Interleave<
     ExhaustivePositiveOrdinaryPrimitiveFloats<T>,
     ExhaustiveNegativeOrdinaryPrimitiveFloats<T>,
 >
@@ -112,7 +112,7 @@ where
         .interleave(exhaustive_negative_ordinary_primitive_floats())
 }
 
-pub fn exhaustive_positive_primitive_floats<T: 'static + PrimitiveFloat>(
+pub fn exhaustive_positive_primitive_floats<T: PrimitiveFloat>(
 ) -> Chain<Once<T>, ExhaustivePositiveOrdinaryPrimitiveFloats<T>>
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
@@ -122,7 +122,7 @@ where
     once(T::INFINITY).chain(exhaustive_positive_ordinary_primitive_floats())
 }
 
-pub fn exhaustive_negative_primitive_floats<T: 'static + PrimitiveFloat>(
+pub fn exhaustive_negative_primitive_floats<T: PrimitiveFloat>(
 ) -> Chain<Once<T>, ExhaustiveNegativeOrdinaryPrimitiveFloats<T>>
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
@@ -132,7 +132,7 @@ where
     once(T::NEG_INFINITY).chain(exhaustive_negative_ordinary_primitive_floats())
 }
 
-pub fn exhaustive_nonzero_primitive_floats<T: 'static + PrimitiveFloat>() -> Chain<
+pub fn exhaustive_nonzero_primitive_floats<T: PrimitiveFloat>() -> Chain<
     std::vec::IntoIter<T>,
     Interleave<
         ExhaustivePositiveOrdinaryPrimitiveFloats<T>,
@@ -149,7 +149,7 @@ where
         .chain(exhaustive_nonzero_ordinary_primitive_floats())
 }
 
-pub fn exhaustive_primitive_floats<T: 'static + PrimitiveFloat>() -> Chain<
+pub fn exhaustive_primitive_floats<T: PrimitiveFloat>() -> Chain<
     std::vec::IntoIter<T>,
     Interleave<
         ExhaustivePositiveOrdinaryPrimitiveFloats<T>,

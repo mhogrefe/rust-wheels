@@ -4,9 +4,8 @@ use malachite_base::num::{PrimitiveFloat, PrimitiveUnsigned};
 use malachite_nz::integer::Integer;
 use rust_wheels::iterators::primitive_floats::*;
 
-fn exhaustive_positive_ordinary_primitive_floats_helper<T: 'static + PrimitiveFloat>(
-    eo: &TestOutput,
-) where
+fn exhaustive_positive_ordinary_primitive_floats_helper<T: PrimitiveFloat>(eo: &TestOutput)
+where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
     T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
@@ -24,9 +23,8 @@ fn test_exhaustive_positive_ordinary_primitive_floats() {
     exhaustive_positive_ordinary_primitive_floats_helper::<f64>(&eo);
 }
 
-fn exhaustive_negative_ordinary_primitive_floats_helper<T: 'static + PrimitiveFloat>(
-    eo: &TestOutput,
-) where
+fn exhaustive_negative_ordinary_primitive_floats_helper<T: PrimitiveFloat>(eo: &TestOutput)
+where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
     T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
@@ -44,7 +42,7 @@ fn test_exhaustive_negative_ordinary_primitive_floats() {
     exhaustive_negative_ordinary_primitive_floats_helper::<f64>(&eo);
 }
 
-fn exhaustive_nonzero_ordinary_primitive_floats_helper<T: 'static + PrimitiveFloat>(eo: &TestOutput)
+fn exhaustive_nonzero_ordinary_primitive_floats_helper<T: PrimitiveFloat>(eo: &TestOutput)
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
@@ -63,7 +61,7 @@ fn test_exhaustive_nonzero_ordinary_primitive_floats() {
     exhaustive_nonzero_ordinary_primitive_floats_helper::<f64>(&eo);
 }
 
-fn exhaustive_positive_primitive_floats_helper<T: 'static + PrimitiveFloat>(eo: &TestOutput)
+fn exhaustive_positive_primitive_floats_helper<T: PrimitiveFloat>(eo: &TestOutput)
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
@@ -82,7 +80,7 @@ fn test_exhaustive_positive_primitive_floats() {
     exhaustive_positive_primitive_floats_helper::<f64>(&eo);
 }
 
-fn exhaustive_negative_primitive_floats_helper<T: 'static + PrimitiveFloat>(eo: &TestOutput)
+fn exhaustive_negative_primitive_floats_helper<T: PrimitiveFloat>(eo: &TestOutput)
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
@@ -101,7 +99,7 @@ fn test_exhaustive_negative_primitive_floats() {
     exhaustive_negative_primitive_floats_helper::<f64>(&eo);
 }
 
-fn exhaustive_nonzero_primitive_floats_helper<T: 'static + PrimitiveFloat>(eo: &TestOutput)
+fn exhaustive_nonzero_primitive_floats_helper<T: PrimitiveFloat>(eo: &TestOutput)
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
@@ -120,7 +118,7 @@ fn test_exhaustive_nonzero_primitive_floats() {
     exhaustive_nonzero_primitive_floats_helper::<f64>(&eo);
 }
 
-fn exhaustive_primitive_floats_helper<T: 'static + PrimitiveFloat>(eo: &TestOutput)
+fn exhaustive_primitive_floats_helper<T: PrimitiveFloat>(eo: &TestOutput)
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
