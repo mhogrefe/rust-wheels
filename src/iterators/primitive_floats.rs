@@ -32,7 +32,7 @@ impl<T: PrimitiveFloat> Iterator for PositiveMantissas<T> {
 
 fn positive_mantissas<T: PrimitiveFloat>() -> PositiveMantissas<T> {
     PositiveMantissas(range_down_increasing(
-        (PositiveMantissas::<T>::ONE << T::MANTISSA_WIDTH) - PositiveMantissas::<T>::ONE,
+        (PositiveMantissas::<T>::ONE << T::MANTISSA_WIDTH.into()) - PositiveMantissas::<T>::ONE,
     ))
 }
 

@@ -204,7 +204,7 @@ impl BinaryFraction {
             if exponent == 0 {
                 exponent = T::MIN_EXPONENT;
             } else {
-                mantissa += T::UnsignedOfEqualWidth::ONE << T::MANTISSA_WIDTH;
+                mantissa += T::UnsignedOfEqualWidth::ONE << T::MANTISSA_WIDTH.into();
                 exponent += T::MIN_EXPONENT - 1;
             }
             let mantissa = mantissa.to_signed_checked().unwrap();
