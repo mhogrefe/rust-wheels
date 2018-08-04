@@ -11176,10 +11176,10 @@ random_range_down_char_iii list 21
 'ȕ'
 'Û'
 'Ǘ'
-'͏'
+'\u{34f}'
 'ʮ'
 'ƾ'
-'̿'
+'\u{33f}'
 'ϔ'
 'Σ'
 'ö'
@@ -11194,7 +11194,7 @@ random_range_down_char_iii list 21
 ...
 
 random_range_down_char_iii map 10
-'̃': 1034
+'\u{303}': 1034
 'ů': 1033
 '\u{95}': 1031
 'b': 1030
@@ -11202,7 +11202,7 @@ random_range_down_char_iii map 10
 'ª': 1014
 'ɉ': 1013
 'Ψ': 1012
-'̅': 1011
+'\u{305}': 1011
 'ȷ': 1010
 
 random_range_down_char_iv list 21
