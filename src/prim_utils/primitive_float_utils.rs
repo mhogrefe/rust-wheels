@@ -1,7 +1,5 @@
 use malachite_base::misc::{CheckedFrom, CheckedInto};
-use malachite_base::num::{
-    BitAccess, One, PrimitiveFloat, PrimitiveUnsigned, SignificantBits, Zero,
-};
+use malachite_base::num::{One, Parity, PrimitiveFloat, PrimitiveUnsigned, SignificantBits, Zero};
 use malachite_nz::integer::Integer;
 use std::cmp::Ordering;
 use std::ops::{Add, Neg, Shl, Shr, Sub};
@@ -273,7 +271,7 @@ where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
 {
-    if mantissa == <T::SignedOfEqualWidth as Zero>::ZERO && exponent != 0 || !mantissa.get_bit(0) {
+    if mantissa == <T::SignedOfEqualWidth as Zero>::ZERO && exponent != 0 || mantissa.is_even() {
         None
     } else {
         BinaryFraction::new(Integer::from(mantissa), exponent).to_float()

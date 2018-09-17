@@ -4,7 +4,7 @@ use iterators::general::CachedIterator;
 use iterators::integers_geometric::{u32s_geometric, U32sGeometric};
 use iterators::primitive_ints::exhaustive_positive;
 use iterators::tuples::ZOrderTupleIndices;
-use malachite_base::num::{BitAccess, PrimitiveInteger, PrimitiveUnsigned};
+use malachite_base::num::{Parity, PrimitiveInteger, PrimitiveUnsigned};
 use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
 use malachite_nz::natural::random::special_random_natural_with_bits::*;
 use rand::{IsaacRng, Rng, SeedableRng};
@@ -121,12 +121,7 @@ where
             .map(Option::Some)
             .chain(repeat(Option::None))
     };
-    Box::new(
-        exhaustive_dependent_pairs_infinite_log(exhaustive_positive(), f)
-            .map(|(_, v)| v)
-            .filter(|v| v.is_some())
-            .map(|v| v.unwrap()),
-    )
+    Box::new(exhaustive_dependent_pairs_infinite_log(exhaustive_positive(), f).flat_map(|(_, v)| v))
 }
 
 pub enum ExhaustiveVecs<'a, I: Iterator>
@@ -237,7 +232,7 @@ impl<T: PrimitiveUnsigned> Iterator for SpecialRandomUnsignedVecs<T> {
             u64::from(self.lengths.next().unwrap() << T::LOG_WIDTH),
         );
         //TODO make this more generic
-        if T::WIDTH == u64::WIDTH && (limbs.len() as u64).get_bit(0) {
+        if T::WIDTH == u64::WIDTH && (limbs.len() as u64).is_odd() {
             limbs.push(0);
         }
         let mut result = vec![T::ZERO; limbs.len() << u32::LOG_WIDTH >> T::LOG_WIDTH];
@@ -274,7 +269,7 @@ impl Iterator for SpecialRandomBoolVecs {
         let mut bits = n.to_bits_asc();
         // The last element of bits is always true; flip it to false 50% of the time.
         if !bits.is_empty() && self.rng.gen() {
-            *bits.last_mut().unwrap() = true;
+            *bits.last_mut().unwrap() = false;
         }
         Some(bits)
     }
