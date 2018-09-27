@@ -10,7 +10,8 @@ pub fn exhaustive_rounding_modes() -> std::vec::IntoIter<RoundingMode> {
         RoundingMode::Ceiling,
         RoundingMode::Nearest,
         RoundingMode::Exact,
-    ].into_iter()
+    ]
+    .into_iter()
 }
 
 pub fn random_rounding_modes(seed: &[u32]) -> RandomFromVector<RoundingMode> {
