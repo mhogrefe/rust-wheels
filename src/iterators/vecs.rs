@@ -232,7 +232,7 @@ impl<T: PrimitiveUnsigned> Iterator for SpecialRandomUnsignedVecs<T> {
             u64::from(self.lengths.next().unwrap() << T::LOG_WIDTH),
         );
         //TODO make this more generic
-        if T::WIDTH == u64::WIDTH && (limbs.len() as u64).is_odd() {
+        if T::WIDTH == u64::WIDTH && (limbs.len() as u64).odd() {
             limbs.push(0);
         }
         let mut result = vec![T::ZERO; limbs.len() << u32::LOG_WIDTH >> T::LOG_WIDTH];

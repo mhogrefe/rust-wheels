@@ -271,7 +271,7 @@ where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
 {
-    if mantissa == <T::SignedOfEqualWidth as Zero>::ZERO && exponent != 0 || mantissa.is_even() {
+    if mantissa == <T::SignedOfEqualWidth as Zero>::ZERO && exponent != 0 || mantissa.even() {
         None
     } else {
         BinaryFraction::new(Integer::from(mantissa), exponent).to_float()
