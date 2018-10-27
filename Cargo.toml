@@ -16,3 +16,6 @@ rand = "0.3.0"
 sha3 = "0.8.0"
 streaming-stats = "0.2.2"
 time = "0.1.40"
+
+[profile.release]
+lto = true
