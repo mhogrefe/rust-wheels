@@ -1,9 +1,11 @@
 use iterators::common::scramble;
 use iterators::dependent_pairs::exhaustive_dependent_pairs_infinite_log;
 use iterators::general::CachedIterator;
-use iterators::integers_geometric::{u32s_geometric, U32sGeometric};
+use iterators::integers_geometric::{
+    range_up_geometric_u32, u32s_geometric, RangeUpGeometricU32, U32sGeometric,
+};
 use iterators::primitive_ints::exhaustive_positive;
-use iterators::tuples::ZOrderTupleIndices;
+use iterators::tuples::{exhaustive_pairs, ZOrderTupleIndices};
 use malachite_base::num::{Parity, PrimitiveInteger, PrimitiveUnsigned};
 use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
 use malachite_nz::natural::random::special_random_natural_with_bits::*;
@@ -183,6 +185,29 @@ where
     }
 }
 
+pub fn exhaustive_vecs_min_length<'a, I: 'static + Clone + Iterator + 'a>(
+    min_len: u64,
+    xs: I,
+) -> Box<Iterator<Item = Vec<I::Item>>>
+where
+    I::Item: Clone,
+{
+    match min_len {
+        0 => Box::new(exhaustive_vecs(xs)),
+        1 => Box::new(exhaustive_vecs(xs).skip(1)),
+        _ => Box::new(
+            exhaustive_pairs(
+                exhaustive_fixed_size_vecs_from_single(min_len, xs.clone()),
+                exhaustive_vecs(xs),
+            )
+            .map(|(mut xs, mut ys)| {
+                xs.append(&mut ys);
+                xs
+            }),
+        ),
+    }
+}
+
 pub struct RandomVecs<I>
 where
     I: Iterator,
@@ -213,6 +238,44 @@ where
 {
     RandomVecs {
         lengths: u32s_geometric(&scramble(seed, "lengths"), scale),
+        xs: xs_gen(&scramble(seed, "xs")),
+    }
+}
+
+pub struct RandomVecsMinLength<I>
+where
+    I: Iterator,
+{
+    lengths: RangeUpGeometricU32,
+    xs: I,
+}
+
+impl<I> Iterator for RandomVecsMinLength<I>
+where
+    I: Iterator,
+{
+    type Item = Vec<I::Item>;
+
+    fn next(&mut self) -> Option<Vec<I::Item>> {
+        Some(
+            (&mut self.xs)
+                .take(self.lengths.next().unwrap() as usize)
+                .collect(),
+        )
+    }
+}
+
+pub fn random_vecs_min_length<I>(
+    seed: &[u32],
+    scale: u32,
+    min_length: u64,
+    xs_gen: &Fn(&[u32]) -> I,
+) -> RandomVecsMinLength<I>
+where
+    I: Iterator,
+{
+    RandomVecsMinLength {
+        lengths: range_up_geometric_u32(&scramble(seed, "lengths"), scale, min_length as u32),
         xs: xs_gen(&scramble(seed, "xs")),
     }
 }
@@ -250,6 +313,45 @@ pub fn special_random_unsigned_vecs<T: PrimitiveUnsigned>(
 ) -> SpecialRandomUnsignedVecs<T> {
     SpecialRandomUnsignedVecs {
         lengths: u32s_geometric(&scramble(seed, "lengths"), scale),
+        rng: Box::new(IsaacRng::from_seed(&scramble(seed, "xs"))),
+        boo: PhantomData,
+    }
+}
+
+pub struct SpecialRandomUnsignedVecsMinLength<T: PrimitiveUnsigned> {
+    lengths: RangeUpGeometricU32,
+    rng: Box<IsaacRng>,
+    boo: PhantomData<*const T>,
+}
+
+impl<T: PrimitiveUnsigned> Iterator for SpecialRandomUnsignedVecsMinLength<T> {
+    type Item = Vec<T>;
+
+    fn next(&mut self) -> Option<Vec<T>> {
+        let len = self.lengths.next().unwrap();
+        if len == 0 {
+            return Some(Vec::new());
+        }
+        let mut limbs =
+            limbs_special_random_up_to_bits(&mut self.rng, u64::from(len << T::LOG_WIDTH));
+        //TODO make this more generic
+        if T::WIDTH == u64::WIDTH && (limbs.len() as u64).odd() {
+            limbs.push(0);
+        }
+        let mut result = vec![T::ZERO; limbs.len() << u32::LOG_WIDTH >> T::LOG_WIDTH];
+        T::copy_from_u32_slice(&mut result, &limbs);
+        Some(result)
+    }
+}
+
+//TODO test
+pub fn special_random_unsigned_vecs_min_length<T: PrimitiveUnsigned>(
+    seed: &[u32],
+    scale: u32,
+    min_length: u64,
+) -> SpecialRandomUnsignedVecsMinLength<T> {
+    SpecialRandomUnsignedVecsMinLength {
+        lengths: range_up_geometric_u32(&scramble(seed, "lengths"), scale, min_length as u32),
         rng: Box::new(IsaacRng::from_seed(&scramble(seed, "xs"))),
         boo: PhantomData,
     }
