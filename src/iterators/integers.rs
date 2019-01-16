@@ -15,6 +15,7 @@ use malachite_nz::integer::Integer;
 use malachite_nz::natural::random::random_natural_below::random_natural_below;
 use malachite_nz::natural::random::random_natural_with_bits::random_natural_with_bits;
 use malachite_nz::natural::Natural;
+use malachite_nz::platform::Limb;
 use rand::{IsaacRng, Rng, SeedableRng};
 use std::cmp::Ordering;
 use std::iter::{once, Chain, Once};
@@ -27,7 +28,7 @@ impl Iterator for RangeIncreasingUnboundedInteger {
 
     fn next(&mut self) -> Option<Integer> {
         let ret = self.0.clone();
-        self.0 += 1;
+        self.0 += 1 as Limb;
         Some(ret)
     }
 }
@@ -40,7 +41,7 @@ impl Iterator for RangeDecreasingUnboundedInteger {
 
     fn next(&mut self) -> Option<Integer> {
         let ret = self.0.clone();
-        self.0 -= 1;
+        self.0 -= 1 as Limb;
         Some(ret)
     }
 }
@@ -77,9 +78,9 @@ pub fn exhaustive_range_integer(a: Integer, b: Integer) -> ExhaustiveRangeIntege
     if a > b {
         panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
     }
-    if a >= 0 {
+    if a >= 0 as Limb {
         ExhaustiveRangeInteger::AllNonNegative(range_increasing(a, b))
-    } else if b <= 0 {
+    } else if b <= 0 as Limb {
         ExhaustiveRangeInteger::AllNonPositive(range_decreasing(a, b))
     } else {
         ExhaustiveRangeInteger::SomeOfEachSign(
@@ -315,7 +316,7 @@ pub fn random_range_integer(seed: &[u32], a: Integer, b: Integer) -> RandomRange
     }
     RandomRangeInteger {
         rng: Box::new(IsaacRng::from_seed(seed)),
-        diameter_plus_one: Natural::checked_from(b - &a).unwrap() + 1u32,
+        diameter_plus_one: Natural::checked_from(b - &a).unwrap() + 1 as Limb,
         a,
     }
 }
@@ -383,8 +384,8 @@ impl Iterator for RandomRangeUpInteger {
 
 pub fn random_range_up_integer(seed: &[u32], scale: u32, a: Integer) -> RandomRangeUpInteger {
     let a_bit_size = a.significant_bits();
-    let min_bit_size = if a < 0 { 0 } else { a_bit_size as u32 };
-    let offset_limit = if a < 0 {
+    let min_bit_size = if a < 0 as Limb { 0 } else { a_bit_size as u32 };
+    let offset_limit = if a < 0 as Limb {
         None
     } else {
         Some((Natural::ONE << a_bit_size) - (&a).unsigned_abs_ref())

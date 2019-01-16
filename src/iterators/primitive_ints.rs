@@ -5,6 +5,7 @@ use itertools::{Interleave, Itertools};
 use malachite_base::misc::{Min, Walkable};
 use malachite_base::num::{PrimitiveInteger, PrimitiveSigned, PrimitiveUnsigned};
 use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
+use rand::distributions::range::SampleRange;
 use rand::distributions::{IndependentSample, Range};
 use rand::{IsaacRng, Rand, SeedableRng};
 use std::fmt::Display;
@@ -99,7 +100,7 @@ pub enum RandomRange<T: Rand> {
     All(Random<T>),
 }
 
-impl<T: PrimitiveInteger> Iterator for RandomRange<T> {
+impl<T: PrimitiveInteger + Rand + SampleRange> Iterator for RandomRange<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
@@ -116,7 +117,7 @@ impl<T: PrimitiveInteger> Iterator for RandomRange<T> {
 
 pub struct RandomPositiveUnsigned<T: Rand>(Random<T>);
 
-impl<T: PrimitiveUnsigned> Iterator for RandomPositiveUnsigned<T> {
+impl<T: PrimitiveUnsigned + Rand> Iterator for RandomPositiveUnsigned<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
@@ -133,9 +134,9 @@ pub fn random_positive_unsigned<T: Rand>(seed: &[u32]) -> RandomPositiveUnsigned
     RandomPositiveUnsigned(random(seed))
 }
 
-pub struct RandomPositiveSigned<T: PrimitiveSigned>(Random<T>);
+pub struct RandomPositiveSigned<T: PrimitiveSigned + Rand>(Random<T>);
 
-impl<T: PrimitiveSigned> Iterator for RandomPositiveSigned<T> {
+impl<T: PrimitiveSigned + Rand> Iterator for RandomPositiveSigned<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
@@ -148,13 +149,13 @@ impl<T: PrimitiveSigned> Iterator for RandomPositiveSigned<T> {
     }
 }
 
-pub fn random_positive_signed<T: PrimitiveSigned>(seed: &[u32]) -> RandomPositiveSigned<T> {
+pub fn random_positive_signed<T: PrimitiveSigned + Rand>(seed: &[u32]) -> RandomPositiveSigned<T> {
     RandomPositiveSigned(random(seed))
 }
 
-pub struct RandomNegativeSigned<T: PrimitiveSigned>(Random<T>);
+pub struct RandomNegativeSigned<T: PrimitiveSigned + Rand>(Random<T>);
 
-impl<T: PrimitiveSigned> Iterator for RandomNegativeSigned<T> {
+impl<T: PrimitiveSigned + Rand> Iterator for RandomNegativeSigned<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
@@ -162,13 +163,13 @@ impl<T: PrimitiveSigned> Iterator for RandomNegativeSigned<T> {
     }
 }
 
-pub fn random_negative_signed<T: PrimitiveSigned>(seed: &[u32]) -> RandomNegativeSigned<T> {
+pub fn random_negative_signed<T: PrimitiveSigned + Rand>(seed: &[u32]) -> RandomNegativeSigned<T> {
     RandomNegativeSigned(random(seed))
 }
 
-pub struct RandomNaturalSigned<T: PrimitiveSigned>(Random<T>);
+pub struct RandomNaturalSigned<T: PrimitiveSigned + Rand>(Random<T>);
 
-impl<T: PrimitiveSigned> Iterator for RandomNaturalSigned<T> {
+impl<T: PrimitiveSigned + Rand> Iterator for RandomNaturalSigned<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
@@ -176,13 +177,13 @@ impl<T: PrimitiveSigned> Iterator for RandomNaturalSigned<T> {
     }
 }
 
-pub fn random_natural_signed<T: PrimitiveSigned>(seed: &[u32]) -> RandomNaturalSigned<T> {
+pub fn random_natural_signed<T: PrimitiveSigned + Rand>(seed: &[u32]) -> RandomNaturalSigned<T> {
     RandomNaturalSigned(random(seed))
 }
 
-pub struct RandomNonzeroSigned<T: PrimitiveSigned>(Random<T>);
+pub struct RandomNonzeroSigned<T: PrimitiveSigned + Rand>(Random<T>);
 
-impl<T: PrimitiveSigned> Iterator for RandomNonzeroSigned<T> {
+impl<T: PrimitiveSigned + Rand> Iterator for RandomNonzeroSigned<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
@@ -195,11 +196,15 @@ impl<T: PrimitiveSigned> Iterator for RandomNonzeroSigned<T> {
     }
 }
 
-pub fn random_nonzero_signed<T: PrimitiveSigned>(seed: &[u32]) -> RandomNonzeroSigned<T> {
+pub fn random_nonzero_signed<T: PrimitiveSigned + Rand>(seed: &[u32]) -> RandomNonzeroSigned<T> {
     RandomNonzeroSigned(random(seed))
 }
 
-pub fn random_range<T: PrimitiveInteger>(seed: &[u32], a: T, b: T) -> RandomRange<T> {
+pub fn random_range<T: PrimitiveInteger + Rand + SampleRange>(
+    seed: &[u32],
+    a: T,
+    b: T,
+) -> RandomRange<T> {
     if a == T::MIN && b == T::MAX {
         RandomRange::All(random(seed))
     } else if b == T::MAX {
@@ -217,17 +222,23 @@ pub fn random_range<T: PrimitiveInteger>(seed: &[u32], a: T, b: T) -> RandomRang
     }
 }
 
-pub fn random_range_up<T: PrimitiveInteger>(seed: &[u32], a: T) -> RandomRange<T> {
+pub fn random_range_up<T: PrimitiveInteger + Rand + SampleRange>(
+    seed: &[u32],
+    a: T,
+) -> RandomRange<T> {
     random_range(seed, a, T::MAX)
 }
 
-pub fn random_range_down<T: PrimitiveInteger>(seed: &[u32], a: T) -> RandomRange<T> {
+pub fn random_range_down<T: PrimitiveInteger + Rand + SampleRange>(
+    seed: &[u32],
+    a: T,
+) -> RandomRange<T> {
     random_range(seed, T::MIN, a)
 }
 
-pub struct SpecialRandomUnsigned<T: PrimitiveUnsigned>(Random<T>);
+pub struct SpecialRandomUnsigned<T: PrimitiveUnsigned + Rand>(Random<T>);
 
-impl<T: PrimitiveUnsigned> Iterator for SpecialRandomUnsigned<T> {
+impl<T: PrimitiveUnsigned + Rand> Iterator for SpecialRandomUnsigned<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
@@ -236,13 +247,15 @@ impl<T: PrimitiveUnsigned> Iterator for SpecialRandomUnsigned<T> {
     }
 }
 
-pub fn special_random_unsigned<T: PrimitiveUnsigned>(seed: &[u32]) -> SpecialRandomUnsigned<T> {
+pub fn special_random_unsigned<T: PrimitiveUnsigned + Rand>(
+    seed: &[u32],
+) -> SpecialRandomUnsigned<T> {
     SpecialRandomUnsigned(random(seed))
 }
 
-pub struct SpecialRandomPositiveUnsigned<T: PrimitiveUnsigned>(SpecialRandomUnsigned<T>);
+pub struct SpecialRandomPositiveUnsigned<T: PrimitiveUnsigned + Rand>(SpecialRandomUnsigned<T>);
 
-impl<T: PrimitiveUnsigned> Iterator for SpecialRandomPositiveUnsigned<T> {
+impl<T: PrimitiveUnsigned + Rand> Iterator for SpecialRandomPositiveUnsigned<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
@@ -255,7 +268,7 @@ impl<T: PrimitiveUnsigned> Iterator for SpecialRandomPositiveUnsigned<T> {
     }
 }
 
-pub fn special_random_positive_unsigned<T: PrimitiveUnsigned>(
+pub fn special_random_positive_unsigned<T: PrimitiveUnsigned + Rand>(
     seed: &[u32],
 ) -> SpecialRandomPositiveUnsigned<T> {
     SpecialRandomPositiveUnsigned(special_random_unsigned(seed))
@@ -263,9 +276,14 @@ pub fn special_random_positive_unsigned<T: PrimitiveUnsigned>(
 
 pub struct SpecialRandomNaturalSigned<T: PrimitiveSigned>(
     SpecialRandomUnsigned<T::UnsignedOfEqualWidth>,
-);
+)
+where
+    <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand;
 
-impl<T: PrimitiveSigned> Iterator for SpecialRandomNaturalSigned<T> {
+impl<T: PrimitiveSigned> Iterator for SpecialRandomNaturalSigned<T>
+where
+    <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+{
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
@@ -275,15 +293,23 @@ impl<T: PrimitiveSigned> Iterator for SpecialRandomNaturalSigned<T> {
 
 pub fn special_random_natural_signed<T: PrimitiveSigned>(
     seed: &[u32],
-) -> SpecialRandomNaturalSigned<T> {
+) -> SpecialRandomNaturalSigned<T>
+where
+    <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+{
     SpecialRandomNaturalSigned(special_random_unsigned(seed))
 }
 
 pub struct SpecialRandomPositiveSigned<T: PrimitiveSigned>(
     SpecialRandomPositiveUnsigned<T::UnsignedOfEqualWidth>,
-);
+)
+where
+    <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand;
 
-impl<T: PrimitiveSigned> Iterator for SpecialRandomPositiveSigned<T> {
+impl<T: PrimitiveSigned> Iterator for SpecialRandomPositiveSigned<T>
+where
+    <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+{
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
@@ -293,15 +319,23 @@ impl<T: PrimitiveSigned> Iterator for SpecialRandomPositiveSigned<T> {
 
 pub fn special_random_positive_signed<T: PrimitiveSigned>(
     seed: &[u32],
-) -> SpecialRandomPositiveSigned<T> {
+) -> SpecialRandomPositiveSigned<T>
+where
+    <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+{
     SpecialRandomPositiveSigned(special_random_positive_unsigned(seed))
 }
 
 pub struct SpecialRandomNegativeSigned<T: PrimitiveSigned>(
     SpecialRandomUnsigned<T::UnsignedOfEqualWidth>,
-);
+)
+where
+    <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand;
 
-impl<T: PrimitiveSigned> Iterator for SpecialRandomNegativeSigned<T> {
+impl<T: PrimitiveSigned> Iterator for SpecialRandomNegativeSigned<T>
+where
+    <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+{
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
@@ -311,13 +345,21 @@ impl<T: PrimitiveSigned> Iterator for SpecialRandomNegativeSigned<T> {
 
 pub fn special_random_negative_signed<T: PrimitiveSigned>(
     seed: &[u32],
-) -> SpecialRandomNegativeSigned<T> {
+) -> SpecialRandomNegativeSigned<T>
+where
+    <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+{
     SpecialRandomNegativeSigned(special_random_unsigned(seed))
 }
 
-pub struct SpecialRandomSigned<T: PrimitiveSigned>(SpecialRandomUnsigned<T::UnsignedOfEqualWidth>);
+pub struct SpecialRandomSigned<T: PrimitiveSigned>(SpecialRandomUnsigned<T::UnsignedOfEqualWidth>)
+where
+    <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand;
 
-impl<T: PrimitiveSigned> Iterator for SpecialRandomSigned<T> {
+impl<T: PrimitiveSigned> Iterator for SpecialRandomSigned<T>
+where
+    <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+{
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
@@ -325,13 +367,21 @@ impl<T: PrimitiveSigned> Iterator for SpecialRandomSigned<T> {
     }
 }
 
-pub fn special_random_signed<T: PrimitiveSigned>(seed: &[u32]) -> SpecialRandomSigned<T> {
+pub fn special_random_signed<T: PrimitiveSigned>(seed: &[u32]) -> SpecialRandomSigned<T>
+where
+    <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+{
     SpecialRandomSigned(special_random_unsigned(seed))
 }
 
-pub struct SpecialRandomNonzeroSigned<T: PrimitiveSigned>(SpecialRandomSigned<T>);
+pub struct SpecialRandomNonzeroSigned<T: PrimitiveSigned>(SpecialRandomSigned<T>)
+where
+    <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand;
 
-impl<T: PrimitiveSigned> Iterator for SpecialRandomNonzeroSigned<T> {
+impl<T: PrimitiveSigned> Iterator for SpecialRandomNonzeroSigned<T>
+where
+    <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+{
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
@@ -346,6 +396,9 @@ impl<T: PrimitiveSigned> Iterator for SpecialRandomNonzeroSigned<T> {
 
 pub fn special_random_nonzero_signed<T: PrimitiveSigned>(
     seed: &[u32],
-) -> SpecialRandomNonzeroSigned<T> {
+) -> SpecialRandomNonzeroSigned<T>
+where
+    <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+{
     SpecialRandomNonzeroSigned(special_random_signed(seed))
 }

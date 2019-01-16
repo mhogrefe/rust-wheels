@@ -1,9 +1,10 @@
-use rust_wheels::iterators::primitive_ints::*;
-
 use common::{get_expected_test_outputs, TestOutput};
 use malachite_base::num::{PrimitiveInteger, PrimitiveSigned, PrimitiveUnsigned};
+use rand::distributions::range::SampleRange;
+use rand::Rand;
 use rust_wheels::iterators::common::EXAMPLE_SEED;
 use rust_wheels::iterators::general::{random, range_decreasing, range_increasing};
+use rust_wheels::iterators::primitive_ints::*;
 
 macro_rules! prim_fail {
     ($t:ty, $range_increasing_fail:ident, $range_decreasing_fail:ident) => {
@@ -148,7 +149,7 @@ prim_fail_i!(
     random_range_fail_i64_4
 );
 
-fn positive_unsigned_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
+fn positive_unsigned_helper<T: PrimitiveUnsigned + Rand>(eo: &TestOutput) {
     eo.match_vec(
         &format!("exhaustive_positive_{}s", T::NAME),
         &mut exhaustive_positive::<T>(),
@@ -172,7 +173,10 @@ fn test_positive_unsigned() {
     positive_unsigned_helper::<u64>(&eo);
 }
 
-fn positive_signed_helper<T: PrimitiveSigned>(eo: &TestOutput) {
+fn positive_signed_helper<T: PrimitiveSigned + Rand>(eo: &TestOutput)
+where
+    <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+{
     eo.match_vec(
         &format!("exhaustive_positive_{}s", T::NAME),
         &mut exhaustive_positive::<T>(),
@@ -196,7 +200,10 @@ fn test_positive_signed() {
     positive_signed_helper::<i64>(&eo);
 }
 
-fn negative_signed_helper<T: PrimitiveSigned>(eo: &TestOutput) {
+fn negative_signed_helper<T: PrimitiveSigned + Rand>(eo: &TestOutput)
+where
+    <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+{
     eo.match_vec(
         &format!("exhaustive_negative_{}s", T::NAME),
         &mut exhaustive_negative_signed::<T>(),
@@ -220,7 +227,10 @@ fn test_negative_signed() {
     negative_signed_helper::<i64>(&eo);
 }
 
-fn natural_signed_helper<T: PrimitiveSigned>(eo: &TestOutput) {
+fn natural_signed_helper<T: PrimitiveSigned + Rand>(eo: &TestOutput)
+where
+    <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+{
     eo.match_vec(
         &format!("exhaustive_natural_{}s", T::NAME),
         &mut exhaustive_natural_signed::<T>(),
@@ -244,7 +254,10 @@ fn test_natural_signed() {
     natural_signed_helper::<i64>(&eo);
 }
 
-fn nonzero_signed_helper<T: PrimitiveSigned>(eo: &TestOutput) {
+fn nonzero_signed_helper<T: PrimitiveSigned + Rand>(eo: &TestOutput)
+where
+    <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+{
     eo.match_vec(
         &format!("exhaustive_nonzero_{}s", T::NAME),
         &mut exhaustive_nonzero_signed::<T>(),
@@ -268,7 +281,7 @@ fn test_nonzero_signed() {
     nonzero_signed_helper::<i64>(&eo);
 }
 
-fn all_unsigned_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
+fn all_unsigned_helper<T: PrimitiveUnsigned + Rand>(eo: &TestOutput) {
     eo.match_vec(
         &format!("exhaustive_{}s", T::NAME),
         &mut exhaustive_unsigned::<T>(),
@@ -292,7 +305,10 @@ fn test_all_unsigned() {
     all_unsigned_helper::<u64>(&eo);
 }
 
-fn all_signed_helper<T: PrimitiveSigned>(eo: &TestOutput) {
+fn all_signed_helper<T: PrimitiveSigned + Rand>(eo: &TestOutput)
+where
+    <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+{
     eo.match_vec(
         &format!("exhaustive_{}s", T::NAME),
         &mut exhaustive_signed::<T>(),
@@ -638,7 +654,7 @@ fn test_decreasing() {
     decreasing_helper::<i64>(&eo);
 }
 
-fn random_range_up_u_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
+fn random_range_up_u_helper<T: PrimitiveUnsigned + Rand + SampleRange>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec_f(
             &format!("random_range_up_{}_{}", T::NAME, number),
@@ -650,7 +666,7 @@ fn random_range_up_u_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
     test("iii", T::MAX);
 }
 
-fn random_range_up_i_helper<T: PrimitiveSigned>(eo: &TestOutput) {
+fn random_range_up_i_helper<T: PrimitiveSigned + Rand + SampleRange>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec_f(
             &format!("random_range_up_{}_{}", T::NAME, number),
@@ -677,7 +693,7 @@ fn test_random_range_up() {
     random_range_up_i_helper::<i64>(&eo);
 }
 
-fn random_range_down_u_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
+fn random_range_down_u_helper<T: PrimitiveUnsigned + Rand + SampleRange>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec_f(
             &format!("random_range_down_{}_{}", T::NAME, number),
@@ -689,7 +705,7 @@ fn random_range_down_u_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
     test("iii", T::MAX);
 }
 
-fn random_range_down_i_helper<T: PrimitiveSigned>(eo: &TestOutput) {
+fn random_range_down_i_helper<T: PrimitiveSigned + Rand + SampleRange>(eo: &TestOutput) {
     let test = |number, a| {
         eo.match_vec_f(
             &format!("random_range_down_{}_{}", T::NAME, number),
@@ -716,7 +732,7 @@ fn test_random_range_down() {
     random_range_down_i_helper::<i64>(&eo);
 }
 
-fn random_range_u_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
+fn random_range_u_helper<T: PrimitiveUnsigned + Rand + SampleRange>(eo: &TestOutput) {
     let test = |number, a, b| {
         eo.match_vec_f(
             &format!("random_range_{}_{}", T::NAME, number),
@@ -731,7 +747,7 @@ fn random_range_u_helper<T: PrimitiveUnsigned>(eo: &TestOutput) {
     test("vi", T::ZERO, T::MAX - T::ONE);
 }
 
-fn range_i_helper<T: PrimitiveSigned>(eo: &TestOutput) {
+fn range_i_helper<T: PrimitiveSigned + Rand + SampleRange>(eo: &TestOutput) {
     let test = |number, a, b| {
         eo.match_vec(
             &format!("exhaustive_range_{}_{}", T::NAME, number),

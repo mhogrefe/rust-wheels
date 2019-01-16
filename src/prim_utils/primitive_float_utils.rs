@@ -3,6 +3,7 @@ use malachite_base::num::{
     One, Parity, PrimitiveFloat, PrimitiveUnsigned, Sign, SignificantBits, Zero,
 };
 use malachite_nz::integer::Integer;
+use malachite_nz::platform::Limb;
 use std::cmp::Ordering;
 use std::ops::{Add, Neg, Shl, Shr, Sub};
 
@@ -231,7 +232,7 @@ impl BinaryFraction {
         if *self == BinaryFraction::ZERO {
             return Some(T::ZERO);
         }
-        if self.mantissa < 0 {
+        if self.mantissa < 0 as Limb {
             return (-self).to_float::<T>().map(|f| -f);
         }
         let fp_exponent = u32::checked_from(self.mantissa.significant_bits())

@@ -7,9 +7,16 @@ authors = ["Mikhail Hogrefe <mikhailhogrefe@gmail.com>"]
 name = "rust_wheels"
 path = "src/lib.rs"
 
+[features]
+
+default = ["32_bit_limbs"]
+
+32_bit_limbs = ["malachite-nz/32_bit_limbs"]
+64_bit_limbs = ["malachite-nz/64_bit_limbs"]
+
 [dependencies]
 gnuplot = "0.0.26"
-malachite-nz = { path = "../malachite/malachite-nz" }
+malachite-nz = { path = "../malachite/malachite-nz", default-features = false }
 malachite-base = { path = "../malachite/malachite-base" }
 itertools = "0.7.8"
 rand = "0.3.0"
