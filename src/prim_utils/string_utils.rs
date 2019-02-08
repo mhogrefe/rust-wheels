@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 pub fn string_sort(s: &str) -> String {
     let mut chars: Vec<char> = s.chars().collect();
-    chars.sort();
+    chars.sort_unstable();
     chars.iter().collect()
 }
 
