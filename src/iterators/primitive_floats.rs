@@ -119,7 +119,7 @@ where
     Integer: From<T::SignedOfEqualWidth>,
     T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
 {
-    once(T::INFINITY).chain(exhaustive_positive_ordinary_primitive_floats())
+    once(T::POSITIVE_INFINITY).chain(exhaustive_positive_ordinary_primitive_floats())
 }
 
 pub fn exhaustive_negative_primitive_floats<T: PrimitiveFloat>(
@@ -129,7 +129,7 @@ where
     Integer: From<T::SignedOfEqualWidth>,
     T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
 {
-    once(T::NEG_INFINITY).chain(exhaustive_negative_ordinary_primitive_floats())
+    once(T::NEGATIVE_INFINITY).chain(exhaustive_negative_ordinary_primitive_floats())
 }
 
 pub fn exhaustive_nonzero_primitive_floats<T: PrimitiveFloat>() -> Chain<
@@ -144,7 +144,7 @@ where
     Integer: From<T::SignedOfEqualWidth>,
     T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
 {
-    vec![T::NAN, T::INFINITY, T::NEG_INFINITY]
+    vec![T::NAN, T::POSITIVE_INFINITY, T::NEGATIVE_INFINITY]
         .into_iter()
         .chain(exhaustive_nonzero_ordinary_primitive_floats())
 }
@@ -161,7 +161,13 @@ where
     Integer: From<T::SignedOfEqualWidth>,
     T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
 {
-    vec![T::NAN, T::INFINITY, T::NEG_INFINITY, T::ZERO, T::NEG_ZERO]
-        .into_iter()
-        .chain(exhaustive_nonzero_ordinary_primitive_floats())
+    vec![
+        T::NAN,
+        T::POSITIVE_INFINITY,
+        T::NEGATIVE_INFINITY,
+        T::ZERO,
+        T::NEGATIVE_ZERO,
+    ]
+    .into_iter()
+    .chain(exhaustive_nonzero_ordinary_primitive_floats())
 }
