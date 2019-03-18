@@ -11,13 +11,11 @@ impl Iterator for PositiveU32sGeometric {
     type Item = u32;
 
     fn next(&mut self) -> Option<u32> {
-        let mut j = 0;
-        loop {
+        let mut j = 1;
+        while !self.rng.gen_weighted_bool(self.weight) {
             j += 1;
-            if self.rng.gen_weighted_bool(self.weight) {
-                return Some(j);
-            }
         }
+        Some(j)
     }
 }
 
@@ -38,12 +36,10 @@ impl Iterator for U32sGeometric {
 
     fn next(&mut self) -> Option<u32> {
         let mut j = 0;
-        loop {
-            if self.rng.gen_weighted_bool(self.weight) {
-                return Some(j);
-            }
+        while !self.rng.gen_weighted_bool(self.weight) {
             j += 1;
         }
+        Some(j)
     }
 }
 

@@ -265,7 +265,7 @@ impl BinaryFraction {
     }
 }
 
-pub fn from_mantissa_and_exponent<T: PrimitiveFloat>(
+pub fn checked_from_mantissa_and_exponent<T: PrimitiveFloat>(
     mantissa: T::SignedOfEqualWidth,
     exponent: i32,
 ) -> Option<T>
@@ -277,6 +277,18 @@ where
     if mantissa == <T::SignedOfEqualWidth as Zero>::ZERO && exponent != 0 || mantissa.even() {
         None
     } else {
-        BinaryFraction::new(Integer::from(mantissa), exponent).to_float()
+        from_mantissa_and_exponent(mantissa, exponent)
     }
+}
+
+pub fn from_mantissa_and_exponent<T: PrimitiveFloat>(
+    mantissa: T::SignedOfEqualWidth,
+    exponent: i32,
+) -> Option<T>
+where
+    Integer: From<T::SignedOfEqualWidth>,
+    Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
+    T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
+{
+    BinaryFraction::new(Integer::from(mantissa), exponent).to_float()
 }
