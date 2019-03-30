@@ -9,6 +9,7 @@ use malachite_nz::natural::random::random_natural_with_bits::random_natural_with
 use malachite_nz::natural::random::special_random_natural_below::*;
 use malachite_nz::natural::random::special_random_natural_with_bits::*;
 use malachite_nz::natural::Natural;
+use malachite_nz::platform::Limb;
 use rand::{IsaacRng, SeedableRng};
 
 #[derive(Clone)]
@@ -19,7 +20,7 @@ impl Iterator for RangeIncreasingUnboundedNatural {
 
     fn next(&mut self) -> Option<Natural> {
         let ret = self.0.clone();
-        self.0 += 1;
+        self.0 += 1 as Limb;
         Some(ret)
     }
 }
@@ -148,7 +149,7 @@ pub fn random_range_natural(seed: &[u32], a: Natural, b: Natural) -> RandomRange
     }
     RandomRangeNatural {
         rng: Box::new(IsaacRng::from_seed(seed)),
-        diameter_plus_one: b - &a + 1,
+        diameter_plus_one: b - &a + 1 as Limb,
         a,
     }
 }
@@ -177,7 +178,7 @@ pub fn special_random_range_natural(
     }
     SpecialRandomRangeNatural {
         rng: Box::new(IsaacRng::from_seed(seed)),
-        diameter_plus_one: b - &a + 1,
+        diameter_plus_one: b - &a + 1 as Limb,
         a,
     }
 }
