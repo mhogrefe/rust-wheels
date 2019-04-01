@@ -45,11 +45,11 @@ fn exhaustive_positive_mantissas<T: PrimitiveFloat>() -> ExhaustivePositiveManti
     ))
 }
 
-pub struct ExhaustivePositiveOrdinaryPrimitiveFloats<T: PrimitiveFloat>(
+pub struct ExhaustivePositiveFinitePrimitiveFloats<T: PrimitiveFloat>(
     ExhaustivePairs<ExhaustivePositiveMantissas<T>, ExhaustiveRangeSigned<i32>>,
 );
 
-impl<T: PrimitiveFloat> Iterator for ExhaustivePositiveOrdinaryPrimitiveFloats<T>
+impl<T: PrimitiveFloat> Iterator for ExhaustivePositiveFinitePrimitiveFloats<T>
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
@@ -71,24 +71,24 @@ where
     }
 }
 
-pub fn exhaustive_positive_ordinary_primitive_floats<T: PrimitiveFloat>(
-) -> ExhaustivePositiveOrdinaryPrimitiveFloats<T>
+pub fn exhaustive_positive_finite_primitive_floats<T: PrimitiveFloat>(
+) -> ExhaustivePositiveFinitePrimitiveFloats<T>
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
     T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
 {
-    ExhaustivePositiveOrdinaryPrimitiveFloats(exhaustive_pairs(
+    ExhaustivePositiveFinitePrimitiveFloats(exhaustive_pairs(
         exhaustive_positive_mantissas::<T>(),
         exhaustive_range_signed(T::MIN_EXPONENT, T::MAX_EXPONENT as i32),
     ))
 }
 
-pub struct ExhaustiveNegativeOrdinaryPrimitiveFloats<T: PrimitiveFloat>(
-    ExhaustivePositiveOrdinaryPrimitiveFloats<T>,
+pub struct ExhaustiveNegativeFinitePrimitiveFloats<T: PrimitiveFloat>(
+    ExhaustivePositiveFinitePrimitiveFloats<T>,
 );
 
-impl<T: PrimitiveFloat> Iterator for ExhaustiveNegativeOrdinaryPrimitiveFloats<T>
+impl<T: PrimitiveFloat> Iterator for ExhaustiveNegativeFinitePrimitiveFloats<T>
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
@@ -101,54 +101,54 @@ where
     }
 }
 
-pub fn exhaustive_negative_ordinary_primitive_floats<T: PrimitiveFloat>(
-) -> ExhaustiveNegativeOrdinaryPrimitiveFloats<T>
+pub fn exhaustive_negative_finite_primitive_floats<T: PrimitiveFloat>(
+) -> ExhaustiveNegativeFinitePrimitiveFloats<T>
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
     T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
 {
-    ExhaustiveNegativeOrdinaryPrimitiveFloats(exhaustive_positive_ordinary_primitive_floats())
+    ExhaustiveNegativeFinitePrimitiveFloats(exhaustive_positive_finite_primitive_floats())
 }
 
-pub fn exhaustive_nonzero_ordinary_primitive_floats<T: PrimitiveFloat>() -> Interleave<
-    ExhaustivePositiveOrdinaryPrimitiveFloats<T>,
-    ExhaustiveNegativeOrdinaryPrimitiveFloats<T>,
+pub fn exhaustive_nonzero_finite_primitive_floats<T: PrimitiveFloat>() -> Interleave<
+    ExhaustivePositiveFinitePrimitiveFloats<T>,
+    ExhaustiveNegativeFinitePrimitiveFloats<T>,
 >
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
     T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
 {
-    exhaustive_positive_ordinary_primitive_floats()
-        .interleave(exhaustive_negative_ordinary_primitive_floats())
+    exhaustive_positive_finite_primitive_floats()
+        .interleave(exhaustive_negative_finite_primitive_floats())
 }
 
 pub fn exhaustive_positive_primitive_floats<T: PrimitiveFloat>(
-) -> Chain<Once<T>, ExhaustivePositiveOrdinaryPrimitiveFloats<T>>
+) -> Chain<Once<T>, ExhaustivePositiveFinitePrimitiveFloats<T>>
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
     T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
 {
-    once(T::POSITIVE_INFINITY).chain(exhaustive_positive_ordinary_primitive_floats())
+    once(T::POSITIVE_INFINITY).chain(exhaustive_positive_finite_primitive_floats())
 }
 
 pub fn exhaustive_negative_primitive_floats<T: PrimitiveFloat>(
-) -> Chain<Once<T>, ExhaustiveNegativeOrdinaryPrimitiveFloats<T>>
+) -> Chain<Once<T>, ExhaustiveNegativeFinitePrimitiveFloats<T>>
 where
     Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
     Integer: From<T::SignedOfEqualWidth>,
     T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
 {
-    once(T::NEGATIVE_INFINITY).chain(exhaustive_negative_ordinary_primitive_floats())
+    once(T::NEGATIVE_INFINITY).chain(exhaustive_negative_finite_primitive_floats())
 }
 
 pub fn exhaustive_nonzero_primitive_floats<T: PrimitiveFloat>() -> Chain<
     std::vec::IntoIter<T>,
     Interleave<
-        ExhaustivePositiveOrdinaryPrimitiveFloats<T>,
-        ExhaustiveNegativeOrdinaryPrimitiveFloats<T>,
+        ExhaustivePositiveFinitePrimitiveFloats<T>,
+        ExhaustiveNegativeFinitePrimitiveFloats<T>,
     >,
 >
 where
@@ -158,14 +158,31 @@ where
 {
     vec![T::NAN, T::POSITIVE_INFINITY, T::NEGATIVE_INFINITY]
         .into_iter()
-        .chain(exhaustive_nonzero_ordinary_primitive_floats())
+        .chain(exhaustive_nonzero_finite_primitive_floats())
+}
+
+pub fn exhaustive_finite_primitive_floats<T: PrimitiveFloat>() -> Chain<
+    std::vec::IntoIter<T>,
+    Interleave<
+        ExhaustivePositiveFinitePrimitiveFloats<T>,
+        ExhaustiveNegativeFinitePrimitiveFloats<T>,
+    >,
+>
+where
+    Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
+    Integer: From<T::SignedOfEqualWidth>,
+    T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
+{
+    vec![T::ZERO, T::NEGATIVE_ZERO]
+        .into_iter()
+        .chain(exhaustive_nonzero_finite_primitive_floats())
 }
 
 pub fn exhaustive_primitive_floats<T: PrimitiveFloat>() -> Chain<
     std::vec::IntoIter<T>,
     Interleave<
-        ExhaustivePositiveOrdinaryPrimitiveFloats<T>,
-        ExhaustiveNegativeOrdinaryPrimitiveFloats<T>,
+        ExhaustivePositiveFinitePrimitiveFloats<T>,
+        ExhaustiveNegativeFinitePrimitiveFloats<T>,
     >,
 >
 where
@@ -181,7 +198,36 @@ where
         T::NEGATIVE_ZERO,
     ]
     .into_iter()
-    .chain(exhaustive_nonzero_ordinary_primitive_floats())
+    .chain(exhaustive_nonzero_finite_primitive_floats())
+}
+
+pub struct RandomFinitePrimitiveFloats<T: PrimitiveFloat>(RandomPrimitiveFloats<T>)
+where
+    T::UnsignedOfEqualWidth: Rand;
+
+impl<T: PrimitiveFloat> Iterator for RandomFinitePrimitiveFloats<T>
+where
+    T::UnsignedOfEqualWidth: Rand,
+{
+    type Item = T;
+
+    fn next(&mut self) -> Option<T> {
+        loop {
+            let opt_f = self.0.next();
+            if opt_f.unwrap().is_finite() {
+                return opt_f;
+            }
+        }
+    }
+}
+
+pub fn random_finite_primitive_floats<T: PrimitiveFloat>(
+    seed: &[u32],
+) -> RandomFinitePrimitiveFloats<T>
+where
+    T::UnsignedOfEqualWidth: Rand,
+{
+    RandomFinitePrimitiveFloats(random_primitive_floats(seed))
 }
 
 pub struct RandomPrimitiveFloats<T: PrimitiveFloat>(Random<T::UnsignedOfEqualWidth>)
@@ -211,12 +257,14 @@ macro_rules! special_random_float_gen {
         $f: ident,
         $special_random_positive_mantissas_s: ident,
         $special_random_positive_mantissas_f: ident,
-        $special_random_positive_ordinary_s: ident,
-        $special_random_positive_ordinary_f: ident,
-        $special_random_negative_ordinary_s: ident,
-        $special_random_negative_ordinary_f: ident,
-        $special_random_nonzero_ordinary_s: ident,
-        $special_random_nonzero_ordinary_f: ident,
+        $special_random_positive_finite_s: ident,
+        $special_random_positive_finite_f: ident,
+        $special_random_negative_finite_s: ident,
+        $special_random_negative_finite_f: ident,
+        $special_random_nonzero_finite_s: ident,
+        $special_random_nonzero_finite_f: ident,
+        $special_random_finite_s: ident,
+        $special_random_finite_f: ident,
         $special_random_s: ident,
         $special_random_f: ident
     ) => {
@@ -255,12 +303,12 @@ macro_rules! special_random_float_gen {
             }
         }
 
-        pub struct $special_random_positive_ordinary_s {
+        pub struct $special_random_positive_finite_s {
             mantissa_gen: $special_random_positive_mantissas_s,
             exponent_gen: I32sGeometric,
         }
 
-        impl Iterator for $special_random_positive_ordinary_s {
+        impl Iterator for $special_random_positive_finite_s {
             type Item = $f;
 
             fn next(&mut self) -> Option<$f> {
@@ -284,19 +332,19 @@ macro_rules! special_random_float_gen {
             }
         }
 
-        pub fn $special_random_positive_ordinary_f(
+        pub fn $special_random_positive_finite_f(
             seed: &[u32],
             scale: u32,
-        ) -> $special_random_positive_ordinary_s {
-            $special_random_positive_ordinary_s {
+        ) -> $special_random_positive_finite_s {
+            $special_random_positive_finite_s {
                 mantissa_gen: $special_random_positive_mantissas_f(&scramble(seed, "mantissa")),
                 exponent_gen: i32s_geometric(&scramble(seed, "exponent"), scale),
             }
         }
 
-        pub struct $special_random_negative_ordinary_s($special_random_positive_ordinary_s);
+        pub struct $special_random_negative_finite_s($special_random_positive_finite_s);
 
-        impl Iterator for $special_random_negative_ordinary_s {
+        impl Iterator for $special_random_negative_finite_s {
             type Item = $f;
 
             fn next(&mut self) -> Option<$f> {
@@ -304,19 +352,19 @@ macro_rules! special_random_float_gen {
             }
         }
 
-        pub fn $special_random_negative_ordinary_f(
+        pub fn $special_random_negative_finite_f(
             seed: &[u32],
             scale: u32,
-        ) -> $special_random_negative_ordinary_s {
-            $special_random_negative_ordinary_s($special_random_positive_ordinary_f(seed, scale))
+        ) -> $special_random_negative_finite_s {
+            $special_random_negative_finite_s($special_random_positive_finite_f(seed, scale))
         }
 
-        pub struct $special_random_nonzero_ordinary_s {
+        pub struct $special_random_nonzero_finite_s {
             sign_gen: Random<bool>,
-            abs_gen: $special_random_positive_ordinary_s,
+            abs_gen: $special_random_positive_finite_s,
         }
 
-        impl Iterator for $special_random_nonzero_ordinary_s {
+        impl Iterator for $special_random_nonzero_finite_s {
             type Item = $f;
 
             fn next(&mut self) -> Option<$f> {
@@ -329,13 +377,44 @@ macro_rules! special_random_float_gen {
             }
         }
 
-        pub fn $special_random_nonzero_ordinary_f(
+        pub fn $special_random_nonzero_finite_f(
             seed: &[u32],
             scale: u32,
-        ) -> $special_random_nonzero_ordinary_s {
-            $special_random_nonzero_ordinary_s {
+        ) -> $special_random_nonzero_finite_s {
+            $special_random_nonzero_finite_s {
                 sign_gen: random(&scramble(seed, "sign")),
-                abs_gen: $special_random_positive_ordinary_f(&scramble(seed, "abs"), scale),
+                abs_gen: $special_random_positive_finite_f(&scramble(seed, "abs"), scale),
+            }
+        }
+
+        pub struct $special_random_finite_s {
+            scale: u32,
+            switch_gen: Box<IsaacRng>,
+            special_gen: RandomFromVector<$f>,
+            finite_gen: $special_random_nonzero_finite_s,
+        }
+
+        impl Iterator for $special_random_finite_s {
+            type Item = $f;
+
+            fn next(&mut self) -> Option<$f> {
+                if self.switch_gen.gen_weighted_bool(self.scale) {
+                    self.special_gen.next()
+                } else {
+                    self.finite_gen.next()
+                }
+            }
+        }
+
+        pub fn $special_random_finite_f(seed: &[u32], scale: u32) -> $special_random_finite_s {
+            $special_random_finite_s {
+                scale: scale + 2,
+                switch_gen: Box::new(IsaacRng::from_seed(&scramble(seed, "switch"))),
+                special_gen: random_from_vector(
+                    &scramble(seed, "special"),
+                    vec![$f::ZERO, $f::NEGATIVE_ZERO],
+                ),
+                finite_gen: $special_random_nonzero_finite_f(&scramble(seed, "finite"), scale),
             }
         }
 
@@ -343,7 +422,7 @@ macro_rules! special_random_float_gen {
             scale: u32,
             switch_gen: Box<IsaacRng>,
             special_gen: RandomFromVector<$f>,
-            ordinary_gen: $special_random_nonzero_ordinary_s,
+            finite_gen: $special_random_nonzero_finite_s,
         }
 
         impl Iterator for $special_random_s {
@@ -353,7 +432,7 @@ macro_rules! special_random_float_gen {
                 if self.switch_gen.gen_weighted_bool(self.scale) {
                     self.special_gen.next()
                 } else {
-                    self.ordinary_gen.next()
+                    self.finite_gen.next()
                 }
             }
         }
@@ -372,10 +451,7 @@ macro_rules! special_random_float_gen {
                         $f::NEGATIVE_ZERO,
                     ],
                 ),
-                ordinary_gen: $special_random_nonzero_ordinary_f(
-                    &scramble(seed, "ordinary"),
-                    scale,
-                ),
+                finite_gen: $special_random_nonzero_finite_f(&scramble(seed, "finite"), scale),
             }
         }
     };
@@ -385,12 +461,14 @@ special_random_float_gen!(
     f32,
     SpecialRandomPositiveMantissasF32,
     special_random_positive_mantissas_f32,
-    SpecialRandomPositiveOrdinaryF32s,
-    special_random_positive_ordinary_f32s,
-    SpecialRandomNegativeOrdinaryF32s,
-    special_random_negative_ordinary_f32s,
-    SpecialRandomNonzeroOrdinaryF32s,
-    special_random_nonzero_ordinary_f32s,
+    SpecialRandomPositiveFiniteF32s,
+    special_random_positive_finite_f32s,
+    SpecialRandomNegativeFiniteF32s,
+    special_random_negative_finite_f32s,
+    SpecialRandomNonzeroFiniteF32s,
+    special_random_nonzero_finite_f32s,
+    SpecialRandomFiniteF32s,
+    special_random_finite_f32s,
     SpecialRandomF32s,
     special_random_f32s
 );
@@ -399,12 +477,14 @@ special_random_float_gen!(
     f64,
     SpecialRandomPositiveMantissasF64,
     special_random_positive_mantissas_f64,
-    SpecialRandomPositiveOrdinaryF64s,
-    special_random_positive_ordinary_f64s,
-    SpecialRandomNegativeOrdinaryF64s,
-    special_random_negative_ordinary_f64s,
-    SpecialRandomNonzeroOrdinaryF64s,
-    special_random_nonzero_ordinary_f64s,
+    SpecialRandomPositiveFiniteF64s,
+    special_random_positive_finite_f64s,
+    SpecialRandomNegativeFiniteF64s,
+    special_random_negative_finite_f64s,
+    SpecialRandomNonzeroFiniteF64s,
+    special_random_nonzero_finite_f64s,
+    SpecialRandomFiniteF64s,
+    special_random_finite_f64s,
     SpecialRandomF64s,
     special_random_f64s
 );

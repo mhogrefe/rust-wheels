@@ -692,7 +692,7 @@ exhaustive_negative_integers list 21
 -20
 ...
 
-exhaustive_negative_ordinary_primitive_floats_f32 list 21
+exhaustive_negative_finite_primitive_floats_f32 list 21
 -1
 -2
 -3
@@ -715,7 +715,7 @@ exhaustive_negative_ordinary_primitive_floats_f32 list 21
 -24
 ...
 
-exhaustive_negative_ordinary_primitive_floats_f64 list 21
+exhaustive_negative_finite_primitive_floats_f64 list 21
 -1
 -2
 -3
@@ -899,7 +899,7 @@ exhaustive_nonzero_integers list 21
 -10
 ...
 
-exhaustive_nonzero_ordinary_primitive_floats_f32 list 21
+exhaustive_nonzero_finite_primitive_floats_f32 list 21
 1
 -1
 2
@@ -922,7 +922,7 @@ exhaustive_nonzero_ordinary_primitive_floats_f32 list 21
 -10
 ...
 
-exhaustive_nonzero_ordinary_primitive_floats_f64 list 21
+exhaustive_nonzero_finite_primitive_floats_f64 list 21
 1
 -1
 2
@@ -1139,7 +1139,7 @@ exhaustive_positive_naturals list 21
 20
 ...
 
-exhaustive_positive_ordinary_primitive_floats_f32 list 21
+exhaustive_positive_finite_primitive_floats_f32 list 21
 1
 2
 3
@@ -1162,7 +1162,7 @@ exhaustive_positive_ordinary_primitive_floats_f32 list 21
 24
 ...
 
-exhaustive_positive_ordinary_primitive_floats_f64 list 21
+exhaustive_positive_finite_primitive_floats_f64 list 21
 1
 2
 3
