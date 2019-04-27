@@ -306,7 +306,7 @@ impl Iterator for RandomRangeInteger {
     type Item = Integer;
 
     fn next(&mut self) -> Option<Integer> {
-        Some(Integer::from(random_natural_below(&mut self.rng, &self.diameter_plus_one)) + &self.a)
+        Some(random_natural_below(&mut self.rng, &self.diameter_plus_one) + &self.a)
     }
 }
 
