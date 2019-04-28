@@ -2,8 +2,11 @@ use iterators::general::{
     random, range_decreasing, range_increasing, Random, RangeDecreasing, RangeIncreasing,
 };
 use itertools::{Interleave, Itertools};
-use malachite_base::misc::{Min, Walkable};
-use malachite_base::num::{PrimitiveInteger, PrimitiveSigned, PrimitiveUnsigned};
+use malachite_base::comparison::Min;
+use malachite_base::crement::Crementable;
+use malachite_base::num::integers::PrimitiveInteger;
+use malachite_base::num::signeds::PrimitiveSigned;
+use malachite_base::num::unsigneds::PrimitiveUnsigned;
 use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
 use rand::distributions::range::SampleRange;
 use rand::distributions::{IndependentSample, Range};
@@ -45,11 +48,11 @@ pub fn range_up_decreasing<T: PrimitiveInteger>(a: T) -> RangeDecreasing<T> {
     range_decreasing(a, T::MAX)
 }
 
-pub fn range_down_increasing<T: Display + Min + Walkable>(b: T) -> RangeIncreasing<T> {
+pub fn range_down_increasing<T: Display + Min + Crementable>(b: T) -> RangeIncreasing<T> {
     range_increasing(T::MIN, b)
 }
 
-pub fn range_down_decreasing<T: Display + Min + Walkable>(b: T) -> RangeDecreasing<T> {
+pub fn range_down_decreasing<T: Display + Min + Crementable>(b: T) -> RangeDecreasing<T> {
     range_decreasing(T::MIN, b)
 }
 

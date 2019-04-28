@@ -7,10 +7,11 @@ use iterators::primitive_ints::{
 };
 use iterators::tuples::{exhaustive_pairs, ExhaustivePairs};
 use itertools::{Interleave, Itertools};
-use malachite_base::misc::CheckedFrom;
-use malachite_base::num::{
-    One, PrimitiveFloat, PrimitiveSigned, PrimitiveUnsigned, SignificantBits, Zero,
-};
+use malachite_base::conversion::CheckedFrom;
+use malachite_base::num::floats::PrimitiveFloat;
+use malachite_base::num::signeds::PrimitiveSigned;
+use malachite_base::num::traits::{One, SignificantBits, Zero};
+use malachite_base::num::unsigneds::PrimitiveUnsigned;
 use malachite_nz::integer::Integer;
 use prim_utils::primitive_float_utils::{
     checked_from_mantissa_and_exponent, from_mantissa_and_exponent,

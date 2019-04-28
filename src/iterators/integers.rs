@@ -9,8 +9,8 @@ use iterators::naturals::{
     SpecialRandomNaturals, SpecialRandomPositiveNaturals,
 };
 use itertools::{Interleave, Itertools};
-use malachite_base::misc::CheckedFrom;
-use malachite_base::num::{NegativeOne, One, SignificantBits, Zero};
+use malachite_base::conversion::CheckedFrom;
+use malachite_base::num::traits::{NegativeOne, One, SignificantBits, Zero};
 use malachite_nz::integer::Integer;
 use malachite_nz::natural::random::random_natural_below::random_natural_below;
 use malachite_nz::natural::random::random_natural_with_bits::random_natural_with_bits;

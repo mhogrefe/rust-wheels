@@ -1,18 +1,18 @@
 use iterators::primitive_ints::{random_range, RandomRange};
-use malachite_base::misc::Walkable;
+use malachite_base::crement::Crementable;
 use rand::{IsaacRng, Rand, Rng, SeedableRng};
 use std::fmt::Display;
 use std::iter::Peekable;
 use std::marker::PhantomData;
 
 #[derive(Clone)]
-pub struct RangeIncreasing<T: Walkable> {
+pub struct RangeIncreasing<T: Crementable> {
     i: T,
     b: T,
     done: bool,
 }
 
-impl<T: Clone + Walkable> Iterator for RangeIncreasing<T> {
+impl<T: Clone + Crementable> Iterator for RangeIncreasing<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
@@ -29,7 +29,7 @@ impl<T: Clone + Walkable> Iterator for RangeIncreasing<T> {
     }
 }
 
-pub fn range_increasing<T: Display + Walkable>(a: T, b: T) -> RangeIncreasing<T> {
+pub fn range_increasing<T: Display + Crementable>(a: T, b: T) -> RangeIncreasing<T> {
     if a > b {
         panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
     }
@@ -41,13 +41,13 @@ pub fn range_increasing<T: Display + Walkable>(a: T, b: T) -> RangeIncreasing<T>
 }
 
 #[derive(Clone)]
-pub struct RangeDecreasing<T: Walkable> {
+pub struct RangeDecreasing<T: Crementable> {
     a: T,
     i: T,
     done: bool,
 }
 
-impl<T: Clone + Walkable> Iterator for RangeDecreasing<T> {
+impl<T: Clone + Crementable> Iterator for RangeDecreasing<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
@@ -64,7 +64,7 @@ impl<T: Clone + Walkable> Iterator for RangeDecreasing<T> {
     }
 }
 
-pub fn range_decreasing<T: Display + Walkable>(a: T, b: T) -> RangeDecreasing<T> {
+pub fn range_decreasing<T: Display + Crementable>(a: T, b: T) -> RangeDecreasing<T> {
     if a > b {
         panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
     }

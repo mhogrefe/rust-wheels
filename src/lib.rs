@@ -33,6 +33,4 @@ pub mod iterators {
 }
 pub mod prim_utils {
     pub mod primitive_float_utils;
-    pub mod primitive_int_utils;
-    pub mod string_utils;
 }

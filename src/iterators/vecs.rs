@@ -6,7 +6,9 @@ use iterators::integers_geometric::{
 };
 use iterators::primitive_ints::exhaustive_positive;
 use iterators::tuples::{exhaustive_pairs, ZOrderTupleIndices};
-use malachite_base::num::{Parity, PrimitiveInteger, PrimitiveUnsigned};
+use malachite_base::num::integers::PrimitiveInteger;
+use malachite_base::num::traits::Parity;
+use malachite_base::num::unsigneds::PrimitiveUnsigned;
 use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
 use malachite_nz::natural::random::special_random_natural_with_bits::*;
 use rand::{IsaacRng, Rng, SeedableRng};

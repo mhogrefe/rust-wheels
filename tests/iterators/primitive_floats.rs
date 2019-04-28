@@ -1,6 +1,7 @@
 use common::{get_expected_test_outputs, TestOutput};
-use malachite_base::misc::CheckedFrom;
-use malachite_base::num::{PrimitiveFloat, PrimitiveUnsigned};
+use malachite_base::conversion::CheckedFrom;
+use malachite_base::num::floats::PrimitiveFloat;
+use malachite_base::num::unsigneds::PrimitiveUnsigned;
 use malachite_nz::integer::Integer;
 use rust_wheels::iterators::primitive_floats::*;
 

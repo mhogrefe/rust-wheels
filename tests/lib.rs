@@ -4,7 +4,6 @@ extern crate rand;
 extern crate rust_wheels;
 
 pub mod common;
-
 pub mod iterators {
     pub mod bools;
     pub mod chars;
@@ -16,8 +15,4 @@ pub mod iterators {
     pub mod primitive_floats;
     pub mod primitive_ints;
     pub mod rounding_modes;
-}
-
-pub mod prim_utils {
-    pub mod primitive_int_utils;
 }
