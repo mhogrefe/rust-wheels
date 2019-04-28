@@ -1,6 +1,6 @@
-use iterators::general::{
-    random, range_decreasing, range_increasing, Random, RangeDecreasing, RangeIncreasing,
-};
+use std::fmt::Display;
+use std::iter::{once, Chain, Once};
+
 use itertools::{Interleave, Itertools};
 use malachite_base::comparison::Min;
 use malachite_base::crement::Crementable;
@@ -11,8 +11,10 @@ use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
 use rand::distributions::range::SampleRange;
 use rand::distributions::{IndependentSample, Range};
 use rand::{IsaacRng, Rand, SeedableRng};
-use std::fmt::Display;
-use std::iter::{once, Chain, Once};
+
+use iterators::general::{
+    random, range_decreasing, range_increasing, Random, RangeDecreasing, RangeIncreasing,
+};
 
 pub fn exhaustive_positive<T: PrimitiveInteger>() -> RangeIncreasing<T> {
     range_increasing(T::ONE, T::MAX)

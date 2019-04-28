@@ -1,6 +1,5 @@
-use rust_wheels::iterators::bools::*;
-
 use common::get_expected_test_outputs;
+use rust_wheels::iterators::bools::*;
 use rust_wheels::iterators::common::EXAMPLE_SEED;
 use rust_wheels::iterators::general::random;
 

@@ -1,11 +1,12 @@
 extern crate rust_wheels;
 
-use rust_wheels::iterators::adaptors::*;
 use std::collections::HashMap;
 use std::fmt::{Binary, Debug, Display};
 use std::fs::File;
 use std::hash::Hash;
 use std::io::prelude::*;
+
+use rust_wheels::iterators::adaptors::*;
 
 const TINY_LIMIT: usize = 20;
 const HUGE_LIMIT: usize = 1_000_000;

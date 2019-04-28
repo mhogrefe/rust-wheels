@@ -1,8 +1,9 @@
+use std::collections::HashMap;
+use std::hash::Hash;
+
 use iterators::adaptors::Concat;
 use iterators::general::CachedIterator;
 use iterators::tuples::{LogPairIndices, SqrtPairIndices, ZOrderTupleIndices};
-use std::collections::HashMap;
-use std::hash::Hash;
 
 pub fn dependent_pairs<'a, I: Iterator + 'a, J: Iterator, F: 'a>(
     xs: I,

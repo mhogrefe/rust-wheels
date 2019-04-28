@@ -1,6 +1,7 @@
-use iterators::general::{random_from_vector, RandomFromVector};
 use std;
 use std::cmp::Ordering;
+
+use iterators::general::{random_from_vector, RandomFromVector};
 
 pub fn orderings_increasing() -> std::vec::IntoIter<Ordering> {
     vec![Ordering::Less, Ordering::Equal, Ordering::Greater].into_iter()

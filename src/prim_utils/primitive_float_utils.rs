@@ -1,11 +1,12 @@
+use std::cmp::Ordering;
+use std::ops::{Add, Neg, Shl, Shr, Sub};
+
 use malachite_base::conversion::{CheckedFrom, CheckedInto};
 use malachite_base::num::floats::PrimitiveFloat;
 use malachite_base::num::traits::{One, Parity, Sign, SignificantBits, Zero};
 use malachite_base::num::unsigneds::PrimitiveUnsigned;
 use malachite_nz::integer::Integer;
 use malachite_nz::platform::Limb;
-use std::cmp::Ordering;
-use std::ops::{Add, Neg, Shl, Shr, Sub};
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct BinaryFraction {

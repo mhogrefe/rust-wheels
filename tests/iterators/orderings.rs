@@ -1,7 +1,6 @@
-use rust_wheels::iterators::orderings::*;
-
 use common::get_expected_test_outputs;
 use rust_wheels::iterators::common::EXAMPLE_SEED;
+use rust_wheels::iterators::orderings::*;
 
 #[test]
 fn test_orderings_increasing() {

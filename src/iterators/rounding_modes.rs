@@ -1,6 +1,8 @@
-use iterators::general::{random_from_vector, RandomFromVector};
-use malachite_base::round::RoundingMode;
 use std;
+
+use malachite_base::round::RoundingMode;
+
+use iterators::general::{random_from_vector, RandomFromVector};
 
 pub fn exhaustive_rounding_modes() -> std::vec::IntoIter<RoundingMode> {
     vec![

@@ -1,3 +1,15 @@
+use std::cmp::min;
+use std::iter::{once, Chain, Once};
+
+use itertools::{Interleave, Itertools};
+use malachite_base::conversion::CheckedFrom;
+use malachite_base::num::floats::PrimitiveFloat;
+use malachite_base::num::signeds::PrimitiveSigned;
+use malachite_base::num::traits::{One, SignificantBits, Zero};
+use malachite_base::num::unsigneds::PrimitiveUnsigned;
+use malachite_nz::integer::Integer;
+use rand::{IsaacRng, Rand, Rng, SeedableRng};
+
 use iterators::common::scramble;
 use iterators::general::{random, random_from_vector, Random, RandomFromVector, RangeIncreasing};
 use iterators::integers_geometric::{i32s_geometric, I32sGeometric};
@@ -6,19 +18,9 @@ use iterators::primitive_ints::{
     RandomRange,
 };
 use iterators::tuples::{exhaustive_pairs, ExhaustivePairs};
-use itertools::{Interleave, Itertools};
-use malachite_base::conversion::CheckedFrom;
-use malachite_base::num::floats::PrimitiveFloat;
-use malachite_base::num::signeds::PrimitiveSigned;
-use malachite_base::num::traits::{One, SignificantBits, Zero};
-use malachite_base::num::unsigneds::PrimitiveUnsigned;
-use malachite_nz::integer::Integer;
 use prim_utils::primitive_float_utils::{
     checked_from_mantissa_and_exponent, from_mantissa_and_exponent,
 };
-use rand::{IsaacRng, Rand, Rng, SeedableRng};
-use std::cmp::min;
-use std::iter::{once, Chain, Once};
 
 struct ExhaustivePositiveMantissas<T: PrimitiveFloat>(
     RangeIncreasing<<T::SignedOfEqualWidth as PrimitiveSigned>::UnsignedOfEqualWidth>,

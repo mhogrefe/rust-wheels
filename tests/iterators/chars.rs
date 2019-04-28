@@ -1,9 +1,9 @@
-use rust_wheels::iterators::chars::*;
+use std::char;
 
 use common::get_expected_test_outputs;
+use rust_wheels::iterators::chars::*;
 use rust_wheels::iterators::common::EXAMPLE_SEED;
 use rust_wheels::iterators::general::{random, range_decreasing, range_increasing};
-use std::char;
 
 #[test]
 fn test_chars_increasing() {

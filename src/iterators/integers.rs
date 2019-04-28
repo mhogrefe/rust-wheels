@@ -1,3 +1,16 @@
+use std::cmp::Ordering;
+use std::iter::{once, Chain, Once};
+
+use itertools::{Interleave, Itertools};
+use malachite_base::conversion::CheckedFrom;
+use malachite_base::num::traits::{NegativeOne, One, SignificantBits, Zero};
+use malachite_nz::integer::Integer;
+use malachite_nz::natural::random::random_natural_below::random_natural_below;
+use malachite_nz::natural::random::random_natural_with_bits::random_natural_with_bits;
+use malachite_nz::natural::Natural;
+use malachite_nz::platform::Limb;
+use rand::{IsaacRng, Rng, SeedableRng};
+
 use iterators::common::scramble;
 use iterators::general::{
     random, range_decreasing, range_increasing, Random, RangeDecreasing, RangeIncreasing,
@@ -8,17 +21,6 @@ use iterators::naturals::{
     special_random_positive_naturals, RandomNaturals, RandomPositiveNaturals,
     SpecialRandomNaturals, SpecialRandomPositiveNaturals,
 };
-use itertools::{Interleave, Itertools};
-use malachite_base::conversion::CheckedFrom;
-use malachite_base::num::traits::{NegativeOne, One, SignificantBits, Zero};
-use malachite_nz::integer::Integer;
-use malachite_nz::natural::random::random_natural_below::random_natural_below;
-use malachite_nz::natural::random::random_natural_with_bits::random_natural_with_bits;
-use malachite_nz::natural::Natural;
-use malachite_nz::platform::Limb;
-use rand::{IsaacRng, Rng, SeedableRng};
-use std::cmp::Ordering;
-use std::iter::{once, Chain, Once};
 
 #[derive(Clone)]
 pub struct RangeIncreasingUnboundedInteger(Integer);

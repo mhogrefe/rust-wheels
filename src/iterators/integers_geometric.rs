@@ -1,6 +1,7 @@
+use rand::{IsaacRng, Rng, SeedableRng};
+
 use iterators::common::scramble;
 use iterators::general::{random, Random};
-use rand::{IsaacRng, Rng, SeedableRng};
 
 pub struct PositiveU32sGeometric {
     rng: Box<IsaacRng>,

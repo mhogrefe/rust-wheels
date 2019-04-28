@@ -1,8 +1,7 @@
-use rust_wheels::iterators::general::*;
-
 use common::get_expected_test_outputs;
 use rust_wheels::io::readers::parse_vec;
 use rust_wheels::iterators::common::EXAMPLE_SEED;
+use rust_wheels::iterators::general::*;
 
 #[test]
 fn test_random_from_vector() {

@@ -1,3 +1,13 @@
+use std::iter::repeat;
+use std::marker::PhantomData;
+
+use malachite_base::num::integers::PrimitiveInteger;
+use malachite_base::num::traits::Parity;
+use malachite_base::num::unsigneds::PrimitiveUnsigned;
+use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
+use malachite_nz::natural::random::special_random_natural_with_bits::*;
+use rand::{IsaacRng, Rng, SeedableRng};
+
 use iterators::common::scramble;
 use iterators::dependent_pairs::exhaustive_dependent_pairs_infinite_log;
 use iterators::general::CachedIterator;
@@ -6,14 +16,6 @@ use iterators::integers_geometric::{
 };
 use iterators::primitive_ints::exhaustive_positive;
 use iterators::tuples::{exhaustive_pairs, ZOrderTupleIndices};
-use malachite_base::num::integers::PrimitiveInteger;
-use malachite_base::num::traits::Parity;
-use malachite_base::num::unsigneds::PrimitiveUnsigned;
-use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
-use malachite_nz::natural::random::special_random_natural_with_bits::*;
-use rand::{IsaacRng, Rng, SeedableRng};
-use std::iter::repeat;
-use std::marker::PhantomData;
 
 pub enum ExhaustiveFixedSizeVecsFromSingle<I: Iterator>
 where

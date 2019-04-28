@@ -1,10 +1,11 @@
-use rust_wheels::iterators::integers::*;
+use std::str::FromStr;
+
+use malachite_nz::integer::Integer;
 
 use common::get_expected_test_outputs;
-use malachite_nz::integer::Integer;
 use rust_wheels::iterators::common::EXAMPLE_SEED;
 use rust_wheels::iterators::general::{range_decreasing, range_increasing};
-use std::str::FromStr;
+use rust_wheels::iterators::integers::*;
 
 #[test]
 fn test_range_up_increasing_integer() {

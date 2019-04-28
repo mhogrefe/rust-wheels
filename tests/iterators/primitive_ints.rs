@@ -1,9 +1,10 @@
-use common::{get_expected_test_outputs, TestOutput};
 use malachite_base::num::integers::PrimitiveInteger;
 use malachite_base::num::signeds::PrimitiveSigned;
 use malachite_base::num::unsigneds::PrimitiveUnsigned;
 use rand::distributions::range::SampleRange;
 use rand::Rand;
+
+use common::{get_expected_test_outputs, TestOutput};
 use rust_wheels::iterators::common::EXAMPLE_SEED;
 use rust_wheels::iterators::general::{random, range_decreasing, range_increasing};
 use rust_wheels::iterators::primitive_ints::*;

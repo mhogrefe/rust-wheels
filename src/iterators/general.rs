@@ -1,9 +1,11 @@
-use iterators::primitive_ints::{random_range, RandomRange};
-use malachite_base::crement::Crementable;
-use rand::{IsaacRng, Rand, Rng, SeedableRng};
 use std::fmt::Display;
 use std::iter::Peekable;
 use std::marker::PhantomData;
+
+use malachite_base::crement::Crementable;
+use rand::{IsaacRng, Rand, Rng, SeedableRng};
+
+use iterators::primitive_ints::{random_range, RandomRange};
 
 #[derive(Clone)]
 pub struct RangeIncreasing<T: Crementable> {

@@ -1,7 +1,6 @@
-use rust_wheels::iterators::integers_geometric::*;
-
 use common::get_expected_test_outputs;
 use rust_wheels::iterators::common::EXAMPLE_SEED;
+use rust_wheels::iterators::integers_geometric::*;
 
 #[test]
 fn test_positive_u32s_geometric() {
