@@ -1,3 +1,4 @@
+use malachite_base::conversion::WrappingFrom;
 use malachite_base::num::integers::PrimitiveInteger;
 use malachite_base::num::signeds::PrimitiveSigned;
 use malachite_base::num::unsigneds::PrimitiveUnsigned;
@@ -179,6 +180,7 @@ fn test_positive_unsigned() {
 fn positive_signed_helper<T: PrimitiveSigned + Rand>(eo: &TestOutput)
 where
     <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+    T: WrappingFrom<<T as PrimitiveSigned>::UnsignedOfEqualWidth>,
 {
     eo.match_vec(
         &format!("exhaustive_positive_{}s", T::NAME),
@@ -206,6 +208,7 @@ fn test_positive_signed() {
 fn negative_signed_helper<T: PrimitiveSigned + Rand>(eo: &TestOutput)
 where
     <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+    T: WrappingFrom<<T as PrimitiveSigned>::UnsignedOfEqualWidth>,
 {
     eo.match_vec(
         &format!("exhaustive_negative_{}s", T::NAME),
@@ -233,6 +236,7 @@ fn test_negative_signed() {
 fn natural_signed_helper<T: PrimitiveSigned + Rand>(eo: &TestOutput)
 where
     <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+    T: WrappingFrom<<T as PrimitiveSigned>::UnsignedOfEqualWidth>,
 {
     eo.match_vec(
         &format!("exhaustive_natural_{}s", T::NAME),
@@ -260,6 +264,7 @@ fn test_natural_signed() {
 fn nonzero_signed_helper<T: PrimitiveSigned + Rand>(eo: &TestOutput)
 where
     <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+    T: WrappingFrom<<T as PrimitiveSigned>::UnsignedOfEqualWidth>,
 {
     eo.match_vec(
         &format!("exhaustive_nonzero_{}s", T::NAME),
@@ -311,6 +316,7 @@ fn test_all_unsigned() {
 fn all_signed_helper<T: PrimitiveSigned + Rand>(eo: &TestOutput)
 where
     <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+    T: WrappingFrom<<T as PrimitiveSigned>::UnsignedOfEqualWidth>,
 {
     eo.match_vec(
         &format!("exhaustive_{}s", T::NAME),

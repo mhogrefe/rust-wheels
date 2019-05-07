@@ -3,6 +3,7 @@ use std::iter::{once, Chain, Once};
 
 use itertools::{Interleave, Itertools};
 use malachite_base::comparison::Min;
+use malachite_base::conversion::WrappingFrom;
 use malachite_base::crement::Crementable;
 use malachite_base::num::integers::PrimitiveInteger;
 use malachite_base::num::signeds::PrimitiveSigned;
@@ -288,11 +289,12 @@ where
 impl<T: PrimitiveSigned> Iterator for SpecialRandomNaturalSigned<T>
 where
     <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+    T: WrappingFrom<<T as PrimitiveSigned>::UnsignedOfEqualWidth>,
 {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        self.0.next().map(|x| T::from_unsigned_bitwise(x) & T::MAX)
+        self.0.next().map(|x| T::wrapping_from(x) & T::MAX)
     }
 }
 
@@ -314,11 +316,12 @@ where
 impl<T: PrimitiveSigned> Iterator for SpecialRandomPositiveSigned<T>
 where
     <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+    T: WrappingFrom<<T as PrimitiveSigned>::UnsignedOfEqualWidth>,
 {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        self.0.next().map(|x| T::from_unsigned_bitwise(x) & T::MAX)
+        self.0.next().map(|x| T::wrapping_from(x) & T::MAX)
     }
 }
 
@@ -340,11 +343,12 @@ where
 impl<T: PrimitiveSigned> Iterator for SpecialRandomNegativeSigned<T>
 where
     <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+    T: WrappingFrom<<T as PrimitiveSigned>::UnsignedOfEqualWidth>,
 {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        self.0.next().map(|x| T::from_unsigned_bitwise(x) | T::MIN)
+        self.0.next().map(|x| T::wrapping_from(x) | T::MIN)
     }
 }
 
@@ -364,11 +368,12 @@ where
 impl<T: PrimitiveSigned> Iterator for SpecialRandomSigned<T>
 where
     <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+    T: WrappingFrom<<T as PrimitiveSigned>::UnsignedOfEqualWidth>,
 {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        self.0.next().map(T::from_unsigned_bitwise)
+        self.0.next().map(T::wrapping_from)
     }
 }
 
@@ -386,6 +391,7 @@ where
 impl<T: PrimitiveSigned> Iterator for SpecialRandomNonzeroSigned<T>
 where
     <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
+    T: WrappingFrom<<T as PrimitiveSigned>::UnsignedOfEqualWidth>,
 {
     type Item = T;
 

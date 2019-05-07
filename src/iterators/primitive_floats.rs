@@ -2,12 +2,9 @@ use std::cmp::min;
 use std::iter::{once, Chain, Once};
 
 use itertools::{Interleave, Itertools};
-use malachite_base::conversion::CheckedFrom;
+use malachite_base::conversion::{CheckedFrom, WrappingFrom};
 use malachite_base::num::floats::PrimitiveFloat;
-use malachite_base::num::signeds::PrimitiveSigned;
-use malachite_base::num::traits::{One, SignificantBits, Zero};
-use malachite_base::num::unsigneds::PrimitiveUnsigned;
-use malachite_nz::integer::Integer;
+use malachite_base::num::traits::{SignificantBits, Zero};
 use rand::{IsaacRng, Rand, Rng, SeedableRng};
 
 use iterators::common::scramble;
@@ -22,187 +19,179 @@ use prim_utils::primitive_float_utils::{
     checked_from_mantissa_and_exponent, from_mantissa_and_exponent,
 };
 
-struct ExhaustivePositiveMantissas<T: PrimitiveFloat>(
-    RangeIncreasing<<T::SignedOfEqualWidth as PrimitiveSigned>::UnsignedOfEqualWidth>,
-);
+macro_rules! exhaustive_float_gen {
+    (
+        $f: ident,
+        $u: ident,
+        $s: ident,
+        $exhaustive_positive_mantissas_s: ident,
+        $exhaustive_positive_mantissas_f: ident,
+        $exhaustive_positive_finite_primitive_floats_s: ident,
+        $exhaustive_positive_finite_primitive_floats_f: ident,
+        $exhaustive_negative_finite_primitive_floats_s: ident,
+        $exhaustive_negative_finite_primitive_floats_f: ident,
+        $exhaustive_nonzero_finite_primitive_floats_f: ident,
+        $exhaustive_positive_primitive_floats_f: ident,
+        $exhaustive_negative_primitive_floats_f: ident,
+        $exhaustive_nonzero_primitive_floats_f: ident,
+        $exhaustive_finite_primitive_floats_f: ident,
+        $exhaustive_primitive_floats_f: ident,
+    ) => {
+        struct $exhaustive_positive_mantissas_s(RangeIncreasing<$u>);
 
-impl<T: PrimitiveFloat> ExhaustivePositiveMantissas<T> {
-    const ONE: <T::SignedOfEqualWidth as PrimitiveSigned>::UnsignedOfEqualWidth =
-        <<T::SignedOfEqualWidth as PrimitiveSigned>::UnsignedOfEqualWidth as One>::ONE;
-}
+        impl Iterator for $exhaustive_positive_mantissas_s {
+            type Item = $u;
 
-impl<T: PrimitiveFloat> Iterator for ExhaustivePositiveMantissas<T> {
-    type Item = <T::SignedOfEqualWidth as PrimitiveSigned>::UnsignedOfEqualWidth;
-
-    fn next(&mut self) -> Option<<T::SignedOfEqualWidth as PrimitiveSigned>::UnsignedOfEqualWidth> {
-        self.0
-            .next()
-            .map(|m| (m << 1) + ExhaustivePositiveMantissas::<T>::ONE)
-    }
-}
-
-fn exhaustive_positive_mantissas<T: PrimitiveFloat>() -> ExhaustivePositiveMantissas<T> {
-    ExhaustivePositiveMantissas(range_down_increasing(
-        (ExhaustivePositiveMantissas::<T>::ONE << T::MANTISSA_WIDTH.into())
-            - ExhaustivePositiveMantissas::<T>::ONE,
-    ))
-}
-
-pub struct ExhaustivePositiveFinitePrimitiveFloats<T: PrimitiveFloat>(
-    ExhaustivePairs<ExhaustivePositiveMantissas<T>, ExhaustiveRangeSigned<i32>>,
-);
-
-impl<T: PrimitiveFloat> Iterator for ExhaustivePositiveFinitePrimitiveFloats<T>
-where
-    Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
-    Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
-{
-    type Item = T;
-
-    fn next(&mut self) -> Option<T> {
-        while let Some((m, e)) = self.0.next() {
-            let f = checked_from_mantissa_and_exponent(
-                T::SignedOfEqualWidth::from_unsigned_bitwise(m),
-                e,
-            );
-            if f.is_some() {
-                return f;
+            fn next(&mut self) -> Option<$u> {
+                self.0.next().map(|m| (m << 1) + 1)
             }
         }
-        None
-    }
+
+        fn $exhaustive_positive_mantissas_f() -> $exhaustive_positive_mantissas_s {
+            $exhaustive_positive_mantissas_s(range_down_increasing((1 << $f::MANTISSA_WIDTH) - 1))
+        }
+
+        pub struct $exhaustive_positive_finite_primitive_floats_s(
+            ExhaustivePairs<$exhaustive_positive_mantissas_s, ExhaustiveRangeSigned<i32>>,
+        );
+
+        impl Iterator for $exhaustive_positive_finite_primitive_floats_s {
+            type Item = $f;
+
+            fn next(&mut self) -> Option<$f> {
+                while let Some((m, e)) = self.0.next() {
+                    let f = checked_from_mantissa_and_exponent($s::wrapping_from(m), e);
+                    if f.is_some() {
+                        return f;
+                    }
+                }
+                None
+            }
+        }
+
+        pub fn $exhaustive_positive_finite_primitive_floats_f(
+        ) -> $exhaustive_positive_finite_primitive_floats_s {
+            $exhaustive_positive_finite_primitive_floats_s(exhaustive_pairs(
+                $exhaustive_positive_mantissas_f(),
+                exhaustive_range_signed($f::MIN_EXPONENT, $f::MAX_EXPONENT as i32),
+            ))
+        }
+
+        pub struct $exhaustive_negative_finite_primitive_floats_s(
+            $exhaustive_positive_finite_primitive_floats_s,
+        );
+
+        impl Iterator for $exhaustive_negative_finite_primitive_floats_s {
+            type Item = $f;
+
+            fn next(&mut self) -> Option<$f> {
+                self.0.next().map(|f| -f)
+            }
+        }
+
+        pub fn $exhaustive_negative_finite_primitive_floats_f(
+        ) -> $exhaustive_negative_finite_primitive_floats_s {
+            $exhaustive_negative_finite_primitive_floats_s(
+                $exhaustive_positive_finite_primitive_floats_f(),
+            )
+        }
+
+        pub fn $exhaustive_nonzero_finite_primitive_floats_f() -> Interleave<
+            $exhaustive_positive_finite_primitive_floats_s,
+            $exhaustive_negative_finite_primitive_floats_s,
+        > {
+            $exhaustive_positive_finite_primitive_floats_f()
+                .interleave($exhaustive_negative_finite_primitive_floats_f())
+        }
+
+        pub fn $exhaustive_positive_primitive_floats_f(
+        ) -> Chain<Once<$f>, $exhaustive_positive_finite_primitive_floats_s> {
+            once($f::POSITIVE_INFINITY).chain($exhaustive_positive_finite_primitive_floats_f())
+        }
+
+        pub fn $exhaustive_negative_primitive_floats_f(
+        ) -> Chain<Once<$f>, $exhaustive_negative_finite_primitive_floats_s> {
+            once($f::NEGATIVE_INFINITY).chain($exhaustive_negative_finite_primitive_floats_f())
+        }
+
+        pub fn $exhaustive_nonzero_primitive_floats_f() -> Chain<
+            std::vec::IntoIter<$f>,
+            Interleave<
+                $exhaustive_positive_finite_primitive_floats_s,
+                $exhaustive_negative_finite_primitive_floats_s,
+            >,
+        > {
+            vec![$f::NAN, $f::POSITIVE_INFINITY, $f::NEGATIVE_INFINITY]
+                .into_iter()
+                .chain($exhaustive_nonzero_finite_primitive_floats_f())
+        }
+
+        pub fn $exhaustive_finite_primitive_floats_f() -> Chain<
+            std::vec::IntoIter<$f>,
+            Interleave<
+                $exhaustive_positive_finite_primitive_floats_s,
+                $exhaustive_negative_finite_primitive_floats_s,
+            >,
+        > {
+            vec![$f::ZERO, $f::NEGATIVE_ZERO]
+                .into_iter()
+                .chain($exhaustive_nonzero_finite_primitive_floats_f())
+        }
+
+        pub fn $exhaustive_primitive_floats_f() -> Chain<
+            std::vec::IntoIter<$f>,
+            Interleave<
+                $exhaustive_positive_finite_primitive_floats_s,
+                $exhaustive_negative_finite_primitive_floats_s,
+            >,
+        > {
+            vec![
+                $f::NAN,
+                $f::POSITIVE_INFINITY,
+                $f::NEGATIVE_INFINITY,
+                $f::ZERO,
+                $f::NEGATIVE_ZERO,
+            ]
+            .into_iter()
+            .chain($exhaustive_nonzero_finite_primitive_floats_f())
+        }
+    };
 }
 
-pub fn exhaustive_positive_finite_primitive_floats<T: PrimitiveFloat>(
-) -> ExhaustivePositiveFinitePrimitiveFloats<T>
-where
-    Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
-    Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
-{
-    ExhaustivePositiveFinitePrimitiveFloats(exhaustive_pairs(
-        exhaustive_positive_mantissas::<T>(),
-        exhaustive_range_signed(T::MIN_EXPONENT, T::MAX_EXPONENT as i32),
-    ))
-}
-
-pub struct ExhaustiveNegativeFinitePrimitiveFloats<T: PrimitiveFloat>(
-    ExhaustivePositiveFinitePrimitiveFloats<T>,
+exhaustive_float_gen!(
+    f32,
+    u32,
+    i32,
+    ExhaustivePositiveMantissasF32,
+    exhaustive_positive_mantissas_f32,
+    ExhaustivePositiveFiniteF32s,
+    exhaustive_positive_finite_f32s,
+    ExhaustiveNegativeFiniteF32s,
+    exhaustive_negative_finite_f32s,
+    exhaustive_nonzero_finite_f32s,
+    exhaustive_positive_f32s,
+    exhaustive_negative_f32s,
+    exhaustive_nonzero_f32s,
+    exhaustive_finite_f32s,
+    exhaustive_f32s,
 );
-
-impl<T: PrimitiveFloat> Iterator for ExhaustiveNegativeFinitePrimitiveFloats<T>
-where
-    Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
-    Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
-{
-    type Item = T;
-
-    fn next(&mut self) -> Option<T> {
-        self.0.next().map(|f| -f)
-    }
-}
-
-pub fn exhaustive_negative_finite_primitive_floats<T: PrimitiveFloat>(
-) -> ExhaustiveNegativeFinitePrimitiveFloats<T>
-where
-    Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
-    Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
-{
-    ExhaustiveNegativeFinitePrimitiveFloats(exhaustive_positive_finite_primitive_floats())
-}
-
-pub fn exhaustive_nonzero_finite_primitive_floats<T: PrimitiveFloat>() -> Interleave<
-    ExhaustivePositiveFinitePrimitiveFloats<T>,
-    ExhaustiveNegativeFinitePrimitiveFloats<T>,
->
-where
-    Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
-    Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
-{
-    exhaustive_positive_finite_primitive_floats()
-        .interleave(exhaustive_negative_finite_primitive_floats())
-}
-
-pub fn exhaustive_positive_primitive_floats<T: PrimitiveFloat>(
-) -> Chain<Once<T>, ExhaustivePositiveFinitePrimitiveFloats<T>>
-where
-    Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
-    Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
-{
-    once(T::POSITIVE_INFINITY).chain(exhaustive_positive_finite_primitive_floats())
-}
-
-pub fn exhaustive_negative_primitive_floats<T: PrimitiveFloat>(
-) -> Chain<Once<T>, ExhaustiveNegativeFinitePrimitiveFloats<T>>
-where
-    Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
-    Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
-{
-    once(T::NEGATIVE_INFINITY).chain(exhaustive_negative_finite_primitive_floats())
-}
-
-pub fn exhaustive_nonzero_primitive_floats<T: PrimitiveFloat>() -> Chain<
-    std::vec::IntoIter<T>,
-    Interleave<
-        ExhaustivePositiveFinitePrimitiveFloats<T>,
-        ExhaustiveNegativeFinitePrimitiveFloats<T>,
-    >,
->
-where
-    Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
-    Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
-{
-    vec![T::NAN, T::POSITIVE_INFINITY, T::NEGATIVE_INFINITY]
-        .into_iter()
-        .chain(exhaustive_nonzero_finite_primitive_floats())
-}
-
-pub fn exhaustive_finite_primitive_floats<T: PrimitiveFloat>() -> Chain<
-    std::vec::IntoIter<T>,
-    Interleave<
-        ExhaustivePositiveFinitePrimitiveFloats<T>,
-        ExhaustiveNegativeFinitePrimitiveFloats<T>,
-    >,
->
-where
-    Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
-    Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
-{
-    vec![T::ZERO, T::NEGATIVE_ZERO]
-        .into_iter()
-        .chain(exhaustive_nonzero_finite_primitive_floats())
-}
-
-pub fn exhaustive_primitive_floats<T: PrimitiveFloat>() -> Chain<
-    std::vec::IntoIter<T>,
-    Interleave<
-        ExhaustivePositiveFinitePrimitiveFloats<T>,
-        ExhaustiveNegativeFinitePrimitiveFloats<T>,
-    >,
->
-where
-    Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
-    Integer: From<T::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
-{
-    vec![
-        T::NAN,
-        T::POSITIVE_INFINITY,
-        T::NEGATIVE_INFINITY,
-        T::ZERO,
-        T::NEGATIVE_ZERO,
-    ]
-    .into_iter()
-    .chain(exhaustive_nonzero_finite_primitive_floats())
-}
+exhaustive_float_gen!(
+    f64,
+    u64,
+    i64,
+    ExhaustivePositiveMantissasF64,
+    exhaustive_positive_mantissas_f64,
+    ExhaustivePositiveFiniteF64s,
+    exhaustive_positive_finite_f64s,
+    ExhaustiveNegativeFiniteF64s,
+    exhaustive_negative_finite_f64s,
+    exhaustive_nonzero_finite_f64s,
+    exhaustive_positive_f64s,
+    exhaustive_negative_f64s,
+    exhaustive_nonzero_f64s,
+    exhaustive_finite_f64s,
+    exhaustive_f64s,
+);
 
 pub struct RandomFinitePrimitiveFloats<T: PrimitiveFloat>(RandomPrimitiveFloats<T>)
 where
@@ -322,9 +311,7 @@ macro_rules! special_random_float_gen {
                         && exponent <= i32::checked_from($f::MAX_EXPONENT).unwrap()
                     {
                         let f = from_mantissa_and_exponent(
-                            <$f as PrimitiveFloat>::SignedOfEqualWidth::from_unsigned_bitwise(
-                                mantissa,
-                            ),
+                            <$f as PrimitiveFloat>::SignedOfEqualWidth::wrapping_from(mantissa),
                             exponent,
                         );
                         if f.is_some() {
