@@ -16,7 +16,8 @@ use iterators::primitive_ints::{
 };
 use iterators::tuples::{exhaustive_pairs, ExhaustivePairs};
 use prim_utils::primitive_float_utils::{
-    checked_from_mantissa_and_exponent, from_mantissa_and_exponent,
+    f32_checked_from_mantissa_and_exponent, f32_from_mantissa_and_exponent,
+    f64_checked_from_mantissa_and_exponent, f64_from_mantissa_and_exponent,
 };
 
 macro_rules! exhaustive_float_gen {
@@ -24,6 +25,7 @@ macro_rules! exhaustive_float_gen {
         $f: ident,
         $u: ident,
         $s: ident,
+        $checked_from_mantissa_and_exponent: ident,
         $exhaustive_positive_mantissas_s: ident,
         $exhaustive_positive_mantissas_f: ident,
         $exhaustive_positive_finite_primitive_floats_s: ident,
@@ -60,7 +62,7 @@ macro_rules! exhaustive_float_gen {
 
             fn next(&mut self) -> Option<$f> {
                 while let Some((m, e)) = self.0.next() {
-                    let f = checked_from_mantissa_and_exponent($s::wrapping_from(m), e);
+                    let f = $checked_from_mantissa_and_exponent($s::wrapping_from(m), e);
                     if f.is_some() {
                         return f;
                     }
@@ -162,6 +164,7 @@ exhaustive_float_gen!(
     f32,
     u32,
     i32,
+    f32_checked_from_mantissa_and_exponent,
     ExhaustivePositiveMantissasF32,
     exhaustive_positive_mantissas_f32,
     ExhaustivePositiveFiniteF32s,
@@ -179,6 +182,7 @@ exhaustive_float_gen!(
     f64,
     u64,
     i64,
+    f64_checked_from_mantissa_and_exponent,
     ExhaustivePositiveMantissasF64,
     exhaustive_positive_mantissas_f64,
     ExhaustivePositiveFiniteF64s,
@@ -247,6 +251,7 @@ where
 macro_rules! special_random_float_gen {
     (
         $f: ident,
+        $from_mantissa_and_exponent: ident,
         $special_random_positive_mantissas_s: ident,
         $special_random_positive_mantissas_f: ident,
         $special_random_positive_finite_s: ident,
@@ -310,7 +315,7 @@ macro_rules! special_random_float_gen {
                     if exponent >= $f::MIN_EXPONENT
                         && exponent <= i32::checked_from($f::MAX_EXPONENT).unwrap()
                     {
-                        let f = from_mantissa_and_exponent(
+                        let f = $from_mantissa_and_exponent(
                             <$f as PrimitiveFloat>::SignedOfEqualWidth::wrapping_from(mantissa),
                             exponent,
                         );
@@ -449,6 +454,7 @@ macro_rules! special_random_float_gen {
 
 special_random_float_gen!(
     f32,
+    f32_from_mantissa_and_exponent,
     SpecialRandomPositiveMantissasF32,
     special_random_positive_mantissas_f32,
     SpecialRandomPositiveFiniteF32s,
@@ -465,6 +471,7 @@ special_random_float_gen!(
 
 special_random_float_gen!(
     f64,
+    f64_from_mantissa_and_exponent,
     SpecialRandomPositiveMantissasF64,
     special_random_positive_mantissas_f64,
     SpecialRandomPositiveFiniteF64s,

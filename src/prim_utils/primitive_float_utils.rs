@@ -3,8 +3,7 @@ use std::ops::{Add, Neg, Shl, Shr, Sub};
 
 use malachite_base::conversion::{CheckedFrom, CheckedInto};
 use malachite_base::num::floats::PrimitiveFloat;
-use malachite_base::num::traits::{One, Parity, Sign, SignificantBits, Zero};
-use malachite_base::num::unsigneds::PrimitiveUnsigned;
+use malachite_base::num::traits::{NegAssign, One, Parity, Sign, SignificantBits, Zero};
 use malachite_nz::integer::Integer;
 use malachite_nz::platform::Limb;
 
@@ -161,6 +160,87 @@ impl Sub<BinaryFraction> for BinaryFraction {
     }
 }
 
+macro_rules! binary_fraction_funs {
+    (
+        $f: ident,
+        $s: ident,
+        $from_float: ident,
+        $largest_finite_float: ident,
+        $to_float: ident
+    ) => {
+        pub fn $from_float(mut f: $f) -> Option<BinaryFraction>
+        {
+            if f == 0.0 {
+                Some(BinaryFraction::ZERO)
+            } else if f == 1.0 {
+                Some(BinaryFraction::ONE)
+            } else if !f.is_finite() {
+                None
+            } else {
+                let positive = f.is_sign_positive();
+                if !positive {
+                    f.neg_assign();
+                }
+                let (mut mantissa, offset_exponent) = f.to_adjusted_mantissa_and_exponent();
+                let mut exponent = offset_exponent as i32;
+                if exponent == 0 {
+                    exponent = $f::MIN_EXPONENT;
+                } else {
+                    mantissa += 1 << $f::MANTISSA_WIDTH;
+                    exponent += $f::MIN_EXPONENT - 1;
+                }
+                let mantissa = $s::checked_from(mantissa).unwrap();
+                let signed_mantissa = if positive { mantissa } else { -mantissa };
+                Some(BinaryFraction::new(
+                    Integer::from(signed_mantissa),
+                    exponent,
+                ))
+            }
+        }
+
+        pub fn $largest_finite_float() -> BinaryFraction
+        {
+            BinaryFraction::$from_float($f::MAX_FINITE).unwrap()
+        }
+
+        pub fn $to_float(&self) -> Option<$f>
+        {
+            if *self == BinaryFraction::ZERO {
+                return Some(0.0);
+            }
+            if self.mantissa < 0 as Limb {
+                return (-self).$to_float().map(|f| -f);
+            }
+            let fp_exponent = i32::checked_from(u32::checked_from(self.mantissa.significant_bits())
+                .unwrap())
+                .unwrap()
+                + self.exponent
+                - 1;
+            let signed_max_exponent = i32::checked_from($f::MAX_EXPONENT).unwrap();
+            if fp_exponent > signed_max_exponent
+                || fp_exponent == signed_max_exponent
+                    && *self > BinaryFraction::$largest_finite_float()
+            {
+                return None;
+            }
+            let (adjusted_mantissa, adjusted_exponent) = if fp_exponent < $f::MIN_NORMAL_EXPONENT {
+                (self >> $f::MIN_EXPONENT, 0)
+            } else {
+                (
+                    ((self >> fp_exponent) - BinaryFraction::ONE) << $f::MANTISSA_WIDTH as i32,
+                    fp_exponent + $f::MAX_EXPONENT as i32,
+                )
+            };
+            adjusted_mantissa.into_integer().map(|i| {
+                $f::from_adjusted_mantissa_and_exponent(
+                    (&i).checked_into().unwrap(),
+                    adjusted_exponent as u32,
+                )
+            })
+        }
+    }
+}
+
 impl BinaryFraction {
     pub fn new(mantissa: Integer, exponent: i32) -> BinaryFraction {
         if let Some(trailing_zeros) = mantissa.trailing_zeros() {
@@ -186,110 +266,43 @@ impl BinaryFraction {
         }
     }
 
-    pub fn from_float<T: PrimitiveFloat>(mut f: T) -> Option<BinaryFraction>
-    where
-        Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
-    {
-        if f == T::ZERO {
-            Some(BinaryFraction::ZERO)
-        } else if f == T::ONE {
-            Some(BinaryFraction::ONE)
-        } else if !f.is_finite() {
-            None
-        } else {
-            let positive = f.is_sign_positive();
-            if !positive {
-                f.neg_assign();
-            }
-            let (mut mantissa, offset_exponent) = f.to_adjusted_mantissa_and_exponent();
-            let mut exponent = offset_exponent as i32;
-            if exponent == 0 {
-                exponent = T::MIN_EXPONENT;
+    binary_fraction_funs!(f32, i32, from_f32, largest_finite_f32, to_f32);
+    binary_fraction_funs!(f64, i64, from_f64, largest_finite_f64, to_f64);
+}
+
+macro_rules! additional_funs {
+    (
+        $f: ident,
+        $s: ident,
+        $checked_from_mantissa_and_exponent: ident,
+        $from_mantissa_and_exponent: ident,
+        $to_float: ident
+    ) => {
+        pub fn $checked_from_mantissa_and_exponent(mantissa: $s, exponent: i32) -> Option<$f> {
+            if mantissa == 0 && exponent != 0 || mantissa.even() {
+                None
             } else {
-                mantissa += T::UnsignedOfEqualWidth::ONE << T::MANTISSA_WIDTH.into();
-                exponent += T::MIN_EXPONENT - 1;
+                $from_mantissa_and_exponent(mantissa, exponent)
             }
-            let mantissa = mantissa.to_signed_checked().unwrap();
-            let signed_mantissa = if positive { mantissa } else { -mantissa };
-            Some(BinaryFraction::new(
-                Integer::from(signed_mantissa),
-                exponent,
-            ))
         }
-    }
 
-    pub fn largest_finite_float<T: PrimitiveFloat>() -> BinaryFraction
-    where
-        Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
-    {
-        BinaryFraction::from_float(T::MAX_FINITE).unwrap()
-    }
-
-    pub fn to_float<T: PrimitiveFloat>(&self) -> Option<T>
-    where
-        Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
-        T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
-    {
-        if *self == BinaryFraction::ZERO {
-            return Some(T::ZERO);
+        pub fn $from_mantissa_and_exponent(mantissa: $s, exponent: i32) -> Option<$f> {
+            BinaryFraction::new(Integer::from(mantissa), exponent).$to_float()
         }
-        if self.mantissa < 0 as Limb {
-            return (-self).to_float::<T>().map(|f| -f);
-        }
-        let fp_exponent = u32::checked_from(self.mantissa.significant_bits())
-            .unwrap()
-            .to_signed_checked()
-            .unwrap()
-            + self.exponent
-            - 1;
-        let signed_max_exponent = T::MAX_EXPONENT.to_signed_checked().unwrap();
-        if fp_exponent > signed_max_exponent
-            || fp_exponent == signed_max_exponent
-                && *self > BinaryFraction::largest_finite_float::<T>()
-        {
-            return None;
-        }
-        let (adjusted_mantissa, adjusted_exponent) = if fp_exponent < T::MIN_NORMAL_EXPONENT {
-            (self >> T::MIN_EXPONENT, 0)
-        } else {
-            (
-                ((self >> fp_exponent) - BinaryFraction::ONE) << T::MANTISSA_WIDTH as i32,
-                fp_exponent + T::MAX_EXPONENT as i32,
-            )
-        };
-        adjusted_mantissa.into_integer().map(|i| {
-            T::from_adjusted_mantissa_and_exponent(
-                (&i).checked_into().unwrap(),
-                adjusted_exponent as u32,
-            )
-        })
-    }
+    };
 }
 
-pub fn checked_from_mantissa_and_exponent<T: PrimitiveFloat>(
-    mantissa: T::SignedOfEqualWidth,
-    exponent: i32,
-) -> Option<T>
-where
-    Integer: From<T::SignedOfEqualWidth>,
-    Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
-{
-    if mantissa == <T::SignedOfEqualWidth as Zero>::ZERO && exponent != 0 || mantissa.even() {
-        None
-    } else {
-        from_mantissa_and_exponent(mantissa, exponent)
-    }
-}
-
-pub fn from_mantissa_and_exponent<T: PrimitiveFloat>(
-    mantissa: T::SignedOfEqualWidth,
-    exponent: i32,
-) -> Option<T>
-where
-    Integer: From<T::SignedOfEqualWidth>,
-    Integer: From<<T::UnsignedOfEqualWidth as PrimitiveUnsigned>::SignedOfEqualWidth>,
-    T::UnsignedOfEqualWidth: for<'a> CheckedFrom<&'a Integer>,
-{
-    BinaryFraction::new(Integer::from(mantissa), exponent).to_float()
-}
+additional_funs!(
+    f32,
+    i32,
+    f32_checked_from_mantissa_and_exponent,
+    f32_from_mantissa_and_exponent,
+    to_f32
+);
+additional_funs!(
+    f64,
+    i64,
+    f64_checked_from_mantissa_and_exponent,
+    f64_from_mantissa_and_exponent,
+    to_f64
+);
