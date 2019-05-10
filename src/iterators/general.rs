@@ -2,6 +2,7 @@ use std::fmt::Display;
 use std::iter::Peekable;
 use std::marker::PhantomData;
 
+use malachite_base::conversion::{CheckedFrom, WrappingFrom};
 use malachite_base::crement::Crementable;
 use rand::{IsaacRng, Rand, Rng, SeedableRng};
 
@@ -106,7 +107,9 @@ impl<T: Clone> Iterator for RandomFromVector<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        self.range.next().map(|i| self.xs[i as usize].clone())
+        self.range
+            .next()
+            .map(|i| self.xs[usize::checked_from(i).unwrap()].clone())
     }
 }
 
@@ -117,7 +120,7 @@ pub fn random_from_vector<T>(seed: &[u32], xs: Vec<T>) -> RandomFromVector<T> {
     let limit = &xs.len() - 1;
     RandomFromVector {
         xs,
-        range: random_range(seed, 0, limit as u64),
+        range: random_range(seed, 0, u64::wrapping_from(limit)),
     }
 }
 

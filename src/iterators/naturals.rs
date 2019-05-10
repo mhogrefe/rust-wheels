@@ -1,3 +1,4 @@
+use malachite_base::conversion::CheckedFrom;
 use malachite_base::num::traits::{One, SignificantBits, Zero};
 use malachite_nz::natural::random::random_natural_below::random_natural_below;
 use malachite_nz::natural::random::random_natural_with_bits::random_natural_with_bits;
@@ -215,7 +216,11 @@ pub fn random_range_up_natural(seed: &[u32], scale: u32, a: Natural) -> RandomRa
     let offset_limit = (Natural::ONE << a_bit_size) - &a;
     RandomRangeUpNatural {
         rng: Box::new(IsaacRng::from_seed(&scramble(seed, "bits"))),
-        bit_sizes: range_up_geometric_u32(&scramble(seed, "bitsizes"), scale, a_bit_size as u32),
+        bit_sizes: range_up_geometric_u32(
+            &scramble(seed, "bitsizes"),
+            scale,
+            u32::checked_from(a_bit_size).unwrap(),
+        ),
         a,
         a_bit_size,
         offset_limit,
@@ -257,7 +262,11 @@ pub fn special_random_range_up_natural(
     let offset_limit = (Natural::ONE << a_bit_size) - &a;
     SpecialRandomRangeUpNatural {
         rng: Box::new(IsaacRng::from_seed(&scramble(seed, "bits"))),
-        bit_sizes: range_up_geometric_u32(&scramble(seed, "bitsizes"), scale, a_bit_size as u32),
+        bit_sizes: range_up_geometric_u32(
+            &scramble(seed, "bitsizes"),
+            scale,
+            u32::checked_from(a_bit_size).unwrap(),
+        ),
         a,
         a_bit_size,
         offset_limit,

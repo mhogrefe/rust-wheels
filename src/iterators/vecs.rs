@@ -1,6 +1,7 @@
 use std::iter::repeat;
 use std::marker::PhantomData;
 
+use malachite_base::conversion::{CheckedFrom, WrappingFrom};
 use malachite_base::num::integers::PrimitiveInteger;
 use malachite_base::num::traits::Parity;
 use malachite_base::num::unsigneds::PrimitiveUnsigned;
@@ -62,7 +63,7 @@ where
                         return None;
                     }
                     for j in 0..i.size() {
-                        match xs.get(i.0[j] as usize) {
+                        match xs.get(usize::checked_from(i.0[j]).unwrap()) {
                             Some(x) => result.push(x),
                             None => {
                                 if max_indices.as_ref() == Some(i) {
@@ -76,7 +77,7 @@ where
                     }
                     if !*stop_checking_size {
                         if let Some(size) = xs.currently_known_size() {
-                            let size = size as u64;
+                            let size = u64::wrapping_from(size);
                             let mut max_vec = Vec::new();
                             max_vec.resize(i.size(), size - 1);
                             *max_indices = Some(ZOrderTupleIndices(max_vec));
@@ -229,7 +230,7 @@ where
     fn next(&mut self) -> Option<Vec<I::Item>> {
         Some(
             (&mut self.xs)
-                .take(self.lengths.next().unwrap() as usize)
+                .take(usize::checked_from(self.lengths.next().unwrap()).unwrap())
                 .collect(),
         )
     }
@@ -263,7 +264,7 @@ where
     fn next(&mut self) -> Option<Vec<I::Item>> {
         Some(
             (&mut self.xs)
-                .take(self.lengths.next().unwrap() as usize)
+                .take(usize::checked_from(self.lengths.next().unwrap()).unwrap())
                 .collect(),
         )
     }
@@ -279,7 +280,11 @@ where
     I: Iterator,
 {
     RandomVecsMinLength {
-        lengths: range_up_geometric_u32(&scramble(seed, "lengths"), scale, min_length as u32),
+        lengths: range_up_geometric_u32(
+            &scramble(seed, "lengths"),
+            scale,
+            u32::checked_from(min_length).unwrap(),
+        ),
         xs: xs_gen(&scramble(seed, "xs")),
     }
 }
@@ -301,7 +306,7 @@ impl<T: PrimitiveUnsigned> Iterator for SpecialRandomUnsignedVecs<T> {
         let mut limbs =
             limbs_special_random_up_to_bits(&mut self.rng, u64::from(len << T::LOG_WIDTH));
         //TODO make this more generic
-        if T::WIDTH == u64::WIDTH && (limbs.len() as u64).odd() {
+        if T::WIDTH == u64::WIDTH && limbs.len().odd() {
             limbs.push(0);
         }
         let mut result = vec![T::ZERO; limbs.len() << u32::LOG_WIDTH >> T::LOG_WIDTH];
@@ -339,7 +344,7 @@ impl<T: PrimitiveUnsigned> Iterator for SpecialRandomUnsignedVecsMinLength<T> {
         let mut limbs =
             limbs_special_random_up_to_bits(&mut self.rng, u64::from(len << T::LOG_WIDTH));
         //TODO make this more generic
-        if T::WIDTH == u64::WIDTH && (limbs.len() as u64).odd() {
+        if T::WIDTH == u64::WIDTH && limbs.len().odd() {
             limbs.push(0);
         }
         let mut result = vec![T::ZERO; limbs.len() << u32::LOG_WIDTH >> T::LOG_WIDTH];
@@ -355,7 +360,11 @@ pub fn special_random_unsigned_vecs_min_length<T: PrimitiveUnsigned>(
     min_length: u64,
 ) -> SpecialRandomUnsignedVecsMinLength<T> {
     SpecialRandomUnsignedVecsMinLength {
-        lengths: range_up_geometric_u32(&scramble(seed, "lengths"), scale, min_length as u32),
+        lengths: range_up_geometric_u32(
+            &scramble(seed, "lengths"),
+            scale,
+            u32::checked_from(min_length).unwrap(),
+        ),
         rng: Box::new(IsaacRng::from_seed(&scramble(seed, "xs"))),
         boo: PhantomData,
     }

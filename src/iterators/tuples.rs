@@ -1,3 +1,5 @@
+use malachite_base::conversion::{CheckedFrom, WrappingFrom};
+
 use iterators::common::scramble;
 use iterators::general::CachedIterator;
 
@@ -10,8 +12,8 @@ impl LogPairIndices {
     }
 
     pub fn from_indices(i: usize, j: usize) -> Option<LogPairIndices> {
-        let i = i as u64;
-        let j = j as u64;
+        let i = u64::wrapping_from(i);
+        let j = u64::wrapping_from(j);
         if i.leading_zeros() == 0 {
             return None;
         }
@@ -29,7 +31,10 @@ impl LogPairIndices {
 
     pub fn indices(&self) -> (usize, usize) {
         let y = self.0.trailing_zeros();
-        ((self.0 >> (y + 1)) as usize, y as usize)
+        (
+            usize::checked_from(self.0 >> (y + 1)).unwrap(),
+            usize::checked_from(y).unwrap(),
+        )
     }
 }
 
@@ -82,7 +87,7 @@ pub struct ZOrderTupleIndices(pub Vec<u64>);
 impl ZOrderTupleIndices {
     pub fn new(size: u64) -> ZOrderTupleIndices {
         let mut v = Vec::new();
-        v.resize(size as usize, 0);
+        v.resize(usize::checked_from(size).unwrap(), 0);
         ZOrderTupleIndices(v)
     }
 
@@ -247,8 +252,8 @@ where
             if self.max_indices.as_ref() == Some(&self.i) {
                 return None;
             }
-            let i = self.i.x as usize;
-            let j = self.i.y as usize;
+            let i = usize::checked_from(self.i.x).unwrap();
+            let j = usize::checked_from(self.i.y).unwrap();
             let ox = self.xs.get(i);
             if ox.is_none() {
                 self.i.increment();
@@ -261,10 +266,8 @@ where
             }
             if !self.stop_checking_size {
                 if let Some(size) = self.xs.currently_known_size() {
-                    self.max_indices = Some(SqrtPairIndices {
-                        x: size as u64 - 1,
-                        y: size as u64 - 1,
-                    });
+                    let size = u64::wrapping_from(size) - 1;
+                    self.max_indices = Some(SqrtPairIndices { x: size, y: size });
                     self.stop_checking_size = true;
                 }
             }
@@ -311,8 +314,8 @@ where
             if self.max_indices.as_ref() == Some(&self.i) {
                 return None;
             }
-            let i = self.i.x as usize;
-            let j = self.i.y as usize;
+            let i = usize::checked_from(self.i.x).unwrap();
+            let j = usize::checked_from(self.i.y).unwrap();
             let ox = self.xs.get(i);
             if ox.is_none() {
                 self.i.increment();
@@ -327,8 +330,8 @@ where
                 if let Some(xs_size) = self.xs.currently_known_size() {
                     if let Some(ys_size) = self.ys.currently_known_size() {
                         self.max_indices = Some(SqrtPairIndices {
-                            x: xs_size as u64 - 1,
-                            y: ys_size as u64 - 1,
+                            x: u64::wrapping_from(xs_size) - 1,
+                            y: u64::wrapping_from(ys_size) - 1,
                         });
                         self.stop_checking_size = true;
                     }
@@ -383,7 +386,7 @@ macro_rules! exhaustive_tuple_from_single {
                         return None;
                     }
                     $(
-                        let $opt_elem = self.xs.get(self.i.0[$index] as usize);
+                        let $opt_elem = self.xs.get(usize::checked_from(self.i.0[$index]).unwrap());
                         if $opt_elem.is_none() {
                             self.i.increment();
                             continue;
@@ -391,7 +394,7 @@ macro_rules! exhaustive_tuple_from_single {
                     )*
                     if !self.stop_checking_size {
                         if let Some(size) = self.xs.currently_known_size() {
-                            let size = size as u64;
+                            let size = u64::wrapping_from(size);
                             let mut max_vec = Vec::new();
                             max_vec.resize($size, size - 1);
                             self.max_indices = Some(ZOrderTupleIndices(max_vec));
@@ -539,7 +542,8 @@ macro_rules! exhaustive_tuple {
                         return None;
                     }
                     $(
-                        let $opt_elem = self.$cached_it.get(self.i.0[$index] as usize);
+                        let $opt_elem =
+                            self.$cached_it.get(usize::checked_from(self.i.0[$index]).unwrap());
                         if $opt_elem.is_none() {
                             self.i.increment();
                             continue;
@@ -556,7 +560,9 @@ macro_rules! exhaustive_tuple {
 
                         if all_sizes_available {
                             self.max_indices = Some(ZOrderTupleIndices(vec![
-                                $(self.$cached_it.currently_known_size().unwrap() as u64 - 1),*
+                                $(u64::wrapping_from(
+                                    self.$cached_it.currently_known_size().unwrap()) - 1
+                                ),*
                             ]));
                             self.stop_checking_size = true;
                         }

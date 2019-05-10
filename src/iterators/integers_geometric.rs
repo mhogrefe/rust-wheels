@@ -1,3 +1,4 @@
+use malachite_base::conversion::WrappingFrom;
 use rand::{IsaacRng, Rng, SeedableRng};
 
 use iterators::common::scramble;
@@ -57,7 +58,7 @@ impl Iterator for NegativeI32sGeometric {
     type Item = i32;
 
     fn next(&mut self) -> Option<i32> {
-        self.0.next().map(|i| -(i as i32))
+        self.0.next().map(|i| -i32::wrapping_from(i))
     }
 }
 
@@ -75,9 +76,9 @@ impl Iterator for NonzeroI32sGeometric {
 
     fn next(&mut self) -> Option<i32> {
         if self.sign_gen.next().unwrap() {
-            self.abs_gen.next().map(|i| i as i32)
+            self.abs_gen.next().map(i32::wrapping_from)
         } else {
-            self.abs_gen.next().map(|i| -(i as i32))
+            self.abs_gen.next().map(|i| -i32::wrapping_from(i))
         }
     }
 }
@@ -99,9 +100,9 @@ impl Iterator for I32sGeometric {
 
     fn next(&mut self) -> Option<i32> {
         if self.signs.next().unwrap() {
-            self.abs.next().map(|i| i as i32)
+            self.abs.next().map(i32::wrapping_from)
         } else {
-            self.abs.next().map(|i| -(i as i32))
+            self.abs.next().map(|i| -i32::wrapping_from(i))
         }
     }
 }
@@ -142,7 +143,9 @@ impl Iterator for RangeUpGeometricI32 {
     type Item = i32;
 
     fn next(&mut self) -> Option<i32> {
-        self.naturals.next().map(|u| u as i32 + self.min)
+        self.naturals
+            .next()
+            .map(|u| i32::wrapping_from(u) + self.min)
     }
 }
 
@@ -162,7 +165,9 @@ impl Iterator for RangeDownGeometric {
     type Item = i32;
 
     fn next(&mut self) -> Option<i32> {
-        self.naturals.next().map(|u| self.max - u as i32)
+        self.naturals
+            .next()
+            .map(|u| self.max - i32::wrapping_from(u))
     }
 }
 

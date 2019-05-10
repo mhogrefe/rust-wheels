@@ -75,7 +75,7 @@ macro_rules! exhaustive_float_gen {
         ) -> $exhaustive_positive_finite_primitive_floats_s {
             $exhaustive_positive_finite_primitive_floats_s(exhaustive_pairs(
                 $exhaustive_positive_mantissas_f(),
-                exhaustive_range_signed($f::MIN_EXPONENT, $f::MAX_EXPONENT as i32),
+                exhaustive_range_signed($f::MIN_EXPONENT, i32::wrapping_from($f::MAX_EXPONENT)),
             ))
         }
 

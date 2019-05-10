@@ -1,7 +1,7 @@
 use std::cmp::Ordering;
 use std::ops::{Add, Neg, Shl, Shr, Sub};
 
-use malachite_base::conversion::{CheckedFrom, CheckedInto};
+use malachite_base::conversion::{CheckedFrom, CheckedInto, WrappingFrom};
 use malachite_base::num::floats::PrimitiveFloat;
 use malachite_base::num::traits::{NegAssign, One, Parity, Sign, SignificantBits, Zero};
 use malachite_nz::integer::Integer;
@@ -182,7 +182,7 @@ macro_rules! binary_fraction_funs {
                     f.neg_assign();
                 }
                 let (mut mantissa, offset_exponent) = f.to_adjusted_mantissa_and_exponent();
-                let mut exponent = offset_exponent as i32;
+                let mut exponent = i32::wrapping_from(offset_exponent);
                 if exponent == 0 {
                     exponent = $f::MIN_EXPONENT;
                 } else {
@@ -227,14 +227,15 @@ macro_rules! binary_fraction_funs {
                 (self >> $f::MIN_EXPONENT, 0)
             } else {
                 (
-                    ((self >> fp_exponent) - BinaryFraction::ONE) << $f::MANTISSA_WIDTH as i32,
-                    fp_exponent + $f::MAX_EXPONENT as i32,
+                    ((self >> fp_exponent) - BinaryFraction::ONE) <<
+                        i32::wrapping_from($f::MANTISSA_WIDTH),
+                    fp_exponent + i32::wrapping_from($f::MAX_EXPONENT),
                 )
             };
             adjusted_mantissa.into_integer().map(|i| {
                 $f::from_adjusted_mantissa_and_exponent(
                     (&i).checked_into().unwrap(),
-                    adjusted_exponent as u32,
+                    u32::checked_from(adjusted_exponent).unwrap(),
                 )
             })
         }
@@ -244,7 +245,7 @@ macro_rules! binary_fraction_funs {
 impl BinaryFraction {
     pub fn new(mantissa: Integer, exponent: i32) -> BinaryFraction {
         if let Some(trailing_zeros) = mantissa.trailing_zeros() {
-            let trailing_zeros = trailing_zeros as i32;
+            let trailing_zeros = i32::wrapping_from(trailing_zeros);
             BinaryFraction {
                 mantissa: mantissa >> trailing_zeros,
                 exponent: exponent + trailing_zeros,
