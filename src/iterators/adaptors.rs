@@ -353,6 +353,7 @@ where
     )
 }
 
+#[derive(Clone)]
 pub struct MultiChain<I> {
     ranges: Vec<I>,
     i: usize,

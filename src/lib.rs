@@ -28,6 +28,7 @@ pub mod iterators {
     pub mod primitive_floats;
     pub mod primitive_ints;
     pub mod rounding_modes;
+    pub mod strings;
     pub mod tuples;
     pub mod vecs;
 }
