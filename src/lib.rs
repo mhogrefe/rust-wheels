@@ -10,9 +10,11 @@ extern crate stats;
 extern crate time;
 
 pub mod benchmarks;
+
 pub mod io {
     pub mod readers;
 }
+
 pub mod iterators {
     pub mod adaptors;
     pub mod bools;
@@ -32,6 +34,7 @@ pub mod iterators {
     pub mod tuples;
     pub mod vecs;
 }
+
 pub mod prim_utils {
     pub mod primitive_float_utils;
 }

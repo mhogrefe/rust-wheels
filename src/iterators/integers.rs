@@ -57,6 +57,7 @@ pub fn range_down_decreasing_integer(a: Integer) -> RangeDecreasingUnboundedInte
 }
 
 type T = Interleave<RangeIncreasing<Integer>, RangeDecreasing<Integer>>;
+
 #[derive(Clone)]
 pub enum ExhaustiveRangeInteger {
     AllNonNegative(RangeIncreasing<Integer>),
