@@ -1,9 +1,11 @@
 use std::cmp::Ordering;
 use std::ops::{Add, Neg, Shl, Shr, Sub};
 
-use malachite_base::conversion::{CheckedFrom, CheckedInto, WrappingFrom};
+use malachite_base::num::arithmetic::traits::{NegAssign, Parity, Sign};
+use malachite_base::num::basic::traits::{One, Zero};
+use malachite_base::num::conversion::traits::{CheckedFrom, CheckedInto, WrappingFrom};
 use malachite_base::num::floats::PrimitiveFloat;
-use malachite_base::num::traits::{NegAssign, One, Parity, Sign, SignificantBits, Zero};
+use malachite_base::num::logic::traits::SignificantBits;
 use malachite_nz::integer::Integer;
 use malachite_nz::platform::Limb;
 

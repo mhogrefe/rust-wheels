@@ -1,4 +1,4 @@
-use malachite_base::conversion::{CheckedFrom, WrappingFrom};
+use malachite_base::num::conversion::traits::{CheckedFrom, WrappingFrom};
 
 use iterators::common::scramble;
 use iterators::general::CachedIterator;

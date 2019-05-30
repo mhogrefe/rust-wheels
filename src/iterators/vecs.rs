@@ -1,10 +1,10 @@
 use std::iter::repeat;
 use std::marker::PhantomData;
 
-use malachite_base::conversion::{CheckedFrom, WrappingFrom};
-use malachite_base::num::integers::PrimitiveInteger;
-use malachite_base::num::traits::Parity;
-use malachite_base::num::unsigneds::PrimitiveUnsigned;
+use malachite_base::num::arithmetic::traits::Parity;
+use malachite_base::num::basic::integers::PrimitiveInteger;
+use malachite_base::num::basic::unsigneds::PrimitiveUnsigned;
+use malachite_base::num::conversion::traits::{CheckedFrom, WrappingFrom};
 use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
 use malachite_nz::natural::random::special_random_natural_with_bits::*;
 use rand::{IsaacRng, Rng, SeedableRng};

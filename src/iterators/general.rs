@@ -2,8 +2,8 @@ use std::fmt::Display;
 use std::iter::Peekable;
 use std::marker::PhantomData;
 
-use malachite_base::conversion::{CheckedFrom, WrappingFrom};
 use malachite_base::crement::Crementable;
+use malachite_base::num::conversion::traits::{CheckedFrom, WrappingFrom};
 use rand::{IsaacRng, Rand, Rng, SeedableRng};
 
 use iterators::primitive_ints::{random_range, RandomRange};

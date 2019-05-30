@@ -2,9 +2,10 @@ use std::cmp::min;
 use std::iter::{once, Chain, Once};
 
 use itertools::{Interleave, Itertools};
-use malachite_base::conversion::{CheckedFrom, WrappingFrom};
+use malachite_base::num::basic::traits::Zero;
+use malachite_base::num::conversion::traits::{CheckedFrom, WrappingFrom};
 use malachite_base::num::floats::PrimitiveFloat;
-use malachite_base::num::traits::{SignificantBits, Zero};
+use malachite_base::num::logic::traits::SignificantBits;
 use rand::{IsaacRng, Rand, Rng, SeedableRng};
 
 use iterators::common::scramble;
