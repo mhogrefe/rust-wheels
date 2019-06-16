@@ -9,10 +9,7 @@ path = "src/lib.rs"
 
 [features]
 
-default = ["32_bit_limbs"]
-
 32_bit_limbs = ["malachite-nz/32_bit_limbs"]
-64_bit_limbs = ["malachite-nz/64_bit_limbs"]
 
 [dependencies]
 gnuplot = "0.0.26"
