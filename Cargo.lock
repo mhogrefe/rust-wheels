@@ -152,7 +152,7 @@ dependencies = [
 
 [[package]]
 name = "redox_syscall"
-version = "0.1.55"
+version = "0.1.56"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -195,7 +195,7 @@ version = "0.1.42"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "libc 0.2.58 (registry+https://github.com/rust-lang/crates.io-index)",
- "redox_syscall 0.1.55 (registry+https://github.com/rust-lang/crates.io-index)",
+ "redox_syscall 0.1.56 (registry+https://github.com/rust-lang/crates.io-index)",
  "winapi 0.3.7 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -244,7 +244,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum rand_core 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)" = "7a6fdeb83b075e8266dcc8762c22776f6877a63111121f5f8c7411e5be7eed4b"
 "checksum rand_core 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "d0e7a549d590831370895ab7ba4ea0c1b6b011d106b5ff2da6eee112615e6dc0"
 "checksum rdrand 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "678054eb77286b51581ba43620cc911abf02758c91f93f479767aed0f90458b2"
-"checksum redox_syscall 0.1.55 (registry+https://github.com/rust-lang/crates.io-index)" = "cbd093aba707641a1ebf784490f00ceb889b21953774de1d5fba05d1ee1d283c"
+"checksum redox_syscall 0.1.56 (registry+https://github.com/rust-lang/crates.io-index)" = "2439c63f3f6139d1b57529d16bc3b8bb855230c8efcc5d3a896c8bea7c3b1e84"
 "checksum sha3 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)" = "dd26bc0e7a2e3a7c959bc494caf58b72ee0c71d67704e9520f736ca7e4853ecf"
 "checksum streaming-stats 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)" = "fd8abbec7f4bc18e9e761572465226e63f88c1cb90ee8b3f403a81631ef9fd50"
 "checksum time 0.1.42 (registry+https://github.com/rust-lang/crates.io-index)" = "db8dcfca086c1143c9270ac42a2bbd8a7ee477b78ac8e45b19abfb0cbede4b6f"
