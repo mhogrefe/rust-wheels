@@ -213,6 +213,33 @@ where
     }
 }
 
+pub struct RandomFixedLengthVecs<I>
+where
+    I: Iterator,
+{
+    length: usize,
+    xs: I,
+}
+
+impl<I> Iterator for RandomFixedLengthVecs<I>
+where
+    I: Iterator,
+{
+    type Item = Vec<I::Item>;
+
+    fn next(&mut self) -> Option<Vec<I::Item>> {
+        Some((&mut self.xs).take(self.length).collect())
+    }
+}
+
+//TODO test
+pub fn random_fixed_length_vecs<I>(length: usize, xs: I) -> RandomFixedLengthVecs<I>
+where
+    I: Iterator,
+{
+    RandomFixedLengthVecs { length, xs }
+}
+
 pub struct RandomVecs<I>
 where
     I: Iterator,
@@ -286,6 +313,45 @@ where
             u32::checked_from(min_length).unwrap(),
         ),
         xs: xs_gen(&scramble(seed, "xs")),
+    }
+}
+
+pub struct SpecialRandomFixedLengthUnsignedVecs<T: PrimitiveUnsigned> {
+    length: usize,
+    rng: Box<IsaacRng>,
+    boo: PhantomData<*const T>,
+}
+
+impl<T: PrimitiveUnsigned> Iterator for SpecialRandomFixedLengthUnsignedVecs<T> {
+    type Item = Vec<T>;
+
+    fn next(&mut self) -> Option<Vec<T>> {
+        if self.length == 0 {
+            return Some(Vec::new());
+        }
+        let mut limbs = limbs_special_random_up_to_bits(
+            &mut self.rng,
+            u64::checked_from(self.length).unwrap() << T::LOG_WIDTH,
+        );
+        //TODO make this more generic
+        if T::WIDTH == u64::WIDTH && limbs.len().odd() {
+            limbs.push(0);
+        }
+        let mut result = vec![T::ZERO; limbs.len() << u32::LOG_WIDTH >> T::LOG_WIDTH];
+        T::copy_from_u32_slice(&mut result, &limbs);
+        Some(result)
+    }
+}
+
+//TODO test
+pub fn special_random_fixed_length_unsigned_vecs<T: PrimitiveUnsigned>(
+    seed: &[u32],
+    length: usize,
+) -> SpecialRandomFixedLengthUnsignedVecs<T> {
+    SpecialRandomFixedLengthUnsignedVecs {
+        length,
+        rng: Box::new(IsaacRng::from_seed(seed)),
+        boo: PhantomData,
     }
 }
 
