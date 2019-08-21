@@ -30,7 +30,7 @@ where
 fn to_limited_string_vec_helper<I>(
     limit: usize,
     xs: &mut I,
-    f: &Fn(&I::Item) -> String,
+    f: &dyn Fn(&I::Item) -> String,
 ) -> Vec<String>
 where
     I: Iterator,
@@ -76,7 +76,7 @@ where
     to_limited_string_vec_helper(limit, xs, &|x| format!("{:#b}", x))
 }
 
-fn to_limited_string_helper<I>(limit: usize, xs: &mut I, f: &Fn(&I::Item) -> String) -> String
+fn to_limited_string_helper<I>(limit: usize, xs: &mut I, f: &dyn Fn(&I::Item) -> String) -> String
 where
     I: Iterator,
 {
@@ -167,7 +167,7 @@ impl PartialOrd for FrequencyRecord {
 fn get_most_common_values_helper<T, S: BuildHasher>(
     limit: usize,
     map: HashMap<T, usize, S>,
-    f: &Fn(&T) -> String,
+    f: &dyn Fn(&T) -> String,
 ) -> Vec<(String, usize)>
 where
     T: Eq + Hash,
@@ -226,7 +226,7 @@ fn get_limited_string_vec_and_frequency_map_helper<I>(
     small_limit: usize,
     large_limit: usize,
     xs: &mut I,
-    f: &Fn(&I::Item) -> String,
+    f: &dyn Fn(&I::Item) -> String,
 ) -> (Vec<String>, HashMap<I::Item, usize>)
 where
     I: Iterator,
@@ -285,7 +285,7 @@ fn get_limited_string_vec_and_most_common_values_helper<I>(
     small_limit: usize,
     large_limit: usize,
     xs: &mut I,
-    f: &Fn(&I::Item) -> String,
+    f: &dyn Fn(&I::Item) -> String,
 ) -> (Vec<String>, Vec<(String, usize)>)
 where
     I: Iterator,

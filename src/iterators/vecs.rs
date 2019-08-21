@@ -119,7 +119,7 @@ where
 
 fn exhaustive_vecs_more_than_one<'a, I: Clone + Iterator + 'a>(
     xs: I,
-) -> Box<Iterator<Item = Vec<I::Item>> + 'a>
+) -> Box<dyn Iterator<Item = Vec<I::Item>> + 'a>
 where
     I::Item: Clone,
 {
@@ -137,7 +137,7 @@ where
 {
     Zero(bool),
     One(I::Item, Vec<I::Item>),
-    MoreThanOne(bool, Box<Iterator<Item = Vec<I::Item>> + 'a>),
+    MoreThanOne(bool, Box<dyn Iterator<Item = Vec<I::Item>> + 'a>),
 }
 
 impl<'a, I: Iterator> Iterator for ExhaustiveVecs<'a, I>
@@ -193,7 +193,7 @@ where
 pub fn exhaustive_vecs_min_length<'a, I: 'static + Clone + Iterator + 'a>(
     min_len: u64,
     xs: I,
-) -> Box<Iterator<Item = Vec<I::Item>>>
+) -> Box<dyn Iterator<Item = Vec<I::Item>>>
 where
     I::Item: Clone,
 {
@@ -264,7 +264,7 @@ where
 }
 
 //TODO test
-pub fn random_vecs<I>(seed: &[u32], scale: u32, xs_gen: &Fn(&[u32]) -> I) -> RandomVecs<I>
+pub fn random_vecs<I>(seed: &[u32], scale: u32, xs_gen: &dyn Fn(&[u32]) -> I) -> RandomVecs<I>
 where
     I: Iterator,
 {
@@ -301,7 +301,7 @@ pub fn random_vecs_min_length<I>(
     seed: &[u32],
     scale: u32,
     min_length: u64,
-    xs_gen: &Fn(&[u32]) -> I,
+    xs_gen: &dyn Fn(&[u32]) -> I,
 ) -> RandomVecsMinLength<I>
 where
     I: Iterator,

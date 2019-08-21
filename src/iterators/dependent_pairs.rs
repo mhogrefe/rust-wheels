@@ -10,7 +10,7 @@ use iterators::tuples::{LogPairIndices, SqrtPairIndices, ZOrderTupleIndices};
 pub fn dependent_pairs<'a, I: Iterator + 'a, J: Iterator, F: 'a>(
     xs: I,
     f: F,
-) -> Box<Iterator<Item = (I::Item, J::Item)> + 'a>
+) -> Box<dyn Iterator<Item = (I::Item, J::Item)> + 'a>
 where
     F: Fn(&I::Item) -> J,
     I::Item: Clone,

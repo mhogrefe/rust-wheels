@@ -43,7 +43,7 @@ pub fn random_with_element<I>(
     seed: &[u32],
     scale: u32,
     x: I::Item,
-    xs_gen: &Fn(&[u32]) -> I,
+    xs_gen: &dyn Fn(&[u32]) -> I,
 ) -> RandomWithElement<I>
 where
     I: Iterator,
@@ -95,7 +95,7 @@ impl<I: Iterator> Iterator for RandomOptions<I> {
 pub fn random_options<I: Iterator>(
     seed: &[u32],
     scale: u32,
-    xs_gen: &Fn(&[u32]) -> I,
+    xs_gen: &dyn Fn(&[u32]) -> I,
 ) -> RandomOptions<I> {
     RandomOptions {
         weight: scale + 2,

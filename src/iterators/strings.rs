@@ -47,7 +47,7 @@ where
 pub fn random_strings_with_chars<I>(
     seed: &[u32],
     scale: u32,
-    chars_gen: &Fn(&[u32]) -> I,
+    chars_gen: &dyn Fn(&[u32]) -> I,
 ) -> RandomStrings<I>
 where
     I: Iterator<Item = char>,

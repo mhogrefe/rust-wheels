@@ -979,7 +979,7 @@ macro_rules! random_tuple {
         //TODO test
         #[allow(unknown_lints, too_many_arguments)]
         pub fn $fn_name<$($it_type: Iterator),*>(seed: &[u32],
-                                                      $($it_gen: &Fn(&[u32]) -> $it_type),*)
+                                                      $($it_gen: &dyn Fn(&[u32]) -> $it_type),*)
                                                       -> $struct_name<$($it_type),*> {
             $struct_name {
                 $(

@@ -17,7 +17,7 @@ fn escape_label_string(s: &str) -> String {
 
 pub struct BenchmarkSeriesOptions<'a, T: 'a> {
     pub name: &'a str,
-    pub function: &'a mut FnMut(T),
+    pub function: &'a mut dyn FnMut(T),
     pub color: &'a str,
 }
 
@@ -28,7 +28,7 @@ where
     pub generator: I,
     pub title: &'a str,
     pub limit: usize,
-    pub bucketing_function: &'a Fn(&I::Item) -> usize,
+    pub bucketing_function: &'a dyn Fn(&I::Item) -> usize,
     pub x_axis_label: &'a str,
     pub y_axis_label: &'a str,
     pub file_name: String,
