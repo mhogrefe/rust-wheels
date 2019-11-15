@@ -9,8 +9,6 @@ extern crate sha3;
 extern crate stats;
 extern crate time;
 
-pub mod benchmarks;
-
 pub mod io {
     pub mod readers;
 }
