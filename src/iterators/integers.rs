@@ -2,6 +2,7 @@ use std::cmp::Ordering;
 use std::iter::{once, Chain, Once};
 
 use itertools::{Interleave, Itertools};
+use malachite_base::crement::Crementable;
 use malachite_base::num::basic::traits::{NegativeOne, One, Zero};
 use malachite_base::num::conversion::traits::CheckedFrom;
 use malachite_base::num::logic::traits::SignificantBits;
@@ -31,7 +32,7 @@ impl Iterator for RangeIncreasingUnboundedInteger {
 
     fn next(&mut self) -> Option<Integer> {
         let ret = self.0.clone();
-        self.0 += 1 as Limb;
+        self.0.increment();
         Some(ret)
     }
 }
@@ -44,7 +45,7 @@ impl Iterator for RangeDecreasingUnboundedInteger {
 
     fn next(&mut self) -> Option<Integer> {
         let ret = self.0.clone();
-        self.0 -= 1 as Limb;
+        self.0.decrement();
         Some(ret)
     }
 }
@@ -320,7 +321,7 @@ pub fn random_range_integer(seed: &[u32], a: Integer, b: Integer) -> RandomRange
     }
     RandomRangeInteger {
         rng: Box::new(IsaacRng::from_seed(seed)),
-        diameter_plus_one: Natural::checked_from(b - &a).unwrap() + 1 as Limb,
+        diameter_plus_one: Natural::checked_from(b - &a).unwrap() + Natural::ONE,
         a,
     }
 }
