@@ -4,7 +4,7 @@ use std::iter::{once, Chain, Once};
 use itertools::{Interleave, Itertools};
 use malachite_base::crement::Crementable;
 use malachite_base::num::basic::traits::{NegativeOne, One, Zero};
-use malachite_base::num::conversion::traits::CheckedFrom;
+use malachite_base::num::conversion::traits::ExactFrom;
 use malachite_base::num::logic::traits::SignificantBits;
 use malachite_nz::integer::Integer;
 use malachite_nz::natural::random::random_natural_below::random_natural_below;
@@ -321,7 +321,7 @@ pub fn random_range_integer(seed: &[u32], a: Integer, b: Integer) -> RandomRange
     }
     RandomRangeInteger {
         rng: Box::new(IsaacRng::from_seed(seed)),
-        diameter_plus_one: Natural::checked_from(b - &a).unwrap() + Natural::ONE,
+        diameter_plus_one: Natural::exact_from(b - &a) + Natural::ONE,
         a,
     }
 }

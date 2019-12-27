@@ -3,7 +3,7 @@ use std::iter::{once, Chain, Once};
 
 use itertools::{Interleave, Itertools};
 use malachite_base::num::basic::traits::Zero;
-use malachite_base::num::conversion::traits::{CheckedFrom, WrappingFrom};
+use malachite_base::num::conversion::traits::{ExactFrom, WrappingFrom};
 use malachite_base::num::floats::PrimitiveFloat;
 use malachite_base::num::logic::traits::SignificantBits;
 use rand::{IsaacRng, Rand, Rng, SeedableRng};
@@ -313,8 +313,7 @@ macro_rules! special_random_float_gen {
                 let mantissa = self.mantissa_gen.next().unwrap();
                 loop {
                     let exponent = self.exponent_gen.next().unwrap();
-                    if exponent >= $f::MIN_EXPONENT
-                        && exponent <= i32::checked_from($f::MAX_EXPONENT).unwrap()
+                    if exponent >= $f::MIN_EXPONENT && exponent <= i32::exact_from($f::MAX_EXPONENT)
                     {
                         let f = $from_mantissa_and_exponent(
                             <$f as PrimitiveFloat>::SignedOfEqualWidth::wrapping_from(mantissa),

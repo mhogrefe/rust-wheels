@@ -1,4 +1,4 @@
-use malachite_base::num::conversion::traits::{CheckedFrom, WrappingFrom};
+use malachite_base::num::conversion::traits::{ExactFrom, WrappingFrom};
 
 use iterators::common::scramble;
 use iterators::general::CachedIterator;
@@ -31,10 +31,7 @@ impl LogPairIndices {
 
     pub fn indices(&self) -> (usize, usize) {
         let y = self.0.trailing_zeros();
-        (
-            usize::checked_from(self.0 >> (y + 1)).unwrap(),
-            usize::checked_from(y).unwrap(),
-        )
+        (usize::exact_from(self.0 >> (y + 1)), usize::exact_from(y))
     }
 }
 
@@ -87,7 +84,7 @@ pub struct ZOrderTupleIndices(pub Vec<u64>);
 impl ZOrderTupleIndices {
     pub fn new(size: u64) -> ZOrderTupleIndices {
         let mut v = Vec::new();
-        v.resize(usize::checked_from(size).unwrap(), 0);
+        v.resize(usize::exact_from(size), 0);
         ZOrderTupleIndices(v)
     }
 
@@ -252,8 +249,8 @@ where
             if self.max_indices.as_ref() == Some(&self.i) {
                 return None;
             }
-            let i = usize::checked_from(self.i.x).unwrap();
-            let j = usize::checked_from(self.i.y).unwrap();
+            let i = usize::exact_from(self.i.x);
+            let j = usize::exact_from(self.i.y);
             let ox = self.xs.get(i);
             if ox.is_none() {
                 self.i.increment();
@@ -314,8 +311,8 @@ where
             if self.max_indices.as_ref() == Some(&self.i) {
                 return None;
             }
-            let i = usize::checked_from(self.i.x).unwrap();
-            let j = usize::checked_from(self.i.y).unwrap();
+            let i = usize::exact_from(self.i.x);
+            let j = usize::exact_from(self.i.y);
             let ox = self.xs.get(i);
             if ox.is_none() {
                 self.i.increment();
@@ -386,7 +383,7 @@ macro_rules! exhaustive_tuple_from_single {
                         return None;
                     }
                     $(
-                        let $opt_elem = self.xs.get(usize::checked_from(self.i.0[$index]).unwrap());
+                        let $opt_elem = self.xs.get(usize::exact_from(self.i.0[$index]));
                         if $opt_elem.is_none() {
                             self.i.increment();
                             continue;
@@ -543,7 +540,7 @@ macro_rules! exhaustive_tuple {
                     }
                     $(
                         let $opt_elem =
-                            self.$cached_it.get(usize::checked_from(self.i.0[$index]).unwrap());
+                            self.$cached_it.get(usize::exact_from(self.i.0[$index]));
                         if $opt_elem.is_none() {
                             self.i.increment();
                             continue;

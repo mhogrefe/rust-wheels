@@ -4,7 +4,7 @@ use std::marker::PhantomData;
 use malachite_base::num::arithmetic::traits::Parity;
 use malachite_base::num::basic::integers::PrimitiveInteger;
 use malachite_base::num::basic::unsigneds::PrimitiveUnsigned;
-use malachite_base::num::conversion::traits::{CheckedFrom, WrappingFrom};
+use malachite_base::num::conversion::traits::{ExactFrom, WrappingFrom};
 use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
 use malachite_nz::natural::random::special_random_natural_with_bits::*;
 use rand::{IsaacRng, Rng, SeedableRng};
@@ -63,7 +63,7 @@ where
                         return None;
                     }
                     for j in 0..i.size() {
-                        match xs.get(usize::checked_from(i.0[j]).unwrap()) {
+                        match xs.get(usize::exact_from(i.0[j])) {
                             Some(x) => result.push(x),
                             None => {
                                 if max_indices.as_ref() == Some(i) {
@@ -257,7 +257,7 @@ where
     fn next(&mut self) -> Option<Vec<I::Item>> {
         Some(
             (&mut self.xs)
-                .take(usize::checked_from(self.lengths.next().unwrap()).unwrap())
+                .take(usize::exact_from(self.lengths.next().unwrap()))
                 .collect(),
         )
     }
@@ -291,7 +291,7 @@ where
     fn next(&mut self) -> Option<Vec<I::Item>> {
         Some(
             (&mut self.xs)
-                .take(usize::checked_from(self.lengths.next().unwrap()).unwrap())
+                .take(usize::exact_from(self.lengths.next().unwrap()))
                 .collect(),
         )
     }
@@ -310,7 +310,7 @@ where
         lengths: range_up_geometric_u32(
             &scramble(seed, "lengths"),
             scale,
-            u32::checked_from(min_length).unwrap(),
+            u32::exact_from(min_length),
         ),
         xs: xs_gen(&scramble(seed, "xs")),
     }
@@ -331,7 +331,7 @@ impl<T: PrimitiveUnsigned> Iterator for SpecialRandomFixedLengthUnsignedVecs<T> 
         }
         let mut limbs = limbs_special_random_up_to_bits(
             &mut self.rng,
-            u64::checked_from(self.length).unwrap() << T::LOG_WIDTH,
+            u64::exact_from(self.length) << T::LOG_WIDTH,
         );
         //TODO make this more generic
         if T::WIDTH == u64::WIDTH && limbs.len().odd() {
@@ -429,7 +429,7 @@ pub fn special_random_unsigned_vecs_min_length<T: PrimitiveUnsigned>(
         lengths: range_up_geometric_u32(
             &scramble(seed, "lengths"),
             scale,
-            u32::checked_from(min_length).unwrap(),
+            u32::exact_from(min_length),
         ),
         rng: Box::new(IsaacRng::from_seed(&scramble(seed, "xs"))),
         boo: PhantomData,

@@ -3,7 +3,7 @@ use std::iter::Peekable;
 use std::marker::PhantomData;
 
 use malachite_base::crement::Crementable;
-use malachite_base::num::conversion::traits::{CheckedFrom, WrappingFrom};
+use malachite_base::num::conversion::traits::{ExactFrom, WrappingFrom};
 use rand::{IsaacRng, Rand, Rng, SeedableRng};
 
 use iterators::primitive_ints::{random_range, RandomRange};
@@ -109,7 +109,7 @@ impl<T: Clone> Iterator for RandomFromVector<T> {
     fn next(&mut self) -> Option<T> {
         self.range
             .next()
-            .map(|i| self.xs[usize::checked_from(i).unwrap()].clone())
+            .map(|i| self.xs[usize::exact_from(i)].clone())
     }
 }
 

@@ -1,6 +1,6 @@
 use malachite_base::crement::Crementable;
 use malachite_base::num::basic::traits::{One, Zero};
-use malachite_base::num::conversion::traits::CheckedFrom;
+use malachite_base::num::conversion::traits::ExactFrom;
 use malachite_base::num::logic::traits::SignificantBits;
 use malachite_nz::natural::random::random_natural_below::random_natural_below;
 use malachite_nz::natural::random::random_natural_with_bits::random_natural_with_bits;
@@ -220,7 +220,7 @@ pub fn random_range_up_natural(seed: &[u32], scale: u32, a: Natural) -> RandomRa
         bit_sizes: range_up_geometric_u32(
             &scramble(seed, "bitsizes"),
             scale,
-            u32::checked_from(a_bit_size).unwrap(),
+            u32::exact_from(a_bit_size),
         ),
         a,
         a_bit_size,
@@ -266,7 +266,7 @@ pub fn special_random_range_up_natural(
         bit_sizes: range_up_geometric_u32(
             &scramble(seed, "bitsizes"),
             scale,
-            u32::checked_from(a_bit_size).unwrap(),
+            u32::exact_from(a_bit_size),
         ),
         a,
         a_bit_size,

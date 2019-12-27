@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::hash::Hash;
 
-use malachite_base::num::conversion::traits::CheckedFrom;
+use malachite_base::num::conversion::traits::ExactFrom;
 
 use iterators::adaptors::Concat;
 use iterators::general::CachedIterator;
@@ -80,12 +80,12 @@ exhaustive_dependent_pairs!(
     exhaustive_dependent_pairs_infinite_sqrt,
     SqrtPairIndices,
     SqrtPairIndices::new(),
-    |i: &SqrtPairIndices| usize::checked_from(i.y).unwrap()
+    |i: &SqrtPairIndices| usize::exact_from(i.y)
 );
 exhaustive_dependent_pairs!(
     ExhaustiveDependentPairsInfinite,
     exhaustive_dependent_pairs_infinite,
     ZOrderTupleIndices,
     ZOrderTupleIndices::new(2),
-    |i: &ZOrderTupleIndices| usize::checked_from(i.0[1]).unwrap()
+    |i: &ZOrderTupleIndices| usize::exact_from(i.0[1])
 );

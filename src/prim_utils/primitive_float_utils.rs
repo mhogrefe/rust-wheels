@@ -3,7 +3,7 @@ use std::ops::{Add, Neg, Shl, Shr, Sub};
 
 use malachite_base::num::arithmetic::traits::{NegAssign, Parity, Sign};
 use malachite_base::num::basic::traits::{One, Zero};
-use malachite_base::num::conversion::traits::{CheckedFrom, CheckedInto, WrappingFrom};
+use malachite_base::num::conversion::traits::{ExactFrom, ExactInto, WrappingFrom};
 use malachite_base::num::floats::PrimitiveFloat;
 use malachite_base::num::logic::traits::SignificantBits;
 use malachite_nz::integer::Integer;
@@ -191,7 +191,7 @@ macro_rules! binary_fraction_funs {
                     mantissa += 1 << $f::MANTISSA_WIDTH;
                     exponent += $f::MIN_EXPONENT - 1;
                 }
-                let mantissa = $s::checked_from(mantissa).unwrap();
+                let mantissa = $s::exact_from(mantissa);
                 let signed_mantissa = if positive { mantissa } else { -mantissa };
                 Some(BinaryFraction::new(
                     Integer::from(signed_mantissa),
@@ -213,12 +213,10 @@ macro_rules! binary_fraction_funs {
             if self.mantissa < 0 as Limb {
                 return (-self).$to_float().map(|f| -f);
             }
-            let fp_exponent = i32::checked_from(u32::checked_from(self.mantissa.significant_bits())
-                .unwrap())
-                .unwrap()
+            let fp_exponent = i32::exact_from(self.mantissa.significant_bits())
                 + self.exponent
                 - 1;
-            let signed_max_exponent = i32::checked_from($f::MAX_EXPONENT).unwrap();
+            let signed_max_exponent = i32::exact_from($f::MAX_EXPONENT);
             if fp_exponent > signed_max_exponent
                 || fp_exponent == signed_max_exponent
                     && *self > BinaryFraction::$largest_finite_float()
@@ -236,8 +234,8 @@ macro_rules! binary_fraction_funs {
             };
             adjusted_mantissa.into_integer().map(|i| {
                 $f::from_adjusted_mantissa_and_exponent(
-                    (&i).checked_into().unwrap(),
-                    u32::checked_from(adjusted_exponent).unwrap(),
+                    (&i).exact_into(),
+                    u32::exact_from(adjusted_exponent),
                 )
             })
         }
