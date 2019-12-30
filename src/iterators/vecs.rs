@@ -1,12 +1,11 @@
 use std::iter::repeat;
 use std::marker::PhantomData;
 
-use malachite_base::num::arithmetic::traits::Parity;
-use malachite_base::num::basic::integers::PrimitiveInteger;
 use malachite_base::num::basic::unsigneds::PrimitiveUnsigned;
 use malachite_base::num::conversion::traits::{ExactFrom, WrappingFrom};
 use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
 use malachite_nz::natural::random::special_random_natural_with_bits::*;
+use malachite_nz::platform::Limb;
 use rand::{IsaacRng, Rng, SeedableRng};
 
 use iterators::common::scramble;
@@ -329,17 +328,11 @@ impl<T: PrimitiveUnsigned> Iterator for SpecialRandomFixedLengthUnsignedVecs<T> 
         if self.length == 0 {
             return Some(Vec::new());
         }
-        let mut limbs = limbs_special_random_up_to_bits(
+        let limbs: Vec<Limb> = limbs_special_random_up_to_bits(
             &mut self.rng,
             u64::exact_from(self.length) << T::LOG_WIDTH,
         );
-        //TODO make this more generic
-        if T::WIDTH == u64::WIDTH && limbs.len().odd() {
-            limbs.push(0);
-        }
-        let mut result = vec![T::ZERO; limbs.len() << u32::LOG_WIDTH >> T::LOG_WIDTH];
-        T::copy_from_u32_slice(&mut result, &limbs);
-        Some(result)
+        Some(T::vec_from_other_type_slice(&limbs))
     }
 }
 
@@ -369,15 +362,9 @@ impl<T: PrimitiveUnsigned> Iterator for SpecialRandomUnsignedVecs<T> {
         if len == 0 {
             return Some(Vec::new());
         }
-        let mut limbs =
+        let limbs: Vec<Limb> =
             limbs_special_random_up_to_bits(&mut self.rng, u64::from(len << T::LOG_WIDTH));
-        //TODO make this more generic
-        if T::WIDTH == u64::WIDTH && limbs.len().odd() {
-            limbs.push(0);
-        }
-        let mut result = vec![T::ZERO; limbs.len() << u32::LOG_WIDTH >> T::LOG_WIDTH];
-        T::copy_from_u32_slice(&mut result, &limbs);
-        Some(result)
+        Some(T::vec_from_other_type_slice(&limbs))
     }
 }
 
@@ -407,15 +394,9 @@ impl<T: PrimitiveUnsigned> Iterator for SpecialRandomUnsignedVecsMinLength<T> {
         if len == 0 {
             return Some(Vec::new());
         }
-        let mut limbs =
+        let limbs: Vec<Limb> =
             limbs_special_random_up_to_bits(&mut self.rng, u64::from(len << T::LOG_WIDTH));
-        //TODO make this more generic
-        if T::WIDTH == u64::WIDTH && limbs.len().odd() {
-            limbs.push(0);
-        }
-        let mut result = vec![T::ZERO; limbs.len() << u32::LOG_WIDTH >> T::LOG_WIDTH];
-        T::copy_from_u32_slice(&mut result, &limbs);
-        Some(result)
+        Some(T::vec_from_other_type_slice(&limbs))
     }
 }
 
