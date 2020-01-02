@@ -127,7 +127,7 @@ impl Iterator for RandomPositiveIntegers {
     type Item = Integer;
 
     fn next(&mut self) -> Option<Integer> {
-        self.0.next().map(Natural::into)
+        self.0.next().map(Integer::from)
     }
 }
 
@@ -141,7 +141,7 @@ impl Iterator for RandomNaturalIntegers {
     type Item = Integer;
 
     fn next(&mut self) -> Option<Integer> {
-        self.0.next().map(Natural::into)
+        self.0.next().map(Integer::from)
     }
 }
 
@@ -217,7 +217,7 @@ impl Iterator for SpecialRandomPositiveIntegers {
     type Item = Integer;
 
     fn next(&mut self) -> Option<Integer> {
-        self.0.next().map(Natural::into)
+        self.0.next().map(Integer::from)
     }
 }
 
@@ -231,7 +231,7 @@ impl Iterator for SpecialRandomNaturalIntegers {
     type Item = Integer;
 
     fn next(&mut self) -> Option<Integer> {
-        self.0.next().map(Natural::into)
+        self.0.next().map(Integer::from)
     }
 }
 
@@ -349,14 +349,14 @@ impl Iterator for RandomRangeUpInteger {
                     // between -(2^n - 1) and -2^(n - 1), inclusive.
                     let abs_result = random_natural_with_bits(&mut self.rng, bit_size);
                     if self.rng.gen() {
-                        abs_result.into()
+                        Integer::from(abs_result)
                     } else {
                         -abs_result
                     }
                 }
                 Ordering::Greater => {
                     // Generates values between 2^(n - 1) and 2^n - 1, inclusive.
-                    random_natural_with_bits(&mut self.rng, bit_size).into()
+                    Integer::from(random_natural_with_bits(&mut self.rng, bit_size))
                 }
                 Ordering::Equal => {
                     if let Some(ref offset_limit) = self.offset_limit {
@@ -372,7 +372,7 @@ impl Iterator for RandomRangeUpInteger {
                         loop {
                             let abs_result = random_natural_with_bits(&mut self.rng, bit_size);
                             let result = if self.rng.gen() {
-                                abs_result.into()
+                                Integer::from(abs_result)
                             } else {
                                 -abs_result
                             };

@@ -51,7 +51,7 @@ impl Iterator for RandomPositiveNaturals {
     fn next(&mut self) -> Option<Natural> {
         Some(random_natural_with_bits(
             &mut self.rng,
-            self.bit_sizes.next().unwrap().into(),
+            u64::from(self.bit_sizes.next().unwrap()),
         ))
     }
 }
@@ -74,7 +74,7 @@ impl Iterator for RandomNaturals {
     fn next(&mut self) -> Option<Natural> {
         Some(random_natural_with_bits(
             &mut self.rng,
-            self.bit_sizes.next().unwrap().into(),
+            u64::from(self.bit_sizes.next().unwrap()),
         ))
     }
 }
@@ -97,7 +97,7 @@ impl Iterator for SpecialRandomPositiveNaturals {
     fn next(&mut self) -> Option<Natural> {
         Some(special_random_natural_with_bits(
             &mut self.rng,
-            self.bit_sizes.next().unwrap().into(),
+            u64::from(self.bit_sizes.next().unwrap()),
         ))
     }
 }
@@ -120,7 +120,7 @@ impl Iterator for SpecialRandomNaturals {
     fn next(&mut self) -> Option<Natural> {
         Some(special_random_natural_with_bits(
             &mut self.rng,
-            self.bit_sizes.next().unwrap().into(),
+            u64::from(self.bit_sizes.next().unwrap()),
         ))
     }
 }

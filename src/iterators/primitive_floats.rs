@@ -278,7 +278,7 @@ macro_rules! special_random_float_gen {
                 let p = self.precision_gen.next().unwrap();
                 self.range_gen.next().map(|m| {
                     let mantissa = (m << 1) + 1;
-                    let p = min(p.into(), mantissa.significant_bits() - 1);
+                    let p = min(u64::from(p), mantissa.significant_bits() - 1);
                     mantissa >> p << p
                 })
             }
