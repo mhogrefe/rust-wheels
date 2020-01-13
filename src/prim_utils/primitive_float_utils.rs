@@ -7,7 +7,6 @@ use malachite_base::num::conversion::traits::{ExactFrom, ExactInto, WrappingFrom
 use malachite_base::num::floats::PrimitiveFloat;
 use malachite_base::num::logic::traits::SignificantBits;
 use malachite_nz::integer::Integer;
-use malachite_nz::platform::Limb;
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct BinaryFraction {
@@ -210,7 +209,7 @@ macro_rules! binary_fraction_funs {
             if *self == BinaryFraction::ZERO {
                 return Some(0.0);
             }
-            if self.mantissa < 0 as Limb {
+            if self.mantissa < 0 {
                 return (-self).$to_float().map(|f| -f);
             }
             let fp_exponent = i32::exact_from(self.mantissa.significant_bits())

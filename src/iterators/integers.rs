@@ -10,7 +10,6 @@ use malachite_nz::integer::Integer;
 use malachite_nz::natural::random::random_natural_below::random_natural_below;
 use malachite_nz::natural::random::random_natural_with_bits::random_natural_with_bits;
 use malachite_nz::natural::Natural;
-use malachite_nz::platform::Limb;
 use rand::{IsaacRng, Rng, SeedableRng};
 
 use iterators::common::scramble;
@@ -83,9 +82,9 @@ pub fn exhaustive_range_integer(a: Integer, b: Integer) -> ExhaustiveRangeIntege
     if a > b {
         panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
     }
-    if a >= 0 as Limb {
+    if a >= 0 {
         ExhaustiveRangeInteger::AllNonNegative(range_increasing(a, b))
-    } else if b <= 0 as Limb {
+    } else if b <= 0 {
         ExhaustiveRangeInteger::AllNonPositive(range_decreasing(a, b))
     } else {
         ExhaustiveRangeInteger::SomeOfEachSign(
@@ -389,8 +388,12 @@ impl Iterator for RandomRangeUpInteger {
 
 pub fn random_range_up_integer(seed: &[u32], scale: u32, a: Integer) -> RandomRangeUpInteger {
     let a_bit_size = a.significant_bits();
-    let min_bit_size = if a < 0 as Limb { 0 } else { a_bit_size as u32 };
-    let offset_limit = if a < 0 as Limb {
+    let min_bit_size = if a < 0 {
+        0
+    } else {
+        u32::exact_from(a_bit_size)
+    };
+    let offset_limit = if a < 0 {
         None
     } else {
         Some((Natural::ONE << a_bit_size) - (&a).unsigned_abs_ref())
