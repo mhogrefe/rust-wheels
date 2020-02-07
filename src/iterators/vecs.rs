@@ -3,6 +3,7 @@ use std::marker::PhantomData;
 
 use malachite_base::num::basic::unsigneds::PrimitiveUnsigned;
 use malachite_base::num::conversion::traits::{ExactFrom, WrappingFrom};
+use malachite_base::num::logic::traits::BitConvertible;
 use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
 use malachite_nz::natural::random::special_random_natural_with_bits::*;
 use malachite_nz::platform::Limb;
