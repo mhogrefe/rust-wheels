@@ -296,7 +296,7 @@ macro_rules! special_random_float_gen {
                 precision_gen: random_range(
                     &scramble(seed, "precision"),
                     0,
-                    $f::MANTISSA_WIDTH - 1,
+                    u32::exact_from($f::MANTISSA_WIDTH) - 1,
                 ),
             }
         }

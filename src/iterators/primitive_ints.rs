@@ -248,7 +248,7 @@ impl<T: PrimitiveUnsigned + Rand> Iterator for SpecialRandomUnsigned<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        let limbs: Vec<u32> = limbs_special_random_up_to_bits(&mut self.0.rng, u64::from(T::WIDTH));
+        let limbs: Vec<u32> = limbs_special_random_up_to_bits(&mut self.0.rng, T::WIDTH);
         Some(T::from_other_type_slice(&limbs))
     }
 }
