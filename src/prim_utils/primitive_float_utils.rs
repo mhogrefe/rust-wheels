@@ -185,10 +185,10 @@ macro_rules! binary_fraction_funs {
                 let (mut mantissa, offset_exponent) = f.to_adjusted_mantissa_and_exponent();
                 let mut exponent = i32::wrapping_from(offset_exponent);
                 if exponent == 0 {
-                    exponent = $f::MIN_EXPONENT;
+                    exponent = i32::wrapping_from($f::MIN_EXPONENT);
                 } else {
                     mantissa += 1 << $f::MANTISSA_WIDTH;
-                    exponent += $f::MIN_EXPONENT - 1;
+                    exponent += i32::wrapping_from($f::MIN_EXPONENT) - 1;
                 }
                 let mantissa = $s::exact_from(mantissa);
                 let signed_mantissa = if positive { mantissa } else { -mantissa };
@@ -222,8 +222,9 @@ macro_rules! binary_fraction_funs {
             {
                 return None;
             }
-            let (adjusted_mantissa, adjusted_exponent) = if fp_exponent < $f::MIN_NORMAL_EXPONENT {
-                (self >> $f::MIN_EXPONENT, 0)
+            let mn_exponent = i32::wrapping_from($f::MIN_NORMAL_EXPONENT);
+            let (adjusted_mantissa, adjusted_exponent) = if fp_exponent < mn_exponent {
+                (self >> i32::wrapping_from($f::MIN_EXPONENT), 0)
             } else {
                 (
                     ((self >> fp_exponent) - BinaryFraction::ONE) <<
@@ -234,7 +235,7 @@ macro_rules! binary_fraction_funs {
             adjusted_mantissa.into_integer().map(|i| {
                 $f::from_adjusted_mantissa_and_exponent(
                     (&i).exact_into(),
-                    u32::exact_from(adjusted_exponent),
+                    u64::exact_from(adjusted_exponent),
                 )
             })
         }

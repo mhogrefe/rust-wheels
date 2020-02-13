@@ -76,7 +76,10 @@ macro_rules! exhaustive_float_gen {
         ) -> $exhaustive_positive_finite_primitive_floats_s {
             $exhaustive_positive_finite_primitive_floats_s(exhaustive_pairs(
                 $exhaustive_positive_mantissas_f(),
-                exhaustive_range_signed($f::MIN_EXPONENT, i32::wrapping_from($f::MAX_EXPONENT)),
+                exhaustive_range_signed(
+                    i32::wrapping_from($f::MIN_EXPONENT),
+                    i32::wrapping_from($f::MAX_EXPONENT),
+                ),
             ))
         }
 
@@ -313,7 +316,8 @@ macro_rules! special_random_float_gen {
                 let mantissa = self.mantissa_gen.next().unwrap();
                 loop {
                     let exponent = self.exponent_gen.next().unwrap();
-                    if exponent >= $f::MIN_EXPONENT && exponent <= i32::exact_from($f::MAX_EXPONENT)
+                    if exponent >= i32::wrapping_from($f::MIN_EXPONENT)
+                        && exponent <= i32::exact_from($f::MAX_EXPONENT)
                     {
                         let f = $from_mantissa_and_exponent(
                             <$f as PrimitiveFloat>::SignedOfEqualWidth::wrapping_from(mantissa),
