@@ -20,9 +20,59 @@ where
     ))
 }
 
+pub struct RandomDependentPairs<I: Iterator, J: Iterator, F, T>
+where
+    F: Fn(&T, &I::Item) -> J,
+{
+    xs: I,
+    f: F,
+    data: T,
+    x_to_ys: HashMap<I::Item, J>,
+}
+
+impl<I: Iterator, J: Iterator, F, T> Iterator for RandomDependentPairs<I, J, F, T>
+where
+    F: Fn(&T, &I::Item) -> J,
+    I::Item: Clone + Eq + Hash,
+{
+    type Item = (I::Item, J::Item);
+
+    fn next(&mut self) -> Option<(I::Item, J::Item)> {
+        let x = self.xs.next().unwrap();
+        let ys = self
+            .x_to_ys
+            .entry(x.clone())
+            .or_insert((self.f)(&self.data, &x));
+        Some((x, ys.next().unwrap()))
+    }
+}
+
+pub fn random_dependent_pairs<I: Iterator, J: Iterator, F, T>(
+    data: T,
+    xs: I,
+    f: F,
+) -> RandomDependentPairs<I, J, F, T>
+where
+    F: Fn(&T, &I::Item) -> J,
+    I::Item: Clone + Eq + Hash,
+{
+    RandomDependentPairs {
+        xs,
+        f,
+        data,
+        x_to_ys: HashMap::new(),
+    }
+}
+
 macro_rules! exhaustive_dependent_pairs {
-    ($struct_name:ident, $fn_name:ident, $index_type:ident, $index_ctor:expr, $x_index_fn:expr) => {
-        pub struct $struct_name<I: Iterator, J: Iterator, F>
+    (
+        $struct_name:ident,
+        $fn_name:ident,
+        $index_type:ident,
+        $index_ctor:expr,
+        $x_index_fn:expr
+    ) => {
+        pub struct $struct_name<I: Iterator, J: Iterator, F, T>
         where
             I::Item: Clone,
         {
@@ -30,11 +80,12 @@ macro_rules! exhaustive_dependent_pairs {
             xs: CachedIterator<I>,
             x_to_ys: HashMap<I::Item, J>,
             i: $index_type,
+            data: T,
         }
 
-        impl<I: Iterator, J: Iterator, F> Iterator for $struct_name<I, J, F>
+        impl<I: Iterator, J: Iterator, F, T> Iterator for $struct_name<I, J, F, T>
         where
-            F: Fn(&I::Item) -> J,
+            F: Fn(&T, &I::Item) -> J,
             I::Item: Clone + Eq + Hash,
         {
             type Item = (I::Item, J::Item);
@@ -46,16 +97,20 @@ macro_rules! exhaustive_dependent_pairs {
                 if let Some(ys) = self.x_to_ys.get_mut(&x) {
                     return Some((x, ys.next().unwrap()));
                 }
-                let mut ys = (self.f)(&x);
+                let mut ys = (self.f)(&self.data, &x);
                 let y = ys.next().unwrap();
                 self.x_to_ys.insert(x.clone(), ys);
                 Some((x, y))
             }
         }
 
-        pub fn $fn_name<I: Iterator, J: Iterator, F>(xs: I, f: F) -> $struct_name<I, J, F>
+        pub fn $fn_name<I: Iterator, J: Iterator, F, T>(
+            data: T,
+            xs: I,
+            f: F,
+        ) -> $struct_name<I, J, F, T>
         where
-            F: Fn(&I::Item) -> J,
+            F: Fn(&T, &I::Item) -> J,
             I::Item: Clone + Eq + Hash,
         {
             $struct_name {
@@ -63,6 +118,7 @@ macro_rules! exhaustive_dependent_pairs {
                 xs: CachedIterator::new(xs),
                 x_to_ys: HashMap::new(),
                 i: $index_ctor,
+                data,
             }
         }
     };

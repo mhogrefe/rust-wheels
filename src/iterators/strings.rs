@@ -3,11 +3,11 @@ use iterators::chars::exhaustive_chars;
 use iterators::general::{random, Random, RangeIncreasing};
 use iterators::vecs::{exhaustive_vecs, random_vecs, ExhaustiveVecs, RandomVecs};
 
-pub struct ExhaustiveStrings<'a, I>(ExhaustiveVecs<'a, I>)
+pub struct ExhaustiveStrings<I>(ExhaustiveVecs<I>)
 where
     I: Clone + Iterator<Item = char>;
 
-impl<'a, I> Iterator for ExhaustiveStrings<'a, I>
+impl<I> Iterator for ExhaustiveStrings<I>
 where
     I: Clone + Iterator<Item = char>,
 {
@@ -18,14 +18,14 @@ where
     }
 }
 
-pub fn exhaustive_strings_with_chars<'a, I>(chars: I) -> ExhaustiveStrings<'a, I>
+pub fn exhaustive_strings_with_chars<I: 'static>(chars: I) -> ExhaustiveStrings<I>
 where
-    I: 'a + Clone + Iterator<Item = char>,
+    I: Clone + Iterator<Item = char>,
 {
     ExhaustiveStrings(exhaustive_vecs(chars))
 }
 
-pub fn exhaustive_strings<'a>() -> ExhaustiveStrings<'a, MultiChain<RangeIncreasing<char>>> {
+pub fn exhaustive_strings() -> ExhaustiveStrings<MultiChain<RangeIncreasing<char>>> {
     exhaustive_strings_with_chars(exhaustive_chars())
 }
 

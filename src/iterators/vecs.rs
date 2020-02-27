@@ -9,13 +9,14 @@ use malachite_nz::natural::random::special_random_natural_with_bits::*;
 use malachite_nz::platform::Limb;
 use rand::{IsaacRng, Rng, SeedableRng};
 
+use iterators::adaptors::Concat;
 use iterators::common::scramble;
 use iterators::dependent_pairs::exhaustive_dependent_pairs_infinite_log;
 use iterators::general::CachedIterator;
 use iterators::integers_geometric::{
     range_up_geometric_u32, u32s_geometric, RangeUpGeometricU32, U32sGeometric,
 };
-use iterators::primitive_ints::exhaustive_positive;
+use iterators::primitive_ints::{exhaustive_positive, range_up_increasing};
 use iterators::tuples::{exhaustive_pairs, ZOrderTupleIndices};
 
 pub enum ExhaustiveFixedSizeVecsFromSingle<I: Iterator>
@@ -123,24 +124,26 @@ fn exhaustive_vecs_more_than_one<'a, I: Clone + Iterator + 'a>(
 where
     I::Item: Clone,
 {
-    let f = move |size: &u64| {
+    let f = move |_: &(), size: &u64| {
         exhaustive_fixed_size_vecs_from_single(*size, xs.clone())
             .map(Option::Some)
             .chain(repeat(Option::None))
     };
-    Box::new(exhaustive_dependent_pairs_infinite_log(exhaustive_positive(), f).flat_map(|(_, v)| v))
+    Box::new(
+        exhaustive_dependent_pairs_infinite_log((), exhaustive_positive(), f).flat_map(|(_, v)| v),
+    )
 }
 
-pub enum ExhaustiveVecs<'a, I: Iterator>
+pub enum ExhaustiveVecs<I: Iterator>
 where
     I::Item: Clone,
 {
     Zero(bool),
     One(I::Item, Vec<I::Item>),
-    MoreThanOne(bool, Box<dyn Iterator<Item = Vec<I::Item>> + 'a>),
+    MoreThanOne(bool, Box<dyn Iterator<Item = Vec<I::Item>>>),
 }
 
-impl<'a, I: Iterator> Iterator for ExhaustiveVecs<'a, I>
+impl<I: Iterator> Iterator for ExhaustiveVecs<I>
 where
     I::Item: Clone,
 {
@@ -174,7 +177,7 @@ where
 }
 
 //TODO test
-pub fn exhaustive_vecs<'a, I: Clone + Iterator + 'a>(xs: I) -> ExhaustiveVecs<'a, I>
+pub fn exhaustive_vecs<I: 'static + Clone + Iterator>(xs: I) -> ExhaustiveVecs<I>
 where
     I::Item: Clone,
 {
@@ -190,7 +193,7 @@ where
     }
 }
 
-pub fn exhaustive_vecs_min_length<'a, I: 'static + Clone + Iterator + 'a>(
+pub fn exhaustive_vecs_min_length<I: 'static + Clone + Iterator>(
     min_len: u64,
     xs: I,
 ) -> Box<dyn Iterator<Item = Vec<I::Item>>>
@@ -213,10 +216,18 @@ where
     }
 }
 
-pub struct RandomFixedLengthVecs<I>
+pub fn exhaustive_vecs_shortlex<I: 'static + Clone + Iterator>(
+    xs: I,
+) -> Box<dyn Iterator<Item = Vec<I::Item>>>
 where
-    I: Iterator,
+    I::Item: Clone,
 {
+    Box::new(Concat::new(range_up_increasing(0).map(move |i| {
+        exhaustive_fixed_size_vecs_from_single(i, xs.clone())
+    })))
+}
+
+pub struct RandomFixedLengthVecs<I: Iterator> {
     length: usize,
     xs: I,
 }
