@@ -1,3 +1,4 @@
+use malachite_base::num::arithmetic::traits::PowerOfTwo;
 use malachite_base::num::conversion::traits::{ExactFrom, WrappingFrom};
 
 use iterators::common::scramble;
@@ -12,8 +13,8 @@ impl LogPairIndices {
     }
 
     pub fn from_indices(i: usize, j: usize) -> Option<LogPairIndices> {
-        let i = u64::wrapping_from(i);
-        let j = u64::wrapping_from(j);
+        let i = u64::exact_from(i);
+        let j = u64::exact_from(j);
         if i.leading_zeros() == 0 {
             return None;
         }
@@ -56,7 +57,7 @@ impl SqrtPairIndices {
         let mut ix = 0;
         let mut iy = 0;
         loop {
-            let mask = 1 << iy;
+            let mask = u64::power_of_two(iy);
             if self.y & mask != 0 {
                 self.y &= !mask;
                 iy += 1;
@@ -65,7 +66,7 @@ impl SqrtPairIndices {
                 return;
             }
             for _ in 0..2 {
-                let mask = 1 << ix;
+                let mask = u64::power_of_two(ix);
                 if self.x & mask != 0 {
                     self.x &= !mask;
                     ix += 1;
@@ -90,7 +91,7 @@ impl ZOrderTupleIndices {
 
     pub fn increment(&mut self) {
         for j in 0..64 {
-            let mask = 1 << j;
+            let mask = u64::power_of_two(j);
             for i in (0..self.0.len()).rev() {
                 if self.0[i] & mask != 0 {
                     self.0[i] &= !mask;

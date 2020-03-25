@@ -3,6 +3,7 @@ use std::iter::{once, Chain, Once};
 
 use itertools::{Interleave, Itertools};
 use malachite_base::crement::Crementable;
+use malachite_base::num::arithmetic::traits::ModPowerOfTwoNeg;
 use malachite_base::num::basic::traits::{NegativeOne, One, Zero};
 use malachite_base::num::conversion::traits::ExactFrom;
 use malachite_base::num::logic::traits::SignificantBits;
@@ -396,7 +397,7 @@ pub fn random_range_up_integer(seed: &[u32], scale: u32, a: Integer) -> RandomRa
     let offset_limit = if a < 0 {
         None
     } else {
-        Some((Natural::ONE << a_bit_size) - (&a).unsigned_abs_ref())
+        Some((&a).unsigned_abs_ref().mod_power_of_two_neg(a_bit_size))
     };
     RandomRangeUpInteger {
         rng: Box::new(IsaacRng::from_seed(&scramble(seed, "bits"))),

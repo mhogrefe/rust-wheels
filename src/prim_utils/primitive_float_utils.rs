@@ -1,7 +1,7 @@
 use std::cmp::Ordering;
 use std::ops::{Add, Neg, Shl, Shr, Sub};
 
-use malachite_base::num::arithmetic::traits::{NegAssign, Parity, Sign};
+use malachite_base::num::arithmetic::traits::{NegAssign, Parity, PowerOfTwo, Sign};
 use malachite_base::num::basic::traits::{One, Zero};
 use malachite_base::num::conversion::traits::{ExactFrom, ExactInto, WrappingFrom};
 use malachite_base::num::floats::PrimitiveFloat;
@@ -164,6 +164,7 @@ impl Sub<BinaryFraction> for BinaryFraction {
 macro_rules! binary_fraction_funs {
     (
         $f: ident,
+        $u: ident,
         $s: ident,
         $from_float: ident,
         $largest_finite_float: ident,
@@ -187,7 +188,7 @@ macro_rules! binary_fraction_funs {
                 if exponent == 0 {
                     exponent = i32::wrapping_from($f::MIN_EXPONENT);
                 } else {
-                    mantissa += 1 << $f::MANTISSA_WIDTH;
+                    mantissa += $u::power_of_two($f::MANTISSA_WIDTH);
                     exponent += i32::wrapping_from($f::MIN_EXPONENT) - 1;
                 }
                 let mantissa = $s::exact_from(mantissa);
@@ -267,8 +268,8 @@ impl BinaryFraction {
         }
     }
 
-    binary_fraction_funs!(f32, i32, from_f32, largest_finite_f32, to_f32);
-    binary_fraction_funs!(f64, i64, from_f64, largest_finite_f64, to_f64);
+    binary_fraction_funs!(f32, u32, i32, from_f32, largest_finite_f32, to_f32);
+    binary_fraction_funs!(f64, u64, i64, from_f64, largest_finite_f64, to_f64);
 }
 
 macro_rules! additional_funs {

@@ -5,7 +5,7 @@ use itertools::{Interleave, Itertools};
 use malachite_base::num::basic::traits::Zero;
 use malachite_base::num::conversion::traits::{ExactFrom, WrappingFrom};
 use malachite_base::num::floats::PrimitiveFloat;
-use malachite_base::num::logic::traits::SignificantBits;
+use malachite_base::num::logic::traits::{LowMask, SignificantBits};
 use rand::{IsaacRng, Rand, Rng, SeedableRng};
 
 use iterators::common::scramble;
@@ -51,7 +51,9 @@ macro_rules! exhaustive_float_gen {
         }
 
         fn $exhaustive_positive_mantissas_f() -> $exhaustive_positive_mantissas_s {
-            $exhaustive_positive_mantissas_s(range_down_increasing((1 << $f::MANTISSA_WIDTH) - 1))
+            $exhaustive_positive_mantissas_s(range_down_increasing($u::low_mask(
+                $f::MANTISSA_WIDTH,
+            )))
         }
 
         pub struct $exhaustive_positive_finite_primitive_floats_s(
@@ -255,6 +257,8 @@ where
 macro_rules! special_random_float_gen {
     (
         $f: ident,
+        $u: ident,
+        $s: ident,
         $from_mantissa_and_exponent: ident,
         $special_random_positive_mantissas_s: ident,
         $special_random_positive_mantissas_f: ident,
@@ -270,14 +274,14 @@ macro_rules! special_random_float_gen {
         $special_random_f: ident
     ) => {
         struct $special_random_positive_mantissas_s {
-            range_gen: RandomRange<<$f as PrimitiveFloat>::UnsignedOfEqualWidth>,
+            range_gen: RandomRange<$u>,
             precision_gen: RandomRange<u32>,
         }
 
         impl Iterator for $special_random_positive_mantissas_s {
-            type Item = <$f as PrimitiveFloat>::UnsignedOfEqualWidth;
+            type Item = $u;
 
-            fn next(&mut self) -> Option<<$f as PrimitiveFloat>::UnsignedOfEqualWidth> {
+            fn next(&mut self) -> Option<$u> {
                 let p = self.precision_gen.next().unwrap();
                 self.range_gen.next().map(|m| {
                     let mantissa = (m << 1) + 1;
@@ -294,7 +298,7 @@ macro_rules! special_random_float_gen {
                 range_gen: random_range(
                     &scramble(seed, "mantissa"),
                     0,
-                    (1 << $f::MANTISSA_WIDTH) - 1,
+                    $u::low_mask($f::MANTISSA_WIDTH),
                 ),
                 precision_gen: random_range(
                     &scramble(seed, "precision"),
@@ -319,10 +323,7 @@ macro_rules! special_random_float_gen {
                     if exponent >= i32::wrapping_from($f::MIN_EXPONENT)
                         && exponent <= i32::exact_from($f::MAX_EXPONENT)
                     {
-                        let f = $from_mantissa_and_exponent(
-                            <$f as PrimitiveFloat>::SignedOfEqualWidth::wrapping_from(mantissa),
-                            exponent,
-                        );
+                        let f = $from_mantissa_and_exponent($s::wrapping_from(mantissa), exponent);
                         if f.is_some() {
                             return f;
                         }
@@ -458,6 +459,8 @@ macro_rules! special_random_float_gen {
 
 special_random_float_gen!(
     f32,
+    u32,
+    i32,
     f32_from_mantissa_and_exponent,
     SpecialRandomPositiveMantissasF32,
     special_random_positive_mantissas_f32,
@@ -475,6 +478,8 @@ special_random_float_gen!(
 
 special_random_float_gen!(
     f64,
+    u64,
+    i64,
     f64_from_mantissa_and_exponent,
     SpecialRandomPositiveMantissasF64,
     special_random_positive_mantissas_f64,
