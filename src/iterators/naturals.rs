@@ -215,7 +215,7 @@ pub fn random_range_up_natural(seed: &[u32], scale: u32, a: Natural) -> RandomRa
     // let n = a.significant_bits().
     // There are 2^(n - 1) values with exactly n bits, the smallest being 2^(n - 1);
     // a - 2^(n - 1) are smaller than a, so 2^(n - 1) - (a - 2^(n - 1)) = 2^n - a are at least a.
-    let offset_limit = (Natural::power_of_two(a_bit_size)) - &a;
+    let offset_limit = Natural::power_of_two(a_bit_size) - &a;
     RandomRangeUpNatural {
         rng: Box::new(IsaacRng::from_seed(&scramble(seed, "bits"))),
         bit_sizes: range_up_geometric_u32(
@@ -261,7 +261,7 @@ pub fn special_random_range_up_natural(
     // let n = a.significant_bits().
     // There are 2^(n - 1) values with exactly n bits, the smallest being 2^(n - 1);
     // a - 2^(n - 1) are smaller than a, so 2^(n - 1) - (a - 2^(n - 1)) = 2^n - a are at least a.
-    let offset_limit = (Natural::power_of_two(a_bit_size)) - &a;
+    let offset_limit = Natural::power_of_two(a_bit_size) - &a;
     SpecialRandomRangeUpNatural {
         rng: Box::new(IsaacRng::from_seed(&scramble(seed, "bits"))),
         bit_sizes: range_up_geometric_u32(
