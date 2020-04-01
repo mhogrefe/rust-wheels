@@ -356,6 +356,7 @@ where
     }
 }
 
+// TODO exhaustive_pairs_from_single(range_increasing(0, 0)) doesn't work
 macro_rules! exhaustive_tuple_from_single {
     (
         $size: expr, $repeated_tuple: ty, $struct_name: ident, $fn_name: ident,
