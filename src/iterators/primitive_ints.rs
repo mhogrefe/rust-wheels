@@ -321,7 +321,12 @@ where
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        self.0.next().map(|x| T::wrapping_from(x) & T::MAX)
+        loop {
+            let x = self.0.next().map(|x| T::wrapping_from(x) & T::MAX);
+            if x != Some(T::ZERO) {
+                return x;
+            }
+        }
     }
 }
 

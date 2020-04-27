@@ -170,8 +170,7 @@ macro_rules! binary_fraction_funs {
         $largest_finite_float: ident,
         $to_float: ident
     ) => {
-        pub fn $from_float(mut f: $f) -> Option<BinaryFraction>
-        {
+        pub fn $from_float(mut f: $f) -> Option<BinaryFraction> {
             if f == 0.0 {
                 Some(BinaryFraction::ZERO)
             } else if f == 1.0 {
@@ -200,22 +199,18 @@ macro_rules! binary_fraction_funs {
             }
         }
 
-        pub fn $largest_finite_float() -> BinaryFraction
-        {
+        pub fn $largest_finite_float() -> BinaryFraction {
             BinaryFraction::$from_float($f::MAX_FINITE).unwrap()
         }
 
-        pub fn $to_float(&self) -> Option<$f>
-        {
+        pub fn $to_float(&self) -> Option<$f> {
             if *self == BinaryFraction::ZERO {
                 return Some(0.0);
             }
             if self.mantissa < 0 {
                 return (-self).$to_float().map(|f| -f);
             }
-            let fp_exponent = i32::exact_from(self.mantissa.significant_bits())
-                + self.exponent
-                - 1;
+            let fp_exponent = i32::exact_from(self.mantissa.significant_bits()) + self.exponent - 1;
             let signed_max_exponent = i32::exact_from($f::MAX_EXPONENT);
             if fp_exponent > signed_max_exponent
                 || fp_exponent == signed_max_exponent
@@ -228,8 +223,8 @@ macro_rules! binary_fraction_funs {
                 (self >> i32::wrapping_from($f::MIN_EXPONENT), 0)
             } else {
                 (
-                    ((self >> fp_exponent) - BinaryFraction::ONE) <<
-                        i32::wrapping_from($f::MANTISSA_WIDTH),
+                    ((self >> fp_exponent) - BinaryFraction::ONE)
+                        << i32::wrapping_from($f::MANTISSA_WIDTH),
                     fp_exponent + i32::wrapping_from($f::MAX_EXPONENT),
                 )
             };
@@ -240,7 +235,7 @@ macro_rules! binary_fraction_funs {
                 )
             })
         }
-    }
+    };
 }
 
 impl BinaryFraction {
