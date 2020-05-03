@@ -2,10 +2,12 @@ use std::cmp::min;
 use std::iter::{once, Chain, Once};
 
 use itertools::{Interleave, Itertools};
+use malachite_base::num::arithmetic::traits::RoundToMultipleOfPowerOfTwo;
 use malachite_base::num::basic::traits::Zero;
 use malachite_base::num::conversion::traits::{ExactFrom, WrappingFrom};
 use malachite_base::num::floats::PrimitiveFloat;
 use malachite_base::num::logic::traits::{LowMask, SignificantBits};
+use malachite_base::round::RoundingMode;
 use rand::{IsaacRng, Rand, Rng, SeedableRng};
 
 use iterators::common::scramble;
@@ -286,7 +288,7 @@ macro_rules! special_random_float_gen {
                 self.range_gen.next().map(|m| {
                     let mantissa = (m << 1) + 1;
                     let p = min(u64::from(p), mantissa.significant_bits() - 1);
-                    mantissa >> p << p
+                    mantissa.round_to_multiple_of_power_of_two(p, RoundingMode::Ceiling)
                 })
             }
         }
