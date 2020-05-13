@@ -2,7 +2,7 @@ use std::fmt::Display;
 use std::iter::{once, Chain, Once};
 
 use itertools::{Interleave, Itertools};
-use malachite_base::comparison::Min;
+use malachite_base::comparison::traits::Min;
 use malachite_base::crement::Crementable;
 use malachite_base::num::basic::integers::PrimitiveInteger;
 use malachite_base::num::basic::signeds::PrimitiveSigned;
