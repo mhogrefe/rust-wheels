@@ -11207,7 +11207,7 @@ random_range_down_char_iii map 10
 
 random_range_down_char_iv list 21
 'ꃽ'
-'\u{4dbf}'
+'䶿'
 'ᕣ'
 '띰'
 '⤸'
