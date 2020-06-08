@@ -1,6 +1,6 @@
 use std;
 
-use malachite_base::round::RoundingMode;
+use malachite_base::rounding_mode::RoundingMode;
 
 use iterators::general::{random_from_vector, RandomFromVector};
 

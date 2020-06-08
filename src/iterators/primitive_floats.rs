@@ -7,7 +7,7 @@ use malachite_base::num::basic::traits::Zero;
 use malachite_base::num::conversion::traits::{ExactFrom, WrappingFrom};
 use malachite_base::num::floats::PrimitiveFloat;
 use malachite_base::num::logic::traits::{LowMask, SignificantBits};
-use malachite_base::round::RoundingMode;
+use malachite_base::rounding_mode::RoundingMode;
 use rand::{IsaacRng, Rand, Rng, SeedableRng};
 
 use iterators::common::scramble;
