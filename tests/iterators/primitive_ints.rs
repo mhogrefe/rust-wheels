@@ -162,10 +162,10 @@ fn positive_unsigned_helper<T: PrimitiveUnsigned + Rand>(eo: &TestOutput) {
         &format!("random_positive_{}s", T::NAME),
         &mut random_positive_unsigned::<T>(&EXAMPLE_SEED),
     );
-    eo.match_vec_f_binary(
-        &format!("special_random_positive_{}s", T::NAME),
-        &mut special_random_positive_unsigned::<T>(&EXAMPLE_SEED),
-    );
+    // eo.match_vec_f_binary(
+    //     &format!("special_random_positive_{}s", T::NAME),
+    //     &mut special_random_positive_unsigned::<T>(&EXAMPLE_SEED),
+    // );
 }
 
 #[test]
@@ -190,10 +190,10 @@ where
         &format!("random_positive_{}s", T::NAME),
         &mut random_positive_signed::<T>(&EXAMPLE_SEED),
     );
-    eo.match_vec_f_binary(
-        &format!("special_random_positive_{}s", T::NAME),
-        &mut special_random_positive_signed::<T>(&EXAMPLE_SEED),
-    );
+    // eo.match_vec_f_binary(
+    //     &format!("special_random_positive_{}s", T::NAME),
+    //     &mut special_random_positive_signed::<T>(&EXAMPLE_SEED),
+    // );
 }
 
 #[test]
@@ -218,10 +218,10 @@ where
         &format!("random_negative_{}s", T::NAME),
         &mut random_negative_signed::<T>(&EXAMPLE_SEED),
     );
-    eo.match_vec_f_binary(
-        &format!("special_random_negative_{}s", T::NAME),
-        &mut special_random_negative_signed::<T>(&EXAMPLE_SEED),
-    );
+    // eo.match_vec_f_binary(
+    //     &format!("special_random_negative_{}s", T::NAME),
+    //     &mut special_random_negative_signed::<T>(&EXAMPLE_SEED),
+    // );
 }
 
 #[test]
@@ -246,10 +246,10 @@ where
         &format!("random_natural_{}s", T::NAME),
         &mut random_natural_signed::<T>(&EXAMPLE_SEED),
     );
-    eo.match_vec_f_binary(
-        &format!("special_random_natural_{}s", T::NAME),
-        &mut special_random_natural_signed::<T>(&EXAMPLE_SEED),
-    );
+    // eo.match_vec_f_binary(
+    //     &format!("special_random_natural_{}s", T::NAME),
+    //     &mut special_random_natural_signed::<T>(&EXAMPLE_SEED),
+    // );
 }
 
 #[test]
@@ -274,10 +274,10 @@ where
         &format!("random_nonzero_{}s", T::NAME),
         &mut random_nonzero_signed::<T>(&EXAMPLE_SEED),
     );
-    eo.match_vec_f_binary(
-        &format!("special_random_nonzero_{}s", T::NAME),
-        &mut special_random_nonzero_signed::<T>(&EXAMPLE_SEED),
-    );
+    // eo.match_vec_f_binary(
+    //     &format!("special_random_nonzero_{}s", T::NAME),
+    //     &mut special_random_nonzero_signed::<T>(&EXAMPLE_SEED),
+    // );
 }
 
 #[test]
@@ -298,10 +298,10 @@ fn all_unsigned_helper<T: PrimitiveUnsigned + Rand>(eo: &TestOutput) {
         &format!("random_{}s", T::NAME),
         &mut random::<T>(&EXAMPLE_SEED),
     );
-    eo.match_vec_f_binary(
-        &format!("special_random_{}s", T::NAME),
-        &mut special_random_unsigned::<T>(&EXAMPLE_SEED),
-    );
+    // eo.match_vec_f_binary(
+    //     &format!("special_random_{}s", T::NAME),
+    //     &mut special_random_unsigned::<T>(&EXAMPLE_SEED),
+    // );
 }
 
 #[test]
@@ -326,10 +326,10 @@ where
         &format!("random_{}s", T::NAME),
         &mut random::<T>(&EXAMPLE_SEED),
     );
-    eo.match_vec_f_binary(
-        &format!("special_random_{}s", T::NAME),
-        &mut special_random_signed::<T>(&EXAMPLE_SEED),
-    );
+    // eo.match_vec_f_binary(
+    //     &format!("special_random_{}s", T::NAME),
+    //     &mut special_random_signed::<T>(&EXAMPLE_SEED),
+    // );
 }
 
 #[test]

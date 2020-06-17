@@ -110,10 +110,10 @@ fn test_positive_naturals() {
             &format!("random_positive_naturals_{}", number),
             &mut random_positive_naturals(&EXAMPLE_SEED, scale),
         );
-        eo.match_vec_f_binary(
-            &format!("special_random_positive_naturals_{}", number),
-            &mut special_random_positive_naturals(&EXAMPLE_SEED, scale),
-        );
+        // eo.match_vec_f_binary(
+        //     &format!("special_random_positive_naturals_{}", number),
+        //     &mut special_random_positive_naturals(&EXAMPLE_SEED, scale),
+        // );
     };
     test("i", 0);
     test("ii", 1);
@@ -133,10 +133,10 @@ fn test_naturals() {
             &format!("random_naturals_{}", number),
             &mut random_naturals(&EXAMPLE_SEED, scale),
         );
-        eo.match_vec_f_binary(
-            &format!("special_random_naturals_{}", number),
-            &mut special_random_naturals(&EXAMPLE_SEED, scale),
-        );
+        // eo.match_vec_f_binary(
+        //     &format!("special_random_naturals_{}", number),
+        //     &mut special_random_naturals(&EXAMPLE_SEED, scale),
+        // );
     };
     test("i", 0);
     test("ii", 1);

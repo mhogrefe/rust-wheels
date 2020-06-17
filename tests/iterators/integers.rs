@@ -116,10 +116,10 @@ fn test_positive_integers() {
             &format!("random_positive_integers_{}", number),
             &mut random_positive_integers(&EXAMPLE_SEED, scale),
         );
-        eo.match_vec_f_binary(
-            &format!("special_random_positive_integers_{}", number),
-            &mut special_random_positive_integers(&EXAMPLE_SEED, scale),
-        );
+        // eo.match_vec_f_binary(
+        //     &format!("special_random_positive_integers_{}", number),
+        //     &mut special_random_positive_integers(&EXAMPLE_SEED, scale),
+        // );
     };
     test("i", 0);
     test("ii", 1);
@@ -142,10 +142,10 @@ fn test_natural_integers() {
             &format!("random_natural_integers_{}", number),
             &mut random_natural_integers(&EXAMPLE_SEED, scale),
         );
-        eo.match_vec_f_binary(
-            &format!("special_random_natural_integers_{}", number),
-            &mut special_random_natural_integers(&EXAMPLE_SEED, scale),
-        );
+        // eo.match_vec_f_binary(
+        //     &format!("special_random_natural_integers_{}", number),
+        //     &mut special_random_natural_integers(&EXAMPLE_SEED, scale),
+        // );
     };
     test("i", 0);
     test("ii", 1);
@@ -168,10 +168,10 @@ fn test_negative_integers() {
             &format!("random_negative_integers_{}", number),
             &mut random_negative_integers(&EXAMPLE_SEED, scale),
         );
-        eo.match_vec_f_binary(
-            &format!("special_random_negative_integers_{}", number),
-            &mut special_random_negative_integers(&EXAMPLE_SEED, scale),
-        );
+        // eo.match_vec_f_binary(
+        //     &format!("special_random_negative_integers_{}", number),
+        //     &mut special_random_negative_integers(&EXAMPLE_SEED, scale),
+        // );
     };
     test("i", 0);
     test("ii", 1);
@@ -194,10 +194,10 @@ fn test_nonzero_integers() {
             &format!("random_nonzero_integers_{}", number),
             &mut random_nonzero_integers(&EXAMPLE_SEED, scale),
         );
-        eo.match_vec_f_binary(
-            &format!("special_random_nonzero_integers_{}", number),
-            &mut special_random_nonzero_integers(&EXAMPLE_SEED, scale),
-        );
+        // eo.match_vec_f_binary(
+        //     &format!("special_random_nonzero_integers_{}", number),
+        //     &mut special_random_nonzero_integers(&EXAMPLE_SEED, scale),
+        // );
     };
     test("i", 0);
     test("ii", 1);
@@ -217,10 +217,10 @@ fn test_integers() {
             &format!("random_integers_{}", number),
             &mut random_integers(&EXAMPLE_SEED, scale),
         );
-        eo.match_vec_f_binary(
-            &format!("special_random_integers_{}", number),
-            &mut special_random_integers(&EXAMPLE_SEED, scale),
-        );
+        // eo.match_vec_f_binary(
+        //     &format!("special_random_integers_{}", number),
+        //     &mut special_random_integers(&EXAMPLE_SEED, scale),
+        // );
     };
     test("i", 0);
     test("ii", 1);
