@@ -9,10 +9,6 @@ extern crate sha3;
 extern crate stats;
 extern crate time;
 
-pub mod io {
-    pub mod readers;
-}
-
 pub mod iterators {
     pub mod adaptors;
     pub mod bools;
