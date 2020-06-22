@@ -1,8 +1,10 @@
 use std::iter::repeat;
 use std::marker::PhantomData;
 
+use malachite_base::exhaustive::range::range_up_increasing;
 use malachite_base::num::basic::unsigneds::PrimitiveUnsigned;
 use malachite_base::num::conversion::traits::{ExactFrom, WrappingFrom};
+use malachite_base::num::exhaustive::exhaustive_positive_primitives;
 use malachite_base::num::logic::traits::BitConvertible;
 use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
 use malachite_nz::natural::random::special_random_natural_with_bits::*;
@@ -16,7 +18,6 @@ use iterators::general::CachedIterator;
 use iterators::integers_geometric::{
     range_up_geometric_u32, u32s_geometric, RangeUpGeometricU32, U32sGeometric,
 };
-use iterators::primitive_ints::{exhaustive_positive, range_up_increasing};
 use iterators::tuples::{exhaustive_pairs, ZOrderTupleIndices};
 
 pub enum ExhaustiveFixedSizeVecsFromSingle<I: Iterator>
@@ -130,7 +131,8 @@ where
             .chain(repeat(Option::None))
     };
     Box::new(
-        exhaustive_dependent_pairs_infinite_log((), exhaustive_positive(), f).flat_map(|(_, v)| v),
+        exhaustive_dependent_pairs_infinite_log((), exhaustive_positive_primitives(), f)
+            .flat_map(|(_, v)| v),
     )
 }
 

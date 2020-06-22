@@ -1,71 +1,20 @@
-use std::fmt::Display;
 use std::iter::{once, Chain, Once};
 
-use itertools::{Interleave, Itertools};
-use malachite_base::comparison::traits::Min;
-use malachite_base::crement::Crementable;
+use itertools::Itertools;
+use malachite_base::exhaustive::range::{
+    range_decreasing, range_increasing, RangeDecreasing, RangeIncreasing,
+};
 use malachite_base::num::basic::integers::PrimitiveInteger;
 use malachite_base::num::basic::signeds::PrimitiveSigned;
 use malachite_base::num::basic::unsigneds::PrimitiveUnsigned;
 use malachite_base::num::conversion::traits::WrappingFrom;
+use malachite_base::num::exhaustive::UpDown;
 use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
 use rand::distributions::range::SampleRange;
 use rand::distributions::{IndependentSample, Range};
 use rand::{IsaacRng, Rand, SeedableRng};
 
-use iterators::general::{
-    random, range_decreasing, range_increasing, Random, RangeDecreasing, RangeIncreasing,
-};
-
-pub fn exhaustive_positive<T: PrimitiveInteger>() -> RangeIncreasing<T> {
-    range_increasing(T::ONE, T::MAX)
-}
-
-pub fn exhaustive_unsigned<T: PrimitiveUnsigned>() -> RangeIncreasing<T> {
-    range_increasing(T::ZERO, T::MAX)
-}
-
-pub fn exhaustive_negative_signed<T: PrimitiveSigned>() -> RangeDecreasing<T> {
-    range_decreasing(T::MIN, T::NEGATIVE_ONE)
-}
-
-pub fn exhaustive_natural_signed<T: PrimitiveSigned>() -> RangeIncreasing<T> {
-    range_increasing(T::ZERO, T::MAX)
-}
-
-type UpDown<T> = Interleave<RangeIncreasing<T>, RangeDecreasing<T>>;
-
-pub fn exhaustive_nonzero_signed<T: PrimitiveSigned>() -> UpDown<T> {
-    exhaustive_positive().interleave(exhaustive_negative_signed())
-}
-
-pub fn exhaustive_signed<T: PrimitiveSigned>() -> Chain<Once<T>, UpDown<T>> {
-    once(T::ZERO).chain(exhaustive_nonzero_signed())
-}
-
-pub fn range_up_increasing<T: PrimitiveInteger>(a: T) -> RangeIncreasing<T> {
-    range_increasing(a, T::MAX)
-}
-
-pub fn range_up_decreasing<T: PrimitiveInteger>(a: T) -> RangeDecreasing<T> {
-    range_decreasing(a, T::MAX)
-}
-
-pub fn range_down_increasing<T: Display + Min + Crementable>(b: T) -> RangeIncreasing<T> {
-    range_increasing(T::MIN, b)
-}
-
-pub fn range_down_decreasing<T: Display + Min + Crementable>(b: T) -> RangeDecreasing<T> {
-    range_decreasing(T::MIN, b)
-}
-
-pub fn increasing<T: PrimitiveInteger>() -> RangeIncreasing<T> {
-    range_increasing(T::MIN, T::MAX)
-}
-
-pub fn decreasing<T: PrimitiveInteger>() -> RangeDecreasing<T> {
-    range_decreasing(T::MIN, T::MAX)
-}
+use iterators::general::{random, Random};
 
 #[derive(Clone)]
 pub enum ExhaustiveRangeSigned<T: PrimitiveSigned> {

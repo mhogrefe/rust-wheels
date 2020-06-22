@@ -1,6 +1,8 @@
+use malachite_base::exhaustive::range::RangeIncreasing;
+
 use iterators::adaptors::MultiChain;
 use iterators::chars::exhaustive_chars;
-use iterators::general::{random, Random, RangeIncreasing};
+use iterators::general::{random, Random};
 use iterators::vecs::{exhaustive_vecs, random_vecs, ExhaustiveVecs, RandomVecs};
 
 pub struct ExhaustiveStrings<I>(ExhaustiveVecs<I>)

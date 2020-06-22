@@ -1,12 +1,13 @@
 use std::str::FromStr;
 
+use malachite_base::exhaustive::range::{
+    range_decreasing, range_down_decreasing, range_down_increasing, range_increasing,
+};
 use malachite_nz::natural::Natural;
 
 use common::get_expected_test_outputs;
 use rust_wheels::iterators::common::EXAMPLE_SEED;
-use rust_wheels::iterators::general::{range_decreasing, range_increasing};
 use rust_wheels::iterators::naturals::*;
-use rust_wheels::iterators::primitive_ints::{range_down_decreasing, range_down_increasing};
 
 #[test]
 fn test_range_increasing_natural() {

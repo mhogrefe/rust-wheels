@@ -2,20 +2,20 @@ use std::cmp::min;
 use std::iter::{once, Chain, Once};
 
 use itertools::{Interleave, Itertools};
+use malachite_base::exhaustive::range::{range_down_increasing, RangeIncreasing};
 use malachite_base::num::arithmetic::traits::RoundToMultipleOfPowerOfTwo;
 use malachite_base::num::basic::traits::Zero;
 use malachite_base::num::conversion::traits::{ExactFrom, WrappingFrom};
 use malachite_base::num::floats::PrimitiveFloat;
 use malachite_base::num::logic::traits::{LowMask, SignificantBits};
-use malachite_base::rounding_mode::RoundingMode;
+use malachite_base::rounding_modes::RoundingMode;
 use rand::{IsaacRng, Rand, Rng, SeedableRng};
 
 use iterators::common::scramble;
-use iterators::general::{random, random_from_vector, Random, RandomFromVector, RangeIncreasing};
+use iterators::general::{random, random_from_vector, Random, RandomFromVector};
 use iterators::integers_geometric::{i32s_geometric, I32sGeometric};
 use iterators::primitive_ints::{
-    exhaustive_range_signed, random_range, range_down_increasing, ExhaustiveRangeSigned,
-    RandomRange,
+    exhaustive_range_signed, random_range, ExhaustiveRangeSigned, RandomRange,
 };
 use iterators::tuples::{exhaustive_pairs, ExhaustivePairs};
 use prim_utils::primitive_float_utils::{

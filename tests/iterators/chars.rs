@@ -1,9 +1,11 @@
 use std::char;
 
+use malachite_base::exhaustive::range::{range_decreasing, range_increasing};
+
 use common::get_expected_test_outputs;
 use rust_wheels::iterators::chars::*;
 use rust_wheels::iterators::common::EXAMPLE_SEED;
-use rust_wheels::iterators::general::{random, range_decreasing, range_increasing};
+use rust_wheels::iterators::general::random;
 
 #[test]
 fn test_chars_increasing() {

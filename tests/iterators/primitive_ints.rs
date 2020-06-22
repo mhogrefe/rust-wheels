@@ -1,3 +1,7 @@
+use malachite_base::exhaustive::range::{
+    decreasing, increasing, range_decreasing, range_down_decreasing, range_down_increasing,
+    range_increasing, range_up_decreasing, range_up_increasing,
+};
 use malachite_base::num::basic::integers::PrimitiveInteger;
 use malachite_base::num::basic::signeds::PrimitiveSigned;
 use malachite_base::num::basic::unsigneds::PrimitiveUnsigned;
@@ -7,7 +11,7 @@ use rand::Rand;
 
 use common::{get_expected_test_outputs, TestOutput};
 use rust_wheels::iterators::common::EXAMPLE_SEED;
-use rust_wheels::iterators::general::{random, range_decreasing, range_increasing};
+use rust_wheels::iterators::general::random;
 use rust_wheels::iterators::primitive_ints::*;
 
 macro_rules! prim_fail {
@@ -154,10 +158,6 @@ prim_fail_i!(
 );
 
 fn positive_unsigned_helper<T: PrimitiveUnsigned + Rand>(eo: &TestOutput) {
-    eo.match_vec(
-        &format!("exhaustive_positive_{}s", T::NAME),
-        &mut exhaustive_positive::<T>(),
-    );
     eo.match_vec_f(
         &format!("random_positive_{}s", T::NAME),
         &mut random_positive_unsigned::<T>(&EXAMPLE_SEED),
@@ -182,10 +182,6 @@ where
     <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
     T: WrappingFrom<<T as PrimitiveSigned>::UnsignedOfEqualWidth>,
 {
-    eo.match_vec(
-        &format!("exhaustive_positive_{}s", T::NAME),
-        &mut exhaustive_positive::<T>(),
-    );
     eo.match_vec_f(
         &format!("random_positive_{}s", T::NAME),
         &mut random_positive_signed::<T>(&EXAMPLE_SEED),
@@ -210,10 +206,6 @@ where
     <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
     T: WrappingFrom<<T as PrimitiveSigned>::UnsignedOfEqualWidth>,
 {
-    eo.match_vec(
-        &format!("exhaustive_negative_{}s", T::NAME),
-        &mut exhaustive_negative_signed::<T>(),
-    );
     eo.match_vec_f(
         &format!("random_negative_{}s", T::NAME),
         &mut random_negative_signed::<T>(&EXAMPLE_SEED),
@@ -238,10 +230,6 @@ where
     <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
     T: WrappingFrom<<T as PrimitiveSigned>::UnsignedOfEqualWidth>,
 {
-    eo.match_vec(
-        &format!("exhaustive_natural_{}s", T::NAME),
-        &mut exhaustive_natural_signed::<T>(),
-    );
     eo.match_vec_f(
         &format!("random_natural_{}s", T::NAME),
         &mut random_natural_signed::<T>(&EXAMPLE_SEED),
@@ -266,10 +254,6 @@ where
     <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
     T: WrappingFrom<<T as PrimitiveSigned>::UnsignedOfEqualWidth>,
 {
-    eo.match_vec(
-        &format!("exhaustive_nonzero_{}s", T::NAME),
-        &mut exhaustive_nonzero_signed::<T>(),
-    );
     eo.match_vec_f(
         &format!("random_nonzero_{}s", T::NAME),
         &mut random_nonzero_signed::<T>(&EXAMPLE_SEED),
@@ -290,10 +274,6 @@ fn test_nonzero_signed() {
 }
 
 fn all_unsigned_helper<T: PrimitiveUnsigned + Rand>(eo: &TestOutput) {
-    eo.match_vec(
-        &format!("exhaustive_{}s", T::NAME),
-        &mut exhaustive_unsigned::<T>(),
-    );
     eo.match_vec_f(
         &format!("random_{}s", T::NAME),
         &mut random::<T>(&EXAMPLE_SEED),
@@ -318,10 +298,6 @@ where
     <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
     T: WrappingFrom<<T as PrimitiveSigned>::UnsignedOfEqualWidth>,
 {
-    eo.match_vec(
-        &format!("exhaustive_{}s", T::NAME),
-        &mut exhaustive_signed::<T>(),
-    );
     eo.match_vec_f(
         &format!("random_{}s", T::NAME),
         &mut random::<T>(&EXAMPLE_SEED),

@@ -11,7 +11,6 @@ extern crate time;
 
 pub mod iterators {
     pub mod adaptors;
-    pub mod bools;
     pub mod chars;
     pub mod common;
     pub mod dependent_pairs;

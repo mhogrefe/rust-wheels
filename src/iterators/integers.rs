@@ -3,6 +3,9 @@ use std::iter::{once, Chain, Once};
 
 use itertools::{Interleave, Itertools};
 use malachite_base::crement::Crementable;
+use malachite_base::exhaustive::range::{
+    range_decreasing, range_increasing, RangeDecreasing, RangeIncreasing,
+};
 use malachite_base::num::arithmetic::traits::ModPowerOfTwoNeg;
 use malachite_base::num::basic::traits::{NegativeOne, One, Zero};
 use malachite_base::num::conversion::traits::ExactFrom;
@@ -14,9 +17,7 @@ use malachite_nz::natural::Natural;
 use rand::{IsaacRng, Rng, SeedableRng};
 
 use iterators::common::scramble;
-use iterators::general::{
-    random, range_decreasing, range_increasing, Random, RangeDecreasing, RangeIncreasing,
-};
+use iterators::general::{random, Random};
 use iterators::integers_geometric::{range_up_geometric_u32, RangeUpGeometricU32};
 use iterators::naturals::{
     random_naturals, random_positive_naturals, special_random_naturals,

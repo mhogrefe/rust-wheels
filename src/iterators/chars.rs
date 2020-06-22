@@ -1,12 +1,13 @@
 use std::char;
 
-use malachite_base::chars::char_to_contiguous_range::char_to_contiguous_range;
-use malachite_base::chars::contiguous_range_to_char::contiguous_range_to_char;
+use malachite_base::chars::{char_to_contiguous_range, contiguous_range_to_char};
+use malachite_base::exhaustive::range::{
+    range_decreasing, range_increasing, RangeDecreasing, RangeIncreasing,
+};
 use rand::distributions::{IndependentSample, Range};
 use rand::{IsaacRng, Rng, SeedableRng};
 
 use iterators::adaptors::MultiChain;
-use iterators::general::{range_decreasing, range_increasing, RangeDecreasing, RangeIncreasing};
 
 pub fn exhaustive_chars() -> MultiChain<RangeIncreasing<char>> {
     MultiChain::new(vec![
