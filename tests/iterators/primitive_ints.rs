@@ -11,7 +11,6 @@ use rand::Rand;
 
 use common::{get_expected_test_outputs, TestOutput};
 use rust_wheels::iterators::common::EXAMPLE_SEED;
-use rust_wheels::iterators::general::random;
 use rust_wheels::iterators::primitive_ints::*;
 
 macro_rules! prim_fail {
@@ -157,11 +156,7 @@ prim_fail_i!(
     random_range_fail_i64_4
 );
 
-fn positive_unsigned_helper<T: PrimitiveUnsigned + Rand>(eo: &TestOutput) {
-    eo.match_vec_f(
-        &format!("random_positive_{}s", T::NAME),
-        &mut random_positive_unsigned::<T>(&EXAMPLE_SEED),
-    );
+fn positive_unsigned_helper<T: PrimitiveUnsigned + Rand>(_eo: &TestOutput) {
     // eo.match_vec_f_binary(
     //     &format!("special_random_positive_{}s", T::NAME),
     //     &mut special_random_positive_unsigned::<T>(&EXAMPLE_SEED),
@@ -177,15 +172,11 @@ fn test_positive_unsigned() {
     positive_unsigned_helper::<u64>(&eo);
 }
 
-fn positive_signed_helper<T: PrimitiveSigned + Rand>(eo: &TestOutput)
+fn positive_signed_helper<T: PrimitiveSigned + Rand>(_eo: &TestOutput)
 where
     <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
     T: WrappingFrom<<T as PrimitiveSigned>::UnsignedOfEqualWidth>,
 {
-    eo.match_vec_f(
-        &format!("random_positive_{}s", T::NAME),
-        &mut random_positive_signed::<T>(&EXAMPLE_SEED),
-    );
     // eo.match_vec_f_binary(
     //     &format!("special_random_positive_{}s", T::NAME),
     //     &mut special_random_positive_signed::<T>(&EXAMPLE_SEED),
@@ -201,15 +192,11 @@ fn test_positive_signed() {
     positive_signed_helper::<i64>(&eo);
 }
 
-fn negative_signed_helper<T: PrimitiveSigned + Rand>(eo: &TestOutput)
+fn negative_signed_helper<T: PrimitiveSigned + Rand>(_eo: &TestOutput)
 where
     <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
     T: WrappingFrom<<T as PrimitiveSigned>::UnsignedOfEqualWidth>,
 {
-    eo.match_vec_f(
-        &format!("random_negative_{}s", T::NAME),
-        &mut random_negative_signed::<T>(&EXAMPLE_SEED),
-    );
     // eo.match_vec_f_binary(
     //     &format!("special_random_negative_{}s", T::NAME),
     //     &mut special_random_negative_signed::<T>(&EXAMPLE_SEED),
@@ -225,15 +212,11 @@ fn test_negative_signed() {
     negative_signed_helper::<i64>(&eo);
 }
 
-fn natural_signed_helper<T: PrimitiveSigned + Rand>(eo: &TestOutput)
+fn natural_signed_helper<T: PrimitiveSigned + Rand>(_eo: &TestOutput)
 where
     <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
     T: WrappingFrom<<T as PrimitiveSigned>::UnsignedOfEqualWidth>,
 {
-    eo.match_vec_f(
-        &format!("random_natural_{}s", T::NAME),
-        &mut random_natural_signed::<T>(&EXAMPLE_SEED),
-    );
     // eo.match_vec_f_binary(
     //     &format!("special_random_natural_{}s", T::NAME),
     //     &mut special_random_natural_signed::<T>(&EXAMPLE_SEED),
@@ -249,15 +232,11 @@ fn test_natural_signed() {
     natural_signed_helper::<i64>(&eo);
 }
 
-fn nonzero_signed_helper<T: PrimitiveSigned + Rand>(eo: &TestOutput)
+fn nonzero_signed_helper<T: PrimitiveSigned + Rand>(_eo: &TestOutput)
 where
     <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
     T: WrappingFrom<<T as PrimitiveSigned>::UnsignedOfEqualWidth>,
 {
-    eo.match_vec_f(
-        &format!("random_nonzero_{}s", T::NAME),
-        &mut random_nonzero_signed::<T>(&EXAMPLE_SEED),
-    );
     // eo.match_vec_f_binary(
     //     &format!("special_random_nonzero_{}s", T::NAME),
     //     &mut special_random_nonzero_signed::<T>(&EXAMPLE_SEED),
@@ -273,11 +252,7 @@ fn test_nonzero_signed() {
     nonzero_signed_helper::<i64>(&eo);
 }
 
-fn all_unsigned_helper<T: PrimitiveUnsigned + Rand>(eo: &TestOutput) {
-    eo.match_vec_f(
-        &format!("random_{}s", T::NAME),
-        &mut random::<T>(&EXAMPLE_SEED),
-    );
+fn all_unsigned_helper<T: PrimitiveUnsigned + Rand>(_eo: &TestOutput) {
     // eo.match_vec_f_binary(
     //     &format!("special_random_{}s", T::NAME),
     //     &mut special_random_unsigned::<T>(&EXAMPLE_SEED),
@@ -293,15 +268,11 @@ fn test_all_unsigned() {
     all_unsigned_helper::<u64>(&eo);
 }
 
-fn all_signed_helper<T: PrimitiveSigned + Rand>(eo: &TestOutput)
+fn all_signed_helper<T: PrimitiveSigned + Rand>(_eo: &TestOutput)
 where
     <T as PrimitiveSigned>::UnsignedOfEqualWidth: Rand,
     T: WrappingFrom<<T as PrimitiveSigned>::UnsignedOfEqualWidth>,
 {
-    eo.match_vec_f(
-        &format!("random_{}s", T::NAME),
-        &mut random::<T>(&EXAMPLE_SEED),
-    );
     // eo.match_vec_f_binary(
     //     &format!("special_random_{}s", T::NAME),
     //     &mut special_random_signed::<T>(&EXAMPLE_SEED),

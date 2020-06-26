@@ -5,6 +5,8 @@ use std::fmt::Debug;
 use std::fmt::{Binary, Display};
 use std::hash::{BuildHasher, Hash};
 
+use malachite_base::strings::ToDebugString;
+
 pub struct GeneratorFromFunction<F, T>(F)
 where
     F: FnMut() -> T;
@@ -65,7 +67,7 @@ where
     I: Iterator,
     <I as Iterator>::Item: Debug,
 {
-    to_limited_string_vec_helper(limit, xs, &|x| format!("{:?}", x))
+    to_limited_string_vec_helper(limit, xs, &ToDebugString::to_debug_string)
 }
 
 pub fn to_limited_string_vec_binary<I>(limit: usize, xs: &mut I) -> Vec<String>
@@ -116,7 +118,7 @@ where
     I: Iterator,
     <I as Iterator>::Item: Debug,
 {
-    to_limited_string_helper(limit, xs, &|x| format!("{:?}", x))
+    to_limited_string_helper(limit, xs, &ToDebugString::to_debug_string)
 }
 
 pub fn to_limited_string_binary<I>(limit: usize, xs: &mut I) -> String
@@ -219,7 +221,7 @@ pub fn get_most_common_values_debug<T, S: BuildHasher>(
 where
     T: Eq + Hash + Debug,
 {
-    get_most_common_values_helper(limit, map, &|x| format!("{:?}", x))
+    get_most_common_values_helper(limit, map, &ToDebugString::to_debug_string)
 }
 
 fn get_limited_string_vec_and_frequency_map_helper<I>(
@@ -275,9 +277,12 @@ where
     I: Iterator,
     <I as Iterator>::Item: Eq + Hash + Debug,
 {
-    get_limited_string_vec_and_frequency_map_helper(small_limit, large_limit, xs, &|x| {
-        format!("{:?}", x)
-    })
+    get_limited_string_vec_and_frequency_map_helper(
+        small_limit,
+        large_limit,
+        xs,
+        &ToDebugString::to_debug_string,
+    )
 }
 
 fn get_limited_string_vec_and_most_common_values_helper<I>(
@@ -330,7 +335,7 @@ where
         small_limit,
         large_limit,
         xs,
-        &|x| format!("{:?}", x),
+        &ToDebugString::to_debug_string,
     )
 }
 
