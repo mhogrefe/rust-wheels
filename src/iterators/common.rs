@@ -262,9 +262,7 @@ pub const EXAMPLE_SEED: [u32; SEED_SIZE] = [
 ];
 
 pub fn scramble(seed: &[u32], s: &str) -> [u32; SEED_SIZE] {
-    let mut hasher = Sha3_256::new();
-    hasher.input(s.as_bytes());
-    let hash = hasher.result();
+    let hash = Sha3_256::digest(s.as_bytes());
     let mut scrambled_seed = [0; SEED_SIZE];
     for i in 0..SEED_SIZE {
         let j = (i & 0x7) << 2;
