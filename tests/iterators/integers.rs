@@ -1,12 +1,12 @@
 use std::str::FromStr;
 
-use malachite_base::exhaustive::range::{range_decreasing, range_increasing};
 use malachite_nz::integer::Integer;
 
 use common::get_expected_test_outputs;
 use rust_wheels::iterators::common::EXAMPLE_SEED;
 use rust_wheels::iterators::integers::*;
 
+/*
 #[test]
 fn test_range_up_increasing_integer() {
     let eo = get_expected_test_outputs();
@@ -101,16 +101,11 @@ fn range_decreasing_integer_fail_1() {
 #[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
 fn range_decreasing_integer_fail_2() {
     range_decreasing_integer_fail_helper("-9", "-10")
-}
+}*/
 
 #[test]
 fn test_positive_integers() {
     let eo = get_expected_test_outputs();
-    eo.match_vec(
-        "exhaustive_positive_integers",
-        &mut exhaustive_positive_integers(),
-    );
-
     let test = |number, scale| {
         eo.match_vec_f(
             &format!("random_positive_integers_{}", number),
@@ -132,11 +127,6 @@ fn test_positive_integers() {
 #[test]
 fn test_natural_integers() {
     let eo = get_expected_test_outputs();
-    eo.match_vec(
-        "exhaustive_natural_integers",
-        &mut exhaustive_natural_integers(),
-    );
-
     let test = |number, scale| {
         eo.match_vec_f(
             &format!("random_natural_integers_{}", number),
@@ -158,11 +148,6 @@ fn test_natural_integers() {
 #[test]
 fn test_negative_integers() {
     let eo = get_expected_test_outputs();
-    eo.match_vec(
-        "exhaustive_negative_integers",
-        &mut exhaustive_negative_integers(),
-    );
-
     let test = |number, scale| {
         eo.match_vec_f(
             &format!("random_negative_integers_{}", number),
@@ -184,11 +169,6 @@ fn test_negative_integers() {
 #[test]
 fn test_nonzero_integers() {
     let eo = get_expected_test_outputs();
-    eo.match_vec(
-        "exhaustive_nonzero_integers",
-        &mut exhaustive_nonzero_integers(),
-    );
-
     let test = |number, scale| {
         eo.match_vec_f(
             &format!("random_nonzero_integers_{}", number),
@@ -210,8 +190,6 @@ fn test_nonzero_integers() {
 #[test]
 fn test_integers() {
     let eo = get_expected_test_outputs();
-    eo.match_vec("exhaustive_integers", &mut exhaustive_integers());
-
     let test = |number, scale| {
         eo.match_vec_f(
             &format!("random_integers_{}", number),
@@ -234,13 +212,13 @@ fn test_integers() {
 fn test_range_integer() {
     let eo = get_expected_test_outputs();
     let e_test = |number, a, b| {
-        eo.match_vec(
-            &format!("exhaustive_range_integer_{}", number),
-            &mut exhaustive_range_integer(
-                Integer::from_str(a).unwrap(),
-                Integer::from_str(b).unwrap(),
-            ),
-        );
+        // eo.match_vec(
+        //     &format!("exhaustive_range_integer_{}", number),
+        //     &mut exhaustive_range_integer(
+        //         Integer::from_str(a).unwrap(),
+        //         Integer::from_str(b).unwrap(),
+        //     ),
+        // );
         eo.match_vec_f(
             &format!("random_range_integer_{}", number),
             &mut random_range_integer(
@@ -259,9 +237,10 @@ fn test_range_integer() {
     e_test("vii", "-100", "100");
 }
 
+/*
 fn exhaustive_range_integer_fail_helper(a: &str, b: &str) {
     exhaustive_range_integer(Integer::from_str(a).unwrap(), Integer::from_str(b).unwrap());
-}
+}*/
 
 fn random_range_integer_fail_helper(a: &str, b: &str) {
     random_range_integer(
@@ -271,6 +250,7 @@ fn random_range_integer_fail_helper(a: &str, b: &str) {
     );
 }
 
+/*
 #[test]
 #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]
 fn range_integer_fail_1() {
@@ -281,7 +261,7 @@ fn range_integer_fail_1() {
 #[should_panic(expected = "a must be less than or equal to b. a: -9, b: -10")]
 fn range_integer_fail_2() {
     exhaustive_range_integer_fail_helper("-9", "-10")
-}
+}*/
 
 #[test]
 #[should_panic(expected = "a must be less than or equal to b. a: 10, b: 9")]

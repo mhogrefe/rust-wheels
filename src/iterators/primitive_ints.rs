@@ -1,54 +1,13 @@
-use std::iter::{once, Chain, Once};
-
-use itertools::Itertools;
-use malachite_base::exhaustive::range::{
-    range_decreasing, range_increasing, RangeDecreasing, RangeIncreasing,
-};
 use malachite_base::num::basic::integers::PrimitiveInteger;
 use malachite_base::num::basic::signeds::PrimitiveSigned;
 use malachite_base::num::basic::unsigneds::PrimitiveUnsigned;
 use malachite_base::num::conversion::traits::WrappingFrom;
-use malachite_base::num::exhaustive::UpDown;
 use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
 use rand::distributions::range::SampleRange;
 use rand::distributions::{IndependentSample, Range};
 use rand::{IsaacRng, Rand, SeedableRng};
 
 use iterators::general::{random, Random};
-
-#[derive(Clone)]
-pub enum ExhaustiveRangeSigned<T: PrimitiveSigned> {
-    AllNonNegative(RangeIncreasing<T>),
-    AllNonPositive(RangeDecreasing<T>),
-    SomeOfEachSign(Chain<Once<T>, UpDown<T>>),
-}
-
-impl<T: PrimitiveSigned> Iterator for ExhaustiveRangeSigned<T> {
-    type Item = T;
-
-    fn next(&mut self) -> Option<T> {
-        match *self {
-            ExhaustiveRangeSigned::AllNonNegative(ref mut xs) => xs.next(),
-            ExhaustiveRangeSigned::AllNonPositive(ref mut xs) => xs.next(),
-            ExhaustiveRangeSigned::SomeOfEachSign(ref mut xs) => xs.next(),
-        }
-    }
-}
-
-pub fn exhaustive_range_signed<T: PrimitiveSigned>(a: T, b: T) -> ExhaustiveRangeSigned<T> {
-    let zero = T::ZERO;
-    if a >= zero {
-        ExhaustiveRangeSigned::AllNonNegative(range_increasing(a, b))
-    } else if b <= zero {
-        ExhaustiveRangeSigned::AllNonPositive(range_decreasing(a, b))
-    } else {
-        ExhaustiveRangeSigned::SomeOfEachSign(
-            once(zero).chain(
-                range_increasing(T::ONE, b).interleave(range_decreasing(a, T::NEGATIVE_ONE)),
-            ),
-        )
-    }
-}
 
 pub enum RandomRange<T: Rand> {
     Some(bool, Box<IsaacRng>, Range<T>),

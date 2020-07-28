@@ -1,10 +1,10 @@
 use std::iter::repeat;
 use std::marker::PhantomData;
 
-use malachite_base::exhaustive::range::range_up_increasing;
 use malachite_base::num::basic::unsigneds::PrimitiveUnsigned;
 use malachite_base::num::conversion::traits::{ExactFrom, WrappingFrom};
 use malachite_base::num::exhaustive::exhaustive_positive_primitives;
+use malachite_base::num::exhaustive::primitive_integer_increasing_range_to_max;
 use malachite_base::num::logic::traits::BitConvertible;
 use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
 use malachite_nz::natural::random::special_random_natural_with_bits::*;
@@ -224,9 +224,10 @@ pub fn exhaustive_vecs_shortlex<I: 'static + Clone + Iterator>(
 where
     I::Item: Clone,
 {
-    Box::new(Concat::new(range_up_increasing(0).map(move |i| {
-        exhaustive_fixed_size_vecs_from_single(i, xs.clone())
-    })))
+    Box::new(Concat::new(
+        primitive_integer_increasing_range_to_max(0)
+            .map(move |i| exhaustive_fixed_size_vecs_from_single(i, xs.clone())),
+    ))
 }
 
 pub struct RandomFixedLengthVecs<I: Iterator> {

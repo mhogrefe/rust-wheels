@@ -2,10 +2,13 @@ use std::cmp::min;
 use std::iter::{once, Chain, Once};
 
 use itertools::{Interleave, Itertools};
-use malachite_base::exhaustive::range::{range_down_increasing, RangeIncreasing};
 use malachite_base::num::arithmetic::traits::RoundToMultipleOfPowerOfTwo;
 use malachite_base::num::basic::traits::Zero;
 use malachite_base::num::conversion::traits::{ExactFrom, WrappingFrom};
+use malachite_base::num::exhaustive::{
+    exhaustive_signed_range, primitive_integer_increasing_range, ExhaustiveSignedRange,
+    PrimitiveIntegerIncreasingRange,
+};
 use malachite_base::num::floats::PrimitiveFloat;
 use malachite_base::num::logic::traits::{LowMask, SignificantBits};
 use malachite_base::rounding_modes::RoundingMode;
@@ -14,9 +17,7 @@ use rand::{IsaacRng, Rand, Rng, SeedableRng};
 use iterators::common::scramble;
 use iterators::general::{random, random_from_vector, Random, RandomFromVector};
 use iterators::integers_geometric::{i32s_geometric, I32sGeometric};
-use iterators::primitive_ints::{
-    exhaustive_range_signed, random_range, ExhaustiveRangeSigned, RandomRange,
-};
+use iterators::primitive_ints::{random_range, RandomRange};
 use iterators::tuples::{exhaustive_pairs, ExhaustivePairs};
 use prim_utils::primitive_float_utils::{
     f32_checked_from_mantissa_and_exponent, f32_from_mantissa_and_exponent,
@@ -42,24 +43,25 @@ macro_rules! exhaustive_float_gen {
         $exhaustive_finite_primitive_floats_f: ident,
         $exhaustive_primitive_floats_f: ident,
     ) => {
-        struct $exhaustive_positive_mantissas_s(RangeIncreasing<$u>);
+        struct $exhaustive_positive_mantissas_s(PrimitiveIntegerIncreasingRange<$u>);
 
         impl Iterator for $exhaustive_positive_mantissas_s {
             type Item = $u;
 
             fn next(&mut self) -> Option<$u> {
-                self.0.next().map(|m| (m << 1) + 1)
+                self.0.next().map(|m| (m << 1) | 1)
             }
         }
 
         fn $exhaustive_positive_mantissas_f() -> $exhaustive_positive_mantissas_s {
-            $exhaustive_positive_mantissas_s(range_down_increasing($u::low_mask(
-                $f::MANTISSA_WIDTH,
-            )))
+            $exhaustive_positive_mantissas_s(primitive_integer_increasing_range(
+                0,
+                $u::low_mask($f::MANTISSA_WIDTH),
+            ))
         }
 
         pub struct $exhaustive_positive_finite_primitive_floats_s(
-            ExhaustivePairs<$exhaustive_positive_mantissas_s, ExhaustiveRangeSigned<i32>>,
+            ExhaustivePairs<$exhaustive_positive_mantissas_s, ExhaustiveSignedRange<i32>>,
         );
 
         impl Iterator for $exhaustive_positive_finite_primitive_floats_s {
@@ -80,7 +82,7 @@ macro_rules! exhaustive_float_gen {
         ) -> $exhaustive_positive_finite_primitive_floats_s {
             $exhaustive_positive_finite_primitive_floats_s(exhaustive_pairs(
                 $exhaustive_positive_mantissas_f(),
-                exhaustive_range_signed(
+                exhaustive_signed_range(
                     i32::wrapping_from($f::MIN_EXPONENT),
                     i32::wrapping_from($f::MAX_EXPONENT),
                 ),

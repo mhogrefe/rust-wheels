@@ -1,6 +1,5 @@
-use malachite_base::crement::Crementable;
 use malachite_base::num::arithmetic::traits::PowerOfTwo;
-use malachite_base::num::basic::traits::{One, Zero};
+use malachite_base::num::basic::traits::One;
 use malachite_base::num::conversion::traits::ExactFrom;
 use malachite_base::num::logic::traits::SignificantBits;
 use malachite_nz::natural::random::random_natural_below::random_natural_below;
@@ -15,31 +14,6 @@ use iterators::integers_geometric::{
     positive_u32s_geometric, range_up_geometric_u32, u32s_geometric, PositiveU32sGeometric,
     RangeUpGeometricU32, U32sGeometric,
 };
-
-#[derive(Clone)]
-pub struct RangeIncreasingUnboundedNatural(Natural);
-
-impl Iterator for RangeIncreasingUnboundedNatural {
-    type Item = Natural;
-
-    fn next(&mut self) -> Option<Natural> {
-        let ret = self.0.clone();
-        self.0.increment();
-        Some(ret)
-    }
-}
-
-pub fn range_up_increasing_natural(a: Natural) -> RangeIncreasingUnboundedNatural {
-    RangeIncreasingUnboundedNatural(a)
-}
-
-pub fn exhaustive_positive_naturals() -> RangeIncreasingUnboundedNatural {
-    range_up_increasing_natural(Natural::ONE)
-}
-
-pub fn exhaustive_naturals() -> RangeIncreasingUnboundedNatural {
-    range_up_increasing_natural(Natural::ZERO)
-}
 
 pub struct RandomPositiveNaturals {
     rng: Box<IsaacRng>,

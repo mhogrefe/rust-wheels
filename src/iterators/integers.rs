@@ -1,13 +1,7 @@
 use std::cmp::Ordering;
-use std::iter::{once, Chain, Once};
 
-use itertools::{Interleave, Itertools};
-use malachite_base::crement::Crementable;
-use malachite_base::exhaustive::range::{
-    range_decreasing, range_increasing, RangeDecreasing, RangeIncreasing,
-};
 use malachite_base::num::arithmetic::traits::ModPowerOfTwoNeg;
-use malachite_base::num::basic::traits::{NegativeOne, One, Zero};
+use malachite_base::num::basic::traits::{One, Zero};
 use malachite_base::num::conversion::traits::ExactFrom;
 use malachite_base::num::logic::traits::SignificantBits;
 use malachite_nz::integer::Integer;
@@ -24,103 +18,6 @@ use iterators::naturals::{
     special_random_positive_naturals, RandomNaturals, RandomPositiveNaturals,
     SpecialRandomNaturals, SpecialRandomPositiveNaturals,
 };
-
-#[derive(Clone)]
-pub struct RangeIncreasingUnboundedInteger(Integer);
-
-impl Iterator for RangeIncreasingUnboundedInteger {
-    type Item = Integer;
-
-    fn next(&mut self) -> Option<Integer> {
-        let ret = self.0.clone();
-        self.0.increment();
-        Some(ret)
-    }
-}
-
-#[derive(Clone)]
-pub struct RangeDecreasingUnboundedInteger(Integer);
-
-impl Iterator for RangeDecreasingUnboundedInteger {
-    type Item = Integer;
-
-    fn next(&mut self) -> Option<Integer> {
-        let ret = self.0.clone();
-        self.0.decrement();
-        Some(ret)
-    }
-}
-
-pub fn range_up_increasing_integer(a: Integer) -> RangeIncreasingUnboundedInteger {
-    RangeIncreasingUnboundedInteger(a)
-}
-
-pub fn range_down_decreasing_integer(a: Integer) -> RangeDecreasingUnboundedInteger {
-    RangeDecreasingUnboundedInteger(a)
-}
-
-type T = Interleave<RangeIncreasing<Integer>, RangeDecreasing<Integer>>;
-
-#[derive(Clone)]
-pub enum ExhaustiveRangeInteger {
-    AllNonNegative(RangeIncreasing<Integer>),
-    AllNonPositive(RangeDecreasing<Integer>),
-    SomeOfEachSign(Chain<Once<Integer>, T>),
-}
-
-impl Iterator for ExhaustiveRangeInteger {
-    type Item = Integer;
-
-    fn next(&mut self) -> Option<Integer> {
-        match *self {
-            ExhaustiveRangeInteger::AllNonNegative(ref mut xs) => xs.next(),
-            ExhaustiveRangeInteger::AllNonPositive(ref mut xs) => xs.next(),
-            ExhaustiveRangeInteger::SomeOfEachSign(ref mut xs) => xs.next(),
-        }
-    }
-}
-
-pub fn exhaustive_range_integer(a: Integer, b: Integer) -> ExhaustiveRangeInteger {
-    if a > b {
-        panic!("a must be less than or equal to b. a: {}, b: {}", a, b);
-    }
-    if a >= 0 {
-        ExhaustiveRangeInteger::AllNonNegative(range_increasing(a, b))
-    } else if b <= 0 {
-        ExhaustiveRangeInteger::AllNonPositive(range_decreasing(a, b))
-    } else {
-        ExhaustiveRangeInteger::SomeOfEachSign(
-            once(Integer::ZERO).chain(
-                range_increasing(Integer::ONE, b)
-                    .interleave(range_decreasing(a, Integer::NEGATIVE_ONE)),
-            ),
-        )
-    }
-}
-
-pub fn exhaustive_positive_integers() -> RangeIncreasingUnboundedInteger {
-    range_up_increasing_integer(Integer::ONE)
-}
-
-pub fn exhaustive_natural_integers() -> RangeIncreasingUnboundedInteger {
-    range_up_increasing_integer(Integer::ZERO)
-}
-
-pub fn exhaustive_negative_integers() -> RangeDecreasingUnboundedInteger {
-    range_down_decreasing_integer(Integer::NEGATIVE_ONE)
-}
-
-pub fn exhaustive_nonzero_integers(
-) -> Interleave<RangeIncreasingUnboundedInteger, RangeDecreasingUnboundedInteger> {
-    exhaustive_positive_integers().interleave(exhaustive_negative_integers())
-}
-
-pub fn exhaustive_integers() -> Chain<
-    Once<Integer>,
-    Interleave<RangeIncreasingUnboundedInteger, RangeDecreasingUnboundedInteger>,
-> {
-    once(Integer::ZERO).chain(exhaustive_nonzero_integers())
-}
 
 pub struct RandomPositiveIntegers(RandomPositiveNaturals);
 
