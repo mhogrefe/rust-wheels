@@ -1,7 +1,5 @@
-use malachite_base::exhaustive::range::RangeIncreasing;
+use malachite_base::chars::exhaustive::{exhaustive_chars, ExhaustiveChars};
 
-use iterators::adaptors::MultiChain;
-use iterators::chars::exhaustive_chars;
 use iterators::general::{random, Random};
 use iterators::vecs::{exhaustive_vecs, random_vecs, ExhaustiveVecs, RandomVecs};
 
@@ -27,7 +25,7 @@ where
     ExhaustiveStrings(exhaustive_vecs(chars))
 }
 
-pub fn exhaustive_strings() -> ExhaustiveStrings<MultiChain<RangeIncreasing<char>>> {
+pub fn exhaustive_strings() -> ExhaustiveStrings<ExhaustiveChars> {
     exhaustive_strings_with_chars(exhaustive_chars())
 }
 

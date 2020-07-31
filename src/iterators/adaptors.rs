@@ -358,39 +358,6 @@ where
     )
 }
 
-#[derive(Clone)]
-pub struct MultiChain<I> {
-    ranges: Vec<I>,
-    i: usize,
-}
-
-impl<I> MultiChain<I> {
-    pub fn new(ranges: Vec<I>) -> MultiChain<I> {
-        MultiChain { ranges, i: 0 }
-    }
-}
-
-impl<I: Iterator> Iterator for MultiChain<I> {
-    type Item = I::Item;
-
-    fn next(&mut self) -> Option<I::Item> {
-        if self.i == self.ranges.len() {
-            None
-        } else {
-            loop {
-                if let Some(x) = self.ranges[self.i].next() {
-                    return Some(x);
-                } else {
-                    self.i += 1;
-                    if self.i == self.ranges.len() {
-                        return None;
-                    }
-                }
-            }
-        }
-    }
-}
-
 pub struct Concat<I: Iterator> {
     xss: I,
     xs: Option<I::Item>,
