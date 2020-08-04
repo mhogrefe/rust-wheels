@@ -1,6 +1,6 @@
 use std::char;
 
-use malachite_base::chars::{char_to_contiguous_range, contiguous_range_to_char};
+use malachite_base::chars::crement::{char_to_contiguous_range, contiguous_range_to_char};
 use rand::distributions::{IndependentSample, Range};
 use rand::{IsaacRng, Rng, SeedableRng};
 

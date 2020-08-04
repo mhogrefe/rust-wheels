@@ -12,5 +12,4 @@ pub mod iterators {
     pub mod integers_geometric;
     pub mod naturals;
     pub mod primitive_floats;
-    pub mod primitive_ints;
 }
