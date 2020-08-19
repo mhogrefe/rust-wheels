@@ -9,7 +9,6 @@ pub mod iterators {
     pub mod chars;
     pub mod general;
     pub mod integers;
-    pub mod integers_geometric;
     pub mod naturals;
     pub mod primitive_floats;
 }
