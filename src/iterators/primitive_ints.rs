@@ -1,4 +1,4 @@
-use malachite_base::num::basic::integers::PrimitiveInteger;
+use malachite_base::num::basic::integers::PrimitiveInt;
 use malachite_base::num::basic::signeds::PrimitiveSigned;
 use malachite_base::num::basic::unsigneds::PrimitiveUnsigned;
 use malachite_base::num::conversion::traits::WrappingFrom;
@@ -14,7 +14,7 @@ pub enum RandomRange<T: Rand> {
     All(Random<T>),
 }
 
-impl<T: PrimitiveInteger + Rand + SampleRange> Iterator for RandomRange<T> {
+impl<T: PrimitiveInt + Rand + SampleRange> Iterator for RandomRange<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
@@ -114,7 +114,7 @@ pub fn random_nonzero_signed<T: PrimitiveSigned + Rand>(seed: &[u32]) -> RandomN
     RandomNonzeroSigned(random(seed))
 }
 
-pub fn random_range<T: PrimitiveInteger + Rand + SampleRange>(
+pub fn random_range<T: PrimitiveInt + Rand + SampleRange>(
     seed: &[u32],
     a: T,
     b: T,
@@ -136,14 +136,11 @@ pub fn random_range<T: PrimitiveInteger + Rand + SampleRange>(
     }
 }
 
-pub fn random_range_up<T: PrimitiveInteger + Rand + SampleRange>(
-    seed: &[u32],
-    a: T,
-) -> RandomRange<T> {
+pub fn random_range_up<T: PrimitiveInt + Rand + SampleRange>(seed: &[u32], a: T) -> RandomRange<T> {
     random_range(seed, a, T::MAX)
 }
 
-pub fn random_range_down<T: PrimitiveInteger + Rand + SampleRange>(
+pub fn random_range_down<T: PrimitiveInt + Rand + SampleRange>(
     seed: &[u32],
     a: T,
 ) -> RandomRange<T> {

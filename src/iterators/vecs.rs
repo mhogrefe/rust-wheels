@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 
 use malachite_base::num::basic::unsigneds::PrimitiveUnsigned;
 use malachite_base::num::conversion::traits::{ExactFrom, WrappingFrom};
-use malachite_base::num::exhaustive::{exhaustive_positive_primitives, exhaustive_unsigneds};
+use malachite_base::num::exhaustive::{exhaustive_positive_primitive_ints, exhaustive_unsigneds};
 use malachite_base::num::logic::traits::BitConvertible;
 use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
 use malachite_nz::natural::random::special_random_natural_with_bits::*;
@@ -130,7 +130,7 @@ where
             .chain(repeat(Option::None))
     };
     Box::new(
-        exhaustive_dependent_pairs_infinite_log((), exhaustive_positive_primitives(), f)
+        exhaustive_dependent_pairs_infinite_log((), exhaustive_positive_primitive_ints(), f)
             .flat_map(|(_, v)| v),
     )
 }

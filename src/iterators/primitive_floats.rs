@@ -6,8 +6,8 @@ use malachite_base::num::arithmetic::traits::RoundToMultipleOfPowerOfTwo;
 use malachite_base::num::basic::traits::Zero;
 use malachite_base::num::conversion::traits::{ExactFrom, WrappingFrom};
 use malachite_base::num::exhaustive::{
-    exhaustive_signed_range, primitive_integer_increasing_range, ExhaustiveSignedRange,
-    PrimitiveIntegerIncreasingRange,
+    exhaustive_signed_range, primitive_int_increasing_range, ExhaustiveSignedRange,
+    PrimitiveIntIncreasingRange,
 };
 use malachite_base::num::floats::PrimitiveFloat;
 use malachite_base::num::logic::traits::{LowMask, SignificantBits};
@@ -43,7 +43,7 @@ macro_rules! exhaustive_float_gen {
         $exhaustive_finite_primitive_floats_f: ident,
         $exhaustive_primitive_floats_f: ident,
     ) => {
-        struct $exhaustive_positive_mantissas_s(PrimitiveIntegerIncreasingRange<$u>);
+        struct $exhaustive_positive_mantissas_s(PrimitiveIntIncreasingRange<$u>);
 
         impl Iterator for $exhaustive_positive_mantissas_s {
             type Item = $u;
@@ -54,7 +54,7 @@ macro_rules! exhaustive_float_gen {
         }
 
         fn $exhaustive_positive_mantissas_f() -> $exhaustive_positive_mantissas_s {
-            $exhaustive_positive_mantissas_s(primitive_integer_increasing_range(
+            $exhaustive_positive_mantissas_s(primitive_int_increasing_range(
                 0,
                 $u::low_mask($f::MANTISSA_WIDTH),
             ))
