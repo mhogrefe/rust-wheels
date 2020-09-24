@@ -2,9 +2,10 @@ use std::iter::repeat;
 use std::marker::PhantomData;
 
 use malachite_base::num::basic::unsigneds::PrimitiveUnsigned;
-use malachite_base::num::conversion::traits::{ExactFrom, WrappingFrom};
+use malachite_base::num::conversion::traits::ExactFrom;
 use malachite_base::num::exhaustive::{exhaustive_positive_primitive_ints, exhaustive_unsigneds};
 use malachite_base::num::logic::traits::BitConvertible;
+use malachite_base::vecs::exhaustive::exhaustive_fixed_length_vecs_from_single;
 use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
 use malachite_nz::natural::random::special_random_natural_with_bits::*;
 use malachite_nz::platform::Limb;
@@ -13,110 +14,10 @@ use rand::{IsaacRng, Rng, SeedableRng};
 use iterators::adaptors::Concat;
 use iterators::common::scramble;
 use iterators::dependent_pairs::exhaustive_dependent_pairs_infinite_log;
-use iterators::general::CachedIterator;
 use iterators::integers_geometric::{
     range_up_geometric_u32, u32s_geometric, RangeUpGeometricU32, U32sGeometric,
 };
-use iterators::tuples::{exhaustive_pairs, ZOrderTupleIndices};
-
-pub enum ExhaustiveFixedSizeVecsFromSingle<I: Iterator>
-where
-    I::Item: Clone,
-{
-    Zero(bool),
-    One(I),
-    MoreThanOne(
-        bool,
-        CachedIterator<I>,
-        ZOrderTupleIndices,
-        bool,
-        Option<ZOrderTupleIndices>,
-    ),
-}
-
-impl<I: Iterator> Iterator for ExhaustiveFixedSizeVecsFromSingle<I>
-where
-    I::Item: Clone,
-{
-    type Item = Vec<I::Item>;
-
-    fn next(&mut self) -> Option<Vec<I::Item>> {
-        match *self {
-            ExhaustiveFixedSizeVecsFromSingle::Zero(ref mut first) => {
-                if *first {
-                    *first = false;
-                    Some(Vec::new())
-                } else {
-                    None
-                }
-            }
-            ExhaustiveFixedSizeVecsFromSingle::One(ref mut xs) => xs.next().map(|x| vec![x]),
-            ExhaustiveFixedSizeVecsFromSingle::MoreThanOne(
-                ref mut done,
-                ref mut xs,
-                ref mut i,
-                ref mut stop_checking_size,
-                ref mut max_indices,
-            ) => {
-                let mut result = Vec::with_capacity(i.size());
-                'outer: loop {
-                    if *done {
-                        return None;
-                    }
-                    for j in 0..i.size() {
-                        match xs.get(usize::exact_from(i.0[j])) {
-                            Some(x) => result.push(x),
-                            None => {
-                                if max_indices.as_ref() == Some(i) {
-                                    return None;
-                                }
-                                i.increment();
-                                result.clear();
-                                continue 'outer;
-                            }
-                        }
-                    }
-                    if !*stop_checking_size {
-                        if let Some(size) = xs.currently_known_size() {
-                            let size = u64::wrapping_from(size);
-                            let mut max_vec = Vec::new();
-                            max_vec.resize(i.size(), size - 1);
-                            *max_indices = Some(ZOrderTupleIndices(max_vec));
-                            *stop_checking_size = true;
-                        }
-                    }
-                    if max_indices.as_ref() == Some(i) {
-                        *done = true;
-                    } else {
-                        i.increment();
-                    }
-                    return Some(result);
-                }
-            }
-        }
-    }
-}
-
-//TODO test
-pub fn exhaustive_fixed_size_vecs_from_single<I: Iterator>(
-    size: u64,
-    xs: I,
-) -> ExhaustiveFixedSizeVecsFromSingle<I>
-where
-    I::Item: Clone,
-{
-    match size {
-        0 => ExhaustiveFixedSizeVecsFromSingle::Zero(true),
-        1 => ExhaustiveFixedSizeVecsFromSingle::One(xs),
-        _ => ExhaustiveFixedSizeVecsFromSingle::MoreThanOne(
-            false,
-            CachedIterator::new(xs),
-            ZOrderTupleIndices::new(size),
-            false,
-            None,
-        ),
-    }
-}
+use iterators::tuples::exhaustive_pairs;
 
 fn exhaustive_vecs_more_than_one<'a, I: Clone + Iterator + 'a>(
     xs: I,
@@ -125,7 +26,7 @@ where
     I::Item: Clone,
 {
     let f = move |_: &(), size: &u64| {
-        exhaustive_fixed_size_vecs_from_single(*size, xs.clone())
+        exhaustive_fixed_length_vecs_from_single(usize::exact_from(*size), xs.clone())
             .map(Option::Some)
             .chain(repeat(Option::None))
     };
@@ -206,7 +107,7 @@ where
         1 => Box::new(exhaustive_vecs(xs).skip(1)),
         _ => Box::new(
             exhaustive_pairs(
-                exhaustive_fixed_size_vecs_from_single(min_len, xs.clone()),
+                exhaustive_fixed_length_vecs_from_single(usize::exact_from(min_len), xs.clone()),
                 exhaustive_vecs(xs),
             )
             .map(|(mut xs, mut ys)| {
@@ -224,7 +125,7 @@ where
     I::Item: Clone,
 {
     Box::new(Concat::new(exhaustive_unsigneds().map(move |i| {
-        exhaustive_fixed_size_vecs_from_single(i, xs.clone())
+        exhaustive_fixed_length_vecs_from_single(i, xs.clone())
     })))
 }
 
