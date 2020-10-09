@@ -1,4 +1,9 @@
-#![allow(unknown_lints, suspicious_arithmetic_impl, suspicious_op_assign_impl)]
+#![allow(
+    unknown_lints,
+    suspicious_arithmetic_impl,
+    suspicious_op_assign_impl,
+    unstable_name_collisions
+)]
 
 extern crate gnuplot;
 extern crate itertools;

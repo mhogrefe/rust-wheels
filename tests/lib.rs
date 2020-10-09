@@ -1,3 +1,4 @@
+#[allow(unstable_name_collisions)]
 extern crate malachite_base;
 extern crate malachite_nz;
 extern crate rand;
