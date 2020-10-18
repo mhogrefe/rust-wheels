@@ -1,16 +1,6 @@
-use std::iter::{once, Chain, Once};
-
 use rand::{IsaacRng, Rng, SeedableRng};
 
 use iterators::common::scramble;
-
-//TODO test
-pub fn exhaustive_with_element<I>(x: I::Item, xs: I) -> Chain<Once<I::Item>, I>
-where
-    I: Iterator,
-{
-    once(x).chain(xs)
-}
 
 pub struct RandomWithElement<I>
 where
@@ -54,23 +44,6 @@ where
         x,
         xs: xs_gen(&scramble(seed, "xs")),
     }
-}
-
-pub struct Somes<I>(I)
-where
-    I: Iterator;
-
-impl<I: Iterator> Iterator for Somes<I> {
-    type Item = Option<I::Item>;
-
-    fn next(&mut self) -> Option<Option<I::Item>> {
-        self.0.next().map(Option::from)
-    }
-}
-
-//TODO test
-pub fn exhaustive_options<I: Iterator>(xs: I) -> Chain<Once<Option<I::Item>>, Somes<I>> {
-    once(Option::None).chain(Somes(xs))
 }
 
 pub struct RandomOptions<I: Iterator> {

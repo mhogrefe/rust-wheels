@@ -1,4 +1,4 @@
-use malachite_base::vecs::from_str::vec_from_str;
+use malachite_base::vecs::vec_from_str;
 
 use common::get_expected_test_outputs;
 use rust_wheels::iterators::common::EXAMPLE_SEED;
