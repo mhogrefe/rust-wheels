@@ -12,13 +12,13 @@ use malachite_base::num::exhaustive::{
 use malachite_base::num::floats::PrimitiveFloat;
 use malachite_base::num::logic::traits::{LowMask, SignificantBits};
 use malachite_base::rounding_modes::RoundingMode;
+use malachite_base::tuples::exhaustive::{exhaustive_pairs, ExhaustivePairs};
 use rand::{IsaacRng, Rand, Rng, SeedableRng};
 
 use iterators::common::scramble;
 use iterators::general::{random, random_from_vector, Random, RandomFromVector};
 use iterators::integers_geometric::{i32s_geometric, I32sGeometric};
 use iterators::primitive_ints::{random_range, RandomRange};
-use iterators::tuples::{exhaustive_pairs, ExhaustivePairs};
 use prim_utils::primitive_float_utils::{
     f32_checked_from_mantissa_and_exponent, f32_from_mantissa_and_exponent,
     f64_checked_from_mantissa_and_exponent, f64_from_mantissa_and_exponent,
@@ -61,7 +61,7 @@ macro_rules! exhaustive_float_gen {
         }
 
         pub struct $exhaustive_positive_finite_primitive_floats_s(
-            ExhaustivePairs<$exhaustive_positive_mantissas_s, ExhaustiveSignedRange<i32>>,
+            ExhaustivePairs<$u, $exhaustive_positive_mantissas_s, i32, ExhaustiveSignedRange<i32>>,
         );
 
         impl Iterator for $exhaustive_positive_finite_primitive_floats_s {

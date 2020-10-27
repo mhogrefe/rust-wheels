@@ -5,6 +5,7 @@ use malachite_base::num::basic::unsigneds::PrimitiveUnsigned;
 use malachite_base::num::conversion::traits::ExactFrom;
 use malachite_base::num::exhaustive::{exhaustive_positive_primitive_ints, exhaustive_unsigneds};
 use malachite_base::num::logic::traits::BitConvertible;
+use malachite_base::tuples::exhaustive::exhaustive_pairs;
 use malachite_base::vecs::exhaustive::exhaustive_fixed_length_vecs_from_single;
 use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
 use malachite_nz::natural::random::special_random_natural_with_bits::*;
@@ -17,7 +18,6 @@ use iterators::dependent_pairs::exhaustive_dependent_pairs_infinite_log;
 use iterators::integers_geometric::{
     range_up_geometric_u32, u32s_geometric, RangeUpGeometricU32, U32sGeometric,
 };
-use iterators::tuples::exhaustive_pairs;
 
 fn exhaustive_vecs_more_than_one<'a, I: Clone + Iterator + 'a>(
     xs: I,
