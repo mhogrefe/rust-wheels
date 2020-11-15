@@ -70,14 +70,6 @@ where
     to_limited_string_vec_helper(limit, xs, &ToDebugString::to_debug_string)
 }
 
-pub fn to_limited_string_vec_binary<I>(limit: usize, xs: &mut I) -> Vec<String>
-where
-    I: Iterator,
-    <I as Iterator>::Item: Binary,
-{
-    to_limited_string_vec_helper(limit, xs, &|x| format!("{:#b}", x))
-}
-
 fn to_limited_string_helper<I>(limit: usize, xs: &mut I, f: &dyn Fn(&I::Item) -> String) -> String
 where
     I: Iterator,
@@ -268,23 +260,6 @@ where
     })
 }
 
-pub fn get_limited_string_vec_and_frequency_map_debug<I>(
-    small_limit: usize,
-    large_limit: usize,
-    xs: &mut I,
-) -> (Vec<String>, HashMap<I::Item, usize>)
-where
-    I: Iterator,
-    <I as Iterator>::Item: Eq + Hash + Debug,
-{
-    get_limited_string_vec_and_frequency_map_helper(
-        small_limit,
-        large_limit,
-        xs,
-        &ToDebugString::to_debug_string,
-    )
-}
-
 fn get_limited_string_vec_and_most_common_values_helper<I>(
     tiny_limit: usize,
     small_limit: usize,
@@ -317,44 +292,6 @@ where
         large_limit,
         xs,
         &|x| x.to_string(),
-    )
-}
-
-pub fn get_limited_string_vec_and_most_common_values_debug<I>(
-    tiny_limit: usize,
-    small_limit: usize,
-    large_limit: usize,
-    xs: &mut I,
-) -> (Vec<String>, Vec<(String, usize)>)
-where
-    I: Iterator,
-    <I as Iterator>::Item: Clone + Eq + Hash + Debug,
-{
-    get_limited_string_vec_and_most_common_values_helper(
-        tiny_limit,
-        small_limit,
-        large_limit,
-        xs,
-        &ToDebugString::to_debug_string,
-    )
-}
-
-pub fn get_limited_string_vec_and_most_common_values_binary<I>(
-    tiny_limit: usize,
-    small_limit: usize,
-    large_limit: usize,
-    xs: &mut I,
-) -> (Vec<String>, Vec<(String, usize)>)
-where
-    I: Iterator,
-    <I as Iterator>::Item: Binary + Clone + Eq + Hash,
-{
-    get_limited_string_vec_and_most_common_values_helper(
-        tiny_limit,
-        small_limit,
-        large_limit,
-        xs,
-        &|x| format!("{:#b}", x),
     )
 }
 
