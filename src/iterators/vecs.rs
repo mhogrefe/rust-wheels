@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 
 use malachite_base::num::basic::unsigneds::PrimitiveUnsigned;
 use malachite_base::num::conversion::traits::ExactFrom;
-use malachite_base::num::exhaustive::{exhaustive_positive_primitive_ints, exhaustive_unsigneds};
+use malachite_base::num::exhaustive::exhaustive_positive_primitive_ints;
 use malachite_base::num::logic::traits::BitConvertible;
 use malachite_base::tuples::exhaustive::exhaustive_pairs;
 use malachite_base::vecs::exhaustive::exhaustive_fixed_length_vecs_from_single;
@@ -12,7 +12,6 @@ use malachite_nz::natural::random::special_random_natural_with_bits::*;
 use malachite_nz::platform::Limb;
 use rand::{IsaacRng, Rng, SeedableRng};
 
-use iterators::adaptors::Concat;
 use iterators::common::scramble;
 use iterators::dependent_pairs::exhaustive_dependent_pairs_infinite_log;
 use iterators::integers_geometric::{
@@ -116,17 +115,6 @@ where
             }),
         ),
     }
-}
-
-pub fn exhaustive_vecs_shortlex<I: 'static + Clone + Iterator>(
-    xs: I,
-) -> Box<dyn Iterator<Item = Vec<I::Item>>>
-where
-    I::Item: Clone,
-{
-    Box::new(Concat::new(exhaustive_unsigneds().map(move |i| {
-        exhaustive_fixed_length_vecs_from_single(i, xs.clone())
-    })))
 }
 
 pub struct RandomFixedLengthVecs<I: Iterator> {
