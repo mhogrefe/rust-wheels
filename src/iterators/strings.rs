@@ -1,9 +1,11 @@
 use malachite_base::chars::exhaustive::{exhaustive_chars, ExhaustiveChars};
+use malachite_base::num::exhaustive::PrimitiveIntIncreasingRange;
+use malachite_base::vecs::exhaustive::{exhaustive_vecs, ExhaustiveVecs};
 
 use iterators::general::{random, Random};
-use iterators::vecs::{exhaustive_vecs, random_vecs, ExhaustiveVecs, RandomVecs};
+use iterators::vecs::{random_vecs, RandomVecs};
 
-pub struct ExhaustiveStrings<I>(ExhaustiveVecs<I>)
+pub struct ExhaustiveStrings<I>(ExhaustiveVecs<char, PrimitiveIntIncreasingRange<usize>, I>)
 where
     I: Clone + Iterator<Item = char>;
 

@@ -1,121 +1,17 @@
-use std::iter::repeat;
 use std::marker::PhantomData;
 
 use malachite_base::num::basic::unsigneds::PrimitiveUnsigned;
 use malachite_base::num::conversion::traits::ExactFrom;
-use malachite_base::num::exhaustive::exhaustive_positive_primitive_ints;
 use malachite_base::num::logic::traits::BitConvertible;
-use malachite_base::tuples::exhaustive::exhaustive_pairs;
-use malachite_base::vecs::exhaustive::exhaustive_fixed_length_vecs_from_single;
 use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
 use malachite_nz::natural::random::special_random_natural_with_bits::*;
 use malachite_nz::platform::Limb;
 use rand::{IsaacRng, Rng, SeedableRng};
 
 use iterators::common::scramble;
-use iterators::dependent_pairs::exhaustive_dependent_pairs_infinite_log;
 use iterators::integers_geometric::{
     range_up_geometric_u32, u32s_geometric, RangeUpGeometricU32, U32sGeometric,
 };
-
-fn exhaustive_vecs_more_than_one<'a, I: Clone + Iterator + 'a>(
-    xs: I,
-) -> Box<dyn Iterator<Item = Vec<I::Item>> + 'a>
-where
-    I::Item: Clone,
-{
-    let f = move |_: &(), size: &u64| {
-        exhaustive_fixed_length_vecs_from_single(usize::exact_from(*size), xs.clone())
-            .map(Option::Some)
-            .chain(repeat(Option::None))
-    };
-    Box::new(
-        exhaustive_dependent_pairs_infinite_log((), exhaustive_positive_primitive_ints(), f)
-            .flat_map(|(_, v)| v),
-    )
-}
-
-pub enum ExhaustiveVecs<I: Iterator>
-where
-    I::Item: Clone,
-{
-    Zero(bool),
-    One(I::Item, Vec<I::Item>),
-    MoreThanOne(bool, Box<dyn Iterator<Item = Vec<I::Item>>>),
-}
-
-impl<I: Iterator> Iterator for ExhaustiveVecs<I>
-where
-    I::Item: Clone,
-{
-    type Item = Vec<I::Item>;
-
-    fn next(&mut self) -> Option<Vec<I::Item>> {
-        match *self {
-            ExhaustiveVecs::Zero(ref mut first) => {
-                if *first {
-                    *first = false;
-                    Some(Vec::new())
-                } else {
-                    None
-                }
-            }
-            ExhaustiveVecs::One(ref x, ref mut xs) => {
-                let copy = xs.clone();
-                xs.push(x.clone());
-                Some(copy)
-            }
-            ExhaustiveVecs::MoreThanOne(ref mut first, ref mut xs) => {
-                if *first {
-                    *first = false;
-                    Some(Vec::new())
-                } else {
-                    xs.next()
-                }
-            }
-        }
-    }
-}
-
-//TODO test
-pub fn exhaustive_vecs<I: 'static + Clone + Iterator>(xs: I) -> ExhaustiveVecs<I>
-where
-    I::Item: Clone,
-{
-    let mut xs_cloned = xs.clone();
-    let first = match xs_cloned.next() {
-        None => return ExhaustiveVecs::Zero(true),
-        Some(x) => x,
-    };
-    if xs_cloned.next().is_none() {
-        ExhaustiveVecs::One(first, Vec::new())
-    } else {
-        ExhaustiveVecs::MoreThanOne(true, exhaustive_vecs_more_than_one(xs))
-    }
-}
-
-pub fn exhaustive_vecs_min_length<I: 'static + Clone + Iterator>(
-    min_len: u64,
-    xs: I,
-) -> Box<dyn Iterator<Item = Vec<I::Item>>>
-where
-    I::Item: Clone,
-{
-    match min_len {
-        0 => Box::new(exhaustive_vecs(xs)),
-        1 => Box::new(exhaustive_vecs(xs).skip(1)),
-        _ => Box::new(
-            exhaustive_pairs(
-                exhaustive_fixed_length_vecs_from_single(usize::exact_from(min_len), xs.clone()),
-                exhaustive_vecs(xs),
-            )
-            .map(|(mut xs, mut ys)| {
-                xs.append(&mut ys);
-                xs
-            }),
-        ),
-    }
-}
 
 pub struct RandomFixedLengthVecs<I: Iterator> {
     length: usize,
