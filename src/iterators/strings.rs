@@ -5,7 +5,7 @@ use malachite_base::vecs::exhaustive::{exhaustive_vecs, ExhaustiveVecs};
 use iterators::general::{random, Random};
 use iterators::vecs::{random_vecs, RandomVecs};
 
-pub struct ExhaustiveStrings<I>(ExhaustiveVecs<char, PrimitiveIntIncreasingRange<usize>, I>)
+pub struct ExhaustiveStrings<I>(ExhaustiveVecs<char, PrimitiveIntIncreasingRange<u64>, I>)
 where
     I: Clone + Iterator<Item = char>;
 
