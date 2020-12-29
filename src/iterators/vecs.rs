@@ -3,14 +3,15 @@ use std::marker::PhantomData;
 use malachite_base::num::basic::unsigneds::PrimitiveUnsigned;
 use malachite_base::num::conversion::traits::ExactFrom;
 use malachite_base::num::logic::traits::BitConvertible;
-use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
-use malachite_nz::natural::random::special_random_natural_with_bits::*;
 use malachite_nz::platform::Limb;
 use rand::{IsaacRng, Rng, SeedableRng};
 
 use iterators::common::scramble;
 use iterators::integers_geometric::{
     range_up_geometric_u32, u32s_geometric, RangeUpGeometricU32, U32sGeometric,
+};
+use iterators::naturals::{
+    limbs_special_random_up_to_bits_old, special_random_natural_with_bits_old,
 };
 
 pub struct RandomFixedLengthVecs<I: Iterator> {
@@ -126,7 +127,7 @@ impl<T: PrimitiveUnsigned> Iterator for SpecialRandomFixedLengthUnsignedVecs<T> 
         if self.length == 0 {
             return Some(Vec::new());
         }
-        let limbs: Vec<Limb> = limbs_special_random_up_to_bits(
+        let limbs: Vec<Limb> = limbs_special_random_up_to_bits_old(
             &mut self.rng,
             u64::exact_from(self.length) << T::LOG_WIDTH,
         );
@@ -161,7 +162,7 @@ impl<T: PrimitiveUnsigned> Iterator for SpecialRandomUnsignedVecs<T> {
             return Some(Vec::new());
         }
         let limbs: Vec<Limb> =
-            limbs_special_random_up_to_bits(&mut self.rng, u64::from(len << T::LOG_WIDTH));
+            limbs_special_random_up_to_bits_old(&mut self.rng, u64::from(len << T::LOG_WIDTH));
         Some(T::vec_from_other_type_slice(&limbs))
     }
 }
@@ -193,7 +194,7 @@ impl<T: PrimitiveUnsigned> Iterator for SpecialRandomUnsignedVecsMinLength<T> {
             return Some(Vec::new());
         }
         let limbs: Vec<Limb> =
-            limbs_special_random_up_to_bits(&mut self.rng, u64::from(len << T::LOG_WIDTH));
+            limbs_special_random_up_to_bits_old(&mut self.rng, u64::from(len << T::LOG_WIDTH));
         Some(T::vec_from_other_type_slice(&limbs))
     }
 }
@@ -224,7 +225,7 @@ impl Iterator for SpecialRandomBoolVecs {
     type Item = Vec<bool>;
 
     fn next(&mut self) -> Option<Vec<bool>> {
-        let n = special_random_natural_with_bits(
+        let n = special_random_natural_with_bits_old(
             &mut self.rng,
             u64::from(self.lengths.next().unwrap()),
         );

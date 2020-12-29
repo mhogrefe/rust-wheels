@@ -2,12 +2,12 @@ use malachite_base::num::basic::integers::PrimitiveInt;
 use malachite_base::num::basic::signeds::PrimitiveSigned;
 use malachite_base::num::basic::unsigneds::PrimitiveUnsigned;
 use malachite_base::num::conversion::traits::WrappingFrom;
-use malachite_nz::natural::random::special_random_natural_up_to_bits::*;
 use rand::distributions::range::SampleRange;
 use rand::distributions::{IndependentSample, Range};
 use rand::{IsaacRng, Rand, SeedableRng};
 
 use iterators::general::{random, Random};
+use iterators::naturals::limbs_special_random_up_to_bits_old;
 
 pub enum RandomRange<T: Rand> {
     Some(bool, Box<IsaacRng>, Range<T>),
@@ -153,7 +153,7 @@ impl<T: PrimitiveUnsigned + Rand> Iterator for SpecialRandomUnsigned<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        let limbs: Vec<u32> = limbs_special_random_up_to_bits(&mut self.0.rng, T::WIDTH);
+        let limbs: Vec<u32> = limbs_special_random_up_to_bits_old(&mut self.0.rng, T::WIDTH);
         Some(T::from_other_type_slice(&limbs))
     }
 }

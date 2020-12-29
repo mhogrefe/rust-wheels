@@ -1,19 +1,173 @@
-use malachite_base::num::arithmetic::traits::PowerOfTwo;
-use malachite_base::num::basic::traits::One;
+use malachite_base::num::arithmetic::traits::{
+    IsPowerOfTwo, ModPowerOfTwo, PowerOfTwo, SaturatingSubAssign, ShrRound,
+};
+use malachite_base::num::basic::traits::{One, Zero};
 use malachite_base::num::conversion::traits::ExactFrom;
-use malachite_base::num::logic::traits::SignificantBits;
-use malachite_nz::natural::random::random_natural_below::random_natural_below;
-use malachite_nz::natural::random::random_natural_with_bits::random_natural_with_bits;
-use malachite_nz::natural::random::special_random_natural_below::*;
-use malachite_nz::natural::random::special_random_natural_with_bits::*;
+#[cfg(not(feature = "32_bit_limbs"))]
+use malachite_base::num::conversion::traits::VecFromOtherTypeSlice;
+use malachite_base::num::logic::traits::{BitAccess, SignificantBits};
+use malachite_base::rounding_modes::RoundingMode;
+use malachite_nz::natural::arithmetic::add::limbs_slice_add_limb_in_place;
 use malachite_nz::natural::Natural;
-use rand::{IsaacRng, SeedableRng};
+use rand::distributions::{IndependentSample, Range};
+use rand::{IsaacRng, Rand, Rng, SeedableRng};
+use std::cmp::max;
 
 use iterators::common::scramble;
 use iterators::integers_geometric::{
     positive_u32s_geometric, range_up_geometric_u32, u32s_geometric, PositiveU32sGeometric,
     RangeUpGeometricU32, U32sGeometric,
 };
+use malachite_base::num::basic::unsigneds::PrimitiveUnsigned;
+
+pub fn random_natural_below_old<R: Rng>(rng: &mut R, n: &Natural) -> Natural {
+    assert_ne!(*n, 0, "Cannot generate a Natural below 0");
+    if n.is_power_of_two() {
+        random_natural_up_to_bits_old(rng, n.significant_bits() - 1)
+    } else {
+        let bits = n.significant_bits();
+        // Loop loops <= 2 times on average.
+        loop {
+            let m = random_natural_up_to_bits_old(rng, bits);
+            if m < *n {
+                return m;
+            }
+        }
+    }
+}
+
+pub fn limbs_random_up_to_bits_old<T: PrimitiveUnsigned + Rand, R: Rng>(
+    rng: &mut R,
+    bits: u64,
+) -> Vec<T> {
+    assert_ne!(bits, 0);
+    let remainder_bits = bits.mod_power_of_two(T::LOG_WIDTH);
+    let limb_count = bits.shr_round(T::LOG_WIDTH, RoundingMode::Ceiling);
+    let mut xs: Vec<T> = Vec::with_capacity(usize::exact_from(limb_count));
+    for _ in 0..limb_count {
+        xs.push(rng.gen());
+    }
+    if remainder_bits != 0 {
+        xs.last_mut()
+            .unwrap()
+            .mod_power_of_two_assign(remainder_bits);
+    }
+    xs
+}
+
+#[cfg(feature = "32_bit_limbs")]
+pub fn random_natural_up_to_bits_old<R: Rng>(rng: &mut R, bits: u64) -> Natural {
+    if bits == 0 {
+        Natural::ZERO
+    } else {
+        Natural::from_owned_limbs_asc(limbs_random_up_to_bits_old(rng, bits))
+    }
+}
+
+#[cfg(not(feature = "32_bit_limbs"))]
+pub fn random_natural_up_to_bits_old<R: Rng>(rng: &mut R, bits: u64) -> Natural {
+    if bits == 0 {
+        Natural::ZERO
+    } else {
+        let xs: Vec<u32> = limbs_random_up_to_bits_old(rng, bits);
+        Natural::from_owned_limbs_asc(u64::vec_from_other_type_slice(&xs))
+    }
+}
+
+pub fn random_natural_with_bits_old<R: Rng>(rng: &mut R, bits: u64) -> Natural {
+    let mut n = random_natural_up_to_bits_old(rng, bits);
+    if bits != 0 {
+        n.set_bit(bits - 1);
+    }
+    n
+}
+
+pub fn special_random_natural_below_old<R: Rng>(rng: &mut R, n: &Natural) -> Natural {
+    assert_ne!(*n, 0, "Cannot generate a Natural below 0");
+    if n.is_power_of_two() {
+        special_random_natural_up_to_bits_old(rng, n.significant_bits() - 1)
+    } else {
+        let bits = n.significant_bits();
+        // Loop loops <= 2 times on average.
+        loop {
+            let m = special_random_natural_up_to_bits_old(rng, bits);
+            if m < *n {
+                return m;
+            }
+        }
+    }
+}
+
+pub fn limbs_special_random_up_to_bits_old<T: PrimitiveUnsigned, R: Rng>(
+    rng: &mut R,
+    bits: u64,
+) -> Vec<T> {
+    assert_ne!(bits, 0);
+    let remainder_bits = bits.mod_power_of_two(T::LOG_WIDTH);
+    let limb_count = bits.shr_round(T::LOG_WIDTH, RoundingMode::Ceiling);
+    // Initialize the value to all binary 1s; later we'll remove chunks to create blocks of 0s.
+    let mut limbs = vec![T::MAX; usize::exact_from(limb_count)];
+    // max_chunk_size may be as low as max(1, bits / 4) or as high as bits. The actual chunk size
+    // will be between 1 and max_chunk_size, inclusive.
+    let max_chunk_size = max(1, bits / (rng.gen_range(0, 4) + 1));
+    let chunk_size_range = Range::new(1, max_chunk_size + 1);
+    // Start i at a random position in the highest limb.
+    let mut i = (limb_count << T::LOG_WIDTH) - rng.gen_range(0, T::WIDTH) + 1;
+    loop {
+        let mut chunk_size = chunk_size_range.ind_sample(rng);
+        i.saturating_sub_assign(chunk_size);
+        if i == 0 {
+            break;
+        }
+        let j = usize::exact_from(i >> T::LOG_WIDTH);
+        if j < limbs.len() {
+            limbs[j].clear_bit(i & T::WIDTH_MASK);
+        }
+        chunk_size = chunk_size_range.ind_sample(rng);
+        i.saturating_sub_assign(chunk_size);
+        limbs_slice_add_limb_in_place(
+            &mut limbs[usize::exact_from(i >> T::LOG_WIDTH)..],
+            T::power_of_two(i & T::WIDTH_MASK),
+        );
+        if i == 0 {
+            break;
+        }
+    }
+    if remainder_bits != 0 {
+        limbs
+            .last_mut()
+            .unwrap()
+            .mod_power_of_two_assign(remainder_bits);
+    }
+    limbs
+}
+
+#[cfg(feature = "32_bit_limbs")]
+pub fn special_random_natural_up_to_bits_old<R: Rng>(rng: &mut R, bits: u64) -> Natural {
+    if bits == 0 {
+        Natural::ZERO
+    } else {
+        Natural::from_owned_limbs_asc(limbs_special_random_up_to_bits_old(rng, bits))
+    }
+}
+
+#[cfg(not(feature = "32_bit_limbs"))]
+pub fn special_random_natural_up_to_bits_old<R: Rng>(rng: &mut R, bits: u64) -> Natural {
+    if bits == 0 {
+        Natural::ZERO
+    } else {
+        let xs: Vec<u32> = limbs_special_random_up_to_bits_old(rng, bits);
+        Natural::from_owned_limbs_asc(u64::vec_from_other_type_slice(&xs))
+    }
+}
+
+pub fn special_random_natural_with_bits_old<R: Rng>(rng: &mut R, bits: u64) -> Natural {
+    let mut n = special_random_natural_up_to_bits_old(rng, bits);
+    if bits != 0 {
+        n.set_bit(bits - 1);
+    }
+    n
+}
 
 pub struct RandomPositiveNaturals {
     rng: Box<IsaacRng>,
@@ -24,7 +178,7 @@ impl Iterator for RandomPositiveNaturals {
     type Item = Natural;
 
     fn next(&mut self) -> Option<Natural> {
-        Some(random_natural_with_bits(
+        Some(random_natural_with_bits_old(
             &mut self.rng,
             u64::from(self.bit_sizes.next().unwrap()),
         ))
@@ -47,7 +201,7 @@ impl Iterator for RandomNaturals {
     type Item = Natural;
 
     fn next(&mut self) -> Option<Natural> {
-        Some(random_natural_with_bits(
+        Some(random_natural_with_bits_old(
             &mut self.rng,
             u64::from(self.bit_sizes.next().unwrap()),
         ))
@@ -70,7 +224,7 @@ impl Iterator for SpecialRandomPositiveNaturals {
     type Item = Natural;
 
     fn next(&mut self) -> Option<Natural> {
-        Some(special_random_natural_with_bits(
+        Some(special_random_natural_with_bits_old(
             &mut self.rng,
             u64::from(self.bit_sizes.next().unwrap()),
         ))
@@ -93,7 +247,7 @@ impl Iterator for SpecialRandomNaturals {
     type Item = Natural;
 
     fn next(&mut self) -> Option<Natural> {
-        Some(special_random_natural_with_bits(
+        Some(special_random_natural_with_bits_old(
             &mut self.rng,
             u64::from(self.bit_sizes.next().unwrap()),
         ))
@@ -117,7 +271,7 @@ impl Iterator for RandomRangeNatural {
     type Item = Natural;
 
     fn next(&mut self) -> Option<Natural> {
-        Some(random_natural_below(&mut self.rng, &self.diameter_plus_one) + &self.a)
+        Some(random_natural_below_old(&mut self.rng, &self.diameter_plus_one) + &self.a)
     }
 }
 
@@ -142,7 +296,7 @@ impl Iterator for SpecialRandomRangeNatural {
     type Item = Natural;
 
     fn next(&mut self) -> Option<Natural> {
-        Some(special_random_natural_below(&mut self.rng, &self.diameter_plus_one) + &self.a)
+        Some(special_random_natural_below_old(&mut self.rng, &self.diameter_plus_one) + &self.a)
     }
 }
 
@@ -176,10 +330,10 @@ impl Iterator for RandomRangeUpNatural {
         let bit_size = u64::from(self.bit_sizes.next().unwrap());
         Some(if bit_size == self.a_bit_size {
             // Generates values between a and 2^n - 1, inclusive.
-            random_natural_below(&mut self.rng, &self.offset_limit) + &self.a
+            random_natural_below_old(&mut self.rng, &self.offset_limit) + &self.a
         } else {
             // Generates values between 2^(n - 1) and 2^n - 1, inclusive.
-            random_natural_with_bits(&mut self.rng, bit_size)
+            random_natural_with_bits_old(&mut self.rng, bit_size)
         })
     }
 }
@@ -218,10 +372,10 @@ impl Iterator for SpecialRandomRangeUpNatural {
         let bit_size = u64::from(self.bit_sizes.next().unwrap());
         Some(if bit_size == self.a_bit_size {
             // Generates values between a and 2^n - 1, inclusive.
-            special_random_natural_below(&mut self.rng, &self.offset_limit) + &self.a
+            special_random_natural_below_old(&mut self.rng, &self.offset_limit) + &self.a
         } else {
             // Generates values between 2^(n - 1) and 2^n - 1, inclusive.
-            special_random_natural_with_bits(&mut self.rng, bit_size)
+            special_random_natural_with_bits_old(&mut self.rng, bit_size)
         })
     }
 }

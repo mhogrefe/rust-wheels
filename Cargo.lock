@@ -113,7 +113,6 @@ version = "0.1.0"
 dependencies = [
  "itertools",
  "malachite-base",
- "rand 0.4.6",
 ]
 
 [[package]]

@@ -1,35 +1,5 @@
-use malachite_base::chars::exhaustive::{exhaustive_chars, ExhaustiveChars};
-use malachite_base::num::exhaustive::PrimitiveIntIncreasingRange;
-use malachite_base::vecs::exhaustive::{exhaustive_vecs, ExhaustiveVecs};
-
 use iterators::general::{random, Random};
 use iterators::vecs::{random_vecs, RandomVecs};
-
-pub struct ExhaustiveStrings<I>(ExhaustiveVecs<char, PrimitiveIntIncreasingRange<u64>, I>)
-where
-    I: Clone + Iterator<Item = char>;
-
-impl<I> Iterator for ExhaustiveStrings<I>
-where
-    I: Clone + Iterator<Item = char>,
-{
-    type Item = String;
-
-    fn next(&mut self) -> Option<String> {
-        self.0.next().map(|s| s.into_iter().collect())
-    }
-}
-
-pub fn exhaustive_strings_with_chars<I: 'static>(chars: I) -> ExhaustiveStrings<I>
-where
-    I: Clone + Iterator<Item = char>,
-{
-    ExhaustiveStrings(exhaustive_vecs(chars))
-}
-
-pub fn exhaustive_strings() -> ExhaustiveStrings<ExhaustiveChars> {
-    exhaustive_strings_with_chars(exhaustive_chars())
-}
 
 pub struct RandomStrings<I>(RandomVecs<I>)
 where

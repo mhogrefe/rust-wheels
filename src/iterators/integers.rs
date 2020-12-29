@@ -5,8 +5,6 @@ use malachite_base::num::basic::traits::{One, Zero};
 use malachite_base::num::conversion::traits::ExactFrom;
 use malachite_base::num::logic::traits::SignificantBits;
 use malachite_nz::integer::Integer;
-use malachite_nz::natural::random::random_natural_below::random_natural_below;
-use malachite_nz::natural::random::random_natural_with_bits::random_natural_with_bits;
 use malachite_nz::natural::Natural;
 use rand::{IsaacRng, Rng, SeedableRng};
 
@@ -14,9 +12,9 @@ use iterators::common::scramble;
 use iterators::general::{random, Random};
 use iterators::integers_geometric::{range_up_geometric_u32, RangeUpGeometricU32};
 use iterators::naturals::{
-    random_naturals, random_positive_naturals, special_random_naturals,
-    special_random_positive_naturals, RandomNaturals, RandomPositiveNaturals,
-    SpecialRandomNaturals, SpecialRandomPositiveNaturals,
+    random_natural_below_old, random_natural_with_bits_old, random_naturals,
+    random_positive_naturals, special_random_naturals, special_random_positive_naturals,
+    RandomNaturals, RandomPositiveNaturals, SpecialRandomNaturals, SpecialRandomPositiveNaturals,
 };
 
 pub struct RandomPositiveIntegers(RandomPositiveNaturals);
@@ -209,7 +207,12 @@ impl Iterator for RandomRangeInteger {
     type Item = Integer;
 
     fn next(&mut self) -> Option<Integer> {
-        Some(Integer::from(random_natural_below(&mut self.rng, &self.diameter_plus_one)) + &self.a)
+        Some(
+            Integer::from(random_natural_below_old(
+                &mut self.rng,
+                &self.diameter_plus_one,
+            )) + &self.a,
+        )
     }
 }
 
@@ -245,7 +248,7 @@ impl Iterator for RandomRangeUpInteger {
                     // a < 0
                     // Generates values between 2^(n - 1) and 2^n - 1, inclusive, or
                     // between -(2^n - 1) and -2^(n - 1), inclusive.
-                    let abs_result = random_natural_with_bits(&mut self.rng, bit_size);
+                    let abs_result = random_natural_with_bits_old(&mut self.rng, bit_size);
                     if self.rng.gen() {
                         Integer::from(abs_result)
                     } else {
@@ -254,13 +257,14 @@ impl Iterator for RandomRangeUpInteger {
                 }
                 Ordering::Greater => {
                     // Generates values between 2^(n - 1) and 2^n - 1, inclusive.
-                    Integer::from(random_natural_with_bits(&mut self.rng, bit_size))
+                    Integer::from(random_natural_with_bits_old(&mut self.rng, bit_size))
                 }
                 Ordering::Equal => {
                     if let Some(ref offset_limit) = self.offset_limit {
                         // a >= 0
                         // Generates values between a and 2^n - 1, inclusive.
-                        Integer::from(random_natural_below(&mut self.rng, offset_limit)) + &self.a
+                        Integer::from(random_natural_below_old(&mut self.rng, offset_limit))
+                            + &self.a
                     } else {
                         // a < 0
                         // Generates values between 2^(n - 1) and 2^n - 1, inclusive, or
@@ -268,7 +272,7 @@ impl Iterator for RandomRangeUpInteger {
                         //
                         // Loop loops <= 2 times on average.
                         loop {
-                            let abs_result = random_natural_with_bits(&mut self.rng, bit_size);
+                            let abs_result = random_natural_with_bits_old(&mut self.rng, bit_size);
                             let result = if self.rng.gen() {
                                 Integer::from(abs_result)
                             } else {
