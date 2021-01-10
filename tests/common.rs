@@ -1,5 +1,7 @@
+extern crate itertools;
 extern crate rust_wheels;
 
+use self::itertools::Itertools;
 use std::collections::HashMap;
 use std::fmt::{Debug, Display};
 use std::fs::File;
@@ -89,7 +91,7 @@ pub fn get_expected_test_outputs() -> TestOutput {
     for line in contents.lines() {
         match read_mode {
             0 => {
-                let tokens = line.split(' ').collect::<Vec<_>>();
+                let tokens = line.split(' ').collect_vec();
                 if tokens.len() != 3 {
                     panic!("Bad header: {}", line);
                 }
@@ -129,7 +131,7 @@ pub fn get_expected_test_outputs() -> TestOutput {
                     current_map.clear();
                     read_mode = 0;
                 } else {
-                    let line_tokens = line.split(": ").collect::<Vec<_>>();
+                    let line_tokens = line.split(": ").collect_vec();
                     if line_tokens.len() != 2 {
                         panic!("Bad map line: {}", line);
                     }
