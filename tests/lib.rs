@@ -8,6 +8,5 @@ pub mod common;
 
 pub mod iterators {
     pub mod integers;
-    pub mod naturals;
     pub mod primitive_floats;
 }
