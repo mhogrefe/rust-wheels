@@ -1,9 +1,6 @@
 use std::cmp::Ordering;
-use std::collections::BinaryHeap;
-use std::collections::HashMap;
 use std::fmt::Debug;
 use std::fmt::{Binary, Display};
-use std::hash::{BuildHasher, Hash};
 
 use malachite_base::strings::ToDebugString;
 
@@ -62,14 +59,6 @@ where
     to_limited_string_vec_helper(limit, xs, &|x| x.to_string())
 }
 
-pub fn to_limited_string_vec_debug<I>(limit: usize, xs: &mut I) -> Vec<String>
-where
-    I: Iterator,
-    <I as Iterator>::Item: Debug,
-{
-    to_limited_string_vec_helper(limit, xs, &ToDebugString::to_debug_string)
-}
-
 fn to_limited_string_helper<I>(limit: usize, xs: &mut I, f: &dyn Fn(&I::Item) -> String) -> String
 where
     I: Iterator,
@@ -121,22 +110,6 @@ where
     to_limited_string_helper(limit, xs, &|x| format!("{:#b}", x))
 }
 
-pub fn to_frequency_map<I>(xs: &mut I) -> HashMap<I::Item, usize>
-where
-    I: Iterator,
-    <I as Iterator>::Item: Eq + Hash,
-{
-    let mut map: HashMap<I::Item, usize> = HashMap::new();
-    for x in xs {
-        let frequency = match map.get(&x) {
-            None => 0,
-            Some(&f) => f,
-        };
-        map.insert(x, frequency + 1);
-    }
-    map
-}
-
 #[derive(Eq, PartialEq)]
 struct FrequencyRecord {
     item: String,
@@ -158,150 +131,13 @@ impl PartialOrd for FrequencyRecord {
     }
 }
 
-fn get_most_common_values_helper<T, S: BuildHasher>(
-    limit: usize,
-    map: HashMap<T, usize, S>,
-    f: &dyn Fn(&T) -> String,
-) -> Vec<(String, usize)>
-where
-    T: Eq + Hash,
-{
-    let mut inverse_frequency_map: HashMap<usize, Vec<T>> = HashMap::new();
-    for (x, frequency) in map {
-        inverse_frequency_map
-            .entry(frequency)
-            .or_insert_with(Vec::new)
-            .push(x);
-    }
-    let mut most_common_values = BinaryHeap::new();
-    let mut i = 0;
-    for (&frequency, xs) in &inverse_frequency_map {
-        for x in xs {
-            most_common_values.push(FrequencyRecord {
-                item: f(x),
-                frequency,
-            });
-            if i < limit {
-                i += 1;
-            } else {
-                most_common_values.pop();
-            }
-        }
-    }
-    let mut result = Vec::new();
-    while let Some(record) = most_common_values.pop() {
-        result.push((record.item, record.frequency));
-    }
-    result.reverse();
-    result
-}
-
-pub fn get_most_common_values<T, S: BuildHasher>(
-    limit: usize,
-    map: HashMap<T, usize, S>,
-) -> Vec<(String, usize)>
-where
-    T: Eq + Hash + Display,
-{
-    get_most_common_values_helper(limit, map, &|x| x.to_string())
-}
-
-pub fn get_most_common_values_debug<T, S: BuildHasher>(
-    limit: usize,
-    map: HashMap<T, usize, S>,
-) -> Vec<(String, usize)>
-where
-    T: Eq + Hash + Debug,
-{
-    get_most_common_values_helper(limit, map, &ToDebugString::to_debug_string)
-}
-
-fn get_limited_string_vec_and_frequency_map_helper<I>(
-    small_limit: usize,
-    large_limit: usize,
-    xs: &mut I,
-    f: &dyn Fn(&I::Item) -> String,
-) -> (Vec<String>, HashMap<I::Item, usize>)
-where
-    I: Iterator,
-    <I as Iterator>::Item: Eq + Hash,
-{
-    let mut vec = Vec::new();
-    let mut map: HashMap<I::Item, usize> = HashMap::new();
-    let mut i = 0;
-    for x in xs.take(large_limit) {
-        if i < small_limit {
-            vec.push(f(&x))
-        }
-        let frequency = match map.get(&x) {
-            None => 0,
-            Some(&f) => f,
-        };
-        map.insert(x, frequency + 1);
-        i += 1;
-    }
-    if small_limit < i {
-        vec.push("...".to_string());
-    }
-    (vec, map)
-}
-
-pub fn get_limited_string_vec_and_frequency_map<I>(
-    small_limit: usize,
-    large_limit: usize,
-    xs: &mut I,
-) -> (Vec<String>, HashMap<I::Item, usize>)
-where
-    I: Iterator,
-    <I as Iterator>::Item: Eq + Hash + Display,
-{
-    get_limited_string_vec_and_frequency_map_helper(small_limit, large_limit, xs, &|x| {
-        x.to_string()
-    })
-}
-
-fn get_limited_string_vec_and_most_common_values_helper<I>(
-    tiny_limit: usize,
-    small_limit: usize,
-    large_limit: usize,
-    xs: &mut I,
-    f: &dyn Fn(&I::Item) -> String,
-) -> (Vec<String>, Vec<(String, usize)>)
-where
-    I: Iterator,
-    <I as Iterator>::Item: Clone + Eq + Hash,
-{
-    let (vec, map) =
-        get_limited_string_vec_and_frequency_map_helper(small_limit, large_limit, xs, f);
-    (vec, get_most_common_values_helper(tiny_limit, map, f))
-}
-
-pub fn get_limited_string_vec_and_most_common_values<I>(
-    tiny_limit: usize,
-    small_limit: usize,
-    large_limit: usize,
-    xs: &mut I,
-) -> (Vec<String>, Vec<(String, usize)>)
-where
-    I: Iterator,
-    <I as Iterator>::Item: Clone + Eq + Hash + Display,
-{
-    get_limited_string_vec_and_most_common_values_helper(
-        tiny_limit,
-        small_limit,
-        large_limit,
-        xs,
-        &|x| x.to_string(),
-    )
-}
-
-pub struct Concat<I: Iterator> {
+pub(crate) struct Concat<I: Iterator> {
     xss: I,
     xs: Option<I::Item>,
 }
 
 impl<I: Iterator> Concat<I> {
-    pub fn new(xss: I) -> Concat<I> {
+    pub(crate) fn new(xss: I) -> Concat<I> {
         Concat { xss, xs: None }
     }
 }

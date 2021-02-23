@@ -268,8 +268,6 @@ macro_rules! special_random_float_gen {
         $special_random_positive_mantissas_f: ident,
         $special_random_positive_finite_s: ident,
         $special_random_positive_finite_f: ident,
-        $special_random_negative_finite_s: ident,
-        $special_random_negative_finite_f: ident,
         $special_random_nonzero_finite_s: ident,
         $special_random_nonzero_finite_f: ident,
         $special_random_finite_s: ident,
@@ -312,7 +310,7 @@ macro_rules! special_random_float_gen {
             }
         }
 
-        pub struct $special_random_positive_finite_s {
+        struct $special_random_positive_finite_s {
             mantissa_gen: $special_random_positive_mantissas_s,
             exponent_gen: I32sGeometric,
         }
@@ -336,7 +334,7 @@ macro_rules! special_random_float_gen {
             }
         }
 
-        pub fn $special_random_positive_finite_f(
+        fn $special_random_positive_finite_f(
             seed: &[u32],
             scale: u32,
         ) -> $special_random_positive_finite_s {
@@ -346,24 +344,7 @@ macro_rules! special_random_float_gen {
             }
         }
 
-        pub struct $special_random_negative_finite_s($special_random_positive_finite_s);
-
-        impl Iterator for $special_random_negative_finite_s {
-            type Item = $f;
-
-            fn next(&mut self) -> Option<$f> {
-                self.0.next().map(|f| -f)
-            }
-        }
-
-        pub fn $special_random_negative_finite_f(
-            seed: &[u32],
-            scale: u32,
-        ) -> $special_random_negative_finite_s {
-            $special_random_negative_finite_s($special_random_positive_finite_f(seed, scale))
-        }
-
-        pub struct $special_random_nonzero_finite_s {
+        struct $special_random_nonzero_finite_s {
             sign_gen: Random<bool>,
             abs_gen: $special_random_positive_finite_s,
         }
@@ -381,7 +362,7 @@ macro_rules! special_random_float_gen {
             }
         }
 
-        pub fn $special_random_nonzero_finite_f(
+        fn $special_random_nonzero_finite_f(
             seed: &[u32],
             scale: u32,
         ) -> $special_random_nonzero_finite_s {
@@ -470,8 +451,6 @@ special_random_float_gen!(
     special_random_positive_mantissas_f32,
     SpecialRandomPositiveFiniteF32s,
     special_random_positive_finite_f32s,
-    SpecialRandomNegativeFiniteF32s,
-    special_random_negative_finite_f32s,
     SpecialRandomNonzeroFiniteF32s,
     special_random_nonzero_finite_f32s,
     SpecialRandomFiniteF32s,
@@ -489,8 +468,6 @@ special_random_float_gen!(
     special_random_positive_mantissas_f64,
     SpecialRandomPositiveFiniteF64s,
     special_random_positive_finite_f64s,
-    SpecialRandomNegativeFiniteF64s,
-    special_random_negative_finite_f64s,
     SpecialRandomNonzeroFiniteF64s,
     special_random_nonzero_finite_f64s,
     SpecialRandomFiniteF64s,

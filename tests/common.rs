@@ -5,13 +5,11 @@ use self::itertools::Itertools;
 use std::collections::HashMap;
 use std::fmt::{Debug, Display};
 use std::fs::File;
-use std::hash::Hash;
 use std::io::prelude::*;
 
 use rust_wheels::iterators::adaptors::*;
 
 const TINY_LIMIT: usize = 20;
-const HUGE_LIMIT: usize = 1_000_000;
 
 #[derive(Debug)]
 pub struct TestOutput {
@@ -43,36 +41,6 @@ impl TestOutput {
         <I as Iterator>::Item: Display,
     {
         self.match_vec_helper(key, to_limited_string_vec(TINY_LIMIT, xs));
-    }
-
-    fn match_vec_f_helper(&self, key: &str, vec: Vec<String>, map: Vec<(String, usize)>) {
-        self.match_vec_helper(key, vec);
-        let result = self.maps.get(key);
-        if !result.is_some() || &map != result.unwrap() {
-            let mut desired_result_string = String::new();
-            desired_result_string.push('\n');
-            desired_result_string.push_str(key);
-            desired_result_string.push_str(" map ");
-            desired_result_string.push_str(&map.len().to_string());
-            desired_result_string.push('\n');
-            for (x, f) in map {
-                desired_result_string.push_str(&x);
-                desired_result_string.push_str(": ");
-                desired_result_string.push_str(&f.to_string());
-                desired_result_string.push('\n');
-            }
-            assert!(false, "{}", desired_result_string);
-        }
-    }
-
-    pub fn match_vec_f<I>(&self, key: &str, xs: &mut I)
-    where
-        I: Iterator,
-        <I as Iterator>::Item: Clone + Display + Eq + Hash,
-    {
-        let (vec, map) =
-            get_limited_string_vec_and_most_common_values(10, TINY_LIMIT, HUGE_LIMIT, xs);
-        self.match_vec_f_helper(key, vec, map);
     }
 }
 

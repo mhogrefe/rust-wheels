@@ -5,14 +5,11 @@
     unstable_name_collisions
 )]
 
-extern crate gnuplot;
 extern crate itertools;
 extern crate malachite_base;
 extern crate malachite_nz;
 extern crate rand;
 extern crate sha3;
-extern crate stats;
-extern crate time;
 
 pub mod iterators {
     pub mod adaptors;
@@ -22,8 +19,6 @@ pub mod iterators {
     pub mod integers;
     pub mod integers_geometric;
     pub mod naturals;
-    pub mod options;
-    pub mod orderings;
     pub mod primitive_floats;
     pub mod primitive_ints;
     pub mod rounding_modes;

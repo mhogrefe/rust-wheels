@@ -9,7 +9,7 @@ use malachite_base::num::logic::traits::SignificantBits;
 use malachite_nz::integer::Integer;
 
 #[derive(Debug, Eq, PartialEq)]
-pub struct BinaryFraction {
+struct BinaryFraction {
     mantissa: Integer,
     exponent: i32,
 }
@@ -170,7 +170,7 @@ macro_rules! binary_fraction_funs {
         $largest_finite_float: ident,
         $to_float: ident
     ) => {
-        pub fn $from_float(mut f: $f) -> Option<BinaryFraction> {
+        fn $from_float(mut f: $f) -> Option<BinaryFraction> {
             if f == 0.0 {
                 Some(BinaryFraction::ZERO)
             } else if f == 1.0 {
@@ -199,11 +199,11 @@ macro_rules! binary_fraction_funs {
             }
         }
 
-        pub fn $largest_finite_float() -> BinaryFraction {
+        fn $largest_finite_float() -> BinaryFraction {
             BinaryFraction::$from_float($f::MAX_FINITE).unwrap()
         }
 
-        pub fn $to_float(&self) -> Option<$f> {
+        fn $to_float(&self) -> Option<$f> {
             if *self == BinaryFraction::ZERO {
                 return Some(0.0);
             }
@@ -239,7 +239,7 @@ macro_rules! binary_fraction_funs {
 }
 
 impl BinaryFraction {
-    pub fn new(mantissa: Integer, exponent: i32) -> BinaryFraction {
+    fn new(mantissa: Integer, exponent: i32) -> BinaryFraction {
         if let Some(trailing_zeros) = mantissa.trailing_zeros() {
             let trailing_zeros = i32::wrapping_from(trailing_zeros);
             BinaryFraction {
@@ -275,7 +275,10 @@ macro_rules! additional_funs {
         $from_mantissa_and_exponent: ident,
         $to_float: ident
     ) => {
-        pub fn $checked_from_mantissa_and_exponent(mantissa: $s, exponent: i32) -> Option<$f> {
+        pub(crate) fn $checked_from_mantissa_and_exponent(
+            mantissa: $s,
+            exponent: i32,
+        ) -> Option<$f> {
             if mantissa == 0 && exponent != 0 || mantissa.even() {
                 None
             } else {
@@ -283,7 +286,7 @@ macro_rules! additional_funs {
             }
         }
 
-        pub fn $from_mantissa_and_exponent(mantissa: $s, exponent: i32) -> Option<$f> {
+        pub(crate) fn $from_mantissa_and_exponent(mantissa: $s, exponent: i32) -> Option<$f> {
             BinaryFraction::new(Integer::from(mantissa), exponent).$to_float()
         }
     };

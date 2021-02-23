@@ -14,30 +14,6 @@ use iterators::naturals::{
     limbs_special_random_up_to_bits_old, special_random_natural_with_bits_old,
 };
 
-pub struct RandomFixedLengthVecs<I: Iterator> {
-    length: usize,
-    xs: I,
-}
-
-impl<I> Iterator for RandomFixedLengthVecs<I>
-where
-    I: Iterator,
-{
-    type Item = Vec<I::Item>;
-
-    fn next(&mut self) -> Option<Vec<I::Item>> {
-        Some((&mut self.xs).take(self.length).collect())
-    }
-}
-
-//TODO test
-pub fn random_fixed_length_vecs<I>(length: usize, xs: I) -> RandomFixedLengthVecs<I>
-where
-    I: Iterator,
-{
-    RandomFixedLengthVecs { length, xs }
-}
-
 pub struct RandomVecs<I>
 where
     I: Iterator,
@@ -111,39 +87,6 @@ where
             u32::exact_from(min_length),
         ),
         xs: xs_gen(&scramble(seed, "xs")),
-    }
-}
-
-pub struct SpecialRandomFixedLengthUnsignedVecs<T: PrimitiveUnsigned> {
-    length: usize,
-    rng: Box<IsaacRng>,
-    boo: PhantomData<*const T>,
-}
-
-impl<T: PrimitiveUnsigned> Iterator for SpecialRandomFixedLengthUnsignedVecs<T> {
-    type Item = Vec<T>;
-
-    fn next(&mut self) -> Option<Vec<T>> {
-        if self.length == 0 {
-            return Some(Vec::new());
-        }
-        let limbs: Vec<Limb> = limbs_special_random_up_to_bits_old(
-            &mut self.rng,
-            u64::exact_from(self.length) << T::LOG_WIDTH,
-        );
-        Some(T::vec_from_other_type_slice(&limbs))
-    }
-}
-
-//TODO test
-pub fn special_random_fixed_length_unsigned_vecs<T: PrimitiveUnsigned>(
-    seed: &[u32],
-    length: usize,
-) -> SpecialRandomFixedLengthUnsignedVecs<T> {
-    SpecialRandomFixedLengthUnsignedVecs {
-        length,
-        rng: Box::new(IsaacRng::from_seed(seed)),
-        boo: PhantomData,
     }
 }
 

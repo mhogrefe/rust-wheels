@@ -11,14 +11,11 @@ path = "src/lib.rs"
 32_bit_limbs = ["malachite-nz/32_bit_limbs"]
 
 [dependencies]
-gnuplot = "0.0.26"
 malachite-nz = { path = "../malachite/malachite-nz", default-features = false }
 malachite-base = { path = "../malachite/malachite-base" }
 itertools = "0.9.0"
 rand = "0.4.6"
 sha3 = "0.9.0"
-streaming-stats = "0.2.2"
-time = "0.1.40"
 
 [profile.release]
 lto = true

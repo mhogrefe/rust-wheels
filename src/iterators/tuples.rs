@@ -4,32 +4,18 @@ use malachite_base::num::conversion::traits::ExactFrom;
 use iterators::common::scramble;
 
 #[derive(Debug, Eq, PartialEq)]
-pub struct LogPairIndices(u64);
+pub(crate) struct LogPairIndices(u64);
 
 impl LogPairIndices {
-    pub fn new() -> LogPairIndices {
+    pub(crate) fn new() -> LogPairIndices {
         LogPairIndices(1)
     }
 
-    pub fn from_indices(i: usize, j: usize) -> Option<LogPairIndices> {
-        let i = u64::exact_from(i);
-        let j = u64::exact_from(j);
-        if i.leading_zeros() == 0 {
-            return None;
-        }
-        let i = (i << 1) | 1;
-        if u64::from(i.leading_zeros()) < j {
-            None
-        } else {
-            Some(LogPairIndices(i << j))
-        }
-    }
-
-    pub fn increment(&mut self) {
+    pub(crate) fn increment(&mut self) {
         self.0 += 1;
     }
 
-    pub fn indices(&self) -> (usize, usize) {
+    pub(crate) fn indices(&self) -> (usize, usize) {
         let y = self.0.trailing_zeros();
         (usize::exact_from(self.0 >> (y + 1)), usize::exact_from(y))
     }
@@ -42,17 +28,17 @@ impl Default for LogPairIndices {
 }
 
 #[derive(Debug, Default, Eq, PartialEq)]
-pub struct SqrtPairIndices {
+pub(crate) struct SqrtPairIndices {
     pub x: u64,
     pub y: u64,
 }
 
 impl SqrtPairIndices {
-    pub fn new() -> SqrtPairIndices {
+    pub(crate) fn new() -> SqrtPairIndices {
         SqrtPairIndices { x: 0, y: 0 }
     }
 
-    pub fn increment(&mut self) {
+    pub(crate) fn increment(&mut self) {
         let mut ix = 0;
         let mut iy = 0;
         loop {
@@ -79,16 +65,16 @@ impl SqrtPairIndices {
 }
 
 #[derive(Debug, Eq, PartialEq)]
-pub struct ZOrderTupleIndices(pub Vec<u64>);
+pub(crate) struct ZOrderTupleIndices(pub Vec<u64>);
 
 impl ZOrderTupleIndices {
-    pub fn new(size: u64) -> ZOrderTupleIndices {
+    pub(crate) fn new(size: u64) -> ZOrderTupleIndices {
         let mut v = Vec::new();
         v.resize(usize::exact_from(size), 0);
         ZOrderTupleIndices(v)
     }
 
-    pub fn increment(&mut self) {
+    pub(crate) fn increment(&mut self) {
         for j in 0..64 {
             let mask = u64::power_of_two(j);
             for i in (0..self.0.len()).rev() {
@@ -100,10 +86,6 @@ impl ZOrderTupleIndices {
                 }
             }
         }
-    }
-
-    pub fn size(&self) -> usize {
-        self.0.len()
     }
 }
 

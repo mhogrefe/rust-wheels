@@ -52,7 +52,7 @@ pub fn random_from_vector<T>(seed: &[u32], xs: Vec<T>) -> RandomFromVector<T> {
     }
 }
 
-pub struct CachedIterator<I: Iterator>
+pub(crate) struct CachedIterator<I: Iterator>
 where
     I::Item: Clone,
 {
@@ -89,7 +89,7 @@ impl<I: Iterator> CachedIterator<I>
 where
     I::Item: Clone,
 {
-    pub fn get(&mut self, index: usize) -> Option<I::Item> {
+    pub(crate) fn get(&mut self, index: usize) -> Option<I::Item> {
         let old_len = self.cache.len();
         if index < old_len {
             Some(self.cache[index].clone())
@@ -103,21 +103,13 @@ where
             Some(self.cache.last().unwrap().clone())
         }
     }
-
-    pub fn currently_known_size(&self) -> Option<usize> {
-        if self.done {
-            Some(self.cache.len())
-        } else {
-            None
-        }
-    }
 }
 
 impl<I: Iterator> CachedIterator<I>
 where
     I::Item: Clone,
 {
-    pub fn new(xs: I) -> CachedIterator<I> {
+    pub(crate) fn new(xs: I) -> CachedIterator<I> {
         CachedIterator {
             xs: xs.peekable(),
             cache: Vec::new(),
