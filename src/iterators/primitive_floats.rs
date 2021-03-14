@@ -9,7 +9,7 @@ use malachite_base::num::exhaustive::{
     exhaustive_signed_range, primitive_int_increasing_range, ExhaustiveSignedRange,
     PrimitiveIntIncreasingRange,
 };
-use malachite_base::num::floats::PrimitiveFloat;
+use malachite_base::num::float::PrimitiveFloat;
 use malachite_base::num::logic::traits::{LowMask, SignificantBits};
 use malachite_base::rounding_modes::RoundingMode;
 use malachite_base::tuples::exhaustive::{exhaustive_pairs, ExhaustivePairs};
