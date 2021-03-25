@@ -198,7 +198,6 @@ dependencies = [
 name = "rust-wheels"
 version = "0.1.0"
 dependencies = [
- "itertools",
  "malachite-base",
  "malachite-nz",
  "rand 0.4.6",

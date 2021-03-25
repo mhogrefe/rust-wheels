@@ -1,30 +1,5 @@
 use std::cmp::Ordering;
-use std::fmt::Debug;
-use std::fmt::{Binary, Display};
-
-use malachite_base::strings::ToDebugString;
-
-pub struct GeneratorFromFunction<F, T>(F)
-where
-    F: FnMut() -> T;
-
-pub fn generate_from_function<F, T>(f: F) -> GeneratorFromFunction<F, T>
-where
-    F: FnMut() -> T,
-{
-    GeneratorFromFunction(f)
-}
-
-impl<F, T> Iterator for GeneratorFromFunction<F, T>
-where
-    F: FnMut() -> T,
-{
-    type Item = T;
-
-    fn next(&mut self) -> Option<T> {
-        Some(self.0())
-    }
-}
+use std::fmt::Display;
 
 fn to_limited_string_vec_helper<I>(
     limit: usize,
@@ -57,57 +32,6 @@ where
     <I as Iterator>::Item: Display,
 {
     to_limited_string_vec_helper(limit, xs, &|x| x.to_string())
-}
-
-fn to_limited_string_helper<I>(limit: usize, xs: &mut I, f: &dyn Fn(&I::Item) -> String) -> String
-where
-    I: Iterator,
-{
-    let mut string = String::new();
-    let mut found_end = false;
-    let mut delimiter = "";
-    for _ in 0..limit {
-        match xs.next() {
-            Some(x) => {
-                string.push_str(delimiter);
-                delimiter = ", ";
-                string.push_str(&f(&x))
-            }
-            None => {
-                found_end = true;
-                break;
-            }
-        }
-    }
-    if !found_end && xs.next().is_some() {
-        string.push_str(delimiter);
-        string.push_str("...")
-    }
-    string
-}
-
-pub fn to_limited_string<I>(limit: usize, xs: &mut I) -> String
-where
-    I: Iterator,
-    <I as Iterator>::Item: Display,
-{
-    to_limited_string_helper(limit, xs, &|x| x.to_string())
-}
-
-pub fn to_limited_string_debug<I>(limit: usize, xs: &mut I) -> String
-where
-    I: Iterator,
-    <I as Iterator>::Item: Debug,
-{
-    to_limited_string_helper(limit, xs, &ToDebugString::to_debug_string)
-}
-
-pub fn to_limited_string_binary<I>(limit: usize, xs: &mut I) -> String
-where
-    I: Iterator,
-    <I as Iterator>::Item: Binary,
-{
-    to_limited_string_helper(limit, xs, &|x| format!("{:#b}", x))
 }
 
 #[derive(Eq, PartialEq)]

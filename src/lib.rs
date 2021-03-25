@@ -5,7 +5,6 @@
     unstable_name_collisions
 )]
 
-extern crate itertools;
 extern crate malachite_base;
 extern crate malachite_nz;
 extern crate rand;
@@ -24,8 +23,4 @@ pub mod iterators {
     pub mod rounding_modes;
     pub mod tuples;
     pub mod vecs;
-}
-
-pub mod prim_utils {
-    pub mod primitive_float_utils;
 }

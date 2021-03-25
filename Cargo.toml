@@ -13,7 +13,6 @@ path = "src/lib.rs"
 [dependencies]
 malachite-nz = { path = "../malachite/malachite-nz", default-features = false }
 malachite-base = { path = "../malachite/malachite-base" }
-itertools = "0.9.0"
 rand = "0.4.6"
 sha3 = "0.9.0"
 

@@ -20,7 +20,7 @@ use iterators::integers_geometric::{
 };
 use malachite_base::num::basic::unsigneds::PrimitiveUnsigned;
 
-pub fn random_natural_below_old<R: Rng>(rng: &mut R, n: &Natural) -> Natural {
+pub(crate) fn random_natural_below_old<R: Rng>(rng: &mut R, n: &Natural) -> Natural {
     assert_ne!(*n, 0, "Cannot generate a Natural below 0");
     if n.is_power_of_two() {
         random_natural_up_to_bits_old(rng, n.significant_bits() - 1)
@@ -36,7 +36,7 @@ pub fn random_natural_below_old<R: Rng>(rng: &mut R, n: &Natural) -> Natural {
     }
 }
 
-pub fn limbs_random_up_to_bits_old<T: PrimitiveUnsigned + Rand, R: Rng>(
+fn limbs_random_up_to_bits_old<T: PrimitiveUnsigned + Rand, R: Rng>(
     rng: &mut R,
     bits: u64,
 ) -> Vec<T> {
@@ -56,7 +56,7 @@ pub fn limbs_random_up_to_bits_old<T: PrimitiveUnsigned + Rand, R: Rng>(
 }
 
 #[cfg(feature = "32_bit_limbs")]
-pub fn random_natural_up_to_bits_old<R: Rng>(rng: &mut R, bits: u64) -> Natural {
+fn random_natural_up_to_bits_old<R: Rng>(rng: &mut R, bits: u64) -> Natural {
     if bits == 0 {
         Natural::ZERO
     } else {
@@ -65,7 +65,7 @@ pub fn random_natural_up_to_bits_old<R: Rng>(rng: &mut R, bits: u64) -> Natural 
 }
 
 #[cfg(not(feature = "32_bit_limbs"))]
-pub fn random_natural_up_to_bits_old<R: Rng>(rng: &mut R, bits: u64) -> Natural {
+fn random_natural_up_to_bits_old<R: Rng>(rng: &mut R, bits: u64) -> Natural {
     if bits == 0 {
         Natural::ZERO
     } else {
@@ -74,7 +74,7 @@ pub fn random_natural_up_to_bits_old<R: Rng>(rng: &mut R, bits: u64) -> Natural 
     }
 }
 
-pub fn random_natural_with_bits_old<R: Rng>(rng: &mut R, bits: u64) -> Natural {
+pub(crate) fn random_natural_with_bits_old<R: Rng>(rng: &mut R, bits: u64) -> Natural {
     let mut n = random_natural_up_to_bits_old(rng, bits);
     if bits != 0 {
         n.set_bit(bits - 1);
@@ -82,7 +82,7 @@ pub fn random_natural_with_bits_old<R: Rng>(rng: &mut R, bits: u64) -> Natural {
     n
 }
 
-pub fn special_random_natural_below_old<R: Rng>(rng: &mut R, n: &Natural) -> Natural {
+fn special_random_natural_below_old<R: Rng>(rng: &mut R, n: &Natural) -> Natural {
     assert_ne!(*n, 0, "Cannot generate a Natural below 0");
     if n.is_power_of_two() {
         special_random_natural_up_to_bits_old(rng, n.significant_bits() - 1)
@@ -98,7 +98,7 @@ pub fn special_random_natural_below_old<R: Rng>(rng: &mut R, n: &Natural) -> Nat
     }
 }
 
-pub fn limbs_special_random_up_to_bits_old<T: PrimitiveUnsigned, R: Rng>(
+pub(crate) fn limbs_special_random_up_to_bits_old<T: PrimitiveUnsigned, R: Rng>(
     rng: &mut R,
     bits: u64,
 ) -> Vec<T> {
@@ -143,7 +143,7 @@ pub fn limbs_special_random_up_to_bits_old<T: PrimitiveUnsigned, R: Rng>(
 }
 
 #[cfg(feature = "32_bit_limbs")]
-pub fn special_random_natural_up_to_bits_old<R: Rng>(rng: &mut R, bits: u64) -> Natural {
+fn special_random_natural_up_to_bits_old<R: Rng>(rng: &mut R, bits: u64) -> Natural {
     if bits == 0 {
         Natural::ZERO
     } else {
@@ -152,7 +152,7 @@ pub fn special_random_natural_up_to_bits_old<R: Rng>(rng: &mut R, bits: u64) -> 
 }
 
 #[cfg(not(feature = "32_bit_limbs"))]
-pub fn special_random_natural_up_to_bits_old<R: Rng>(rng: &mut R, bits: u64) -> Natural {
+fn special_random_natural_up_to_bits_old<R: Rng>(rng: &mut R, bits: u64) -> Natural {
     if bits == 0 {
         Natural::ZERO
     } else {
@@ -161,7 +161,7 @@ pub fn special_random_natural_up_to_bits_old<R: Rng>(rng: &mut R, bits: u64) -> 
     }
 }
 
-pub fn special_random_natural_with_bits_old<R: Rng>(rng: &mut R, bits: u64) -> Natural {
+pub(crate) fn special_random_natural_with_bits_old<R: Rng>(rng: &mut R, bits: u64) -> Natural {
     let mut n = special_random_natural_up_to_bits_old(rng, bits);
     if bits != 0 {
         n.set_bit(bits - 1);
