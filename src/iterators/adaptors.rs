@@ -1,38 +1,4 @@
 use std::cmp::Ordering;
-use std::fmt::Display;
-
-fn to_limited_string_vec_helper<I>(
-    limit: usize,
-    xs: &mut I,
-    f: &dyn Fn(&I::Item) -> String,
-) -> Vec<String>
-where
-    I: Iterator,
-{
-    let mut vec = Vec::new();
-    let mut found_end = false;
-    for _ in 0..limit {
-        match xs.next() {
-            Some(x) => vec.push(f(&x)),
-            None => {
-                found_end = true;
-                break;
-            }
-        }
-    }
-    if !found_end && xs.next().is_some() {
-        vec.push("...".to_string())
-    }
-    vec
-}
-
-pub fn to_limited_string_vec<I>(limit: usize, xs: &mut I) -> Vec<String>
-where
-    I: Iterator,
-    <I as Iterator>::Item: Display,
-{
-    to_limited_string_vec_helper(limit, xs, &|x| x.to_string())
-}
 
 #[derive(Eq, PartialEq)]
 struct FrequencyRecord {
