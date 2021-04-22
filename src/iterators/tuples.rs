@@ -1,4 +1,4 @@
-use malachite_base::num::arithmetic::traits::PowerOfTwo;
+use malachite_base::num::arithmetic::traits::PowerOf2;
 use malachite_base::num::conversion::traits::ExactFrom;
 
 use iterators::common::scramble;
@@ -42,7 +42,7 @@ impl SqrtPairIndices {
         let mut ix = 0;
         let mut iy = 0;
         loop {
-            let mask = u64::power_of_two(iy);
+            let mask = u64::power_of_2(iy);
             if self.y & mask != 0 {
                 self.y &= !mask;
                 iy += 1;
@@ -51,7 +51,7 @@ impl SqrtPairIndices {
                 return;
             }
             for _ in 0..2 {
-                let mask = u64::power_of_two(ix);
+                let mask = u64::power_of_2(ix);
                 if self.x & mask != 0 {
                     self.x &= !mask;
                     ix += 1;
@@ -76,7 +76,7 @@ impl ZOrderTupleIndices {
 
     pub(crate) fn increment(&mut self) {
         for j in 0..64 {
-            let mask = u64::power_of_two(j);
+            let mask = u64::power_of_2(j);
             for i in (0..self.0.len()).rev() {
                 if self.0[i] & mask != 0 {
                     self.0[i] &= !mask;

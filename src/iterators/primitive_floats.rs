@@ -2,7 +2,7 @@ use iterators::common::scramble;
 use iterators::general::{random, random_from_vector, Random, RandomFromVector};
 use iterators::integers_geometric::{i32s_geometric, I32sGeometric};
 use iterators::primitive_ints::{random_range, RandomRange};
-use malachite_base::num::arithmetic::traits::RoundToMultipleOfPowerOfTwo;
+use malachite_base::num::arithmetic::traits::RoundToMultipleOfPowerOf2;
 use malachite_base::num::basic::traits::Zero;
 use malachite_base::num::conversion::traits::{ExactFrom, WrappingFrom};
 use malachite_base::num::float::PrimitiveFloat;
@@ -90,7 +90,7 @@ macro_rules! special_random_float_gen {
                 self.range_gen.next().map(|m| {
                     let mantissa = (m << 1) + 1;
                     let p = min(u64::from(p), mantissa.significant_bits() - 1);
-                    mantissa.round_to_multiple_of_power_of_two(p, RoundingMode::Ceiling)
+                    mantissa.round_to_multiple_of_power_of_2(p, RoundingMode::Ceiling)
                 })
             }
         }

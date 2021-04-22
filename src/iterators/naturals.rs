@@ -1,5 +1,5 @@
 use malachite_base::num::arithmetic::traits::{
-    IsPowerOfTwo, ModPowerOfTwo, PowerOfTwo, SaturatingSubAssign, ShrRound,
+    IsPowerOf2, ModPowerOf2, PowerOf2, SaturatingSubAssign, ShrRound,
 };
 use malachite_base::num::basic::traits::{One, Zero};
 use malachite_base::num::conversion::traits::ExactFrom;
@@ -22,7 +22,7 @@ use malachite_base::num::basic::unsigneds::PrimitiveUnsigned;
 
 pub(crate) fn random_natural_below_old<R: Rng>(rng: &mut R, n: &Natural) -> Natural {
     assert_ne!(*n, 0, "Cannot generate a Natural below 0");
-    if n.is_power_of_two() {
+    if n.is_power_of_2() {
         random_natural_up_to_bits_old(rng, n.significant_bits() - 1)
     } else {
         let bits = n.significant_bits();
@@ -41,7 +41,7 @@ fn limbs_random_up_to_bits_old<T: PrimitiveUnsigned + Rand, R: Rng>(
     bits: u64,
 ) -> Vec<T> {
     assert_ne!(bits, 0);
-    let remainder_bits = bits.mod_power_of_two(T::LOG_WIDTH);
+    let remainder_bits = bits.mod_power_of_2(T::LOG_WIDTH);
     let limb_count = bits.shr_round(T::LOG_WIDTH, RoundingMode::Ceiling);
     let mut xs: Vec<T> = Vec::with_capacity(usize::exact_from(limb_count));
     for _ in 0..limb_count {
@@ -50,7 +50,7 @@ fn limbs_random_up_to_bits_old<T: PrimitiveUnsigned + Rand, R: Rng>(
     if remainder_bits != 0 {
         xs.last_mut()
             .unwrap()
-            .mod_power_of_two_assign(remainder_bits);
+            .mod_power_of_2_assign(remainder_bits);
     }
     xs
 }
@@ -84,7 +84,7 @@ pub(crate) fn random_natural_with_bits_old<R: Rng>(rng: &mut R, bits: u64) -> Na
 
 fn special_random_natural_below_old<R: Rng>(rng: &mut R, n: &Natural) -> Natural {
     assert_ne!(*n, 0, "Cannot generate a Natural below 0");
-    if n.is_power_of_two() {
+    if n.is_power_of_2() {
         special_random_natural_up_to_bits_old(rng, n.significant_bits() - 1)
     } else {
         let bits = n.significant_bits();
@@ -103,7 +103,7 @@ pub(crate) fn limbs_special_random_up_to_bits_old<T: PrimitiveUnsigned, R: Rng>(
     bits: u64,
 ) -> Vec<T> {
     assert_ne!(bits, 0);
-    let remainder_bits = bits.mod_power_of_two(T::LOG_WIDTH);
+    let remainder_bits = bits.mod_power_of_2(T::LOG_WIDTH);
     let limb_count = bits.shr_round(T::LOG_WIDTH, RoundingMode::Ceiling);
     // Initialize the value to all binary 1s; later we'll remove chunks to create blocks of 0s.
     let mut limbs = vec![T::MAX; usize::exact_from(limb_count)];
@@ -127,7 +127,7 @@ pub(crate) fn limbs_special_random_up_to_bits_old<T: PrimitiveUnsigned, R: Rng>(
         i.saturating_sub_assign(chunk_size);
         limbs_slice_add_limb_in_place(
             &mut limbs[usize::exact_from(i >> T::LOG_WIDTH)..],
-            T::power_of_two(i & T::WIDTH_MASK),
+            T::power_of_2(i & T::WIDTH_MASK),
         );
         if i == 0 {
             break;
@@ -137,7 +137,7 @@ pub(crate) fn limbs_special_random_up_to_bits_old<T: PrimitiveUnsigned, R: Rng>(
         limbs
             .last_mut()
             .unwrap()
-            .mod_power_of_two_assign(remainder_bits);
+            .mod_power_of_2_assign(remainder_bits);
     }
     limbs
 }
@@ -343,7 +343,7 @@ pub fn random_range_up_natural(seed: &[u32], scale: u32, a: Natural) -> RandomRa
     // let n = a.significant_bits().
     // There are 2^(n - 1) values with exactly n bits, the smallest being 2^(n - 1);
     // a - 2^(n - 1) are smaller than a, so 2^(n - 1) - (a - 2^(n - 1)) = 2^n - a are at least a.
-    let offset_limit = Natural::power_of_two(a_bit_size) - &a;
+    let offset_limit = Natural::power_of_2(a_bit_size) - &a;
     RandomRangeUpNatural {
         rng: Box::new(IsaacRng::from_seed(&scramble(seed, "bits"))),
         bit_sizes: range_up_geometric_u32(
@@ -389,7 +389,7 @@ pub fn special_random_range_up_natural(
     // let n = a.significant_bits().
     // There are 2^(n - 1) values with exactly n bits, the smallest being 2^(n - 1);
     // a - 2^(n - 1) are smaller than a, so 2^(n - 1) - (a - 2^(n - 1)) = 2^n - a are at least a.
-    let offset_limit = Natural::power_of_two(a_bit_size) - &a;
+    let offset_limit = Natural::power_of_2(a_bit_size) - &a;
     SpecialRandomRangeUpNatural {
         rng: Box::new(IsaacRng::from_seed(&scramble(seed, "bits"))),
         bit_sizes: range_up_geometric_u32(
