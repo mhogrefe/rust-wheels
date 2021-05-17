@@ -1,11 +1,9 @@
-use std::collections::HashMap;
-use std::hash::Hash;
-
-use malachite_base::num::conversion::traits::ExactFrom;
-
 use iterators::adaptors::Concat;
 use iterators::general::CachedIterator;
-use iterators::tuples::{LogPairIndices, SqrtPairIndices, ZOrderTupleIndices};
+use iterators::tuples::{LogPairIndices, ZOrderTupleIndices};
+use malachite_base::num::conversion::traits::ExactFrom;
+use std::collections::HashMap;
+use std::hash::Hash;
 
 pub fn dependent_pairs<'a, I: Iterator + 'a, J: Iterator, F: 'a>(
     xs: I,
@@ -130,13 +128,6 @@ exhaustive_dependent_pairs!(
     LogPairIndices,
     LogPairIndices::new(),
     |i: &LogPairIndices| i.indices().1
-);
-exhaustive_dependent_pairs!(
-    ExhaustiveDependentPairsInfiniteSqrt,
-    exhaustive_dependent_pairs_infinite_sqrt,
-    SqrtPairIndices,
-    SqrtPairIndices::new(),
-    |i: &SqrtPairIndices| usize::exact_from(i.y)
 );
 exhaustive_dependent_pairs!(
     ExhaustiveDependentPairsInfinite,

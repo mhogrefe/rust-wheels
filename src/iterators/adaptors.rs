@@ -1,26 +1,3 @@
-use std::cmp::Ordering;
-
-#[derive(Eq, PartialEq)]
-struct FrequencyRecord {
-    item: String,
-    frequency: usize,
-}
-
-impl Ord for FrequencyRecord {
-    fn cmp(&self, other: &FrequencyRecord) -> Ordering {
-        match other.frequency.cmp(&self.frequency) {
-            Ordering::Equal => self.item.cmp(&other.item),
-            c => c,
-        }
-    }
-}
-
-impl PartialOrd for FrequencyRecord {
-    fn partial_cmp(&self, other: &FrequencyRecord) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
 pub(crate) struct Concat<I: Iterator> {
     xss: I,
     xs: Option<I::Item>,

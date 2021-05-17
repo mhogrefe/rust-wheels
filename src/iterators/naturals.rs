@@ -1,5 +1,5 @@
 use malachite_base::num::arithmetic::traits::{
-    IsPowerOf2, ModPowerOf2, PowerOf2, SaturatingSubAssign, ShrRound,
+    IsPowerOf2, ModPowerOf2, SaturatingSubAssign, ShrRound,
 };
 use malachite_base::num::basic::traits::{One, Zero};
 use malachite_base::num::conversion::traits::ExactFrom;
@@ -15,8 +15,7 @@ use std::cmp::max;
 
 use iterators::common::scramble;
 use iterators::integers_geometric::{
-    positive_u32s_geometric, range_up_geometric_u32, u32s_geometric, PositiveU32sGeometric,
-    RangeUpGeometricU32, U32sGeometric,
+    positive_u32s_geometric, u32s_geometric, PositiveU32sGeometric, U32sGeometric,
 };
 use malachite_base::num::basic::unsigneds::PrimitiveUnsigned;
 
@@ -48,9 +47,7 @@ fn limbs_random_up_to_bits_old<T: PrimitiveUnsigned + Rand, R: Rng>(
         xs.push(rng.gen());
     }
     if remainder_bits != 0 {
-        xs.last_mut()
-            .unwrap()
-            .mod_power_of_2_assign(remainder_bits);
+        xs.last_mut().unwrap().mod_power_of_2_assign(remainder_bits);
     }
     xs
 }
@@ -312,93 +309,5 @@ pub fn special_random_range_natural(
         rng: Box::new(IsaacRng::from_seed(seed)),
         diameter_plus_one: b - &a + Natural::ONE,
         a,
-    }
-}
-
-pub struct RandomRangeUpNatural {
-    rng: Box<IsaacRng>,
-    bit_sizes: RangeUpGeometricU32,
-    a: Natural,
-    a_bit_size: u64,
-    offset_limit: Natural,
-}
-
-impl Iterator for RandomRangeUpNatural {
-    type Item = Natural;
-
-    fn next(&mut self) -> Option<Natural> {
-        let bit_size = u64::from(self.bit_sizes.next().unwrap());
-        Some(if bit_size == self.a_bit_size {
-            // Generates values between a and 2^n - 1, inclusive.
-            random_natural_below_old(&mut self.rng, &self.offset_limit) + &self.a
-        } else {
-            // Generates values between 2^(n - 1) and 2^n - 1, inclusive.
-            random_natural_with_bits_old(&mut self.rng, bit_size)
-        })
-    }
-}
-
-pub fn random_range_up_natural(seed: &[u32], scale: u32, a: Natural) -> RandomRangeUpNatural {
-    let a_bit_size = a.significant_bits();
-    // let n = a.significant_bits().
-    // There are 2^(n - 1) values with exactly n bits, the smallest being 2^(n - 1);
-    // a - 2^(n - 1) are smaller than a, so 2^(n - 1) - (a - 2^(n - 1)) = 2^n - a are at least a.
-    let offset_limit = Natural::power_of_2(a_bit_size) - &a;
-    RandomRangeUpNatural {
-        rng: Box::new(IsaacRng::from_seed(&scramble(seed, "bits"))),
-        bit_sizes: range_up_geometric_u32(
-            &scramble(seed, "bitsizes"),
-            scale,
-            u32::exact_from(a_bit_size),
-        ),
-        a,
-        a_bit_size,
-        offset_limit,
-    }
-}
-
-pub struct SpecialRandomRangeUpNatural {
-    rng: Box<IsaacRng>,
-    bit_sizes: RangeUpGeometricU32,
-    a: Natural,
-    a_bit_size: u64,
-    offset_limit: Natural,
-}
-
-impl Iterator for SpecialRandomRangeUpNatural {
-    type Item = Natural;
-
-    fn next(&mut self) -> Option<Natural> {
-        let bit_size = u64::from(self.bit_sizes.next().unwrap());
-        Some(if bit_size == self.a_bit_size {
-            // Generates values between a and 2^n - 1, inclusive.
-            special_random_natural_below_old(&mut self.rng, &self.offset_limit) + &self.a
-        } else {
-            // Generates values between 2^(n - 1) and 2^n - 1, inclusive.
-            special_random_natural_with_bits_old(&mut self.rng, bit_size)
-        })
-    }
-}
-
-pub fn special_random_range_up_natural(
-    seed: &[u32],
-    scale: u32,
-    a: Natural,
-) -> SpecialRandomRangeUpNatural {
-    let a_bit_size = a.significant_bits();
-    // let n = a.significant_bits().
-    // There are 2^(n - 1) values with exactly n bits, the smallest being 2^(n - 1);
-    // a - 2^(n - 1) are smaller than a, so 2^(n - 1) - (a - 2^(n - 1)) = 2^n - a are at least a.
-    let offset_limit = Natural::power_of_2(a_bit_size) - &a;
-    SpecialRandomRangeUpNatural {
-        rng: Box::new(IsaacRng::from_seed(&scramble(seed, "bits"))),
-        bit_sizes: range_up_geometric_u32(
-            &scramble(seed, "bitsizes"),
-            scale,
-            u32::exact_from(a_bit_size),
-        ),
-        a,
-        a_bit_size,
-        offset_limit,
     }
 }

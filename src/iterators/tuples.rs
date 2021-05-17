@@ -27,43 +27,6 @@ impl Default for LogPairIndices {
     }
 }
 
-#[derive(Debug, Default, Eq, PartialEq)]
-pub(crate) struct SqrtPairIndices {
-    pub x: u64,
-    pub y: u64,
-}
-
-impl SqrtPairIndices {
-    pub(crate) fn new() -> SqrtPairIndices {
-        SqrtPairIndices { x: 0, y: 0 }
-    }
-
-    pub(crate) fn increment(&mut self) {
-        let mut ix = 0;
-        let mut iy = 0;
-        loop {
-            let mask = u64::power_of_2(iy);
-            if self.y & mask != 0 {
-                self.y &= !mask;
-                iy += 1;
-            } else {
-                self.y |= mask;
-                return;
-            }
-            for _ in 0..2 {
-                let mask = u64::power_of_2(ix);
-                if self.x & mask != 0 {
-                    self.x &= !mask;
-                    ix += 1;
-                } else {
-                    self.x |= mask;
-                    return;
-                }
-            }
-        }
-    }
-}
-
 #[derive(Debug, Eq, PartialEq)]
 pub(crate) struct ZOrderTupleIndices(pub Vec<u64>);
 

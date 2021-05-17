@@ -4,7 +4,7 @@ use rand::{IsaacRng, Rng, SeedableRng};
 use iterators::common::scramble;
 use iterators::general::{random, Random};
 
-pub struct PositiveU32sGeometric {
+pub(crate) struct PositiveU32sGeometric {
     rng: Box<IsaacRng>,
     weight: u32,
 }
@@ -21,7 +21,7 @@ impl Iterator for PositiveU32sGeometric {
     }
 }
 
-pub fn positive_u32s_geometric(seed: &[u32], scale: u32) -> PositiveU32sGeometric {
+pub(crate) fn positive_u32s_geometric(seed: &[u32], scale: u32) -> PositiveU32sGeometric {
     PositiveU32sGeometric {
         rng: Box::new(IsaacRng::from_seed(seed)),
         weight: scale + 2,

@@ -18,7 +18,6 @@ pub mod iterators {
     pub mod integers;
     pub mod integers_geometric;
     pub mod naturals;
-    pub mod primitive_floats;
     pub mod primitive_ints;
     pub mod rounding_modes;
     pub mod tuples;
